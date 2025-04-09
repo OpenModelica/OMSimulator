@@ -2,6 +2,7 @@ import logging
 
 from lxml import etree as ET
 from OMSimulator.component import Component
+from OMSimulator.connector import Connector
 from OMSimulator.connection import Connection
 from OMSimulator.fmu import FMU
 from OMSimulator.values import Values
@@ -100,12 +101,12 @@ class System:
       temp_dir = ssd._filename.parent
       system = System(node.get("name"))
       system.description = node.get("description")
-      system.connectors = utils.parseConnectors(node)
+      system.connectors = Connector.importFromNode(node)
       system.elementgeometry = ElementGeometry.importFromNode(node)
       system.systemgeometry = SystemGeometry.importFromNode(node)
       utils.parseParameterBindings(node, ssd, resources)
       system.elements = utils.parseElements(node, resources)
-      utils.parseConnection(node, system)
+      Connection.importFromNode(node, system)
       return system
 
     except ET.ParseError as e:

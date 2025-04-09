@@ -35,7 +35,7 @@ class Values:
           type_tag = "String"
         case _:
             raise TypeError(f"Unsupported type: {type(value)}")
-      print(f"{prefix} ({type_tag} {key}, {value}, {unit}, {description})")
+      print(f"{prefix} ({type_tag} {key}, {value}, {unit}, '{description}')")
 
   def exportToSSD(self, node, unitDefinitions=None):
     if self.empty():

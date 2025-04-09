@@ -2,6 +2,7 @@ import logging
 from pathlib import Path
 
 from lxml import etree as ET
+from OMSimulator import capi
 from OMSimulator.cref import CRef
 from OMSimulator.fmu import FMU
 from OMSimulator.settings import suppress_path_to_str
@@ -35,6 +36,7 @@ class SSD:
     try:
       tree = ET.parse(filename)
       root = tree.getroot()
+      utils.validateSSP(root, filename, "SystemStructureDescription.xsd")
       variant_name = root.get("name")
       ssd = SSD(variant_name)
       ssd._filename = Path(filename).resolve()
@@ -46,7 +48,7 @@ class SSD:
       ssd.system = System.importFromNode(system, ssd, resources)
 
       utils.parseDefaultExperiment(root, ssd)
-      utils.parseUnitDefinitions(root, ssd)
+      Unit.importFromNode(root, ssd)
       logger.debug(f"SSD '{variant_name}' successfully imported from {filename}")
       return ssd
 
@@ -121,8 +123,8 @@ class SSD:
       nsmap=namespace.ns,
       name=self._name,
       version="2.0",
-      generationTool="OMSimulator",
-      generationDateTime=datetime.now().isoformat()
+      generationTool= capi.capi().getVersion(),
+      generationDateAndTime=datetime.now().isoformat()
     )
 
     self.system.export(root)
@@ -140,9 +142,10 @@ class SSD:
 
   def _exportUnitDefinitions(self, node):
     '''Exports unit definitions to the given XML node.'''
-    unit_definitions_node = ET.SubElement(node, namespace.tag("ssd", "Units"))
-    for unit in self.unitDefinitions:
-      unit.exportToSSD(unit_definitions_node)
+    if self.unitDefinitions:
+      unit_definitions_node = ET.SubElement(node, namespace.tag("ssd", "Units"))
+      for unit in self.unitDefinitions:
+        unit.exportToSSD(unit_definitions_node)
 
   def _exportDefaultExperiment(self, node):
     '''Exports default experiment settings.'''

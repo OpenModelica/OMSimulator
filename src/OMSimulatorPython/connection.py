@@ -40,3 +40,26 @@ class Connection:
       connection_node.set("description", self.description)
     if self.connectionGeometry:
       self.connectionGeometry.exportToSSD(connection_node)
+
+  @staticmethod
+  def importFromNode(node, root):
+    connections_node = node.find("ssd:Connections", namespaces=namespace.ns)
+    if connections_node is None:
+      return
+    for connection in connections_node.findall("ssd:Connection", namespaces=namespace.ns):
+      startElement = connection.get("startElement", '')
+      startConnector = connection.get("startConnector")
+      endElement = connection.get("endElement", '')
+      endConnector = connection.get("endConnector")
+      description = connection.get("description")
+      root.addConnection(startElement, startConnector, endElement, endConnector)
+      if description:
+        root.connections[-1].description = description
+      connection_geometry = connection.find("ssd:ConnectionGeometry", namespaces=namespace.ns)
+      if connection_geometry is not None:
+        pointsX = connection_geometry.get("pointsX")
+        pointsY = connection_geometry.get("pointsY")
+        # print (f"ConnectionGeometry: pointsX: {pointsX}, pointsY: {pointsY}")
+        if pointsX and pointsY:
+          connectionGeometry = ConnectionGeometry([float(x) for x in pointsX.split()], [float(y) for y in pointsY.split()])
+          root.connections[-1].connectionGeometry = connectionGeometry

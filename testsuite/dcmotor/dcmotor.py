@@ -31,30 +31,30 @@ model.export('dcmotor.ssp')
 ##  Active variant "DC-Motor": <hidden>
 ##  |-- System: DC-Motor 'A simple simulation model of a DC-Motor that has to accelerate against a Load MLoad = 1 Nm in 1s from 0 to 1000 rad/s, Voltage U = 48 V '
 ##  |-- Connectors:
-##  |-- |-- (M_mot, Causality.output, SignalType.Real, Nm, None)
+##  |-- |-- (M_mot, Causality.output, SignalType.Real, Nm, 'None')
 ##  |-- |-- |-- ConnectorGeometry: (x:1.0, y:0.472716)
-##  |-- |-- (wB, Causality.output, SignalType.Real, None, None)
+##  |-- |-- (wB, Causality.output, SignalType.Real, None, 'None')
 ##  |-- |-- |-- ConnectorGeometry: (x:1.0, y:0.575601)
-##  |-- |-- (U, Causality.output, SignalType.Real, None, None)
+##  |-- |-- (U, Causality.output, SignalType.Real, None, 'None')
 ##  |-- |-- |-- ConnectorGeometry: (x:1.0, y:0.802381)
-##  |-- |-- (I, Causality.output, SignalType.Real, None, None)
+##  |-- |-- (I, Causality.output, SignalType.Real, None, 'None')
 ##  |-- |-- |-- ConnectorGeometry: (x:1.0, y:0.391695)
-##  |-- |-- (M_load, Causality.output, SignalType.Real, Nm, None)
+##  |-- |-- (M_load, Causality.output, SignalType.Real, Nm, 'None')
 ##  |-- |-- |-- ConnectorGeometry: (x:1.0, y:0.236601)
 ##  |-- Elements:
 ##  |-- |-- System: SuT 'System under Test (DC-Motor model)'
 ##  |-- |-- Connectors:
-##  |-- |-- |-- (wB, Causality.output, SignalType.Real, rad/s, None)
+##  |-- |-- |-- (wB, Causality.output, SignalType.Real, rad/s, 'None')
 ##  |-- |-- |-- |-- ConnectorGeometry: (x:1.0, y:0.741903)
-##  |-- |-- |-- (M_load, Causality.input, SignalType.Real, Nm, None)
+##  |-- |-- |-- (M_load, Causality.input, SignalType.Real, Nm, 'None')
 ##  |-- |-- |-- |-- ConnectorGeometry: (x:0.0, y:0.434438)
-##  |-- |-- |-- (phiB, Causality.output, SignalType.Real, rad, None)
+##  |-- |-- |-- (phiB, Causality.output, SignalType.Real, rad, 'None')
 ##  |-- |-- |-- |-- ConnectorGeometry: (x:1.0, y:0.589313)
-##  |-- |-- |-- (U, Causality.input, SignalType.Real, V, None)
+##  |-- |-- |-- (U, Causality.input, SignalType.Real, V, 'None')
 ##  |-- |-- |-- |-- ConnectorGeometry: (x:0.0, y:0.666667)
-##  |-- |-- |-- (M_mot, Causality.output, SignalType.Real, Nm, None)
+##  |-- |-- |-- (M_mot, Causality.output, SignalType.Real, Nm, 'None')
 ##  |-- |-- |-- |-- ConnectorGeometry: (x:1.0, y:0.413207)
-##  |-- |-- |-- (I, Causality.output, SignalType.Real, A, None)
+##  |-- |-- |-- (I, Causality.output, SignalType.Real, A, 'None')
 ##  |-- |-- |-- |-- ConnectorGeometry: (x:1.0, y:0.151703)
 ##  |-- |-- ElementGeometry:
 ##  |-- |-- |-- (x1:310.0, y1:-183.0, x2:510.0, y2:-2.0, rotation:0.0, icon_source:None, icon_rotation:0.0, icon_flip:False, icon_fixed_aspect_ratio:False)
@@ -62,23 +62,23 @@ model.export('dcmotor.ssp')
 ##  |-- |-- |-- FMU: edrive_mass 'Mechanical part of the DC motor model'
 ##  |-- |-- |-- |-- path: resources/edrive_mass.fmu
 ##  |-- |-- |-- |-- Connectors:
-##  |-- |-- |-- |-- |-- (M_A, Causality.input, SignalType.Real, N.m, None)
+##  |-- |-- |-- |-- |-- (M_A, Causality.input, SignalType.Real, N.m, 'None')
 ##  |-- |-- |-- |-- |-- |-- ConnectorGeometry: (x:0.0, y:0.586667)
-##  |-- |-- |-- |-- |-- (phiB, Causality.output, SignalType.Real, rad, None)
+##  |-- |-- |-- |-- |-- (phiB, Causality.output, SignalType.Real, rad, 'None')
 ##  |-- |-- |-- |-- |-- |-- ConnectorGeometry: (x:1.0, y:0.2)
-##  |-- |-- |-- |-- |-- (wB, Causality.output, SignalType.Real, rad/s, None)
+##  |-- |-- |-- |-- |-- (wB, Causality.output, SignalType.Real, rad/s, 'None')
 ##  |-- |-- |-- |-- |-- |-- ConnectorGeometry: (x:1.0, y:0.4)
-##  |-- |-- |-- |-- |-- (wA, Causality.output, SignalType.Real, rad/s, None)
+##  |-- |-- |-- |-- |-- (wA, Causality.output, SignalType.Real, rad/s, 'None')
 ##  |-- |-- |-- |-- |-- |-- ConnectorGeometry: (x:1.0, y:0.8)
-##  |-- |-- |-- |-- |-- (M_B, Causality.input, SignalType.Real, N.m, None)
+##  |-- |-- |-- |-- |-- (M_B, Causality.input, SignalType.Real, N.m, 'None')
 ##  |-- |-- |-- |-- |-- |-- ConnectorGeometry: (x:0.0, y:0.333333)
-##  |-- |-- |-- |-- |-- (phiA, Causality.output, SignalType.Real, rad, None)
+##  |-- |-- |-- |-- |-- (phiA, Causality.output, SignalType.Real, rad, 'None')
 ##  |-- |-- |-- |-- |-- |-- ConnectorGeometry: (x:1.0, y:0.6)
 ##  |-- |-- |-- |-- ElementGeometry:
 ##  |-- |-- |-- |-- |-- (x1:318.194184, y1:-778.573683, x2:518.194184, y2:-578.573683, rotation:0.0, icon_source:None, icon_rotation:0.0, icon_flip:False, icon_fixed_aspect_ratio:False)
 ##  |-- |-- |-- |-- Inline Parameter Bindings:
-##  |-- |-- |-- |-- |-- (Real inertia.J, 0.002, kg.m2, Moment of inertia)
-##  |-- |-- |-- |-- |-- (Real damper.d, 0.001, N.m.s/rad, Damping constant)
+##  |-- |-- |-- |-- |-- (Real inertia.J, 0.002, kg.m2, 'Moment of inertia')
+##  |-- |-- |-- |-- |-- (Real damper.d, 0.001, N.m.s/rad, 'Damping constant')
 ##  |-- |-- |-- |-- |-- UnitDefinitions:
 ##  |-- |-- |-- |-- |-- |-- Unit: N.m.s/rad
 ##  |-- |-- |-- |-- |-- |-- |-- BaseUnit: kg: 1, m: 2, s: -1, A: 0, K: 0, mol: 0, cd: 0, rad: -1, factor: 1.0, offset: 0.0
@@ -87,25 +87,25 @@ model.export('dcmotor.ssp')
 ##  |-- |-- |-- FMU: emachine_model 'electrical part of the DC-Motor model'
 ##  |-- |-- |-- |-- path: resources/emachine_model.fmu
 ##  |-- |-- |-- |-- Connectors:
-##  |-- |-- |-- |-- |-- (M, Causality.output, SignalType.Real, N.m, None)
+##  |-- |-- |-- |-- |-- (M, Causality.output, SignalType.Real, N.m, 'None')
 ##  |-- |-- |-- |-- |-- |-- ConnectorGeometry: (x:1.0, y:0.6)
-##  |-- |-- |-- |-- |-- (U, Causality.input, SignalType.Real, V, None)
+##  |-- |-- |-- |-- |-- (U, Causality.input, SignalType.Real, V, 'None')
 ##  |-- |-- |-- |-- |-- |-- ConnectorGeometry: (x:0.0, y:0.25)
-##  |-- |-- |-- |-- |-- (w, Causality.input, SignalType.Real, rad/s, None)
+##  |-- |-- |-- |-- |-- (w, Causality.input, SignalType.Real, rad/s, 'None')
 ##  |-- |-- |-- |-- |-- |-- ConnectorGeometry: (x:0.0, y:0.75)
-##  |-- |-- |-- |-- |-- (phi, Causality.input, SignalType.Real, rad, None)
+##  |-- |-- |-- |-- |-- (phi, Causality.input, SignalType.Real, rad, 'None')
 ##  |-- |-- |-- |-- |-- |-- ConnectorGeometry: (x:0.0, y:0.5)
-##  |-- |-- |-- |-- |-- (I, Causality.output, SignalType.Real, A, None)
+##  |-- |-- |-- |-- |-- (I, Causality.output, SignalType.Real, A, 'None')
 ##  |-- |-- |-- |-- |-- |-- ConnectorGeometry: (x:1.0, y:0.1725)
 ##  |-- |-- |-- |-- ElementGeometry:
 ##  |-- |-- |-- |-- |-- (x1:-81.369197, y1:-781.383542, x2:118.630803, y2:-581.383542, rotation:0.0, icon_source:None, icon_rotation:0.0, icon_flip:False, icon_fixed_aspect_ratio:False)
 ##  |-- |-- |-- |-- Inline Parameter Bindings:
-##  |-- |-- |-- |-- |-- (Real resistor.T_ref, 300.15, K, Reference temperature)
-##  |-- |-- |-- |-- |-- (Real resistor.T, 300.15, K, Fixed device temperature if useHeatPort = false)
-##  |-- |-- |-- |-- |-- (Real resistor.alpha, 0.0, 1/K, Temperature coefficient of resistance (R_actual = R*(1 + alpha*(T_heatPort - T_ref)))
-##  |-- |-- |-- |-- |-- (Real inductor.L, 0.001, H, Inductance)
-##  |-- |-- |-- |-- |-- (Real emf.k, 0.1, N.m/A, Transformation coefficient)
-##  |-- |-- |-- |-- |-- (Real resistor.R, 0.5, Ohm, Resistance at temperature T_ref)
+##  |-- |-- |-- |-- |-- (Real resistor.T_ref, 300.15, K, 'Reference temperature')
+##  |-- |-- |-- |-- |-- (Real resistor.T, 300.15, K, 'Fixed device temperature if useHeatPort = false')
+##  |-- |-- |-- |-- |-- (Real resistor.alpha, 0.0, 1/K, 'Temperature coefficient of resistance (R_actual = R*(1 + alpha*(T_heatPort - T_ref))')
+##  |-- |-- |-- |-- |-- (Real inductor.L, 0.001, H, 'Inductance')
+##  |-- |-- |-- |-- |-- (Real emf.k, 0.1, N.m/A, 'Transformation coefficient')
+##  |-- |-- |-- |-- |-- (Real resistor.R, 0.5, Ohm, 'Resistance at temperature T_ref')
 ##  |-- |-- |-- |-- |-- UnitDefinitions:
 ##  |-- |-- |-- |-- |-- |-- Unit: N.m/A
 ##  |-- |-- |-- |-- |-- |-- |-- BaseUnit: kg: 1, m: 2, s: -2, A: -1, K: 0, mol: 0, cd: 0, rad: 0, factor: 1.0, offset: 0.0
@@ -140,17 +140,17 @@ model.export('dcmotor.ssp')
 ##  |-- |-- FMU: stimuli_model ''
 ##  |-- |-- |-- path: resources/stimuli_model.fmu
 ##  |-- |-- |-- Connectors:
-##  |-- |-- |-- |-- (U, Causality.output, SignalType.Real, V, None)
+##  |-- |-- |-- |-- (U, Causality.output, SignalType.Real, V, 'None')
 ##  |-- |-- |-- |-- |-- ConnectorGeometry: (x:1.0, y:0.544915)
-##  |-- |-- |-- |-- (M_load, Causality.output, SignalType.Real, N.m, None)
+##  |-- |-- |-- |-- (M_load, Causality.output, SignalType.Real, N.m, 'None')
 ##  |-- |-- |-- |-- |-- ConnectorGeometry: (x:1.0, y:0.164406)
 ##  |-- |-- |-- ElementGeometry:
 ##  |-- |-- |-- |-- (x1:-159.5, y1:-124.0, x2:40.5, y2:-6.0, rotation:0.0, icon_source:None, icon_rotation:0.0, icon_flip:False, icon_fixed_aspect_ratio:False)
 ##  |-- |-- |-- Inline Parameter Bindings:
-##  |-- |-- |-- |-- (Real Voltage_step.offset, 0.0, None, Offset of output signal y)
-##  |-- |-- |-- |-- (Real Voltage_step.startTime, 0.0, s, Output y = offset for time < startTime)
-##  |-- |-- |-- |-- (Real Voltage_step.height, 12.0, V, Height of step)
-##  |-- |-- |-- |-- (Real MLoad.k, -0.5, N.m, Constant output value)
+##  |-- |-- |-- |-- (Real Voltage_step.offset, 0.0, None, 'Offset of output signal y')
+##  |-- |-- |-- |-- (Real Voltage_step.startTime, 0.0, s, 'Output y = offset for time < startTime')
+##  |-- |-- |-- |-- (Real Voltage_step.height, 12.0, V, 'Height of step')
+##  |-- |-- |-- |-- (Real MLoad.k, -0.5, N.m, 'Constant output value')
 ##  |-- |-- |-- |-- UnitDefinitions:
 ##  |-- |-- |-- |-- |-- Unit: V
 ##  |-- |-- |-- |-- |-- |-- BaseUnit: kg: 1, m: 2, s: -3, A: -1, K: 0, mol: 0, cd: 0, rad: 0, factor: 1.0, offset: 0.0
