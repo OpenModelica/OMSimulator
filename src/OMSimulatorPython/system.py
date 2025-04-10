@@ -107,6 +107,7 @@ class System:
       system.systemgeometry = SystemGeometry.importFromNode(node)
       utils.parseParameterBindings(node, ssd, resources)
       system.elements = utils.parseElements(node, resources)
+      utils.parseAnnotations(node, system)
       Connection.importFromNode(node, system)
       return system
 

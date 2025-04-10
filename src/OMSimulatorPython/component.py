@@ -15,7 +15,7 @@ class Component:
     self.elementgeometry = None
     self.description = None
     self.value = Values()
-    self.solver = None
+    self.solver = dict()
     self.parameterResources = []
 
   def addConnector(self, connector):
