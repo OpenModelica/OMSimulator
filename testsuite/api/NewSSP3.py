@@ -81,6 +81,9 @@ model2.list()
 ## |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, 'Connector of Real output signal')
 ## |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None, 'Gain of input signal 1')
 ## |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, 'Gain of input signal 2')
+## |-- |-- |-- |-- Solver Settings:
+## |-- |-- |-- |-- |-- method: euler
+## |-- |-- |-- |-- |-- tolerance: 1e-06
 ## |-- |-- |-- FMU: Add2 'None'
 ## |-- |-- |-- |-- path: resources/Add.fmu
 ## |-- |-- |-- |-- Connectors:
@@ -89,6 +92,12 @@ model2.list()
 ## |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, 'Connector of Real output signal')
 ## |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None, 'Gain of input signal 1')
 ## |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, 'Gain of input signal 2')
+## |-- |-- |-- |-- Solver Settings:
+## |-- |-- |-- |-- |-- method: euler
+## |-- |-- |-- |-- |-- tolerance: 1e-06
+## |-- |-- Solver Settings:
+## |-- |-- |-- method: euler
+## |-- |-- |-- tolerance: 1e-06
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
