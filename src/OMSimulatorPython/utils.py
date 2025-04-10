@@ -120,3 +120,13 @@ def validateSSP(root, filename : str, schema_file : str):
     for entry in schema.error_log:
       message += "\n%s (line %d, column %d): %s" % (entry.level_name, entry.line, entry.column, entry.message)
     raise Exception(message)
+
+def exportAnnotations(node, solver):
+  """Export annotations to the XML node"""
+  ssd_annotation_node = ET.SubElement(node, namespace.tag("ssd", "Annotations"))
+  annotation_node = ET.SubElement(ssd_annotation_node, namespace.tag("ssc", "Annotation"))
+  annotation_node.set("type", "org.openmodelica")
+  oms_annotation_node = ET.SubElement(annotation_node, namespace.tag("oms", "Annotations"))
+  oms_simulationInformation_node = ET.SubElement(oms_annotation_node, namespace.tag("oms", "SimulationInformation"))
+  for key, value in solver.items():
+    oms_simulationInformation_node.set(key, str(value))

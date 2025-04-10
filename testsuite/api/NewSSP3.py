@@ -16,6 +16,12 @@ model.addResource('../resources/Modelica.Blocks.Math.Add.fmu', new_name='resourc
 component1 = model.addComponent(CRef('default', 'Add1'), 'resources/Add.fmu')
 component2 = model.addComponent(CRef('default', 'Add2'), 'resources/Add.fmu')
 
+solver = {'method': 'euler', 'tolerance': 1e-6}
+model.newSolver(solver)
+
+model.setSolver(CRef('default', 'Add1'), solver)
+model.setSolver(CRef('default', 'Add2'), solver)
+
 model.list()
 model.export('NewSSP3.ssp')
 

@@ -89,6 +89,7 @@ class System:
     self.model = model
     self.elementgeometry = None
     self.systemgeometry = None
+    self.solver = dict()
 
   @property
   def name(self):
@@ -155,6 +156,12 @@ class System:
     if self.systemgeometry:
       print(f"{prefix} SystemGeometry:")
       self.systemgeometry.list(prefix=prefix + " |--")
+
+    ## list solver options
+    if self.solver:
+      print(f"{prefix} Solver Settings:")
+      for key, value in self.solver.items():
+        print(f"{prefix} |-- {key}: {value}")
 
   def addSystem(self, cref: CRef):
     first = cref.first()
@@ -225,6 +232,20 @@ class System:
 
     self.elements[first].setValue(cref.last(), value, unit)
 
+  def newSolver(self, options: dict | None = None):
+    self.solver = options
+
+  def setSolver(self, cref: CRef, Options: dict | None = None):
+    first = cref.first()
+    if not cref.is_root():
+      if first not in self.elements:
+        raise ValueError(f"System '{first}' not found in '{self.name}'")
+      self.elements[first].solver = Options
+    else:
+      if first not in self.elements:
+        raise ValueError(f"Component '{first}' not found in {self.name}")
+      self.elements[first].setSolver(Options)
+
   def export(self, root):
     node = ET.SubElement(root, namespace.tag("ssd", "System"), attrib={"name": self.name})
     if self.description:
@@ -262,5 +283,9 @@ class System:
       connections_node = ET.SubElement(node, namespace.tag("ssd", "Connections"))
       for connection in self.connections:
         connection.exportToSSD(connections_node)
+
+    ## export ssd annotations
+    if self.solver:
+      utils.exportAnnotations(node, self.solver)
 
     return node

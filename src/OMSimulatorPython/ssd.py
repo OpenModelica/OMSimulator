@@ -82,6 +82,13 @@ class SSD:
     subcref = self._validateCref(cref)
     self.system.addSSV(subcref, resource)
 
+  def newSolver(self, options: dict):
+    return self.system.newSolver(options)
+
+  def setSolver(self, cref: CRef, options: dict):
+    subcref = self._validateCref(cref)
+    self.system.setSolver(subcref, options)
+
   def _getComponentResourcePath(self, cref: CRef):
     subcref = self._validateCref(cref)
     return self.system._getComponentResourcePath(subcref)

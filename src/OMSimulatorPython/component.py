@@ -6,7 +6,6 @@ from OMSimulator.values import Values
 from OMSimulator.elementgeometry import ElementGeometry
 from OMSimulator import namespace
 
-
 class Component:
   def __init__(self, name: CRef, fmuPath: Path | str, connectors=None, unitDefinitions=None):
     self.name = CRef(name)
@@ -15,7 +14,8 @@ class Component:
     self.unitDefinitions = unitDefinitions or list()
     self.elementgeometry = None
     self.description = None
-    self.value = Values() ## TODO propogate Values
+    self.value = Values()
+    self.solver = None
     self.parameterResources = []
 
   def addConnector(self, connector):
@@ -57,6 +57,12 @@ class Component:
       for resource in self.parameterResources:
         print(f"{prefix} Parameter Bindings: {resource}")
 
+    ## list solver settings
+    if self.solver:
+      print(f"{prefix} Solver Settings:")
+      for key, value in self.solver.items():
+        print(f"{prefix} |-- {key}: {value}")
+
   def exportToSSD(self, node):
     component_node = ET.SubElement(node, namespace.tag("ssd", "Component"))
     component_node.set("name", str(self.name))
@@ -85,5 +91,13 @@ class Component:
         parameter_binding_node = ET.SubElement(parameter_bindings_node, namespace.tag("ssd", "ParameterBinding"))
         parameter_binding_node.set("source", resource)
 
+    ## export Annotations
+    if self.solver:
+      from OMSimulator import utils
+      utils.exportAnnotations(component_node, self.solver)
+
   def setValue(self, cref:str, value, unit=None, description = None):
     self.value.setValue(cref, value, unit, description)
+
+  def setSolver(self, options: dict):
+    self.solver = options
