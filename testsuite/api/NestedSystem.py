@@ -18,6 +18,14 @@ model.addSystem(CRef('default', 'sub-system2'))
 model.addSystem(CRef('default', 'sub-system2', 'sub-sub-system'))
 component1 = model.addComponent(CRef('default', 'Add1'), 'resources/Add.fmu')
 component2 = model.addComponent(CRef('default', 'sub-system', 'Add2'), 'resources/Add.fmu')
+component2 = model.addComponent(CRef('default', 'sub-system2', 'Add3'), 'resources/Add.fmu')
+
+solver = {'name' : 'solver1', 'method': 'euler', 'tolerance': 1e-6}
+model.newSolver(solver)
+model.setSolver(CRef('default', 'Add1'), 'solver1')
+model.setSolver(CRef('default', 'sub-system', 'Add2'), 'solver1')
+model.setSolver(CRef('default', 'sub-system2', 'Add3'), 'solver1')
+
 
 model.list()
 

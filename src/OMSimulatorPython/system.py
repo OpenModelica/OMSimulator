@@ -238,7 +238,7 @@ class System:
     if not cref.is_root():
       if first not in self.elements:
         raise ValueError(f"System '{first}' not found in '{self.name}'")
-      self.elements[first].solver = name
+      self.elements[first].setSolver(cref.pop_first(), name)
     else:
       if first not in self.elements:
         raise ValueError(f"Component '{first}' not found in {self.name}")
