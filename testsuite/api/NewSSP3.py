@@ -16,11 +16,11 @@ model.addResource('../resources/Modelica.Blocks.Math.Add.fmu', new_name='resourc
 component1 = model.addComponent(CRef('default', 'Add1'), 'resources/Add.fmu')
 component2 = model.addComponent(CRef('default', 'Add2'), 'resources/Add.fmu')
 
-solver = {'method': 'euler', 'tolerance': 1e-6}
+solver = {'name' : 'solver1',  'method': 'euler', 'tolerance': 1e-6}
 model.newSolver(solver)
 
-model.setSolver(CRef('default', 'Add1'), solver)
-model.setSolver(CRef('default', 'Add2'), solver)
+model.setSolver(CRef('default', 'Add1'), 'solver1')
+model.setSolver(CRef('default', 'Add2'), 'solver1')
 
 model.list()
 model.export('NewSSP3.ssp')
@@ -46,8 +46,7 @@ model2.list()
 ## |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None, 'Gain of input signal 1')
 ## |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, 'Gain of input signal 2')
 ## |-- |-- |-- |-- Solver Settings:
-## |-- |-- |-- |-- |-- method: euler
-## |-- |-- |-- |-- |-- tolerance: 1e-06
+## |-- |-- |-- |-- |-- name: solver1
 ## |-- |-- |-- FMU: Add2 'None'
 ## |-- |-- |-- |-- path: resources/Add.fmu
 ## |-- |-- |-- |-- Connectors:
@@ -57,9 +56,9 @@ model2.list()
 ## |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None, 'Gain of input signal 1')
 ## |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, 'Gain of input signal 2')
 ## |-- |-- |-- |-- Solver Settings:
-## |-- |-- |-- |-- |-- method: euler
-## |-- |-- |-- |-- |-- tolerance: 1e-06
+## |-- |-- |-- |-- |-- name: solver1
 ## |-- |-- Solver Settings:
+## |-- |-- |-- name: solver1
 ## |-- |-- |-- method: euler
 ## |-- |-- |-- tolerance: 1e-06
 ## |-- DefaultExperiment
@@ -82,8 +81,7 @@ model2.list()
 ## |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None, 'Gain of input signal 1')
 ## |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, 'Gain of input signal 2')
 ## |-- |-- |-- |-- Solver Settings:
-## |-- |-- |-- |-- |-- method: euler
-## |-- |-- |-- |-- |-- tolerance: 1e-06
+## |-- |-- |-- |-- |-- name: solver1
 ## |-- |-- |-- FMU: Add2 'None'
 ## |-- |-- |-- |-- path: resources/Add.fmu
 ## |-- |-- |-- |-- Connectors:
@@ -93,9 +91,9 @@ model2.list()
 ## |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None, 'Gain of input signal 1')
 ## |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, 'Gain of input signal 2')
 ## |-- |-- |-- |-- Solver Settings:
-## |-- |-- |-- |-- |-- method: euler
-## |-- |-- |-- |-- |-- tolerance: 1e-06
+## |-- |-- |-- |-- |-- name: solver1
 ## |-- |-- Solver Settings:
+## |-- |-- |-- name: solver1
 ## |-- |-- |-- method: euler
 ## |-- |-- |-- tolerance: 1e-06
 ## |-- DefaultExperiment

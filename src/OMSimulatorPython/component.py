@@ -15,7 +15,7 @@ class Component:
     self.elementgeometry = None
     self.description = None
     self.value = Values()
-    self.solver = dict()
+    self.solver = None
     self.parameterResources = []
 
   def addConnector(self, connector):
@@ -60,8 +60,7 @@ class Component:
     ## list solver settings
     if self.solver:
       print(f"{prefix} Solver Settings:")
-      for key, value in self.solver.items():
-        print(f"{prefix} |-- {key}: {value}")
+      print(f"{prefix} |-- name: {self.solver}")
 
   def exportToSSD(self, node):
     component_node = ET.SubElement(node, namespace.tag("ssd", "Component"))
@@ -99,5 +98,5 @@ class Component:
   def setValue(self, cref:str, value, unit=None, description = None):
     self.value.setValue(cref, value, unit, description)
 
-  def setSolver(self, options: dict):
-    self.solver = options
+  def setSolver(self, name: str):
+    self.solver = name

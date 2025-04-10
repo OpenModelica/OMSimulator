@@ -45,7 +45,9 @@ def parseElements(node, resources = None):
     elements[name].elementgeometry = ElementGeometry.importFromNode(system)
     elements[name].systemgeometry = SystemGeometry.importFromNode(system)
     parseParameterBindings(system, elements[name], resources)
-    parseAnnotations(system, elements[name])
+    solver = parseAnnotations(system)
+    if solver:
+      elements[name].solver = solver["name"]
     elements[name].elements = parseElements(system, resources)  # recursively parse nested elements in the sub-system
     Connection.importFromNode(system, elements[name]) # parse connections for the sub-system
 
@@ -59,7 +61,9 @@ def parseElements(node, resources = None):
     elements[name].connectors = Connector.importFromNode(component)
     elements[name].elementgeometry = ElementGeometry.importFromNode(component)
     parseParameterBindings(component, elements[name], resources)
-    parseAnnotations(component, elements[name])
+    solver = parseAnnotations(component)
+    if solver:
+      elements[name].solver = solver["name"]
 
   return elements
 
@@ -130,10 +134,13 @@ def exportAnnotations(node, solver):
   annotation_node.set("type", "org.openmodelica")
   oms_annotation_node = ET.SubElement(annotation_node, namespace.tag("oms", "Annotations"))
   oms_simulationInformation_node = ET.SubElement(oms_annotation_node, namespace.tag("oms", "SimulationInformation"))
-  for key, value in solver.items():
-    oms_simulationInformation_node.set(key, str(value))
+  if (isinstance(solver, dict)):
+    for key, value in solver.items():
+      oms_simulationInformation_node.set(key, str(value))
+  else:
+    oms_simulationInformation_node.set("name", solver)
 
-def parseAnnotations(node, obj):
+def parseAnnotations(node):
   """Extract and print system annotations"""
   annotations_node = node.find("ssd:Annotations", namespaces=namespace.ns)
   if annotations_node is None:
@@ -145,4 +152,4 @@ def parseAnnotations(node, obj):
       if oms_annotation is not None:
         oms_simulationInformation = oms_annotation.find("oms:SimulationInformation", namespaces=namespace.ns)
         if oms_simulationInformation is not None:
-          obj.solver = oms_simulationInformation.attrib
+          return oms_simulationInformation.attrib

@@ -89,7 +89,7 @@ class System:
     self.model = model
     self.elementgeometry = None
     self.systemgeometry = None
-    self.solver = dict()
+    self.solver = None
 
   @property
   def name(self):
@@ -107,7 +107,7 @@ class System:
       system.systemgeometry = SystemGeometry.importFromNode(node)
       utils.parseParameterBindings(node, ssd, resources)
       system.elements = utils.parseElements(node, resources)
-      utils.parseAnnotations(node, system)
+      system.solver = utils.parseAnnotations(node)
       Connection.importFromNode(node, system)
       return system
 
@@ -233,19 +233,16 @@ class System:
 
     self.elements[first].setValue(cref.last(), value, unit)
 
-  def newSolver(self, options: dict | None = None):
-    self.solver = options
-
-  def setSolver(self, cref: CRef, Options: dict | None = None):
+  def setSolver(self, cref: CRef, name: str):
     first = cref.first()
     if not cref.is_root():
       if first not in self.elements:
         raise ValueError(f"System '{first}' not found in '{self.name}'")
-      self.elements[first].solver = Options
+      self.elements[first].solver = name
     else:
       if first not in self.elements:
         raise ValueError(f"Component '{first}' not found in {self.name}")
-      self.elements[first].setSolver(Options)
+      self.elements[first].setSolver(name)
 
   def export(self, root):
     node = ET.SubElement(root, namespace.tag("ssd", "System"), attrib={"name": self.name})
