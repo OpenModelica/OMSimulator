@@ -4,11 +4,9 @@
       "components": [
         {
           "name": "Controller",
-          "type": "co-simulation",
+          "type": "FMI 2 CS",
           "path": "resources/Controller.fmu",
-          "variables": [
-            "output"
-          ]
+          "variables": ["output"]
         }
       ],
       "solver": {
@@ -22,18 +20,13 @@
           "name": "Plant",
           "type": "model exchange",
           "path": "resources/Plant.fmu",
-          "variables": [
-            "input",
-            "output"
-          ]
+          "variables": ["input", "output"]
         },
         {
           "name": "Sensor",
           "type": "model exchange",
           "path": "resources/Sensor.fmu",
-          "variables": [
-            "output"
-          ]
+          "variables": ["output"]
         }
       ],
       "solver": {
