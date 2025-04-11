@@ -89,6 +89,7 @@ class System:
     self.model = model
     self.elementgeometry = None
     self.systemgeometry = None
+    self.solvers = list()
 
   @property
   def name(self):
@@ -106,6 +107,7 @@ class System:
       system.systemgeometry = SystemGeometry.importFromNode(node)
       utils.parseParameterBindings(node, ssd, resources)
       system.elements = utils.parseElements(node, resources)
+      system.solvers = utils.parseAnnotations(node)
       Connection.importFromNode(node, system)
       return system
 
@@ -155,6 +157,13 @@ class System:
     if self.systemgeometry:
       print(f"{prefix} SystemGeometry:")
       self.systemgeometry.list(prefix=prefix + " |--")
+
+    ## list solver options
+    if self.solvers:
+      print(f"{prefix} Solver Settings:")
+      for solver in self.solvers:
+        kv_list = [f"{k}={v}" for k, v in solver.items()]
+        print(f"{prefix} |-- ({', '.join(kv_list)})")
 
   def addSystem(self, cref: CRef):
     first = cref.first()
@@ -225,6 +234,17 @@ class System:
 
     self.elements[first].setValue(cref.last(), value, unit)
 
+  def setSolver(self, cref: CRef, name: str):
+    first = cref.first()
+    if not cref.is_root():
+      if first not in self.elements:
+        raise ValueError(f"System '{first}' not found in '{self.name}'")
+      self.elements[first].setSolver(cref.pop_first(), name)
+    else:
+      if first not in self.elements:
+        raise ValueError(f"Component '{first}' not found in {self.name}")
+      self.elements[first].setSolver(name)
+
   def export(self, root):
     node = ET.SubElement(root, namespace.tag("ssd", "System"), attrib={"name": self.name})
     if self.description:
@@ -262,5 +282,9 @@ class System:
       connections_node = ET.SubElement(node, namespace.tag("ssd", "Connections"))
       for connection in self.connections:
         connection.exportToSSD(connections_node)
+
+    ## export ssd annotations
+    if self.solvers:
+      utils.exportAnnotations(node, self.solvers)
 
     return node

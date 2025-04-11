@@ -46,7 +46,6 @@ class SSD:
         raise ValueError(f"Invalid SSD file: Missing <ssd:System> in {filename}")
 
       ssd.system = System.importFromNode(system, ssd, resources)
-
       utils.parseDefaultExperiment(root, ssd)
       Unit.importFromNode(root, ssd)
       logger.debug(f"SSD '{variant_name}' successfully imported from {filename}")
@@ -81,6 +80,13 @@ class SSD:
   def addSSV(self, cref: CRef, resource):
     subcref = self._validateCref(cref)
     self.system.addSSV(subcref, resource)
+
+  def newSolver(self, options: dict):
+    self.system.solvers.append(options)
+
+  def setSolver(self, cref: CRef, name: str):
+    subcref = self._validateCref(cref)
+    self.system.setSolver(subcref, name)
 
   def _getComponentResourcePath(self, cref: CRef):
     subcref = self._validateCref(cref)

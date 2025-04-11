@@ -125,6 +125,8 @@ model.variants['D16_aero_stimuli'].list()
 ##  |-- |-- .theta_ref -> interface_model.theta_ref.out.y
 ##  |-- |-- valve_model.Debug -> .Debug
 ##  |-- |-- interface_model.theta.in.y -> .theta
+##  |-- Solver Settings:
+##  |-- |-- ()
 ##  UnitDefinitions:
 ##  |-- Unit: mA
 ##  |-- |-- BaseUnit: A: 1, factor: 1e-3
@@ -251,6 +253,8 @@ model.variants['D16_aero_stimuli'].list()
 ##  |-- |-- valve_model.Debug -> .Debug
 ##  |-- |-- stimuli_model.u.in.y -> .u
 ##  |-- |-- stimuli_model.p1.in.y -> .p1
+##  |-- Solver Settings:
+##  |-- |-- ()
 ##  UnitDefinitions:
 ##  |-- Unit: mA
 ##  |-- |-- BaseUnit: A: 1, factor: 1e-3

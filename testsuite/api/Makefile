@@ -14,6 +14,8 @@ NewSSP3.py \
 setValue1.py \
 setValue2.py \
 setValue3.py \
+setSolver1.py \
+setSolver2.py \
 setValueSSV1.py \
 setValueSSV2.py \
 
