@@ -219,6 +219,11 @@ class SSP:
     for ssd in self.variants.values():
       ssd.list("|--")
 
+  def instantiate(self, variant_name: str = None):
+    if self.activeVariant is None:
+      raise ValueError("No active variant set in the SSP.")
+    self.activeVariant.instantiate()
+
   def export(self, filename: str):
     '''Exports the SSP to file'''
     logger.debug(f"Exporting SSP to {filename} using temp directory: {self.temp_dir}")

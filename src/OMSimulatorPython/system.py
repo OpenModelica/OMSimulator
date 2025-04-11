@@ -10,6 +10,7 @@ from OMSimulator.ssv import SSV
 from OMSimulator.elementgeometry import ElementGeometry
 
 from OMSimulator import CRef, namespace, utils
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -264,6 +265,35 @@ class System:
       if first not in self.elements:
         raise ValueError(f"Component '{first}' not found in {self.name}")
       self.elements[first].setSolver(name)
+
+  def instantiate(self):
+    data = {}
+    simulationunits = []
+    components = []
+    for key, element in self.elements.items():
+      components.append({"name": str(element.name), "type": "TODO", "path": str(element.fmuPath)})
+      ## TODO populate the rest of the component data
+    connections = []
+    for connection in self.connections:
+      connections.append({
+              "start element": connection.startElement,
+              "start connector": connection.startConnector,
+              "end element": connection.endElement,
+              "end connector": connection.endConnector})
+
+    simulationunits.append({
+        "components": components,
+        "solver": {
+            "type": "co-simulation"  # or whatever logic applies here
+        },
+        "connections": [connections]  # can be built dynamically later
+    })
+
+    # Full structure
+    data["simulation units"] = simulationunits
+    json_string = json.dumps(data, indent=2)
+    print(json_string)
+    ## call the capi with the json string
 
   def export(self, root):
     node = ET.SubElement(root, namespace.tag("ssd", "System"), attrib={"name": self.name})
