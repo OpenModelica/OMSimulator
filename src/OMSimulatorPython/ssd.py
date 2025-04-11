@@ -98,9 +98,14 @@ class SSD:
 
   def addSystem(self, cref: CRef):
     if self.system is None:
-      raise ValueError("Variant doesn#t contain a system")
+      raise ValueError("Variant doesn't contain a system")
 
     self.system.addSystem(cref.pop_first(first=self._name))
+
+  def instantiate(self):
+    if self.system is None:
+      raise ValueError("Variant doesn't contain a system")
+    self.system.instantiate()
 
   def list(self, prefix=""):
     '''Prints the SSD contents.'''
