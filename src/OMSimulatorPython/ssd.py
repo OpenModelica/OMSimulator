@@ -82,7 +82,7 @@ class SSD:
     self.system.addSSV(subcref, resource)
 
   def newSolver(self, options: dict):
-    self.system.solver = options
+    self.system.solvers.append(options)
 
   def setSolver(self, cref: CRef, name: str):
     subcref = self._validateCref(cref)

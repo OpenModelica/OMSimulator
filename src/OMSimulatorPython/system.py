@@ -89,7 +89,7 @@ class System:
     self.model = model
     self.elementgeometry = None
     self.systemgeometry = None
-    self.solver = None
+    self.solvers = list()
 
   @property
   def name(self):
@@ -107,7 +107,7 @@ class System:
       system.systemgeometry = SystemGeometry.importFromNode(node)
       utils.parseParameterBindings(node, ssd, resources)
       system.elements = utils.parseElements(node, resources)
-      system.solver = utils.parseAnnotations(node)
+      system.solvers = utils.parseAnnotations(node)
       Connection.importFromNode(node, system)
       return system
 
@@ -159,10 +159,11 @@ class System:
       self.systemgeometry.list(prefix=prefix + " |--")
 
     ## list solver options
-    if self.solver:
+    if self.solvers:
       print(f"{prefix} Solver Settings:")
-      for key, value in self.solver.items():
-        print(f"{prefix} |-- {key}: {value}")
+      for solver in self.solvers:
+        kv_list = [f"{k}={v}" for k, v in solver.items()]
+        print(f"{prefix} |-- ({', '.join(kv_list)})")
 
   def addSystem(self, cref: CRef):
     first = cref.first()
@@ -283,7 +284,7 @@ class System:
         connection.exportToSSD(connections_node)
 
     ## export ssd annotations
-    if self.solver:
-      utils.exportAnnotations(node, self.solver)
+    if self.solvers:
+      utils.exportAnnotations(node, self.solvers)
 
     return node

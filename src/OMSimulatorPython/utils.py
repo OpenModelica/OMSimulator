@@ -45,9 +45,10 @@ def parseElements(node, resources = None):
     elements[name].elementgeometry = ElementGeometry.importFromNode(system)
     elements[name].systemgeometry = SystemGeometry.importFromNode(system)
     parseParameterBindings(system, elements[name], resources)
-    solver = parseAnnotations(system)
-    if solver:
-      elements[name].solver = solver["name"]
+    solvers = parseAnnotations(system)
+    if solvers:
+      for solver in solvers:
+        elements[name].solver = solver.get("name")
     elements[name].elements = parseElements(system, resources)  # recursively parse nested elements in the sub-system
     Connection.importFromNode(system, elements[name]) # parse connections for the sub-system
 
@@ -61,9 +62,10 @@ def parseElements(node, resources = None):
     elements[name].connectors = Connector.importFromNode(component)
     elements[name].elementgeometry = ElementGeometry.importFromNode(component)
     parseParameterBindings(component, elements[name], resources)
-    solver = parseAnnotations(component)
-    if solver:
-      elements[name].solver = solver["name"]
+    solvers = parseAnnotations(component)
+    if solvers:
+      for solver in solvers:
+        elements[name].solver = solver.get("name")
 
   return elements
 
@@ -127,29 +129,35 @@ def validateSSP(root, filename : str, schema_file : str):
       message += "\n%s (line %d, column %d): %s" % (entry.level_name, entry.line, entry.column, entry.message)
     raise Exception(message)
 
-def exportAnnotations(node, solver):
+def exportAnnotations(node, solvers):
   """Export annotations to the XML node"""
   ssd_annotation_node = ET.SubElement(node, namespace.tag("ssd", "Annotations"))
   annotation_node = ET.SubElement(ssd_annotation_node, namespace.tag("ssc", "Annotation"))
   annotation_node.set("type", "org.openmodelica")
   oms_annotation_node = ET.SubElement(annotation_node, namespace.tag("oms", "Annotations"))
-  oms_simulationInformation_node = ET.SubElement(oms_annotation_node, namespace.tag("oms", "SimulationInformation"))
-  if (isinstance(solver, dict)):
-    for key, value in solver.items():
-      oms_simulationInformation_node.set(key, str(value))
+  if (isinstance(solvers, list)):
+    for solver in solvers:
+      oms_simulationInformation_node = ET.SubElement(oms_annotation_node, namespace.tag("oms", "SimulationInformation"))
+      for key, value in solver.items():
+        oms_simulationInformation_node.set(key, str(value))
   else:
-    oms_simulationInformation_node.set("name", solver)
+    oms_simulationInformation_node = ET.SubElement(oms_annotation_node, namespace.tag("oms", "SimulationInformation"))
+    oms_simulationInformation_node.set("name", solvers)
 
 def parseAnnotations(node):
   """Extract and print system annotations"""
   annotations_node = node.find("ssd:Annotations", namespaces=namespace.ns)
   if annotations_node is None:
-    return
+    return []
+
+  solvers = []
   for annotation in annotations_node.findall("ssc:Annotation", namespaces=namespace.ns):
     type = annotation.get("type")
     if type == "org.openmodelica":
       oms_annotation = annotation.find("oms:Annotations", namespaces=namespace.ns)
       if oms_annotation is not None:
-        oms_simulationInformation = oms_annotation.find("oms:SimulationInformation", namespaces=namespace.ns)
-        if oms_simulationInformation is not None:
-          return oms_simulationInformation.attrib
+        oms_simulationInformation = oms_annotation.findall("oms:SimulationInformation", namespaces=namespace.ns)
+        for sim in oms_simulationInformation:
+          solvers.append(sim.attrib)
+
+  return solvers

@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command: rm NewSSP3.ssp
+## teardown_command: rm setSolver1.ssp
 ## linux: yes
 ## ucrt64: yes
 ## win: yes
@@ -9,17 +9,25 @@ from OMSimulator import SSP, CRef, Settings
 
 Settings.suppressPath = True
 
-# This example creates a new SSP file with an FMU instantiated as a component.
+# This example creates a new SSP file with an FMU instantiated as a component and sets a solver for the components and the system.
+# It then exports the SSP file and re-imports it to verify the solver settings.
 
 model = SSP()
 model.addResource('../resources/Modelica.Blocks.Math.Add.fmu', new_name='resources/Add.fmu')
 component1 = model.addComponent(CRef('default', 'Add1'), 'resources/Add.fmu')
 component2 = model.addComponent(CRef('default', 'Add2'), 'resources/Add.fmu')
 
-model.list()
-model.export('NewSSP3.ssp')
+solver = {'name' : 'solver1',  'method': 'euler', 'tolerance': 1e-6}
+model.newSolver(solver)
 
-model2 = SSP('NewSSP3.ssp')
+model.setSolver(CRef('default', 'Add1'), 'solver1')
+model.setSolver(CRef('default', 'Add2'), 'solver1')
+
+model.list()
+model.export('setSolver1.ssp')
+
+model2 = SSP('setSolver1.ssp')
+
 model2.list()
 
 ## Result:
@@ -52,9 +60,7 @@ model2.list()
 ## |-- |-- |-- |-- Solver Settings:
 ## |-- |-- |-- |-- |-- name: solver1
 ## |-- |-- Solver Settings:
-## |-- |-- |-- name: solver1
-## |-- |-- |-- method: euler
-## |-- |-- |-- tolerance: 1e-06
+## |-- |-- |-- (name=solver1, method=euler, tolerance=1e-06)
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
@@ -87,9 +93,7 @@ model2.list()
 ## |-- |-- |-- |-- Solver Settings:
 ## |-- |-- |-- |-- |-- name: solver1
 ## |-- |-- Solver Settings:
-## |-- |-- |-- name: solver1
-## |-- |-- |-- method: euler
-## |-- |-- |-- tolerance: 1e-06
+## |-- |-- |-- (name=solver1, method=euler, tolerance=1e-06)
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
