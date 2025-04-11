@@ -4,6 +4,8 @@ TESTFILES = \
 create_ssp_file.py \
 cref.py \
 fmuinfo.py \
+invalidSSD.py \
+invalidSSV.py \
 LOC.py \
 NestedSystem.py \
 NewSSP.py \
@@ -12,6 +14,8 @@ NewSSP3.py \
 setValue1.py \
 setValue2.py \
 setValue3.py \
+setSolver1.py \
+setSolver2.py \
 setValueSSV1.py \
 setValueSSV2.py \
 
@@ -36,7 +40,7 @@ test:
 
 baseline:
 	@echo
-	@echo Updating badelines...
+	@echo Updating baselines...
 	@$(TEST) -b $(TESTFILES)
 
 # Cleans all files that are not listed as dependencies

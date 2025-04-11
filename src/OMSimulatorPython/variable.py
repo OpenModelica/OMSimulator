@@ -25,8 +25,9 @@ class SignalType(Enum):
 
 class Variable:
   '''Class for storing variable information'''
-  def __init__(self, name: Union[str, CRef], valueReference: Union[str, int], causality, variability, signal_type, unit, start_value):
+  def __init__(self, name: Union[str, CRef], description : str, valueReference: Union[str, int], causality, variability, signal_type, unit, start_value):
     self.name = CRef(name)
+    self.description = description
     self.valueReference = int(valueReference)
     self.causality = causality if isinstance(causality, Causality) else Causality[causality]
     self.variability = variability

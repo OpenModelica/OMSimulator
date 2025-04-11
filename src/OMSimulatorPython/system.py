@@ -2,6 +2,7 @@ import logging
 
 from lxml import etree as ET
 from OMSimulator.component import Component
+from OMSimulator.connector import Connector
 from OMSimulator.connection import Connection
 from OMSimulator.fmu import FMU
 from OMSimulator.values import Values
@@ -79,6 +80,7 @@ class System:
   def __init__(self, name : str, model=None):
     from OMSimulator.ssp import SSP
     self._name = name
+    self.description = None
     self.connectors = list()
     self.elements = dict()
     self.connections = list()
@@ -87,6 +89,7 @@ class System:
     self.model = model
     self.elementgeometry = None
     self.systemgeometry = None
+    self.solvers = list()
 
   @property
   def name(self):
@@ -98,12 +101,14 @@ class System:
     try:
       temp_dir = ssd._filename.parent
       system = System(node.get("name"))
-      system.connectors = utils.parseConnectors(node)
+      system.description = node.get("description")
+      system.connectors = Connector.importFromNode(node)
       system.elementgeometry = ElementGeometry.importFromNode(node)
       system.systemgeometry = SystemGeometry.importFromNode(node)
       utils.parseParameterBindings(node, ssd, resources)
       system.elements = utils.parseElements(node, resources)
-      utils.parseConnection(node, system)
+      system.solvers = utils.parseAnnotations(node)
+      Connection.importFromNode(node, system)
       return system
 
     except ET.ParseError as e:
@@ -116,7 +121,7 @@ class System:
     self.connectors.append(connector)
 
   def list(self, prefix=""):
-    print(f"{prefix} System: {self.name}")
+    print(f"{prefix} System: {self.name} '{self.description}'")
     print(f"{prefix} Connectors:")
     for connector in self.connectors:
       connector.list(prefix=prefix + " |--")
@@ -152,6 +157,13 @@ class System:
     if self.systemgeometry:
       print(f"{prefix} SystemGeometry:")
       self.systemgeometry.list(prefix=prefix + " |--")
+
+    ## list solver options
+    if self.solvers:
+      print(f"{prefix} Solver Settings:")
+      for solver in self.solvers:
+        kv_list = [f"{k}={v}" for k, v in solver.items()]
+        print(f"{prefix} |-- ({', '.join(kv_list)})")
 
   def addSystem(self, cref: CRef):
     first = cref.first()
@@ -222,9 +234,21 @@ class System:
 
     self.elements[first].setValue(cref.last(), value, unit)
 
+  def setSolver(self, cref: CRef, name: str):
+    first = cref.first()
+    if not cref.is_root():
+      if first not in self.elements:
+        raise ValueError(f"System '{first}' not found in '{self.name}'")
+      self.elements[first].setSolver(cref.pop_first(), name)
+    else:
+      if first not in self.elements:
+        raise ValueError(f"Component '{first}' not found in {self.name}")
+      self.elements[first].setSolver(name)
+
   def export(self, root):
     node = ET.SubElement(root, namespace.tag("ssd", "System"), attrib={"name": self.name})
-
+    if self.description:
+      node.set("description", self.description)
     if len(self.connectors) > 0 :
       connectors_node = ET.SubElement(node, namespace.tag("ssd", "Connectors"))
       for connector in self.connectors:
@@ -258,5 +282,9 @@ class System:
       connections_node = ET.SubElement(node, namespace.tag("ssd", "Connections"))
       for connection in self.connections:
         connection.exportToSSD(connections_node)
+
+    ## export ssd annotations
+    if self.solvers:
+      utils.exportAnnotations(node, self.solvers)
 
     return node

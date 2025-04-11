@@ -102,6 +102,7 @@ class FMU:
     scalar_variables = model_description.xpath('//ModelVariables/ScalarVariable')
     for scalar_var in scalar_variables:
       name = scalar_var.get('name')
+      description = scalar_var.get('description')
       value_reference = scalar_var.get('valueReference')
       causality = scalar_var.get('causality', 'local')
       variability = scalar_var.get('variability', 'continuous')
@@ -125,7 +126,7 @@ class FMU:
           self._states.append(self._variables[derivative_index - 1])
 
       # Create and store the variable
-      variable = Variable(name, value_reference, causality, variability, var_type, unit, start)
+      variable = Variable(name, description, value_reference, causality, variability, var_type, unit, start)
 
       # Assign unit definitions if applicable
       if unit:
@@ -161,6 +162,7 @@ class FMU:
       if var.isInput() or var.isOutput() or var.isParameter() or var.isCalculatedParameter():
         connector = Connector(var.name, var.causality, var.signal_type)
         connector.setUnit(var.unit)
+        connector.description = var.description
         connectors.append(connector)
     return connectors
 

@@ -6,7 +6,6 @@ from OMSimulator.values import Values
 from OMSimulator.elementgeometry import ElementGeometry
 from OMSimulator import namespace
 
-
 class Component:
   def __init__(self, name: CRef, fmuPath: Path | str, connectors=None, unitDefinitions=None):
     self.name = CRef(name)
@@ -14,7 +13,9 @@ class Component:
     self.connectors = connectors or list()
     self.unitDefinitions = unitDefinitions or list()
     self.elementgeometry = None
-    self.value = Values() ## TODO propogate Values
+    self.description = None
+    self.value = Values()
+    self.solver = None
     self.parameterResources = []
 
   def addConnector(self, connector):
@@ -26,7 +27,7 @@ class Component:
     self.parameterResources.append(resource)
 
   def list(self, prefix=""):
-    print(f"{prefix} FMU: ({self.name})")
+    print(f"{prefix} FMU: {self.name} '{self.description}'")
     prefix += ' |--'
     print(f"{prefix} path: {self.fmuPath}")
 
@@ -56,11 +57,18 @@ class Component:
       for resource in self.parameterResources:
         print(f"{prefix} Parameter Bindings: {resource}")
 
+    ## list solver settings
+    if self.solver:
+      print(f"{prefix} Solver Settings:")
+      print(f"{prefix} |-- name: {self.solver}")
+
   def exportToSSD(self, node):
     component_node = ET.SubElement(node, namespace.tag("ssd", "Component"))
     component_node.set("name", str(self.name))
     component_node.set("type", "application/x-fmu-sharedlibrary")
     component_node.set("source", str(self.fmuPath))
+    if self.description:
+      component_node.set("description", self.description)
 
     if len(self.connectors) > 0:
       connectors_node = ET.SubElement(component_node, namespace.tag("ssd", "Connectors"))
@@ -82,5 +90,13 @@ class Component:
         parameter_binding_node = ET.SubElement(parameter_bindings_node, namespace.tag("ssd", "ParameterBinding"))
         parameter_binding_node.set("source", resource)
 
-  def setValue(self, cref:str, value, unit=None):
-    self.value.setValue(cref, value, unit)
+    ## export Annotations
+    if self.solver:
+      from OMSimulator import utils
+      utils.exportAnnotations(component_node, self.solver)
+
+  def setValue(self, cref:str, value, unit=None, description = None):
+    self.value.setValue(cref, value, unit, description)
+
+  def setSolver(self, name: str):
+    self.solver = name

@@ -129,6 +129,11 @@ class SSP:
 
     return self.activeVariant.addComponent(cref, resource, inst=fmu_inst)
 
+  def newSolver(self, options: dict):
+    if self.activeVariant is None:
+      raise ValueError("No active variant set in the SSP.")
+    self.activeVariant.newSolver(options)
+
   def addSSV(self, cref: CRef, resource: str):
     if self.activeVariant is None:
       raise ValueError("No active variant set in the SSP.")
@@ -154,6 +159,13 @@ class SSP:
         raise KeyError(f"Variable '{cref.last()}' does not exist in the variables list of component '{resource}'")
 
     self.activeVariant.setValue(cref, value, unit)
+
+  def setSolver(self, cref: CRef, name: str):
+    if self.activeVariant is None:
+      raise ValueError("No active variant set in the SSP.")
+
+    self.activeVariant.setSolver(cref, name)
+
 
   def addSystem(self, cref: CRef):
     if self.activeVariant is None:
