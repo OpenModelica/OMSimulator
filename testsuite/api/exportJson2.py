@@ -33,11 +33,9 @@ model.instantiate() ## internally generate the json file and also set the model 
 ##         }
 ##       ],
 ##       "solver": {
-##         "type": "co-simulation"
+##         "type": "co-simulation",
+##         "name": null
 ##       },
-##       "connections": []
-##     },
-##     {
 ##       "connections": [
 ##         {
 ##           "start element": "edrive_mass",
@@ -104,11 +102,9 @@ model.instantiate() ## internally generate the json file and also set the model 
 ##         }
 ##       ],
 ##       "solver": {
-##         "type": "co-simulation"
+##         "type": "co-simulation",
+##         "name": null
 ##       },
-##       "connections": []
-##     },
-##     {
 ##       "connections": [
 ##         {
 ##           "start element": "SuT",

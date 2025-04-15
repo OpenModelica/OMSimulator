@@ -81,6 +81,12 @@ class SSD:
     subcref = self._validateCref(cref)
     self.system.addSSV(subcref, resource)
 
+  def addConnection(self, cref1: CRef, cref2: CRef):
+    subcref1 = self._validateCref(cref1)
+    subcref2 = self._validateCref(cref2)
+    #logger.debug(f"Adding connection from {subcref1} to {subcref2}")
+    self.system.addConnection(str(subcref1.first()), str(subcref1.last()), str(subcref2.first()), str(subcref2.last()))
+
   def newSolver(self, options: dict):
     self.system.solvers.append(options)
 
