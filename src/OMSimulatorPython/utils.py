@@ -56,8 +56,20 @@ def parseElements(node, resources = None):
     name = component.get("name")
     comp_type = component.get("type")
     source = component.get("source")
+    implementation = component.get("implementation", "any")
     description = component.get("description")
-    elements[name] = Component(name, source)
+    fmuType = None
+    match implementation:
+      case "any":
+        fmuType = "me_cs"
+      case "ModelExchange":
+        fmuType = "me"
+      case "CoSimulation":
+        fmuType = "cs"
+      case _:
+        raise ValueError(f"Unknown FMU implementation type: {implementation}")
+
+    elements[name] = Component(name, fmuType, source)
     elements[name].description = description
     elements[name].connectors = Connector.importFromNode(component)
     elements[name].elementgeometry = ElementGeometry.importFromNode(component)

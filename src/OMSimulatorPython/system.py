@@ -188,7 +188,7 @@ class System:
       if first in self.elements:
         raise ValueError(f"Component '{first}' already exists in {self.name}")
       connectors = inst.makeConnectors() if inst else list()
-      component = Component(first, resource, connectors)
+      component = Component(first, inst.type, resource, connectors)
       self.elements[first] = component
       return component
 
@@ -267,33 +267,60 @@ class System:
       self.elements[first].setSolver(name)
 
   def instantiate(self):
-    data = {}
-    simulationunits = []
+    data = {
+        "simulation units": []
+    }
+
+    # process the elements
+    self.processElements(self.elements, self.connections, data)
+
+    # Add top-level simulation metadata
+    data["result file"] = "simulation_result.csv"
+    data["simulation settings"] = {
+        "start time": 0,
+        "stop time": 10, ## TODO get the stop time from the solver settings
+        "tolerance": 1e-6
+    }
+
+    # Dump JSON
+    json_string = json.dumps(data, indent=2)
+    print(json_string)
+
+  def processElements(self, elements_dict : dict, connections : list, data : dict):
     components = []
-    for key, element in self.elements.items():
-      components.append({"name": str(element.name), "type": "TODO", "path": str(element.fmuPath)})
-      ## TODO populate the rest of the component data
-    connections = []
-    for connection in self.connections:
-      connections.append({
+    for key, element in elements_dict.items():
+      if isinstance(element, Component):
+        components.append({
+              "name": str(element.name),
+              "type": element.fmuType,
+              "path": str(element.fmuPath)
+               })
+      elif isinstance(element, System):
+        # Recurse into nested system
+        self.processElements(element.elements, element.connections, data)
+
+    # After processing all elements at this level, write them as a unit (if any)
+    if components or connections:
+      unit = {
+          "components": components,
+          "solver": {
+              "type": "co-simulation"
+          },
+          "connections": [] ## TODO: add internal connections to the unit
+      }
+      data["simulation units"].append(unit)
+
+      ## top level connections
+      con = []
+      for connection in connections:
+        con.append({
               "start element": connection.startElement,
               "start connector": connection.startConnector,
               "end element": connection.endElement,
               "end connector": connection.endConnector})
 
-    simulationunits.append({
-        "components": components,
-        "solver": {
-            "type": "co-simulation"  # or whatever logic applies here
-        },
-        "connections": [connections]  # can be built dynamically later
-    })
-
-    # Full structure
-    data["simulation units"] = simulationunits
-    json_string = json.dumps(data, indent=2)
-    print(json_string)
-    ## call the capi with the json string
+      ## Add connections to the unit
+      data["simulation units"].append({"connections": con})
 
   def export(self, root):
     node = ET.SubElement(root, namespace.tag("ssd", "System"), attrib={"name": self.name})
