@@ -14,6 +14,7 @@ class FMU:
     self._fmu_path = Path(fmu_path)
     self._fmiVersion = None
     self._modelName = None
+    self._fmuType = None
     self._guid = None
     self._description = None
     self._generationTool = None
@@ -32,6 +33,10 @@ class FMU:
   @property
   def modelName(self):
     return self._modelName
+
+  @property
+  def fmuType(self):
+    return self._fmuType
 
   @property
   def guid(self):
@@ -87,6 +92,16 @@ class FMU:
           self._generationTool = model_description.get('generationTool')
           self._generationDateAndTime = model_description.get('generationDateAndTime')
           self._variableNamingConvention = model_description.get('variableNamingConvention')
+
+          has_me = model_description.find('.//{*}ModelExchange') is not None
+          has_cs = model_description.find('.//{*}CoSimulation') is not None
+
+          if has_me and has_cs:
+            self._fmuType = 'me_cs'
+          elif has_me:
+            self._fmuType = 'me'
+          elif has_cs:
+            self._fmuType = 'cs'
 
           # Parse UnitDefinitions
           self._parse_units(model_description)
