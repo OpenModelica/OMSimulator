@@ -107,6 +107,7 @@ model2.instantiate() ## internally generate the json file and also set the model
 ##         {
 ##           "name": [
 ##             "default",
+##             "default",
 ##             "Add1"
 ##           ],
 ##           "type": "me_cs",
@@ -114,6 +115,7 @@ model2.instantiate() ## internally generate the json file and also set the model
 ##         },
 ##         {
 ##           "name": [
+##             "default",
 ##             "default",
 ##             "Gain1"
 ##           ],
@@ -139,6 +141,7 @@ model2.instantiate() ## internally generate the json file and also set the model
 ##         {
 ##           "name": [
 ##             "default",
+##             "default",
 ##             "Add2"
 ##           ],
 ##           "type": "me_cs",
@@ -146,6 +149,7 @@ model2.instantiate() ## internally generate the json file and also set the model
 ##         },
 ##         {
 ##           "name": [
+##             "default",
 ##             "default",
 ##             "Gain2"
 ##           ],
