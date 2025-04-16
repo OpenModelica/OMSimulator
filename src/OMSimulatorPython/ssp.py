@@ -143,6 +143,13 @@ class SSP:
 
     self.activeVariant.addSSV(cref, resource)
 
+  def addConnection(self, cref1: CRef, cref2: CRef):
+    if self.activeVariant is None:
+      raise ValueError("No active variant set in the SSP.")
+
+    self.activeVariant.addConnection(cref1, cref2)
+
+
   def _getComponentResourcePath(self, cref: CRef):
     return self.activeVariant._getComponentResourcePath(cref)
 
@@ -212,6 +219,11 @@ class SSP:
         self.resources[resource].list("|--   |-- |--")
     for ssd in self.variants.values():
       ssd.list("|--")
+
+  def instantiate(self):
+    if self.activeVariant is None:
+      raise ValueError("No active variant set in the SSP.")
+    self.activeVariant.instantiate()
 
   def export(self, filename: str):
     '''Exports the SSP to file'''

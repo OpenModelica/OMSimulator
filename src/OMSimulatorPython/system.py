@@ -11,6 +11,9 @@ from OMSimulator.elementgeometry import ElementGeometry
 
 from OMSimulator import CRef, namespace, utils
 
+from collections import defaultdict
+import json
+
 logger = logging.getLogger(__name__)
 
 class SystemGeometry:
@@ -186,7 +189,7 @@ class System:
       if first in self.elements:
         raise ValueError(f"Component '{first}' already exists in {self.name}")
       connectors = inst.makeConnectors() if inst else list()
-      component = Component(first, resource, connectors)
+      component = Component(first, inst.fmuType, resource, connectors)
       self.elements[first] = component
       return component
 
@@ -244,6 +247,114 @@ class System:
       if first not in self.elements:
         raise ValueError(f"Component '{first}' not found in {self.name}")
       self.elements[first].setSolver(name)
+
+  def instantiate(self, variantname : str):
+    """Instantiates the system and its components."""
+    data = {
+        "simulation units": []
+    }
+
+    # process the elements
+    self.processElements(self.elements, self.connections, data, variantname)
+
+    # Add top-level simulation metadata
+    data["result file"] = "simulation_result.csv"
+    data["simulation settings"] = {
+        "start time": 0,
+        "stop time": 10, ## TODO get the stop time from the solver settings
+        "tolerance": 1e-6
+    }
+
+    # Dump JSON
+    json_string = json.dumps(data, indent=2)
+    print(json_string)
+
+
+  def processElements(self, elements_dict: dict, connections: list, data: dict, variantname: str, systemName = None):
+    """Processes the elements and connections in the system."""
+    # Dict to group components by solver
+    solver_groups = defaultdict(list)
+    componentSolver = {}
+    for key, element in elements_dict.items():
+      if isinstance(element, Component):
+        solver_groups[element.solver].append({
+            "name": [variantname] + [self.name] + ([systemName] if systemName else []) + [str(element.name)],
+            "type": element.fmuType,
+            "path": str(element.fmuPath)
+        })
+        componentSolver[str(element.name)] = element.solver
+      elif isinstance(element, System):
+        # Recurse into nested system
+        self.processElements(element.elements, element.connections, data, variantname, element.name)
+
+    solver_connections = defaultdict(list)
+    for connection in connections:
+      startElement = connection.startElement
+      endElement = connection.endElement
+      startSolver = componentSolver.get(startElement, None)
+      endSolver = componentSolver.get(endElement, None)
+      if startSolver == endSolver:
+          # Same solver, add to the unit directly
+          solver_connections[startSolver].append({
+              "start element": startElement,
+              "start connector": connection.startConnector,
+              "end element": endElement,
+              "end connector": connection.endConnector
+          })
+
+
+
+    for solver, components in solver_groups.items():
+      unit = {
+          "components": components,
+          "solver": {
+              "type": "co-simulation",
+              "name": solver
+          },
+          "connections": solver_connections.get(solver, [])
+      }
+      data["simulation units"].append(unit)
+
+
+
+  # def processElements(self, elements_dict : dict, connections : list, data : dict):
+  #   from collections import defaultdict
+  #   solver_groups = defaultdict(list)
+  #   components = []
+  #   for key, element in elements_dict.items():
+  #     if isinstance(element, Component):
+  #       print(f"Component: {element.name} '{element.solver}'")
+  #       components.append({
+  #             "name": str(element.name),
+  #             "type": element.fmuType,
+  #             "path": str(element.fmuPath)
+  #              })
+  #     elif isinstance(element, System):
+  #       # Recurse into nested system
+  #       self.processElements(element.elements, element.connections, data)
+
+  #   # After processing all elements at this level, write them as a unit (if any)
+  #   if components or connections:
+  #     unit = {
+  #         "components": components,
+  #         "solver": {
+  #             "type": "co-simulation"
+  #         },
+  #         "connections": [] ## TODO: add internal connections to the unit
+  #     }
+  #     data["simulation units"].append(unit)
+
+  #     ## top level connections
+  #     con = []
+  #     for connection in connections:
+  #       con.append({
+  #             "start element": connection.startElement,
+  #             "start connector": connection.startConnector,
+  #             "end element": connection.endElement,
+  #             "end connector": connection.endConnector})
+
+  #     ## Add connections to the unit
+  #     data["simulation units"].append({"connections": con})
 
   def export(self, root):
     node = ET.SubElement(root, namespace.tag("ssd", "System"), attrib={"name": self.name})
