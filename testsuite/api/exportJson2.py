@@ -24,6 +24,7 @@ model.instantiate() ## internally generate the json file and also set the model 
 ##         {
 ##           "name": [
 ##             "DC-Motor",
+##             "DC-Motor",
 ##             "SuT",
 ##             "edrive_mass"
 ##           ],
@@ -32,6 +33,7 @@ model.instantiate() ## internally generate the json file and also set the model 
 ##         },
 ##         {
 ##           "name": [
+##             "DC-Motor",
 ##             "DC-Motor",
 ##             "SuT",
 ##             "emachine_model"
@@ -105,6 +107,7 @@ model.instantiate() ## internally generate the json file and also set the model 
 ##       "components": [
 ##         {
 ##           "name": [
+##             "DC-Motor",
 ##             "DC-Motor",
 ##             "stimuli_model"
 ##           ],

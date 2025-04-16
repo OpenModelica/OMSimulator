@@ -268,14 +268,14 @@ class System:
         raise ValueError(f"Component '{first}' not found in {self.name}")
       self.elements[first].setSolver(name)
 
-  def instantiate(self):
+  def instantiate(self, variantname : str):
     """Instantiates the system and its components."""
     data = {
         "simulation units": []
     }
 
     # process the elements
-    self.processElements(self.elements, self.connections, data)
+    self.processElements(self.elements, self.connections, data, variantname)
 
     # Add top-level simulation metadata
     data["result file"] = "simulation_result.csv"
@@ -290,7 +290,7 @@ class System:
     print(json_string)
 
 
-  def processElements(self, elements_dict: dict, connections: list, data: dict, systemName = None):
+  def processElements(self, elements_dict: dict, connections: list, data: dict, variantname: str, systemName = None):
     """Processes the elements and connections in the system."""
     # Dict to group components by solver
     solver_groups = defaultdict(list)
@@ -298,14 +298,14 @@ class System:
     for key, element in elements_dict.items():
       if isinstance(element, Component):
         solver_groups[element.solver].append({
-            "name": [self.name] + ([systemName] if systemName else []) + [str(element.name)],
+            "name": [variantname] + [self.name] + ([systemName] if systemName else []) + [str(element.name)],
             "type": element.fmuType,
             "path": str(element.fmuPath)
         })
         componentSolver[str(element.name)] = element.solver
       elif isinstance(element, System):
         # Recurse into nested system
-        self.processElements(element.elements, element.connections, data, element.name)
+        self.processElements(element.elements, element.connections, data, variantname, element.name)
 
     solver_connections = defaultdict(list)
     for connection in connections:

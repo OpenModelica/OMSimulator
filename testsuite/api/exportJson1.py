@@ -23,6 +23,7 @@ model.instantiate() ## internally generate the json file and also set the model 
 ##       "components": [
 ##         {
 ##           "name": [
+##             "LOCtest",
 ##             "Root",
 ##             "System"
 ##           ],
@@ -31,6 +32,7 @@ model.instantiate() ## internally generate the json file and also set the model 
 ##         },
 ##         {
 ##           "name": [
+##             "LOCtest",
 ##             "Root",
 ##             "Control"
 ##           ],
