@@ -22,12 +22,18 @@ model.instantiate() ## internally generate the json file and also set the model 
 ##     {
 ##       "components": [
 ##         {
-##           "name": "System",
+##           "name": [
+##             "Root",
+##             "System"
+##           ],
 ##           "type": "me_cs",
 ##           "path": "resources/LOC_SYSTEM_linux.fmu"
 ##         },
 ##         {
-##           "name": "Control",
+##           "name": [
+##             "Root",
+##             "Control"
+##           ],
 ##           "type": "me_cs",
 ##           "path": "resources/LOC_CNTRL_custom_linux.fmu"
 ##         }

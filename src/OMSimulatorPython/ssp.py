@@ -219,7 +219,7 @@ class SSP:
     for ssd in self.variants.values():
       ssd.list("|--")
 
-  def instantiate(self, variant_name: str = None):
+  def instantiate(self):
     if self.activeVariant is None:
       raise ValueError("No active variant set in the SSP.")
     self.activeVariant.instantiate()

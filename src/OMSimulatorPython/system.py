@@ -269,6 +269,7 @@ class System:
       self.elements[first].setSolver(name)
 
   def instantiate(self):
+    """Instantiates the system and its components."""
     data = {
         "simulation units": []
     }
@@ -289,22 +290,22 @@ class System:
     print(json_string)
 
 
-  def processElements(self, elements_dict: dict, connections: list, data: dict):
+  def processElements(self, elements_dict: dict, connections: list, data: dict, systemName = None):
+    """Processes the elements and connections in the system."""
     # Dict to group components by solver
     solver_groups = defaultdict(list)
     componentSolver = {}
     for key, element in elements_dict.items():
       if isinstance(element, Component):
-          # print(f"Component: {element.name} '{element.solver}'")
-          solver_groups[element.solver].append({
-              "name": str(element.name),
-              "type": element.fmuType,
-              "path": str(element.fmuPath)
-          })
-          componentSolver[str(element.name)] = element.solver
+        solver_groups[element.solver].append({
+            "name": [self.name] + ([systemName] if systemName else []) + [str(element.name)],
+            "type": element.fmuType,
+            "path": str(element.fmuPath)
+        })
+        componentSolver[str(element.name)] = element.solver
       elif isinstance(element, System):
         # Recurse into nested system
-        self.processElements(element.elements, element.connections, data)
+        self.processElements(element.elements, element.connections, data, element.name)
 
     solver_connections = defaultdict(list)
     for connection in connections:
