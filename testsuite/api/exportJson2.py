@@ -22,12 +22,20 @@ model.instantiate() ## internally generate the json file and also set the model 
 ##     {
 ##       "components": [
 ##         {
-##           "name": "edrive_mass",
+##           "name": [
+##             "DC-Motor",
+##             "SuT",
+##             "edrive_mass"
+##           ],
 ##           "type": "me",
 ##           "path": "resources/edrive_mass.fmu"
 ##         },
 ##         {
-##           "name": "emachine_model",
+##           "name": [
+##             "DC-Motor",
+##             "SuT",
+##             "emachine_model"
+##           ],
 ##           "type": "me",
 ##           "path": "resources/emachine_model.fmu"
 ##         }
@@ -96,7 +104,10 @@ model.instantiate() ## internally generate the json file and also set the model 
 ##     {
 ##       "components": [
 ##         {
-##           "name": "stimuli_model",
+##           "name": [
+##             "DC-Motor",
+##             "stimuli_model"
+##           ],
 ##           "type": "me",
 ##           "path": "resources/stimuli_model.fmu"
 ##         }

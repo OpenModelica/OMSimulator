@@ -105,12 +105,18 @@ model2.instantiate() ## internally generate the json file and also set the model
 ##     {
 ##       "components": [
 ##         {
-##           "name": "Add1",
+##           "name": [
+##             "default",
+##             "Add1"
+##           ],
 ##           "type": "me_cs",
 ##           "path": "resources/Add.fmu"
 ##         },
 ##         {
-##           "name": "Gain1",
+##           "name": [
+##             "default",
+##             "Gain1"
+##           ],
 ##           "type": "me_cs",
 ##           "path": "resources/Gain.fmu"
 ##         }
@@ -131,12 +137,18 @@ model2.instantiate() ## internally generate the json file and also set the model
 ##     {
 ##       "components": [
 ##         {
-##           "name": "Add2",
+##           "name": [
+##             "default",
+##             "Add2"
+##           ],
 ##           "type": "me_cs",
 ##           "path": "resources/Add.fmu"
 ##         },
 ##         {
-##           "name": "Gain2",
+##           "name": [
+##             "default",
+##             "Gain2"
+##           ],
 ##           "type": "me_cs",
 ##           "path": "resources/Gain.fmu"
 ##         }
