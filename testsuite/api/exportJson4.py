@@ -14,7 +14,9 @@ model.addResource('../resources/Modelica.Blocks.Math.Add.fmu', new_name='resourc
 model.addResource('../resources/Modelica.Blocks.Math.Gain.fmu', new_name='resources/Gain.fmu')
 
 model.addSystem(CRef('default', 'sub-system'))
-
+## add top level system connector
+model.activeVariant.system.addConnector(Connector('param1', Causality.parameter, SignalType.Real))
+## add top level sub-system connector
 model.activeVariant.system.elements[CRef('sub-system')].addConnector(Connector('input', Causality.input, SignalType.Real))
 
 component1 = model.addComponent(CRef('default', 'Add1'), 'resources/Add.fmu')
@@ -26,6 +28,7 @@ model.newSolver(solver1)
 model.setSolver(CRef('default', 'Add1'), 'solver1')
 model.setSolver(CRef('default', 'sub-system', 'Add2'), 'solver1')
 
+model.addConnection(CRef('default', 'param1'), CRef('default', 'Add1', 'u1'))
 model.addConnection(CRef('default', 'Add1', 'y'), CRef('default', 'sub-system', 'input'))
 model.addConnection(CRef('default', 'sub-system', 'Add2', 'u1'), CRef('default', 'sub-system', 'input'))
 
@@ -40,6 +43,7 @@ model.list() ## internally generate the json file and also set the model state l
 ## |-- Active variant "default": None
 ## |-- |-- System: default 'None'
 ## |-- |-- |-- Connectors:
+## |-- |-- |-- |-- (param1, Causality.parameter, SignalType.Real, None, 'None')
 ## |-- |-- |-- Elements:
 ## |-- |-- |-- |-- System: sub-system 'None'
 ## |-- |-- |-- |-- |-- Connectors:
@@ -55,6 +59,8 @@ model.list() ## internally generate the json file and also set the model state l
 ## |-- |-- |-- |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, 'Gain of input signal 2')
 ## |-- |-- |-- |-- |-- |-- |-- Solver Settings:
 ## |-- |-- |-- |-- |-- |-- |-- |-- name: solver1
+## |-- |-- |-- |-- |-- Connections:
+## |-- |-- |-- |-- |-- |-- Add2.u1 -> .input
 ## |-- |-- |-- |-- FMU: Add1 'None'
 ## |-- |-- |-- |-- |-- path: resources/Add.fmu
 ## |-- |-- |-- |-- |-- Connectors:
@@ -66,8 +72,8 @@ model.list() ## internally generate the json file and also set the model state l
 ## |-- |-- |-- |-- |-- Solver Settings:
 ## |-- |-- |-- |-- |-- |-- name: solver1
 ## |-- |-- |-- Connections:
+## |-- |-- |-- |-- .param1 -> Add1.u1
 ## |-- |-- |-- |-- Add1.y -> sub-system.input
-## |-- |-- |-- |-- sub-system.u1 -> sub-system.input
 ## |-- |-- |-- Solver Settings:
 ## |-- |-- |-- |-- (name=solver1, method=euler, tolerance=1e-06)
 ## |-- DefaultExperiment
