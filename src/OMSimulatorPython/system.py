@@ -215,9 +215,9 @@ class System:
     # Both CRefs start in the same subsystem
     if first1 == first2:
       if first1 not in self.elements:
-          raise ValueError(f"System '{first1}' not found in '{self.name}'")
+        raise ValueError(f"System '{first1}' not found in '{self.name}'")
       if first2 not in self.elements:
-          raise ValueError(f"System '{first2}' not found in '{self.name}'")
+        raise ValueError(f"System '{first2}' not found in '{self.name}'")
 
       (start_element, start_connector) = self.split_cref(cref1.pop_first())
       (end_element, end_connector) = self.split_cref(cref2.pop_first())
