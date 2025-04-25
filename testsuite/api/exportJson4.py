@@ -5,26 +5,37 @@
 ## win: yes
 ## mac: yes
 
-from OMSimulator import SSP, CRef, Settings
+from OMSimulator import SSP, CRef, Settings, Connector, Causality, SignalType
 
 Settings.suppressPath = True
 
-# This example creates a new SSP file with an FMU instantiated as a component.
-
 model = SSP()
 model.addResource('../resources/Modelica.Blocks.Math.Add.fmu', new_name='resources/Add.fmu')
+model.addResource('../resources/Modelica.Blocks.Math.Gain.fmu', new_name='resources/Gain.fmu')
+
 model.addSystem(CRef('default', 'sub-system'))
-model.addSystem(CRef('default', 'sub-system2'))
-model.addSystem(CRef('default', 'sub-system2', 'sub-sub-system'))
+
+model.activeVariant.system.elements[CRef('sub-system')].addConnector(Connector('input', Causality.input, SignalType.Real))
+
 component1 = model.addComponent(CRef('default', 'Add1'), 'resources/Add.fmu')
 component2 = model.addComponent(CRef('default', 'sub-system', 'Add2'), 'resources/Add.fmu')
 
-model.list()
+solver1 = {'name' : 'solver1',  'method': 'euler', 'tolerance': 1e-6}
+model.newSolver(solver1)
+
+model.setSolver(CRef('default', 'Add1'), 'solver1')
+model.setSolver(CRef('default', 'sub-system', 'Add2'), 'solver1')
+
+model.addConnection(CRef('default', 'Add1', 'y'), CRef('default', 'sub-system', 'input'))
+model.addConnection(CRef('default', 'sub-system', 'Add2', 'u1'), CRef('default', 'sub-system', 'input'))
+
+model.list() ## internally generate the json file and also set the model state like virgin,
 
 ## Result:
 ## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
 ## |--   resources/Add.fmu
+## |--   resources/Gain.fmu
 ## |-- <class 'OMSimulator.ssd.SSD'>
 ## |-- Active variant "default": None
 ## |-- |-- System: default 'None'
@@ -32,6 +43,7 @@ model.list()
 ## |-- |-- |-- Elements:
 ## |-- |-- |-- |-- System: sub-system 'None'
 ## |-- |-- |-- |-- |-- Connectors:
+## |-- |-- |-- |-- |-- |-- (input, Causality.input, SignalType.Real, None, 'None')
 ## |-- |-- |-- |-- |-- Elements:
 ## |-- |-- |-- |-- |-- |-- FMU: Add2 'None'
 ## |-- |-- |-- |-- |-- |-- |-- path: resources/Add.fmu
@@ -41,11 +53,8 @@ model.list()
 ## |-- |-- |-- |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, 'Connector of Real output signal')
 ## |-- |-- |-- |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None, 'Gain of input signal 1')
 ## |-- |-- |-- |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, 'Gain of input signal 2')
-## |-- |-- |-- |-- System: sub-system2 'None'
-## |-- |-- |-- |-- |-- Connectors:
-## |-- |-- |-- |-- |-- Elements:
-## |-- |-- |-- |-- |-- |-- System: sub-sub-system 'None'
-## |-- |-- |-- |-- |-- |-- |-- Connectors:
+## |-- |-- |-- |-- |-- |-- |-- Solver Settings:
+## |-- |-- |-- |-- |-- |-- |-- |-- name: solver1
 ## |-- |-- |-- |-- FMU: Add1 'None'
 ## |-- |-- |-- |-- |-- path: resources/Add.fmu
 ## |-- |-- |-- |-- |-- Connectors:
@@ -54,6 +63,13 @@ model.list()
 ## |-- |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, 'Connector of Real output signal')
 ## |-- |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None, 'Gain of input signal 1')
 ## |-- |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, 'Gain of input signal 2')
+## |-- |-- |-- |-- |-- Solver Settings:
+## |-- |-- |-- |-- |-- |-- name: solver1
+## |-- |-- |-- Connections:
+## |-- |-- |-- |-- Add1.y -> sub-system.input
+## |-- |-- |-- |-- sub-system.u1 -> sub-system.input
+## |-- |-- |-- Solver Settings:
+## |-- |-- |-- |-- (name=solver1, method=euler, tolerance=1e-06)
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0

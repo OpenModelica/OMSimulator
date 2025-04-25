@@ -40,14 +40,14 @@ model2.list()
 ## |-- <class 'OMSimulator.ssd.SSD'>
 ## |-- Inactive variant "default": None
 ## |-- |-- System: default 'None'
-## |-- |-- Connectors:
+## |-- |-- |-- Connectors:
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
 ## |-- <class 'OMSimulator.ssd.SSD'>
 ## |-- Active variant "Variant-B": None
 ## |-- |-- System: Variant-B 'None'
-## |-- |-- Connectors:
+## |-- |-- |-- Connectors:
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
@@ -57,14 +57,14 @@ model2.list()
 ## |-- <class 'OMSimulator.ssd.SSD'>
 ## |-- Active variant "Variant-B": <hidden>
 ## |-- |-- System: Variant-B 'None'
-## |-- |-- Connectors:
+## |-- |-- |-- Connectors:
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
 ## |-- <class 'OMSimulator.ssd.SSD'>
 ## |-- Inactive variant "default": <hidden>
 ## |-- |-- System: default 'None'
-## |-- |-- Connectors:
+## |-- |-- |-- Connectors:
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
