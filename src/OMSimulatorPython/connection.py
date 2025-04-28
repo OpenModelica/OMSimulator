@@ -32,10 +32,10 @@ class Connection:
 
   def exportToSSD(self, node):
     connection_node = ET.SubElement(node, namespace.tag("ssd", "Connection"))
-    connection_node.set("startElement", self.startElement)
-    connection_node.set("startConnector", self.startConnector)
-    connection_node.set("endElement", self.endElement)
-    connection_node.set("endConnector", self.endConnector)
+    connection_node.set("startElement", str(self.startElement))
+    connection_node.set("startConnector", str(self.startConnector))
+    connection_node.set("endElement", str(self.endElement))
+    connection_node.set("endConnector", str(self.endConnector))
     if self.description:
       connection_node.set("description", self.description)
     if self.connectionGeometry:

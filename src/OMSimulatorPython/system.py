@@ -11,6 +11,9 @@ from OMSimulator.elementgeometry import ElementGeometry
 
 from OMSimulator import CRef, namespace, utils
 
+from collections import defaultdict
+import json
+
 logger = logging.getLogger(__name__)
 
 class SystemGeometry:
@@ -187,7 +190,7 @@ class System:
       if first in self.elements:
         raise ValueError(f"Component '{first}' already exists in {self.name}")
       connectors = inst.makeConnectors() if inst else list()
-      component = Component(first, resource, connectors)
+      component = Component(first, inst.fmuType, resource, connectors)
       self.elements[first] = component
       return component
 
@@ -265,8 +268,83 @@ class System:
         raise ValueError(f"Component '{first}' not found in {self.name}")
       self.elements[first].setSolver(name)
 
+  def instantiate(self):
+    """Instantiates the system and its components."""
+    data = {
+        "simulation units": []
+    }
+    # Dict to group components by solver
+    solver_groups = defaultdict(list)
+    componentSolver = {}
+    # dict to group connections by solver unit
+    solver_connections = defaultdict(list)
+
+    # process the elements
+    self.processElements(self.elements, self.connections, data, solver_groups, componentSolver, solver_connections)
+
+    ## group the simulation units
+    for solver, components in solver_groups.items():
+      unit = {
+          "components": components,
+          "solver": {
+              "type": "co-simulation",
+              "name": solver
+          },
+          "connections": solver_connections.get(solver, [])
+      }
+      data["simulation units"].append(unit)
+
+    # Add top-level simulation metadata
+    data["result file"] = "simulation_result.csv"
+    data["simulation settings"] = {
+        "start time": 0,
+        "stop time": 10, ## TODO get the stop time from the solver settings
+        "tolerance": 1e-6
+    }
+
+    # Dump JSON
+    json_string = json.dumps(data, indent=2)
+    print(json_string)
+
+
+  def processElements(self, elements_dict: dict, connections: list, data: dict, solver_groups : defaultdict, componentSolver : dict, solver_connections : defaultdict, systemName = None):
+    """Processes the elements and connections in the system."""
+    for key, element in elements_dict.items():
+      if isinstance(element, Component):
+        solver_groups[element.solver].append({
+            "name": [self.name] + ([systemName] if systemName else []) + [str(element.name)],
+            "type": element.fmuType,
+            "path": str(element.fmuPath)
+        })
+        componentSolver[str(element.name)] = element.solver
+      elif isinstance(element, System):
+        # recurse into subsystems
+        self.processElements(element.elements, element.connections, data, solver_groups, componentSolver, solver_connections, systemName=element.name)
+
+    for connection in connections:
+      startElement = connection.startElement
+      endElement = connection.endElement
+      startSolver = componentSolver.get(startElement, None)
+      endSolver = componentSolver.get(endElement, None)
+      # print(f"{startElement},{endElement},{startSolver},{endSolver}")
+
+      solver = None
+      if startSolver == endSolver and startSolver is not None:
+        solver = startSolver
+      elif startSolver is None and endSolver is not None:
+        solver = endSolver
+      elif endSolver is None and startSolver is not None:
+        solver = startSolver
+      ##TODO group components and connection without solver information, right now they are grouped under NONE category
+      solver_connections[solver].append({
+            "start element": [self.name] + ([systemName] if systemName else []) + ([startElement] if startElement else []),
+            "start connector": connection.startConnector,
+            "end element": [self.name] + ([systemName] if systemName else []) + ([endElement] if endElement else []),
+            "end connector": connection.endConnector
+        })
+
   def export(self, root):
-    node = ET.SubElement(root, namespace.tag("ssd", "System"), attrib={"name": self.name})
+    node = ET.SubElement(root, namespace.tag("ssd", "System"), attrib={"name": str(self.name)})
     if self.description:
       node.set("description", self.description)
     if len(self.connectors) > 0 :

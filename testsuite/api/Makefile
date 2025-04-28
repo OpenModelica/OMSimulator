@@ -3,6 +3,8 @@ TEST = ../rtest -v
 TESTFILES = \
 create_ssp_file.py \
 cref.py \
+exportJson1.py \
+exportJson2.py \
 exportJson4.py \
 fmuinfo.py \
 invalidSSD.py \
