@@ -91,7 +91,6 @@ model2.instantiate() ## internally generate the json file and also set the model
 ##         {
 ##           "name": [
 ##             "default",
-##             "default",
 ##             "sub-system",
 ##             "Add2"
 ##           ],
@@ -100,7 +99,6 @@ model2.instantiate() ## internally generate the json file and also set the model
 ##         },
 ##         {
 ##           "name": [
-##             "default",
 ##             "default",
 ##             "Add1"
 ##           ],
@@ -114,21 +112,39 @@ model2.instantiate() ## internally generate the json file and also set the model
 ##       },
 ##       "connections": [
 ##         {
-##           "start element": "Add2",
+##           "start element": [
+##             "default",
+##             "sub-system",
+##             "Add2"
+##           ],
 ##           "start connector": "u1",
-##           "end element": "",
+##           "end element": [
+##             "default",
+##             "sub-system"
+##           ],
 ##           "end connector": "input"
 ##         },
 ##         {
-##           "start element": "",
+##           "start element": [
+##             "default"
+##           ],
 ##           "start connector": "param1",
-##           "end element": "Add1",
+##           "end element": [
+##             "default",
+##             "Add1"
+##           ],
 ##           "end connector": "u1"
 ##         },
 ##         {
-##           "start element": "Add1",
+##           "start element": [
+##             "default",
+##             "Add1"
+##           ],
 ##           "start connector": "y",
-##           "end element": "sub-system",
+##           "end element": [
+##             "default",
+##             "sub-system"
+##           ],
 ##           "end connector": "input"
 ##         }
 ##       ]

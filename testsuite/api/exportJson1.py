@@ -23,7 +23,6 @@ model.instantiate() ## internally generate the json file and also set the model 
 ##       "components": [
 ##         {
 ##           "name": [
-##             "LOCtest",
 ##             "Root",
 ##             "System"
 ##           ],
@@ -32,7 +31,6 @@ model.instantiate() ## internally generate the json file and also set the model 
 ##         },
 ##         {
 ##           "name": [
-##             "LOCtest",
 ##             "Root",
 ##             "Control"
 ##           ],
@@ -46,15 +44,27 @@ model.instantiate() ## internally generate the json file and also set the model 
 ##       },
 ##       "connections": [
 ##         {
-##           "start element": "System",
+##           "start element": [
+##             "Root",
+##             "System"
+##           ],
 ##           "start connector": "OUTPUT_temperature_lube_oil",
-##           "end element": "Control",
+##           "end element": [
+##             "Root",
+##             "Control"
+##           ],
 ##           "end connector": "INPUT_temperature_lube_oil"
 ##         },
 ##         {
-##           "start element": "Control",
+##           "start element": [
+##             "Root",
+##             "Control"
+##           ],
 ##           "start connector": "OUTPUT_control_valve_position",
-##           "end element": "System",
+##           "end element": [
+##             "Root",
+##             "System"
+##           ],
 ##           "end connector": "INPUT_control_valve_position"
 ##         }
 ##       ]

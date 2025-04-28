@@ -111,7 +111,7 @@ class SSD:
   def instantiate(self):
     if self.system is None:
       raise ValueError("Variant doesn't contain a system")
-    self.system.instantiate(self.name)
+    self.system.instantiate()
 
   def list(self, prefix=""):
     '''Prints the SSD contents.'''

@@ -268,7 +268,7 @@ class System:
         raise ValueError(f"Component '{first}' not found in {self.name}")
       self.elements[first].setSolver(name)
 
-  def instantiate(self, variantname : str):
+  def instantiate(self):
     """Instantiates the system and its components."""
     data = {
         "simulation units": []
@@ -280,7 +280,7 @@ class System:
     solver_connections = defaultdict(list)
 
     # process the elements
-    self.processElements(self.elements, self.connections, data, variantname, solver_groups, componentSolver, solver_connections)
+    self.processElements(self.elements, self.connections, data, solver_groups, componentSolver, solver_connections)
 
     ## group the simulation units
     for solver, components in solver_groups.items():
@@ -307,18 +307,19 @@ class System:
     print(json_string)
 
 
-  def processElements(self, elements_dict: dict, connections: list, data: dict, variantname: str, solver_groups, componentSolver, solver_connections, systemName = None):
+  def processElements(self, elements_dict: dict, connections: list, data: dict, solver_groups : defaultdict, componentSolver : dict, solver_connections : defaultdict, systemName = None):
     """Processes the elements and connections in the system."""
     for key, element in elements_dict.items():
       if isinstance(element, Component):
         solver_groups[element.solver].append({
-            "name": [variantname] + [self.name] + ([systemName] if systemName else []) + [str(element.name)],
+            "name": [self.name] + ([systemName] if systemName else []) + [str(element.name)],
             "type": element.fmuType,
             "path": str(element.fmuPath)
         })
         componentSolver[str(element.name)] = element.solver
       elif isinstance(element, System):
-        self.processElements(element.elements, element.connections, data, variantname, solver_groups, componentSolver, solver_connections, systemName=element.name)
+        # recurse into subsystems
+        self.processElements(element.elements, element.connections, data, solver_groups, componentSolver, solver_connections, systemName=element.name)
 
     for connection in connections:
       startElement = connection.startElement
@@ -336,9 +337,9 @@ class System:
         solver = startSolver
       ##TODO group components and connection without solver information, right now they are grouped under NONE category
       solver_connections[solver].append({
-            "start element": startElement,
+            "start element": [self.name] + ([systemName] if systemName else []) + ([startElement] if startElement else []),
             "start connector": connection.startConnector,
-            "end element": endElement,
+            "end element": [self.name] + ([systemName] if systemName else []) + ([endElement] if endElement else []),
             "end connector": connection.endConnector
         })
 

@@ -107,7 +107,6 @@ model2.instantiate() ## internally generate the json file and also set the model
 ##         {
 ##           "name": [
 ##             "default",
-##             "default",
 ##             "Add1"
 ##           ],
 ##           "type": "me_cs",
@@ -115,7 +114,6 @@ model2.instantiate() ## internally generate the json file and also set the model
 ##         },
 ##         {
 ##           "name": [
-##             "default",
 ##             "default",
 ##             "Gain1"
 ##           ],
@@ -129,9 +127,15 @@ model2.instantiate() ## internally generate the json file and also set the model
 ##       },
 ##       "connections": [
 ##         {
-##           "start element": "Gain1",
+##           "start element": [
+##             "default",
+##             "Gain1"
+##           ],
 ##           "start connector": "y",
-##           "end element": "Add1",
+##           "end element": [
+##             "default",
+##             "Add1"
+##           ],
 ##           "end connector": "u1"
 ##         }
 ##       ]
@@ -141,7 +145,6 @@ model2.instantiate() ## internally generate the json file and also set the model
 ##         {
 ##           "name": [
 ##             "default",
-##             "default",
 ##             "Add2"
 ##           ],
 ##           "type": "me_cs",
@@ -149,7 +152,6 @@ model2.instantiate() ## internally generate the json file and also set the model
 ##         },
 ##         {
 ##           "name": [
-##             "default",
 ##             "default",
 ##             "Gain2"
 ##           ],
@@ -163,15 +165,27 @@ model2.instantiate() ## internally generate the json file and also set the model
 ##       },
 ##       "connections": [
 ##         {
-##           "start element": "Gain2",
+##           "start element": [
+##             "default",
+##             "Gain2"
+##           ],
 ##           "start connector": "y",
-##           "end element": "Add2",
+##           "end element": [
+##             "default",
+##             "Add2"
+##           ],
 ##           "end connector": "u1"
 ##         },
 ##         {
-##           "start element": "Gain2",
+##           "start element": [
+##             "default",
+##             "Gain2"
+##           ],
 ##           "start connector": "y",
-##           "end element": "Add2",
+##           "end element": [
+##             "default",
+##             "Add2"
+##           ],
 ##           "end connector": "u2"
 ##         }
 ##       ]

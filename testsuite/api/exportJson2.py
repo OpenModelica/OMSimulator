@@ -24,7 +24,6 @@ model.instantiate() ## internally generate the json file and also set the model 
 ##         {
 ##           "name": [
 ##             "DC-Motor",
-##             "DC-Motor",
 ##             "SuT",
 ##             "edrive_mass"
 ##           ],
@@ -34,7 +33,6 @@ model.instantiate() ## internally generate the json file and also set the model 
 ##         {
 ##           "name": [
 ##             "DC-Motor",
-##             "DC-Motor",
 ##             "SuT",
 ##             "emachine_model"
 ##           ],
@@ -43,7 +41,6 @@ model.instantiate() ## internally generate the json file and also set the model 
 ##         },
 ##         {
 ##           "name": [
-##             "DC-Motor",
 ##             "DC-Motor",
 ##             "stimuli_model"
 ##           ],
@@ -57,99 +54,202 @@ model.instantiate() ## internally generate the json file and also set the model 
 ##       },
 ##       "connections": [
 ##         {
-##           "start element": "edrive_mass",
+##           "start element": [
+##             "DC-Motor",
+##             "SuT",
+##             "edrive_mass"
+##           ],
 ##           "start connector": "wB",
-##           "end element": "",
+##           "end element": [
+##             "DC-Motor",
+##             "SuT"
+##           ],
 ##           "end connector": "wB"
 ##         },
 ##         {
-##           "start element": "",
+##           "start element": [
+##             "DC-Motor",
+##             "SuT"
+##           ],
 ##           "start connector": "M_load",
-##           "end element": "edrive_mass",
+##           "end element": [
+##             "DC-Motor",
+##             "SuT",
+##             "edrive_mass"
+##           ],
 ##           "end connector": "M_B"
 ##         },
 ##         {
-##           "start element": "edrive_mass",
+##           "start element": [
+##             "DC-Motor",
+##             "SuT",
+##             "edrive_mass"
+##           ],
 ##           "start connector": "phiB",
-##           "end element": "",
+##           "end element": [
+##             "DC-Motor",
+##             "SuT"
+##           ],
 ##           "end connector": "phiB"
 ##         },
 ##         {
-##           "start element": "",
+##           "start element": [
+##             "DC-Motor",
+##             "SuT"
+##           ],
 ##           "start connector": "U",
-##           "end element": "emachine_model",
+##           "end element": [
+##             "DC-Motor",
+##             "SuT",
+##             "emachine_model"
+##           ],
 ##           "end connector": "U"
 ##         },
 ##         {
-##           "start element": "emachine_model",
+##           "start element": [
+##             "DC-Motor",
+##             "SuT",
+##             "emachine_model"
+##           ],
 ##           "start connector": "M",
-##           "end element": "",
+##           "end element": [
+##             "DC-Motor",
+##             "SuT"
+##           ],
 ##           "end connector": "M_mot"
 ##         },
 ##         {
-##           "start element": "emachine_model",
+##           "start element": [
+##             "DC-Motor",
+##             "SuT",
+##             "emachine_model"
+##           ],
 ##           "start connector": "I",
-##           "end element": "",
+##           "end element": [
+##             "DC-Motor",
+##             "SuT"
+##           ],
 ##           "end connector": "I"
 ##         },
 ##         {
-##           "start element": "emachine_model",
+##           "start element": [
+##             "DC-Motor",
+##             "SuT",
+##             "emachine_model"
+##           ],
 ##           "start connector": "M",
-##           "end element": "edrive_mass",
+##           "end element": [
+##             "DC-Motor",
+##             "SuT",
+##             "edrive_mass"
+##           ],
 ##           "end connector": "M_A"
 ##         },
 ##         {
-##           "start element": "edrive_mass",
+##           "start element": [
+##             "DC-Motor",
+##             "SuT",
+##             "edrive_mass"
+##           ],
 ##           "start connector": "wA",
-##           "end element": "emachine_model",
+##           "end element": [
+##             "DC-Motor",
+##             "SuT",
+##             "emachine_model"
+##           ],
 ##           "end connector": "w"
 ##         },
 ##         {
-##           "start element": "edrive_mass",
+##           "start element": [
+##             "DC-Motor",
+##             "SuT",
+##             "edrive_mass"
+##           ],
 ##           "start connector": "phiA",
-##           "end element": "emachine_model",
+##           "end element": [
+##             "DC-Motor",
+##             "SuT",
+##             "emachine_model"
+##           ],
 ##           "end connector": "phi"
 ##         },
 ##         {
-##           "start element": "SuT",
+##           "start element": [
+##             "DC-Motor",
+##             "SuT"
+##           ],
 ##           "start connector": "M_mot",
-##           "end element": "",
+##           "end element": [
+##             "DC-Motor"
+##           ],
 ##           "end connector": "M_mot"
 ##         },
 ##         {
-##           "start element": "SuT",
+##           "start element": [
+##             "DC-Motor",
+##             "SuT"
+##           ],
 ##           "start connector": "wB",
-##           "end element": "",
+##           "end element": [
+##             "DC-Motor"
+##           ],
 ##           "end connector": "wB"
 ##         },
 ##         {
-##           "start element": "stimuli_model",
+##           "start element": [
+##             "DC-Motor",
+##             "stimuli_model"
+##           ],
 ##           "start connector": "U",
-##           "end element": "",
+##           "end element": [
+##             "DC-Motor"
+##           ],
 ##           "end connector": "U"
 ##         },
 ##         {
-##           "start element": "SuT",
+##           "start element": [
+##             "DC-Motor",
+##             "SuT"
+##           ],
 ##           "start connector": "I",
-##           "end element": "",
+##           "end element": [
+##             "DC-Motor"
+##           ],
 ##           "end connector": "I"
 ##         },
 ##         {
-##           "start element": "stimuli_model",
+##           "start element": [
+##             "DC-Motor",
+##             "stimuli_model"
+##           ],
 ##           "start connector": "M_load",
-##           "end element": "SuT",
+##           "end element": [
+##             "DC-Motor",
+##             "SuT"
+##           ],
 ##           "end connector": "M_load"
 ##         },
 ##         {
-##           "start element": "stimuli_model",
+##           "start element": [
+##             "DC-Motor",
+##             "stimuli_model"
+##           ],
 ##           "start connector": "U",
-##           "end element": "SuT",
+##           "end element": [
+##             "DC-Motor",
+##             "SuT"
+##           ],
 ##           "end connector": "U"
 ##         },
 ##         {
-##           "start element": "",
+##           "start element": [
+##             "DC-Motor"
+##           ],
 ##           "start connector": "M_load",
-##           "end element": "stimuli_model",
+##           "end element": [
+##             "DC-Motor",
+##             "stimuli_model"
+##           ],
 ##           "end connector": "M_load"
 ##         }
 ##       ]
