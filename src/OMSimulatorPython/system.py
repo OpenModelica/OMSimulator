@@ -208,7 +208,7 @@ class System:
     else:
       return (cref.first(), cref.last())
 
-  def _addConnection(self, cref1: CRef, cref2: CRef):
+  def _addConnection(self, cref1: CRef, cref2: CRef) -> None:
     first1 = cref1.first()
     first2 = cref2.first()
 
@@ -216,17 +216,14 @@ class System:
     if first1 == first2:
       if first1 not in self.elements:
         raise ValueError(f"System '{first1}' not found in '{self.name}'")
-      if first2 not in self.elements:
-        raise ValueError(f"System '{first2}' not found in '{self.name}'")
 
-      (start_element, start_connector) = self.split_cref(cref1.pop_first())
-      (end_element, end_connector) = self.split_cref(cref2.pop_first())
       # Add the connection inside the subsystem
-      self.elements[first1].addConnection(start_element, start_connector, end_element, end_connector)
+      self.elements[first1]._addConnection(cref1.pop_first(), cref2.pop_first())
     # Top level system connections
     else:
       (start_element, start_connector) = self.split_cref(cref1)
       (end_element, end_connector) = self.split_cref(cref2)
+
       # Add the connections to top level system
       self.addConnection(start_element, start_connector, end_element, end_connector)
 
