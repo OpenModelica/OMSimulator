@@ -37,9 +37,9 @@ model.addConnection(CRef('default', 'Gain2', 'y'), CRef('default', 'Add2', 'u1')
 model.addConnection(CRef('default', 'Gain2', 'y'), CRef('default', 'Add2', 'u2'))
 
 #model.list()
-model.export('exportjson3.ssp')
+model.export('exportJson3.ssp')
 
-model2 = SSP('exportjson3.ssp')
+model2 = SSP('exportJson3.ssp')
 
 model2.list()
 model2.instantiate() ## internally generate the json file and also set the model state like virgin,
@@ -52,51 +52,51 @@ model2.instantiate() ## internally generate the json file and also set the model
 ## |-- <class 'OMSimulator.ssd.SSD'>
 ## |-- Active variant "default": <hidden>
 ## |-- |-- System: default 'None'
-## |-- |-- Connectors:
-## |-- |-- Elements:
-## |-- |-- |-- FMU: Add1 'None'
-## |-- |-- |-- |-- path: resources/Add.fmu
-## |-- |-- |-- |-- Connectors:
-## |-- |-- |-- |-- |-- (u1, Causality.input, SignalType.Real, None, 'Connector of Real input signal 1')
-## |-- |-- |-- |-- |-- (u2, Causality.input, SignalType.Real, None, 'Connector of Real input signal 2')
-## |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, 'Connector of Real output signal')
-## |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None, 'Gain of input signal 1')
-## |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, 'Gain of input signal 2')
-## |-- |-- |-- |-- Solver Settings:
-## |-- |-- |-- |-- |-- name: solver1
-## |-- |-- |-- FMU: Add2 'None'
-## |-- |-- |-- |-- path: resources/Add.fmu
-## |-- |-- |-- |-- Connectors:
-## |-- |-- |-- |-- |-- (u1, Causality.input, SignalType.Real, None, 'Connector of Real input signal 1')
-## |-- |-- |-- |-- |-- (u2, Causality.input, SignalType.Real, None, 'Connector of Real input signal 2')
-## |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, 'Connector of Real output signal')
-## |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None, 'Gain of input signal 1')
-## |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, 'Gain of input signal 2')
-## |-- |-- |-- |-- Solver Settings:
-## |-- |-- |-- |-- |-- name: solver2
-## |-- |-- |-- FMU: Gain1 'None'
-## |-- |-- |-- |-- path: resources/Gain.fmu
-## |-- |-- |-- |-- Connectors:
-## |-- |-- |-- |-- |-- (u, Causality.input, SignalType.Real, None, 'Input signal connector')
-## |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, 'Output signal connector')
-## |-- |-- |-- |-- |-- (k, Causality.parameter, SignalType.Real, 1, 'Gain value multiplied with input signal')
-## |-- |-- |-- |-- Solver Settings:
-## |-- |-- |-- |-- |-- name: solver1
-## |-- |-- |-- FMU: Gain2 'None'
-## |-- |-- |-- |-- path: resources/Gain.fmu
-## |-- |-- |-- |-- Connectors:
-## |-- |-- |-- |-- |-- (u, Causality.input, SignalType.Real, None, 'Input signal connector')
-## |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, 'Output signal connector')
-## |-- |-- |-- |-- |-- (k, Causality.parameter, SignalType.Real, 1, 'Gain value multiplied with input signal')
-## |-- |-- |-- |-- Solver Settings:
-## |-- |-- |-- |-- |-- name: solver2
-## |-- |-- Connections:
-## |-- |-- |-- Gain1.y -> Add1.u1
-## |-- |-- |-- Gain2.y -> Add2.u1
-## |-- |-- |-- Gain2.y -> Add2.u2
-## |-- |-- Solver Settings:
-## |-- |-- |-- (name=solver1, method=euler, tolerance=1e-06)
-## |-- |-- |-- (name=solver2, method=cvode, tolerance=0.0001)
+## |-- |-- |-- Connectors:
+## |-- |-- |-- Elements:
+## |-- |-- |-- |-- FMU: Add1 'None'
+## |-- |-- |-- |-- |-- path: resources/Add.fmu
+## |-- |-- |-- |-- |-- Connectors:
+## |-- |-- |-- |-- |-- |-- (u1, Causality.input, SignalType.Real, None, 'Connector of Real input signal 1')
+## |-- |-- |-- |-- |-- |-- (u2, Causality.input, SignalType.Real, None, 'Connector of Real input signal 2')
+## |-- |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, 'Connector of Real output signal')
+## |-- |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None, 'Gain of input signal 1')
+## |-- |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, 'Gain of input signal 2')
+## |-- |-- |-- |-- |-- Solver Settings:
+## |-- |-- |-- |-- |-- |-- name: solver1
+## |-- |-- |-- |-- FMU: Add2 'None'
+## |-- |-- |-- |-- |-- path: resources/Add.fmu
+## |-- |-- |-- |-- |-- Connectors:
+## |-- |-- |-- |-- |-- |-- (u1, Causality.input, SignalType.Real, None, 'Connector of Real input signal 1')
+## |-- |-- |-- |-- |-- |-- (u2, Causality.input, SignalType.Real, None, 'Connector of Real input signal 2')
+## |-- |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, 'Connector of Real output signal')
+## |-- |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None, 'Gain of input signal 1')
+## |-- |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, 'Gain of input signal 2')
+## |-- |-- |-- |-- |-- Solver Settings:
+## |-- |-- |-- |-- |-- |-- name: solver2
+## |-- |-- |-- |-- FMU: Gain1 'None'
+## |-- |-- |-- |-- |-- path: resources/Gain.fmu
+## |-- |-- |-- |-- |-- Connectors:
+## |-- |-- |-- |-- |-- |-- (u, Causality.input, SignalType.Real, None, 'Input signal connector')
+## |-- |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, 'Output signal connector')
+## |-- |-- |-- |-- |-- |-- (k, Causality.parameter, SignalType.Real, 1, 'Gain value multiplied with input signal')
+## |-- |-- |-- |-- |-- Solver Settings:
+## |-- |-- |-- |-- |-- |-- name: solver1
+## |-- |-- |-- |-- FMU: Gain2 'None'
+## |-- |-- |-- |-- |-- path: resources/Gain.fmu
+## |-- |-- |-- |-- |-- Connectors:
+## |-- |-- |-- |-- |-- |-- (u, Causality.input, SignalType.Real, None, 'Input signal connector')
+## |-- |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, 'Output signal connector')
+## |-- |-- |-- |-- |-- |-- (k, Causality.parameter, SignalType.Real, 1, 'Gain value multiplied with input signal')
+## |-- |-- |-- |-- |-- Solver Settings:
+## |-- |-- |-- |-- |-- |-- name: solver2
+## |-- |-- |-- Connections:
+## |-- |-- |-- |-- Gain1.y -> Add1.u1
+## |-- |-- |-- |-- Gain2.y -> Add2.u1
+## |-- |-- |-- |-- Gain2.y -> Add2.u2
+## |-- |-- |-- Solver Settings:
+## |-- |-- |-- |-- (name=solver1, method=euler, tolerance=1e-06)
+## |-- |-- |-- |-- (name=solver2, method=cvode, tolerance=0.0001)
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
