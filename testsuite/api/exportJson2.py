@@ -40,6 +40,15 @@ model.instantiate() ## internally generate the json file and also set the model 
 ##           ],
 ##           "type": "me",
 ##           "path": "resources/emachine_model.fmu"
+##         },
+##         {
+##           "name": [
+##             "DC-Motor",
+##             "DC-Motor",
+##             "stimuli_model"
+##           ],
+##           "type": "me",
+##           "path": "resources/stimuli_model.fmu"
 ##         }
 ##       ],
 ##       "solver": {
@@ -100,26 +109,7 @@ model.instantiate() ## internally generate the json file and also set the model 
 ##           "start connector": "phiA",
 ##           "end element": "emachine_model",
 ##           "end connector": "phi"
-##         }
-##       ]
-##     },
-##     {
-##       "components": [
-##         {
-##           "name": [
-##             "DC-Motor",
-##             "DC-Motor",
-##             "stimuli_model"
-##           ],
-##           "type": "me",
-##           "path": "resources/stimuli_model.fmu"
-##         }
-##       ],
-##       "solver": {
-##         "type": "co-simulation",
-##         "name": null
-##       },
-##       "connections": [
+##         },
 ##         {
 ##           "start element": "SuT",
 ##           "start connector": "M_mot",

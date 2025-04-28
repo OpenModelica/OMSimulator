@@ -334,9 +334,8 @@ class System:
         solver = endSolver
       elif endSolver is None and startSolver is not None:
         solver = startSolver
-
-      if solver:
-        solver_connections[solver].append({
+      ##TODO group components and connection without solver information, right now they are grouped under NONE category
+      solver_connections[solver].append({
             "start element": startElement,
             "start connector": connection.startConnector,
             "end element": endElement,
