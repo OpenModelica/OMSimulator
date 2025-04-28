@@ -28,25 +28,12 @@ model.list()
 ## |-- <class 'OMSimulator.ssd.SSD'>
 ## |-- Active variant "default": None
 ## |-- |-- System: default 'None'
+## |-- |-- Connectors:
+## |-- |-- Elements:
+## |-- |-- |-- System: sub-system 'None'
 ## |-- |-- |-- Connectors:
 ## |-- |-- |-- Elements:
-## |-- |-- |-- |-- System: sub-system 'None'
-## |-- |-- |-- |-- |-- Connectors:
-## |-- |-- |-- |-- |-- Elements:
-## |-- |-- |-- |-- |-- |-- FMU: Add2 'None'
-## |-- |-- |-- |-- |-- |-- |-- path: resources/Add.fmu
-## |-- |-- |-- |-- |-- |-- |-- Connectors:
-## |-- |-- |-- |-- |-- |-- |-- |-- (u1, Causality.input, SignalType.Real, None, 'Connector of Real input signal 1')
-## |-- |-- |-- |-- |-- |-- |-- |-- (u2, Causality.input, SignalType.Real, None, 'Connector of Real input signal 2')
-## |-- |-- |-- |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, 'Connector of Real output signal')
-## |-- |-- |-- |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None, 'Gain of input signal 1')
-## |-- |-- |-- |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, 'Gain of input signal 2')
-## |-- |-- |-- |-- System: sub-system2 'None'
-## |-- |-- |-- |-- |-- Connectors:
-## |-- |-- |-- |-- |-- Elements:
-## |-- |-- |-- |-- |-- |-- System: sub-sub-system 'None'
-## |-- |-- |-- |-- |-- |-- |-- Connectors:
-## |-- |-- |-- |-- FMU: Add1 'None'
+## |-- |-- |-- |-- FMU: Add2 'None'
 ## |-- |-- |-- |-- |-- path: resources/Add.fmu
 ## |-- |-- |-- |-- |-- Connectors:
 ## |-- |-- |-- |-- |-- |-- (u1, Causality.input, SignalType.Real, None, 'Connector of Real input signal 1')
@@ -54,6 +41,19 @@ model.list()
 ## |-- |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, 'Connector of Real output signal')
 ## |-- |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None, 'Gain of input signal 1')
 ## |-- |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, 'Gain of input signal 2')
+## |-- |-- |-- System: sub-system2 'None'
+## |-- |-- |-- Connectors:
+## |-- |-- |-- Elements:
+## |-- |-- |-- |-- System: sub-sub-system 'None'
+## |-- |-- |-- |-- Connectors:
+## |-- |-- |-- FMU: Add1 'None'
+## |-- |-- |-- |-- path: resources/Add.fmu
+## |-- |-- |-- |-- Connectors:
+## |-- |-- |-- |-- |-- (u1, Causality.input, SignalType.Real, None, 'Connector of Real input signal 1')
+## |-- |-- |-- |-- |-- (u2, Causality.input, SignalType.Real, None, 'Connector of Real input signal 2')
+## |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, 'Connector of Real output signal')
+## |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None, 'Gain of input signal 1')
+## |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, 'Gain of input signal 2')
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0

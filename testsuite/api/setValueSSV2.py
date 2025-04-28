@@ -63,26 +63,26 @@ model2.list()
 ## |-- <class 'OMSimulator.ssd.SSD'>
 ## |-- Active variant "default": None
 ## |-- |-- System: default 'None'
-## |-- |-- |-- Connectors:
-## |-- |-- |-- Elements:
-## |-- |-- |-- |-- FMU: Add1 'None'
-## |-- |-- |-- |-- |-- path: resources/Add.fmu
-## |-- |-- |-- |-- |-- Connectors:
-## |-- |-- |-- |-- |-- |-- (u1, Causality.input, SignalType.Real, None, 'Connector of Real input signal 1')
-## |-- |-- |-- |-- |-- |-- (u2, Causality.input, SignalType.Real, None, 'Connector of Real input signal 2')
-## |-- |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, 'Connector of Real output signal')
-## |-- |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None, 'Gain of input signal 1')
-## |-- |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, 'Gain of input signal 2')
-## |-- |-- |-- |-- |-- Parameter Bindings: resources/myfile3.ssv
-## |-- |-- |-- |-- FMU: Add2 'None'
-## |-- |-- |-- |-- |-- path: resources/Add.fmu
-## |-- |-- |-- |-- |-- Connectors:
-## |-- |-- |-- |-- |-- |-- (u1, Causality.input, SignalType.Real, None, 'Connector of Real input signal 1')
-## |-- |-- |-- |-- |-- |-- (u2, Causality.input, SignalType.Real, None, 'Connector of Real input signal 2')
-## |-- |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, 'Connector of Real output signal')
-## |-- |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None, 'Gain of input signal 1')
-## |-- |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, 'Gain of input signal 2')
-## |-- |-- |-- |-- |-- Parameter Bindings: resources/myfile4.ssv
+## |-- |-- Connectors:
+## |-- |-- Elements:
+## |-- |-- |-- FMU: Add1 'None'
+## |-- |-- |-- |-- path: resources/Add.fmu
+## |-- |-- |-- |-- Connectors:
+## |-- |-- |-- |-- |-- (u1, Causality.input, SignalType.Real, None, 'Connector of Real input signal 1')
+## |-- |-- |-- |-- |-- (u2, Causality.input, SignalType.Real, None, 'Connector of Real input signal 2')
+## |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, 'Connector of Real output signal')
+## |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None, 'Gain of input signal 1')
+## |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, 'Gain of input signal 2')
+## |-- |-- |-- |-- Parameter Bindings: resources/myfile3.ssv
+## |-- |-- |-- FMU: Add2 'None'
+## |-- |-- |-- |-- path: resources/Add.fmu
+## |-- |-- |-- |-- Connectors:
+## |-- |-- |-- |-- |-- (u1, Causality.input, SignalType.Real, None, 'Connector of Real input signal 1')
+## |-- |-- |-- |-- |-- (u2, Causality.input, SignalType.Real, None, 'Connector of Real input signal 2')
+## |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, 'Connector of Real output signal')
+## |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None, 'Gain of input signal 1')
+## |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, 'Gain of input signal 2')
+## |-- |-- |-- |-- Parameter Bindings: resources/myfile4.ssv
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
@@ -102,26 +102,26 @@ model2.list()
 ## |-- <class 'OMSimulator.ssd.SSD'>
 ## |-- Active variant "default": <hidden>
 ## |-- |-- System: default 'None'
-## |-- |-- |-- Connectors:
-## |-- |-- |-- Elements:
-## |-- |-- |-- |-- FMU: Add1 'None'
-## |-- |-- |-- |-- |-- path: resources/Add.fmu
-## |-- |-- |-- |-- |-- Connectors:
-## |-- |-- |-- |-- |-- |-- (u1, Causality.input, SignalType.Real, None, 'Connector of Real input signal 1')
-## |-- |-- |-- |-- |-- |-- (u2, Causality.input, SignalType.Real, None, 'Connector of Real input signal 2')
-## |-- |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, 'Connector of Real output signal')
-## |-- |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None, 'Gain of input signal 1')
-## |-- |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, 'Gain of input signal 2')
-## |-- |-- |-- |-- |-- Parameter Bindings: resources/myfile3.ssv
-## |-- |-- |-- |-- FMU: Add2 'None'
-## |-- |-- |-- |-- |-- path: resources/Add.fmu
-## |-- |-- |-- |-- |-- Connectors:
-## |-- |-- |-- |-- |-- |-- (u1, Causality.input, SignalType.Real, None, 'Connector of Real input signal 1')
-## |-- |-- |-- |-- |-- |-- (u2, Causality.input, SignalType.Real, None, 'Connector of Real input signal 2')
-## |-- |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, 'Connector of Real output signal')
-## |-- |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None, 'Gain of input signal 1')
-## |-- |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, 'Gain of input signal 2')
-## |-- |-- |-- |-- |-- Parameter Bindings: resources/myfile4.ssv
+## |-- |-- Connectors:
+## |-- |-- Elements:
+## |-- |-- |-- FMU: Add1 'None'
+## |-- |-- |-- |-- path: resources/Add.fmu
+## |-- |-- |-- |-- Connectors:
+## |-- |-- |-- |-- |-- (u1, Causality.input, SignalType.Real, None, 'Connector of Real input signal 1')
+## |-- |-- |-- |-- |-- (u2, Causality.input, SignalType.Real, None, 'Connector of Real input signal 2')
+## |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, 'Connector of Real output signal')
+## |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None, 'Gain of input signal 1')
+## |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, 'Gain of input signal 2')
+## |-- |-- |-- |-- Parameter Bindings: resources/myfile3.ssv
+## |-- |-- |-- FMU: Add2 'None'
+## |-- |-- |-- |-- path: resources/Add.fmu
+## |-- |-- |-- |-- Connectors:
+## |-- |-- |-- |-- |-- (u1, Causality.input, SignalType.Real, None, 'Connector of Real input signal 1')
+## |-- |-- |-- |-- |-- (u2, Causality.input, SignalType.Real, None, 'Connector of Real input signal 2')
+## |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, 'Connector of Real output signal')
+## |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None, 'Gain of input signal 1')
+## |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, 'Gain of input signal 2')
+## |-- |-- |-- |-- Parameter Bindings: resources/myfile4.ssv
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0

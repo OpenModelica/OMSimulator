@@ -42,26 +42,14 @@ model.list() ## internally generate the json file and also set the model state l
 ## |-- <class 'OMSimulator.ssd.SSD'>
 ## |-- Active variant "default": None
 ## |-- |-- System: default 'None'
+## |-- |-- Connectors:
+## |-- |-- |-- (param1, Causality.parameter, SignalType.Real, None, 'None')
+## |-- |-- Elements:
+## |-- |-- |-- System: sub-system 'None'
 ## |-- |-- |-- Connectors:
-## |-- |-- |-- |-- (param1, Causality.parameter, SignalType.Real, None, 'None')
+## |-- |-- |-- |-- (input, Causality.input, SignalType.Real, None, 'None')
 ## |-- |-- |-- Elements:
-## |-- |-- |-- |-- System: sub-system 'None'
-## |-- |-- |-- |-- |-- Connectors:
-## |-- |-- |-- |-- |-- |-- (input, Causality.input, SignalType.Real, None, 'None')
-## |-- |-- |-- |-- |-- Elements:
-## |-- |-- |-- |-- |-- |-- FMU: Add2 'None'
-## |-- |-- |-- |-- |-- |-- |-- path: resources/Add.fmu
-## |-- |-- |-- |-- |-- |-- |-- Connectors:
-## |-- |-- |-- |-- |-- |-- |-- |-- (u1, Causality.input, SignalType.Real, None, 'Connector of Real input signal 1')
-## |-- |-- |-- |-- |-- |-- |-- |-- (u2, Causality.input, SignalType.Real, None, 'Connector of Real input signal 2')
-## |-- |-- |-- |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, 'Connector of Real output signal')
-## |-- |-- |-- |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None, 'Gain of input signal 1')
-## |-- |-- |-- |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, 'Gain of input signal 2')
-## |-- |-- |-- |-- |-- |-- |-- Solver Settings:
-## |-- |-- |-- |-- |-- |-- |-- |-- name: solver1
-## |-- |-- |-- |-- |-- Connections:
-## |-- |-- |-- |-- |-- |-- Add2.u1 -> .input
-## |-- |-- |-- |-- FMU: Add1 'None'
+## |-- |-- |-- |-- FMU: Add2 'None'
 ## |-- |-- |-- |-- |-- path: resources/Add.fmu
 ## |-- |-- |-- |-- |-- Connectors:
 ## |-- |-- |-- |-- |-- |-- (u1, Causality.input, SignalType.Real, None, 'Connector of Real input signal 1')
@@ -72,10 +60,22 @@ model.list() ## internally generate the json file and also set the model state l
 ## |-- |-- |-- |-- |-- Solver Settings:
 ## |-- |-- |-- |-- |-- |-- name: solver1
 ## |-- |-- |-- Connections:
-## |-- |-- |-- |-- .param1 -> Add1.u1
-## |-- |-- |-- |-- Add1.y -> sub-system.input
-## |-- |-- |-- Solver Settings:
-## |-- |-- |-- |-- (name=solver1, method=euler, tolerance=1e-06)
+## |-- |-- |-- |-- Add2.u1 -> .input
+## |-- |-- |-- FMU: Add1 'None'
+## |-- |-- |-- |-- path: resources/Add.fmu
+## |-- |-- |-- |-- Connectors:
+## |-- |-- |-- |-- |-- (u1, Causality.input, SignalType.Real, None, 'Connector of Real input signal 1')
+## |-- |-- |-- |-- |-- (u2, Causality.input, SignalType.Real, None, 'Connector of Real input signal 2')
+## |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, 'Connector of Real output signal')
+## |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None, 'Gain of input signal 1')
+## |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, 'Gain of input signal 2')
+## |-- |-- |-- |-- Solver Settings:
+## |-- |-- |-- |-- |-- name: solver1
+## |-- |-- Connections:
+## |-- |-- |-- .param1 -> Add1.u1
+## |-- |-- |-- Add1.y -> sub-system.input
+## |-- |-- Solver Settings:
+## |-- |-- |-- (name=solver1, method=euler, tolerance=1e-06)
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0

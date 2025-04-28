@@ -122,7 +122,6 @@ class System:
 
   def list(self, prefix=""):
     print(f"{prefix} System: {self.name} '{self.description}'")
-    prefix += ' |--'
     print(f"{prefix} Connectors:")
     for connector in self.connectors:
       connector.list(prefix=prefix + " |--")
