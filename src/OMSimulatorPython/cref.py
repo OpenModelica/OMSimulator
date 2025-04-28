@@ -76,6 +76,12 @@ class CRef:
       raise ValueError("Empty CRef.")
     return CRef(self.names[-1])
 
+  def split(self):
+    if self.is_root():
+      return ("", self)
+    else:
+      return (self.first(), self.pop_first())
+
   def __lt__(self, other: object) -> bool:
     '''Compare two CRef objects based on their names.'''
     if not isinstance(other, CRef):

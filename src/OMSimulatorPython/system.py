@@ -202,12 +202,6 @@ class System:
         raise ValueError(f"Component '{first}' not found in {self.name}")
       self.elements[first].addSSV(resource)
 
-  def split_cref(self, cref: CRef):
-    if cref.is_root():
-      return ("", str(cref))
-    else:
-      return (cref.first(), cref.last())
-
   def _addConnection(self, cref1: CRef, cref2: CRef) -> None:
     first1 = cref1.first()
     first2 = cref2.first()
@@ -221,8 +215,8 @@ class System:
       self.elements[first1]._addConnection(cref1.pop_first(), cref2.pop_first())
     # Top level system connections
     else:
-      (start_element, start_connector) = self.split_cref(cref1)
-      (end_element, end_connector) = self.split_cref(cref2)
+      (start_element, start_connector) = cref1.split()
+      (end_element, end_connector) = cref2.split()
 
       # Add the connections to top level system
       self.addConnection(start_element, start_connector, end_element, end_connector)
