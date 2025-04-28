@@ -81,6 +81,12 @@ class SSD:
     subcref = self._validateCref(cref)
     self.system.addSSV(subcref, resource)
 
+  def addConnection(self, cref1: CRef, cref2: CRef):
+    subcref1 = self._validateCref(cref1)
+    subcref2 = self._validateCref(cref2)
+    #logger.debug(f"Adding connection from {subcref1} to {subcref2}")
+    self.system._addConnection(subcref1, subcref2)
+
   def newSolver(self, options: dict):
     self.system.solvers.append(options)
 
@@ -98,7 +104,7 @@ class SSD:
 
   def addSystem(self, cref: CRef):
     if self.system is None:
-      raise ValueError("Variant doesn#t contain a system")
+      raise ValueError("Variant doesn't contain a system")
 
     self.system.addSystem(cref.pop_first(first=self._name))
 
