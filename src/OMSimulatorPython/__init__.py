@@ -15,9 +15,25 @@ from OMSimulator.ssp import SSP
 from OMSimulator.ssv import SSV
 from OMSimulator.system import System
 from OMSimulator.variable import Causality, SignalType, Variable
+from OMSimulator.instantiated_model import InstantiatedModel
 
 # Define public API
-__all__ = ['Capi', 'Connection', 'Connector', 'CRef', 'FMU', 'Settings', 'SSD', 'SSP', 'SSV', 'System', 'Causality', 'SignalType', 'Variable']
+__all__ = [
+    'Capi',
+    'Causality',
+    'Connection',
+    'Connector',
+    'CRef',
+    'FMU',
+    'InstantiatedModel',
+    'Settings',
+    'SignalType',
+    'SSD',
+    'SSP',
+    'SSV',
+    'System',
+    'Variable',
+  ]
 
 __version__ = '@OMS_SHORT_VERSION_STRING@'
 __author__ = 'Open Source Modelica Consortium (OSMC)'
