@@ -1,18 +1,17 @@
+import json
 import logging
+from collections import defaultdict
 
 from lxml import etree as ET
 from OMSimulator.component import Component
-from OMSimulator.connector import Connector
 from OMSimulator.connection import Connection
-from OMSimulator.fmu import FMU
-from OMSimulator.values import Values
-from OMSimulator.ssv import SSV
+from OMSimulator.connector import Connector
 from OMSimulator.elementgeometry import ElementGeometry
+from OMSimulator.fmu import FMU
+from OMSimulator.ssv import SSV
+from OMSimulator.values import Values
 
-from OMSimulator import CRef, namespace, utils
-
-from collections import defaultdict
-import json
+from OMSimulator import Capi, CRef, namespace, utils
 
 logger = logging.getLogger(__name__)
 
@@ -305,6 +304,8 @@ class System:
     # Dump JSON
     json_string = json.dumps(data, indent=2)
     print(json_string)
+    model, status = Capi.instantiateFromJson(json_string)
+    print(status)
 
 
   def processElements(self, elements_dict: dict, connections: list, data: dict, solver_groups : defaultdict, componentSolver : dict, solver_connections : defaultdict, systemName = None):
