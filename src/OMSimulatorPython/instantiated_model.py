@@ -14,7 +14,21 @@ class InstantiatedModel:
     pass
 
   def initialize(self):
-    Capi.initialize(self.model)
+    status = Capi.initialize(self.model)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to initialize model: {status}")
 
   def simulate(self):
-    Capi.simulate(self.model)
+    status = Capi.simulate(self.model)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to simulate model: {status}")
+
+  def stepUntil(self, stopTime):
+    status = Capi.stepUntil(self.model, stopTime)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to step until {stopTime}: {status}")
+
+  def terminate(self):
+    status = Capi.terminate(self.model)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to terminate model: {status}")
