@@ -1,6 +1,10 @@
 TEST = ../rtest -v
 
 TESTFILES = \
+exportJson1.py \
+exportJson2.py \
+exportJson3.py \
+exportJson4.py \
 SimpleSimulation.py \
 
 # Run make failingtest

@@ -49,8 +49,9 @@ model2.instantiate() ## internally generate the json file and also set the model
 ## |-- Resources:
 ## |--   resources/Add.fmu
 ## |--   resources/Gain.fmu
+## |-- Active Variant: default
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Active variant "default": <hidden>
+## |-- Variant "default": <hidden>
 ## |-- |-- System: default 'None'
 ## |-- |-- |-- Connectors:
 ## |-- |-- |-- Elements:
@@ -198,4 +199,5 @@ model2.instantiate() ## internally generate the json file and also set the model
 ##     "tolerance": 1e-06
 ##   }
 ## }
+## Status.ok
 ## endResult
