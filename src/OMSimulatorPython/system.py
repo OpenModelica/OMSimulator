@@ -8,6 +8,7 @@ from OMSimulator.connection import Connection
 from OMSimulator.connector import Connector
 from OMSimulator.elementgeometry import ElementGeometry
 from OMSimulator.fmu import FMU
+from OMSimulator.instantiated_model import InstantiatedModel
 from OMSimulator.ssv import SSV
 from OMSimulator.values import Values
 
@@ -267,7 +268,7 @@ class System:
         raise ValueError(f"Component '{first}' not found in {self.name}")
       self.elements[first].setSolver(name)
 
-  def instantiate(self):
+  def instantiate(self) -> InstantiatedModel:
     """Instantiates the system and its components."""
     data = {
         "simulation units": []
@@ -303,10 +304,7 @@ class System:
 
     # Dump JSON
     json_string = json.dumps(data, indent=2)
-    print(json_string)
-    model, status = Capi.instantiateFromJson(json_string)
-    print(status)
-
+    return InstantiatedModel(json_string)
 
   def processElements(self, elements_dict: dict, connections: list, data: dict, solver_groups : defaultdict, componentSolver : dict, solver_connections : defaultdict, systemName = None):
     """Processes the elements and connections in the system."""
