@@ -1702,20 +1702,20 @@ oms_status_enu_t oms3_instantiateFromJson(char* model_json_desc, void** out_mode
 
 oms_status_enu_t oms3_initialize(void* model)
 {
-  return oms_status_ok;
+  return oms_status_error;
 }
 
 oms_status_enu_t oms3_simulate(void* model)
 {
-  return oms_status_ok;
+  return oms_status_error;
 }
 
 oms_status_enu_t oms3_stepUntil(void* model, double stopTime)
 {
-  return oms_status_ok;
+  return oms_status_error;
 }
 
 oms_status_enu_t oms3_terminate(void* model)
 {
-  return oms_status_ok;
+  return oms_status_error;
 }
