@@ -1,23 +1,11 @@
 TEST = ../rtest -v
 
 TESTFILES = \
-create_ssp_file.py \
-cref.py \
-fmuinfo.py \
-invalidSSD.py \
-invalidSSV.py \
-LOC.py \
-NestedSystem.py \
-NewSSP.py \
-NewSSP2.py \
-NewSSP3.py \
-setValue1.py \
-setValue2.py \
-setValue3.py \
-setSolver1.py \
-setSolver2.py \
-setValueSSV1.py \
-setValueSSV2.py \
+exportJson1.py \
+exportJson2.py \
+exportJson3.py \
+exportJson4.py \
+SimpleSimulation.py \
 
 # Run make failingtest
 FAILINGTESTFILES = \
@@ -40,7 +28,7 @@ test:
 
 baseline:
 	@echo
-	@echo Updating baselines...
+	@echo Updating badelines...
 	@$(TEST) -b $(TESTFILES)
 
 # Cleans all files that are not listed as dependencies
