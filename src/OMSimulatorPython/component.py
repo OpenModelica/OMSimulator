@@ -24,7 +24,7 @@ class Component:
       raise ValueError(f"Connector '{connector.name}' already exists in {self.name}")
     self.connectors.append(connector)
 
-  def addSSV(self, resource: str):
+  def addSSV(self, cref, resource: str):
     self.parameterResources.append(resource)
 
   def list(self, prefix=""):
@@ -86,8 +86,8 @@ class Component:
 
     ## export parameters binding to ssd file with reference to ssv file
     if len(self.parameterResources) > 0:
+      parameter_bindings_node = ET.SubElement(component_node, namespace.tag("ssd", "ParameterBindings"))
       for resource in self.parameterResources:
-        parameter_bindings_node = ET.SubElement(component_node, namespace.tag("ssd", "ParameterBindings"))
         parameter_binding_node = ET.SubElement(parameter_bindings_node, namespace.tag("ssd", "ParameterBinding"))
         parameter_binding_node.set("source", resource)
 

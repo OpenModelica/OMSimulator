@@ -91,7 +91,7 @@ def parseParameterBindings(node, obj, resources):
         ## use the instantiated ssv class to set the parameter Resources
         if source not in resources:
           logger.warning(f"SSV file not found: {source}")
-        obj.addSSV(source)
+        obj.parameterResources.append(source)
       else:
         values = binding.find("ssd:ParameterValues", namespaces=namespace.ns)
         if values is not None:

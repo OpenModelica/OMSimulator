@@ -88,7 +88,7 @@ class System:
     self.elements = dict()
     self.connections = list()
     self.value = Values()
-    self.parameterResources = dict()
+    self.parameterResources = []
     self.model = model
     self.elementgeometry = None
     self.systemgeometry = None
@@ -108,7 +108,7 @@ class System:
       system.connectors = Connector.importFromNode(node)
       system.elementgeometry = ElementGeometry.importFromNode(node)
       system.systemgeometry = SystemGeometry.importFromNode(node)
-      utils.parseParameterBindings(node, ssd, resources)
+      utils.parseParameterBindings(node, system, resources)
       system.elements = utils.parseElements(node, resources)
       system.solvers = utils.parseAnnotations(node)
       Connection.importFromNode(node, system)
@@ -141,9 +141,8 @@ class System:
 
     ## list parameteres in ssv files
     if len(self.parameterResources) > 0:
-      for key, resources in self.parameterResources.items():
-        print(f"{prefix} Parameter Bindings: {resources.filename.name}")
-        resources.list(prefix=prefix + " |--")
+      for resource in self.parameterResources:
+        print(f"{prefix} Parameter Bindings: {resource}")
 
     ## list elements
     if len(self.elements) > 0:
@@ -195,15 +194,20 @@ class System:
       return component
 
   def addSSV(self, cref: CRef, resource: str):
+    ## top level system
+    if cref is None:
+      self.parameterResources.append(resource)
+      return
     first = cref.first()
     if not cref.is_root():
       if first not in self.elements:
         raise ValueError(f"System '{first}' not found in '{self.name}'")
       self.elements[first].addSSV(cref.pop_first(), resource)
     else:
+      ## recurse into sub system or component
       if first not in self.elements:
-        raise ValueError(f"Component '{first}' not found in {self.name}")
-      self.elements[first].addSSV(resource)
+        raise ValueError(f"Component or SubSystem'{first}' not found in {self.name}")
+      self.elements[first].addSSV(cref.pop_first(), resource)
 
   def _addConnection(self, cref1: CRef, cref2: CRef) -> None:
     first1 = cref1.first()
@@ -360,8 +364,10 @@ class System:
 
       ## export parameters binding to ssd file with reference to ssv file
       if len(self.parameterResources) > 0:
-        for key, resources in self.parameterResources.items():
-          resources.exportToSSD(node)
+        parameter_bindings_node = ET.SubElement(node, namespace.tag("ssd", "ParameterBindings"))
+        for resource in self.parameterResources:
+          parameter_binding_node = ET.SubElement(parameter_bindings_node, namespace.tag("ssd", "ParameterBinding"))
+          parameter_binding_node.set("source", resource)
 
     ## export elements
     if len(self.elements) > 0:

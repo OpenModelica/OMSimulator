@@ -21,6 +21,7 @@ setSolver1.py \
 setSolver2.py \
 setValueSSV1.py \
 setValueSSV2.py \
+setValueSSV3.py \
 
 # Run make failingtest
 FAILINGTESTFILES = \
