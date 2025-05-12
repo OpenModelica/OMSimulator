@@ -12,7 +12,7 @@ Settings.suppressPath = True
 # This example creates a new SSP file with an FMU instantiated as a component and
 # set parameter values to ssv file and reference multiple ssv files to same component
 
-model = SSP(temp_dir="./tmp-setValueSSV2/")
+model = SSP(temp_dir="./tmp-setValueSSV3/")
 
 ## add top level system connector
 model.activeVariant.system.addConnector(Connector('param1', Causality.parameter, SignalType.Real))
