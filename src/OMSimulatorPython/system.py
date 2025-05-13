@@ -198,16 +198,16 @@ class System:
     if cref is None:
       self.parameterResources.append(resource)
       return
+
     first = cref.first()
-    if not cref.is_root():
-      if first not in self.elements:
-        raise ValueError(f"System '{first}' not found in '{self.name}'")
-      self.elements[first].addSSV(cref.pop_first(), resource)
-    else:
-      ## recurse into sub system or component
-      if first not in self.elements:
-        raise ValueError(f"Component or SubSystem'{first}' not found in {self.name}")
-      self.elements[first].addSSV(cref.pop_first(), resource)
+
+    match self.elements.get(first):
+      case System():
+        self.elements[first].addSSV(cref.pop_first(), resource)
+      case Component():
+        self.elements[first].addSSV(resource)
+      case _:
+        raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component")
 
   def _addConnection(self, cref1: CRef, cref2: CRef) -> None:
     first1 = cref1.first()
