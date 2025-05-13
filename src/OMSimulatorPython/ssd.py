@@ -98,9 +98,9 @@ class SSD:
     subcref = self._validateCref(cref)
     return self.system._getComponentResourcePath(subcref)
 
-  def setValue(self, cref: CRef, value, unit = None):
+  def setValue(self, cref: CRef, value, unit = None, description = None):
     subcref = self._validateCref(cref)
-    self.system.setValue(subcref, value, unit)
+    self.system.setValue(subcref, value, unit, description)
 
   def addSystem(self, cref: CRef):
     if self.system is None:

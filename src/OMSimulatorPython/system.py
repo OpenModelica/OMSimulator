@@ -238,11 +238,19 @@ class System:
 
     self.connections.append(Connection(startElement, startConnector, endElement, endConnector))
 
+  def _connectorExists(self, cref: CRef) -> bool:
+    """Check if a connector exists in the system."""
+    return any(c.name == cref for c in self.connectors)
+
   def _getComponentResourcePath(self, cref):
     element_name = cref.first()
     element = self.elements.get(element_name, None)
 
-    if element is None:
+    ## check if element is a top level system connectors
+    if self._connectorExists(cref):
+      return
+
+    if element is None and not self._connectorExists(cref):
       raise ValueError(f"Element '{element_name}' not found in System '{self.name}'")
 
     match element:
@@ -253,13 +261,21 @@ class System:
       case _:
         raise TypeError(f"Element '{element_name}' is not a Component or System, but {type(element)}")
 
-  def setValue(self, cref: CRef, value, unit = None):
+  def setValue(self, cref: CRef, value, unit = None, description = None):
     first = cref.first()
-    if not cref.is_root():
-      if first not in self.elements:
-        raise ValueError(f"System '{first}' not found in '{self.name}'")
 
-    self.elements[first].setValue(cref.last(), value, unit)
+    # Check if the cref is a top level system connector
+    if self._connectorExists(first):
+      self.value.setValue(cref, value, unit)
+      return
+
+    match self.elements.get(first):
+      case System():
+        self.elements[first].setValue(cref.pop_first(), value, unit, description)
+      case Component():
+        self.elements[first].setValue(cref.last(), value, unit, description)
+      case _:
+        raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component or a Connector")
 
   def setSolver(self, cref: CRef, name: str):
     first = cref.first()

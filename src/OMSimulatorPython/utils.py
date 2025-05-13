@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 def _setParameters(parameterValues: dict, obj):
   if len(parameterValues) > 0:
     for key, (value, unit, description) in parameterValues.items():
-      obj.setValue(key, value, unit, description)
+      obj.value.setValue(key, value, unit, description)
 
 def parseDefaultExperiment(node, root):
   default_experiment = node.find("ssd:DefaultExperiment", namespaces=namespace.ns)
