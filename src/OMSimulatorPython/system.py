@@ -209,6 +209,22 @@ class System:
       case _:
         raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component")
 
+  def removeSSVReference(self, cref: CRef, resource: str):
+    ## top level system
+    if cref is None:
+      self.parameterResources.remove(resource)
+      return
+
+    first = cref.first()
+
+    match self.elements.get(first):
+      case System():
+        self.elements[first].removeSSVReference(cref.pop_first(), resource)
+      case Component():
+        self.elements[first].removeSSVReference(resource)
+      case _:
+        raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component")
+
   def _addConnection(self, cref1: CRef, cref2: CRef) -> None:
     first1 = cref1.first()
     first2 = cref2.first()

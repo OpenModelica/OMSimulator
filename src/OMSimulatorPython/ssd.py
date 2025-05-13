@@ -81,6 +81,10 @@ class SSD:
     subcref = self._validateCref(cref)
     self.system.addSSV(subcref, resource)
 
+  def removeSSVReference(self, cref: CRef, resource):
+    subcref = self._validateCref(cref)
+    self.system.removeSSVReference(subcref, resource)
+
   def addConnection(self, cref1: CRef, cref2: CRef):
     subcref1 = self._validateCref(cref1)
     subcref2 = self._validateCref(cref2)

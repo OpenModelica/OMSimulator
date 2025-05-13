@@ -8,7 +8,7 @@ from OMSimulator.connector import Connector, ConnectorGeometry
 from OMSimulator.unit import Unit
 from OMSimulator.variable import Causality, SignalType
 from OMSimulator.elementgeometry import ElementGeometry
-from OMSimulator import namespace
+from OMSimulator import namespace, CRef
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +37,7 @@ def parseElements(node, resources = None):
 
   # Parse the sub system <ssd:system> in the <ssd:Elements> section
   for system in elements_node.findall("ssd:System", namespaces=namespace.ns):
-    name = system.get("name")
+    name = CRef(system.get("name"))
     description = system.get("description")
     elements[name] = System(name)
     elements[name].description = description
@@ -53,7 +53,7 @@ def parseElements(node, resources = None):
     Connection.importFromNode(system, elements[name]) # parse connections for the sub-system
 
   for component in elements_node.findall("ssd:Component", namespaces=namespace.ns):
-    name = component.get("name")
+    name = CRef(component.get("name"))
     comp_type = component.get("type")
     source = component.get("source")
     implementation = component.get("implementation", "any")

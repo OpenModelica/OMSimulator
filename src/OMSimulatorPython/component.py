@@ -27,6 +27,12 @@ class Component:
   def addSSV(self, resource: str):
     self.parameterResources.append(resource)
 
+  def removeSSVReference(self, resource: str):
+    if resource in self.parameterResources:
+      self.parameterResources.remove(resource)
+    else:
+      raise ValueError(f"Resource '{resource}' not found in {self.name}")
+
   def list(self, prefix=""):
     print(f"{prefix} FMU: {self.name} '{self.description}'")
     prefix += ' |--'

@@ -143,6 +143,15 @@ class SSP:
 
     self.activeVariant.addSSV(cref, resource)
 
+  def removeSSVReference(self, cref: CRef, resource: str):
+    if self.activeVariant is None:
+      raise ValueError("No active variant set in the SSP.")
+
+    if resource not in self.resources:
+      logger.warning(f"Resource '{resource}' not found in the SSP resources")
+
+    self.activeVariant.removeSSVReference(cref, resource)
+
   def addConnection(self, cref1: CRef, cref2: CRef):
     if self.activeVariant is None:
       raise ValueError("No active variant set in the SSP.")
