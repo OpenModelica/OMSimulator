@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command: rm -rf swapssv1.ssp tmp-swapssv/ swap1.ssv swap2.ssv
+## teardown_command: rm -rf swapSSV1.ssp tmp-swapSSV1/ swap1.ssv swap2.ssv
 ## linux: yes
 ## ucrt64: yes
 ## win: yes
@@ -10,11 +10,16 @@ from OMSimulator import SSP, CRef, Settings, SSV
 Settings.suppressPath = True
 
 
-model = SSP(temp_dir="./tmp-setValueSSV2/")
+model = SSP(temp_dir="./tmp-swapSSV1/")
 model.addResource('../resources/Modelica.Blocks.Math.Add.fmu', new_name='resources/Add.fmu')
+
+## add subsystem
+model.addSystem(CRef('default', 'sub-system'))
 
 component1 = model.addComponent(CRef('default', 'Add1'), 'resources/Add.fmu')
 component2 = model.addComponent(CRef('default', 'Add2'), 'resources/Add.fmu')
+
+model.addComponent(CRef('default', 'sub-system', 'Add3'), 'resources/Add.fmu')
 
 ssv1 = SSV()
 ssv1.setValue("k1", 2.0, "m")
@@ -28,31 +33,38 @@ ssv2.setValue("k2", 300.0, "kg")
 ssv2.setValue("param3", "ssp")
 ssv2.export("swap2.ssv")
 
-## add myfile1.ssv to to ssp resources
+## add swap1.ssv to to ssp resources
 model.addResource("swap1.ssv", "resources/swap1.ssv")
-## reference myfile1.ssv to Add1
+## reference swap1.ssv to Add1
 model.addSSVReference(CRef('default', 'Add1'), 'resources/swap1.ssv')
 
 
-## add myfile1.ssv to to ssp resources
+## add swap2.ssv to to ssp resources
 model.addResource("swap2.ssv", "resources/swap2.ssv")
 model.addSSVReference(CRef('default', 'Add2'), 'resources/swap2.ssv')
 
-model.export('swapssv1.ssp')
+## reference swap1.ssv to Add3
+model.addSSVReference(CRef('default', 'sub-system', 'Add3'), 'resources/swap1.ssv')
 
-model2 = SSP('swapssv1.ssp')
+model.export('swapSSV1.ssp')
+
+model2 = SSP('swapSSV1.ssp')
 model2.list()
 
-## remove ssv reference from Add1
+## remove ssv reference from Add1 and Add3
 model2.removeSSVReference(CRef('default', 'Add1'), 'resources/swap1.ssv')
-print("After removing swap1.ssv from Add1")
-print("==================================")
+model2.removeSSVReference(CRef('default', 'sub-system', 'Add3'), 'resources/swap1.ssv')
+
+print("After removing swap1.ssv from Add1 and Add3")
+print("=============================================")
 
 model2.list()
 
 model2.addSSVReference(CRef('default', 'Add1'), 'resources/swap2.ssv')
-print("After swapping swap2.ssv to Add1")
-print("==============================")
+model2.addSSVReference(CRef('default', 'sub-system', 'Add3'), 'resources/swap2.ssv')
+
+print("After swapping swap2.ssv to Add1 and Add3")
+print("===========================================")
 model2.list()
 
 
@@ -75,6 +87,18 @@ model2.list()
 ## |-- |-- System: default 'None'
 ## |-- |-- |-- Connectors:
 ## |-- |-- |-- Elements:
+## |-- |-- |-- |-- System: sub-system 'None'
+## |-- |-- |-- |-- |-- Connectors:
+## |-- |-- |-- |-- |-- Elements:
+## |-- |-- |-- |-- |-- |-- FMU: Add3 'None'
+## |-- |-- |-- |-- |-- |-- |-- path: resources/Add.fmu
+## |-- |-- |-- |-- |-- |-- |-- Connectors:
+## |-- |-- |-- |-- |-- |-- |-- |-- (u1, Causality.input, SignalType.Real, None, 'Connector of Real input signal 1')
+## |-- |-- |-- |-- |-- |-- |-- |-- (u2, Causality.input, SignalType.Real, None, 'Connector of Real input signal 2')
+## |-- |-- |-- |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, 'Connector of Real output signal')
+## |-- |-- |-- |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None, 'Gain of input signal 1')
+## |-- |-- |-- |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, 'Gain of input signal 2')
+## |-- |-- |-- |-- |-- |-- |-- Parameter Bindings: resources/swap1.ssv
 ## |-- |-- |-- |-- FMU: Add1 'None'
 ## |-- |-- |-- |-- |-- path: resources/Add.fmu
 ## |-- |-- |-- |-- |-- Connectors:
@@ -96,8 +120,8 @@ model2.list()
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
-## After removing swap1.ssv from Add1
-## ==================================
+## After removing swap1.ssv from Add1 and Add3
+## =============================================
 ## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
 ## |--   resources/Add.fmu
@@ -116,6 +140,17 @@ model2.list()
 ## |-- |-- System: default 'None'
 ## |-- |-- |-- Connectors:
 ## |-- |-- |-- Elements:
+## |-- |-- |-- |-- System: sub-system 'None'
+## |-- |-- |-- |-- |-- Connectors:
+## |-- |-- |-- |-- |-- Elements:
+## |-- |-- |-- |-- |-- |-- FMU: Add3 'None'
+## |-- |-- |-- |-- |-- |-- |-- path: resources/Add.fmu
+## |-- |-- |-- |-- |-- |-- |-- Connectors:
+## |-- |-- |-- |-- |-- |-- |-- |-- (u1, Causality.input, SignalType.Real, None, 'Connector of Real input signal 1')
+## |-- |-- |-- |-- |-- |-- |-- |-- (u2, Causality.input, SignalType.Real, None, 'Connector of Real input signal 2')
+## |-- |-- |-- |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, 'Connector of Real output signal')
+## |-- |-- |-- |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None, 'Gain of input signal 1')
+## |-- |-- |-- |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, 'Gain of input signal 2')
 ## |-- |-- |-- |-- FMU: Add1 'None'
 ## |-- |-- |-- |-- |-- path: resources/Add.fmu
 ## |-- |-- |-- |-- |-- Connectors:
@@ -136,8 +171,8 @@ model2.list()
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
-## After swapping swap2.ssv to Add1
-## ==============================
+## After swapping swap2.ssv to Add1 and Add3
+## ===========================================
 ## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
 ## |--   resources/Add.fmu
@@ -156,6 +191,18 @@ model2.list()
 ## |-- |-- System: default 'None'
 ## |-- |-- |-- Connectors:
 ## |-- |-- |-- Elements:
+## |-- |-- |-- |-- System: sub-system 'None'
+## |-- |-- |-- |-- |-- Connectors:
+## |-- |-- |-- |-- |-- Elements:
+## |-- |-- |-- |-- |-- |-- FMU: Add3 'None'
+## |-- |-- |-- |-- |-- |-- |-- path: resources/Add.fmu
+## |-- |-- |-- |-- |-- |-- |-- Connectors:
+## |-- |-- |-- |-- |-- |-- |-- |-- (u1, Causality.input, SignalType.Real, None, 'Connector of Real input signal 1')
+## |-- |-- |-- |-- |-- |-- |-- |-- (u2, Causality.input, SignalType.Real, None, 'Connector of Real input signal 2')
+## |-- |-- |-- |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, 'Connector of Real output signal')
+## |-- |-- |-- |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None, 'Gain of input signal 1')
+## |-- |-- |-- |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, 'Gain of input signal 2')
+## |-- |-- |-- |-- |-- |-- |-- Parameter Bindings: resources/swap2.ssv
 ## |-- |-- |-- |-- FMU: Add1 'None'
 ## |-- |-- |-- |-- |-- path: resources/Add.fmu
 ## |-- |-- |-- |-- |-- Connectors:

@@ -23,7 +23,7 @@ setSolver2.py \
 setValueSSV1.py \
 setValueSSV2.py \
 setValueSSV3.py \
-swapssv1.py \
+swapSSV1.py \
 
 # Run make failingtest
 FAILINGTESTFILES = \
