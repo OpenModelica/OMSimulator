@@ -147,7 +147,7 @@ class SSP:
     if self.activeVariant is None:
       raise ValueError("No active variant set in the SSP.")
 
-    self.activeVariant.addSSVReference(cref)
+    return self.activeVariant.listSSVReference(cref)
 
   def removeSSVReference(self, cref: CRef, resource: str):
     if self.activeVariant is None:

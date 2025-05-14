@@ -406,15 +406,14 @@ class System:
       if self.elementgeometry:
         self.elementgeometry.exportToSSD(node)
 
-      ## export parameter bindings
-      self.value.exportToSSD(node)
-
-      ## export parameters binding to ssd file with reference to ssv file
-      if len(self.parameterResources) > 0:
-        parameter_bindings_node = ET.SubElement(node, namespace.tag("ssd", "ParameterBindings"))
-        for resource in self.parameterResources:
-          parameter_binding_node = ET.SubElement(parameter_bindings_node, namespace.tag("ssd", "ParameterBinding"))
-          parameter_binding_node.set("source", resource)
+    ## export top level parameter bindings
+    self.value.exportToSSD(node)
+    ## export parameters binding to ssd file with reference to ssv file
+    if len(self.parameterResources) > 0:
+      parameter_bindings_node = ET.SubElement(node, namespace.tag("ssd", "ParameterBindings"))
+      for resource in self.parameterResources:
+        parameter_binding_node = ET.SubElement(parameter_bindings_node, namespace.tag("ssd", "ParameterBinding"))
+        parameter_binding_node.set("source", resource)
 
     ## export elements
     if len(self.elements) > 0:

@@ -10,6 +10,7 @@ fmuinfo.py \
 invalidSSD.py \
 invalidSSV.py \
 LOC.py \
+listSSVReferences1.py \
 NestedSystem.py \
 NewSSP.py \
 NewSSP2.py \
