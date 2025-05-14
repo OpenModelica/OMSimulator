@@ -24,6 +24,7 @@ setValueSSV1.py \
 setValueSSV2.py \
 setValueSSV3.py \
 swapSSV1.py \
+swapSSV2.py \
 
 # Run make failingtest
 FAILINGTESTFILES = \

@@ -9,6 +9,10 @@ from OMSimulator import SSP, CRef, Settings, SSV
 
 Settings.suppressPath = True
 
+# This example creates a new SSP file with an FMU instantiated as a components Add1, Add2 and Add3
+# and set parameter values to ssv file and reference them. It add test to swap ssv reference from swap1.ssv
+# to the same component Add1 and Add3 with swap2.ssv.
+
 
 model = SSP(temp_dir="./tmp-swapSSV1/")
 model.addResource('../resources/Modelica.Blocks.Math.Add.fmu', new_name='resources/Add.fmu')
