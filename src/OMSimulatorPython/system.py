@@ -209,6 +209,23 @@ class System:
       case _:
         raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component")
 
+  def swapSSVReference(self, cref: CRef, resource1: str, resource2: str):
+    ## top level system
+    if cref is None:
+      self.removeSSVReference(cref, resource1)
+      self.addSSVReference(cref, resource2)
+      return
+
+    first = cref.first()
+
+    match self.elements.get(first):
+      case System():
+        self.elements[first].swapSSVReference(cref.pop_first(), resource1, resource2)
+      case Component():
+        self.elements[first].swapSSVReference(resource1, resource2)
+      case _:
+        raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component")
+
   def listSSVReference(self, cref: CRef):
     ## top level system
     if cref is None:

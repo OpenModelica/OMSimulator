@@ -81,6 +81,10 @@ class SSD:
     subcref = self._validateCref(cref)
     self.system.addSSVReference(subcref, resource)
 
+  def swapSSVReference(self, cref: CRef, resource1, resource2):
+    subcref = self._validateCref(cref)
+    self.system.swapSSVReference(subcref, resource1, resource2)
+
   def listSSVReference(self, cref: CRef):
     subcref = self._validateCref(cref)
     return self.system.listSSVReference(subcref)

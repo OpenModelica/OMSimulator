@@ -27,6 +27,10 @@ class Component:
   def addSSVReference(self, resource: str):
     self.parameterResources.append(resource)
 
+  def swapSSVReference(self, resource1: str, resource2: str):
+    self.removeSSVReference(resource1)
+    self.addSSVReference(resource2)
+
   def listSSVReference(self):
     return self.parameterResources
 

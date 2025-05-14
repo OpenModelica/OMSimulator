@@ -143,6 +143,18 @@ class SSP:
 
     self.activeVariant.addSSVReference(cref, resource)
 
+  def swapSSVReference(self, cref: CRef, resource1: str, resource2: str):
+    if self.activeVariant is None:
+      raise ValueError("No active variant set in the SSP.")
+
+    if resource1 not in self.resources:
+      logger.warning(f"Resource '{resource1}' not found in the SSP resources. Add the resource using the addResource API")
+
+    if resource2 not in self.resources:
+      logger.warning(f"Resource '{resource2}' not found in the SSP resources. Add the resource using the addResource API")
+
+    self.activeVariant.swapSSVReference(cref, resource1, resource2)
+
   def listSSVReference(self, cref: CRef):
     if self.activeVariant is None:
       raise ValueError("No active variant set in the SSP.")
