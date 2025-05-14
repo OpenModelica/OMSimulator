@@ -27,6 +27,9 @@ class Component:
   def addSSVReference(self, resource: str):
     self.parameterResources.append(resource)
 
+  def listSSVReference(self):
+    return self.parameterResources
+
   def removeSSVReference(self, resource: str):
     if resource in self.parameterResources:
       self.parameterResources.remove(resource)

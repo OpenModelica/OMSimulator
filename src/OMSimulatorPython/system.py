@@ -209,6 +209,21 @@ class System:
       case _:
         raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component")
 
+  def listSSVReference(self, cref: CRef):
+    ## top level system
+    if cref is None:
+      return self.parameterResources
+
+    first = cref.first()
+
+    match self.elements.get(first):
+      case System():
+        return self.elements[first].listSSVReference(cref.pop_first())
+      case Component():
+        return self.elements[first].listSSVReference()
+      case _:
+        raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component")
+
   def removeSSVReference(self, cref: CRef, resource: str):
     ## top level system
     if cref is None:

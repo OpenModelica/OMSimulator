@@ -81,6 +81,10 @@ class SSD:
     subcref = self._validateCref(cref)
     self.system.addSSVReference(subcref, resource)
 
+  def listSSVReference(self, cref: CRef):
+    subcref = self._validateCref(cref)
+    self.system.addSSVReference(subcref)
+
   def removeSSVReference(self, cref: CRef, resource):
     subcref = self._validateCref(cref)
     self.system.removeSSVReference(subcref, resource)
