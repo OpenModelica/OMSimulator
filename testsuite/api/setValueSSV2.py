@@ -33,12 +33,12 @@ ssv2.export("myfile4.ssv")
 ## add myfile1.ssv to to ssp resources
 model.addResource("myfile3.ssv", "resources/myfile3.ssv")
 ## reference myfile1.ssv to Add1
-model.addSSV(CRef('default', 'Add1'), 'resources/myfile3.ssv')
+model.addSSVReference(CRef('default', 'Add1'), 'resources/myfile3.ssv')
 
 ## add myfile2.ssv to to ssp resources
 model.addResource("myfile4.ssv", "resources/myfile4.ssv")
 ## reference myfile2.ssv to Add2
-model.addSSV(CRef('default', 'Add2'), 'resources/myfile4.ssv')
+model.addSSVReference(CRef('default', 'Add2'), 'resources/myfile4.ssv')
 
 model.list()
 model.export('setValueSSV2.ssp')

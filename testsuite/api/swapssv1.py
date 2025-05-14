@@ -31,12 +31,12 @@ ssv2.export("swap2.ssv")
 ## add myfile1.ssv to to ssp resources
 model.addResource("swap1.ssv", "resources/swap1.ssv")
 ## reference myfile1.ssv to Add1
-model.addSSV(CRef('default', 'Add1'), 'resources/swap1.ssv')
+model.addSSVReference(CRef('default', 'Add1'), 'resources/swap1.ssv')
 
 
 ## add myfile1.ssv to to ssp resources
 model.addResource("swap2.ssv", "resources/swap2.ssv")
-model.addSSV(CRef('default', 'Add2'), 'resources/swap2.ssv')
+model.addSSVReference(CRef('default', 'Add2'), 'resources/swap2.ssv')
 
 model.export('swapssv1.ssp')
 
@@ -50,7 +50,7 @@ print("==================================")
 
 model2.list()
 
-model2.addSSV(CRef('default', 'Add1'), 'resources/swap2.ssv')
+model2.addSSVReference(CRef('default', 'Add1'), 'resources/swap2.ssv')
 print("After swapping swap2.ssv to Add1")
 print("==============================")
 model2.list()

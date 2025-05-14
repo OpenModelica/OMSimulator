@@ -24,7 +24,7 @@ class Component:
       raise ValueError(f"Connector '{connector.name}' already exists in {self.name}")
     self.connectors.append(connector)
 
-  def addSSV(self, resource: str):
+  def addSSVReference(self, resource: str):
     self.parameterResources.append(resource)
 
   def removeSSVReference(self, resource: str):

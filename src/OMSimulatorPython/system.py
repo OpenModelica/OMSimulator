@@ -193,7 +193,7 @@ class System:
       self.elements[first] = component
       return component
 
-  def addSSV(self, cref: CRef, resource: str):
+  def addSSVReference(self, cref: CRef, resource: str):
     ## top level system
     if cref is None:
       self.parameterResources.append(resource)
@@ -203,9 +203,9 @@ class System:
 
     match self.elements.get(first):
       case System():
-        self.elements[first].addSSV(cref.pop_first(), resource)
+        self.elements[first].addSSVReference(cref.pop_first(), resource)
       case Component():
-        self.elements[first].addSSV(resource)
+        self.elements[first].addSSVReference(resource)
       case _:
         raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component")
 

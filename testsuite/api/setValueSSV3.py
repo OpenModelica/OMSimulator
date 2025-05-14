@@ -54,15 +54,15 @@ model.addResource("myfile6.ssv", "resources/myfile6.ssv")
 ## add myfile5.ssv to to ssp resources
 model.addResource("myfile7.ssv", "resources/myfile7.ssv")
 
-model.addSSV(CRef('default'), 'resources/myfile5.ssv')
-model.addSSV(CRef('default'), 'resources/myfile6.ssv')
+model.addSSVReference(CRef('default'), 'resources/myfile5.ssv')
+model.addSSVReference(CRef('default'), 'resources/myfile6.ssv')
 
-model.addSSV(CRef('default', 'sub-system'), 'resources/myfile6.ssv')
+model.addSSVReference(CRef('default', 'sub-system'), 'resources/myfile6.ssv')
 
 ## reference myfile1.ssv to Add1
-model.addSSV(CRef('default', 'Add1'), 'resources/myfile6.ssv')
+model.addSSVReference(CRef('default', 'Add1'), 'resources/myfile6.ssv')
 ## reference myfile1.ssv to Add1
-model.addSSV(CRef('default', 'Add1'), 'resources/myfile7.ssv')
+model.addSSVReference(CRef('default', 'Add1'), 'resources/myfile7.ssv')
 
 model.export('setValueSSV3.ssp')
 
