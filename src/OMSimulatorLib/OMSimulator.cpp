@@ -1691,3 +1691,31 @@ oms_status_enu_t oms_setTolerance(const char* cref, double relativeTolerance)
 
   return logError_SystemNotInModel(model->getCref(), front);
 }
+
+
+oms_status_enu_t oms3_instantiateFromJson(char* model_json_desc, void** out_model_ptr)
+{
+  *out_model_ptr = nullptr;
+  logDebug(model_json_desc);
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3_initialize(void* model)
+{
+  return oms_status_error;
+}
+
+oms_status_enu_t oms3_simulate(void* model)
+{
+  return oms_status_error;
+}
+
+oms_status_enu_t oms3_stepUntil(void* model, double stopTime)
+{
+  return oms_status_error;
+}
+
+oms_status_enu_t oms3_terminate(void* model)
+{
+  return oms_status_error;
+}
