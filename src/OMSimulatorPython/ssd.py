@@ -16,19 +16,17 @@ logger = logging.getLogger(__name__)
 
 
 class SSD:
-  def __init__(self, name: str, model=None):
+  def __init__(self, name: str):
     '''Initialize an SSD object.'''
     from OMSimulator.ssp import SSP
 
     self._name = name
-    self._model: SSP = None
     self._filename = None
-    self.system = System(name, model=model)
+    self.system = System(name)
     self.startTime = 0.0
     self.stopTime = 1.0
     self.unitDefinitions = list()
-    if model:
-      model.add(self)
+
 
   @staticmethod
   def importFromFile(filename: Path, resources = None):
@@ -58,6 +56,10 @@ class SSD:
   @property
   def name(self):
     return self._name
+
+  @name.setter
+  def name(self, name: str):
+    self._name = name
 
   @property
   def dirty(self):
@@ -128,10 +130,7 @@ class SSD:
   def list(self, prefix=""):
     '''Prints the SSD contents.'''
     print(f"{prefix} {type(self)}")
-    if self._model and self._model._activeVariantName == self._name:
-      print(f'{prefix} Active variant "{self._name}": {suppress_path_to_str(self._filename)}')
-    else:
-      print(f'{prefix} Inactive variant "{self._name}": {suppress_path_to_str(self._filename)}')
+    print(f'{prefix} Variant "{self._name}": {suppress_path_to_str(self._filename)}')
 
     if self.system:
       self.system.list(prefix=prefix + " |--")

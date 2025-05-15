@@ -85,8 +85,9 @@ print(f"Component Add3 SSV resources      : {model2.listSSVReference(CRef('defau
 ## |--   |-- |-- (Real k1, 200.0, m, 'None')
 ## |--   |-- |-- (Real k2, 300.0, kg, 'None')
 ## |--   |-- |-- (String param3, ssp, None, 'None')
+## |-- Active Variant: default
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Active variant "default": <hidden>
+## |-- Variant "default": <hidden>
 ## |-- |-- System: default 'None'
 ## |-- |-- |-- Connectors:
 ## |-- |-- |-- Parameter Bindings: resources/list1.ssv

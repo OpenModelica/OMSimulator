@@ -75,8 +75,9 @@ model2.list()
 ## |--   |-- Parameter Bindings:
 ## |--   |-- |-- (Real param1, 200.0, None, 'None')
 ## |--   |-- |-- (Real input1, 300.0, None, 'None')
+## |-- Active Variant: default
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Active variant "default": <hidden>
+## |-- Variant "default": <hidden>
 ## |-- |-- System: default 'None'
 ## |-- |-- |-- Connectors:
 ## |-- |-- |-- |-- (param1, Causality.parameter, SignalType.Real, None, 'None')
@@ -103,8 +104,9 @@ model2.list()
 ## |--   |-- Parameter Bindings:
 ## |--   |-- |-- (Real param1, 200.0, None, 'None')
 ## |--   |-- |-- (Real input1, 300.0, None, 'None')
+## |-- Active Variant: default
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Active variant "default": <hidden>
+## |-- Variant "default": <hidden>
 ## |-- |-- System: default 'None'
 ## |-- |-- |-- Connectors:
 ## |-- |-- |-- |-- (param1, Causality.parameter, SignalType.Real, None, 'None')
@@ -129,8 +131,9 @@ model2.list()
 ## |--   |-- Parameter Bindings:
 ## |--   |-- |-- (Real param1, 200.0, None, 'None')
 ## |--   |-- |-- (Real input1, 300.0, None, 'None')
+## |-- Active Variant: default
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Active variant "default": <hidden>
+## |-- Variant "default": <hidden>
 ## |-- |-- System: default 'None'
 ## |-- |-- |-- Connectors:
 ## |-- |-- |-- |-- (param1, Causality.parameter, SignalType.Real, None, 'None')

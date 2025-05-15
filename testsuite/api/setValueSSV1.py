@@ -34,7 +34,7 @@ for filename in files:
     print(file.read())
 
 ## Result:
-##
+## 
 ## myfile1.ssv:
 ## ============
 ## <?xml version='1.0' encoding='utf-8'?>
@@ -57,8 +57,8 @@ for filename in files:
 ##     </ssv:Parameter>
 ##   </ssv:Parameters>
 ## </ssv:ParameterSet>
-##
-##
+## 
+## 
 ## myfile2.ssv:
 ## ============
 ## <?xml version='1.0' encoding='utf-8'?>
@@ -75,5 +75,5 @@ for filename in files:
 ##     </ssv:Parameter>
 ##   </ssv:Parameters>
 ## </ssv:ParameterSet>
-##
+## 
 ## endResult
