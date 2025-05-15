@@ -88,7 +88,7 @@ class System:
     self.elements = dict()
     self.connections = list()
     self.value = Values()
-    self.parameterResources = dict()
+    self.parameterResources = []
     self.model = model
     self.elementgeometry = None
     self.systemgeometry = None
@@ -108,7 +108,7 @@ class System:
       system.connectors = Connector.importFromNode(node)
       system.elementgeometry = ElementGeometry.importFromNode(node)
       system.systemgeometry = SystemGeometry.importFromNode(node)
-      utils.parseParameterBindings(node, ssd, resources)
+      utils.parseParameterBindings(node, system, resources)
       system.elements = utils.parseElements(node, resources)
       system.solvers = utils.parseAnnotations(node)
       Connection.importFromNode(node, system)
@@ -141,9 +141,8 @@ class System:
 
     ## list parameteres in ssv files
     if len(self.parameterResources) > 0:
-      for key, resources in self.parameterResources.items():
-        print(f"{prefix} Parameter Bindings: {resources.filename.name}")
-        resources.list(prefix=prefix + " |--")
+      for resource in self.parameterResources:
+        print(f"{prefix} Parameter Bindings: {resource}")
 
     ## list elements
     if len(self.elements) > 0:
@@ -194,16 +193,69 @@ class System:
       self.elements[first] = component
       return component
 
-  def addSSV(self, cref: CRef, resource: str):
+  def addSSVReference(self, cref: CRef, resource: str):
+    ## top level system
+    if cref is None:
+      self.parameterResources.append(resource)
+      return
+
     first = cref.first()
-    if not cref.is_root():
-      if first not in self.elements:
-        raise ValueError(f"System '{first}' not found in '{self.name}'")
-      self.elements[first].addSSV(cref.pop_first(), resource)
-    else:
-      if first not in self.elements:
-        raise ValueError(f"Component '{first}' not found in {self.name}")
-      self.elements[first].addSSV(resource)
+
+    match self.elements.get(first):
+      case System():
+        self.elements[first].addSSVReference(cref.pop_first(), resource)
+      case Component():
+        self.elements[first].addSSVReference(resource)
+      case _:
+        raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component")
+
+  def swapSSVReference(self, cref: CRef, resource1: str, resource2: str):
+    ## top level system
+    if cref is None:
+      self.removeSSVReference(cref, resource1)
+      self.addSSVReference(cref, resource2)
+      return
+
+    first = cref.first()
+
+    match self.elements.get(first):
+      case System():
+        self.elements[first].swapSSVReference(cref.pop_first(), resource1, resource2)
+      case Component():
+        self.elements[first].swapSSVReference(resource1, resource2)
+      case _:
+        raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component")
+
+  def listSSVReference(self, cref: CRef):
+    ## top level system
+    if cref is None:
+      return self.parameterResources
+
+    first = cref.first()
+
+    match self.elements.get(first):
+      case System():
+        return self.elements[first].listSSVReference(cref.pop_first())
+      case Component():
+        return self.elements[first].listSSVReference()
+      case _:
+        raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component")
+
+  def removeSSVReference(self, cref: CRef, resource: str):
+    ## top level system
+    if cref is None:
+      self.parameterResources.remove(resource)
+      return
+
+    first = cref.first()
+
+    match self.elements.get(first):
+      case System():
+        self.elements[first].removeSSVReference(cref.pop_first(), resource)
+      case Component():
+        self.elements[first].removeSSVReference(resource)
+      case _:
+        raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component")
 
   def _addConnection(self, cref1: CRef, cref2: CRef) -> None:
     first1 = cref1.first()
@@ -234,11 +286,19 @@ class System:
 
     self.connections.append(Connection(startElement, startConnector, endElement, endConnector))
 
+  def _connectorExists(self, cref: CRef) -> bool:
+    """Check if a connector exists in the system."""
+    return any(c.name == cref for c in self.connectors)
+
   def _getComponentResourcePath(self, cref):
     element_name = cref.first()
     element = self.elements.get(element_name, None)
 
-    if element is None:
+    ## check if element is a top level system connectors
+    if self._connectorExists(cref):
+      return
+
+    if element is None and not self._connectorExists(cref):
       raise ValueError(f"Element '{element_name}' not found in System '{self.name}'")
 
     match element:
@@ -249,13 +309,21 @@ class System:
       case _:
         raise TypeError(f"Element '{element_name}' is not a Component or System, but {type(element)}")
 
-  def setValue(self, cref: CRef, value, unit = None):
+  def setValue(self, cref: CRef, value, unit = None, description = None):
     first = cref.first()
-    if not cref.is_root():
-      if first not in self.elements:
-        raise ValueError(f"System '{first}' not found in '{self.name}'")
 
-    self.elements[first].setValue(cref.last(), value, unit)
+    # Check if the cref is a top level system connector
+    if self._connectorExists(first):
+      self.value.setValue(cref, value, unit)
+      return
+
+    match self.elements.get(first):
+      case System():
+        self.elements[first].setValue(cref.pop_first(), value, unit, description)
+      case Component():
+        self.elements[first].setValue(cref.last(), value, unit, description)
+      case _:
+        raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component or a Connector")
 
   def setSolver(self, cref: CRef, name: str):
     first = cref.first()
@@ -319,7 +387,7 @@ class System:
         componentSolver[str(element.name)] = element.solver
       elif isinstance(element, System):
         # recurse into subsystems
-        self.processElements(element.elements, element.connections, data, solver_groups, componentSolver, solver_connections, systemName=element.name)
+        self.processElements(element.elements, element.connections, data, solver_groups, componentSolver, solver_connections, systemName=str(element.name))
 
     for connection in connections:
       startElement = connection.startElement
@@ -355,13 +423,14 @@ class System:
       if self.elementgeometry:
         self.elementgeometry.exportToSSD(node)
 
-      ## export parameter bindings
-      self.value.exportToSSD(node)
-
-      ## export parameters binding to ssd file with reference to ssv file
-      if len(self.parameterResources) > 0:
-        for key, resources in self.parameterResources.items():
-          resources.exportToSSD(node)
+    ## export top level parameter bindings
+    self.value.exportToSSD(node)
+    ## export parameters binding to ssd file with reference to ssv file
+    if len(self.parameterResources) > 0:
+      parameter_bindings_node = ET.SubElement(node, namespace.tag("ssd", "ParameterBindings"))
+      for resource in self.parameterResources:
+        parameter_binding_node = ET.SubElement(parameter_bindings_node, namespace.tag("ssd", "ParameterBinding"))
+        parameter_binding_node.set("source", resource)
 
     ## export elements
     if len(self.elements) > 0:

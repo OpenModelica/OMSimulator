@@ -134,14 +134,41 @@ class SSP:
       raise ValueError("No active variant set in the SSP.")
     self.activeVariant.newSolver(options)
 
-  def addSSV(self, cref: CRef, resource: str):
+  def addSSVReference(self, cref: CRef, resource: str):
     if self.activeVariant is None:
       raise ValueError("No active variant set in the SSP.")
 
     if resource not in self.resources:
       logger.warning(f"Resource '{resource}' not found in the SSP resources. Add the resource using the addResource API")
 
-    self.activeVariant.addSSV(cref, resource)
+    self.activeVariant.addSSVReference(cref, resource)
+
+  def swapSSVReference(self, cref: CRef, resource1: str, resource2: str):
+    if self.activeVariant is None:
+      raise ValueError("No active variant set in the SSP.")
+
+    if resource1 not in self.resources:
+      logger.warning(f"Resource '{resource1}' not found in the SSP resources. Add the resource using the addResource API")
+
+    if resource2 not in self.resources:
+      logger.warning(f"Resource '{resource2}' not found in the SSP resources. Add the resource using the addResource API")
+
+    self.activeVariant.swapSSVReference(cref, resource1, resource2)
+
+  def listSSVReference(self, cref: CRef):
+    if self.activeVariant is None:
+      raise ValueError("No active variant set in the SSP.")
+
+    return self.activeVariant.listSSVReference(cref)
+
+  def removeSSVReference(self, cref: CRef, resource: str):
+    if self.activeVariant is None:
+      raise ValueError("No active variant set in the SSP.")
+
+    if resource not in self.resources:
+      logger.warning(f"Resource '{resource}' not found in the SSP resources")
+
+    self.activeVariant.removeSSVReference(cref, resource)
 
   def addConnection(self, cref1: CRef, cref2: CRef):
     if self.activeVariant is None:
@@ -152,7 +179,7 @@ class SSP:
   def _getComponentResourcePath(self, cref: CRef):
     return self.activeVariant._getComponentResourcePath(cref)
 
-  def setValue(self, cref: CRef, value, unit = None):
+  def setValue(self, cref: CRef, value, unit = None, description = None):
     if self.activeVariant is None:
       raise ValueError("No active variant set in the SSP.")
 
@@ -164,7 +191,7 @@ class SSP:
     if fmu_inst and not fmu_inst.varExist(cref.last()):
         raise KeyError(f"Variable '{cref.last()}' does not exist in the variables list of component '{resource}'")
 
-    self.activeVariant.setValue(cref, value, unit)
+    self.activeVariant.setValue(cref, value, unit, description)
 
   def setSolver(self, cref: CRef, name: str):
     if self.activeVariant is None:

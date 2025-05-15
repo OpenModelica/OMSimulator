@@ -10,6 +10,7 @@ fmuinfo.py \
 invalidSSD.py \
 invalidSSV.py \
 LOC.py \
+listSSVReference1.py \
 NestedSystem.py \
 NewSSP.py \
 NewSSP2.py \
@@ -17,10 +18,16 @@ NewSSP3.py \
 setValue1.py \
 setValue2.py \
 setValue3.py \
+setValue4.py \
 setSolver1.py \
 setSolver2.py \
 setValueSSV1.py \
 setValueSSV2.py \
+setValueSSV3.py \
+swapSSV1.py \
+swapSSV2.py \
+swapSSV3.py \
+swapSSV4.py \
 
 # Run make failingtest
 FAILINGTESTFILES = \

@@ -77,9 +77,21 @@ class SSD:
     subcref = self._validateCref(cref)
     return self.system.addComponent(subcref, resource, inst)
 
-  def addSSV(self, cref: CRef, resource):
+  def addSSVReference(self, cref: CRef, resource):
     subcref = self._validateCref(cref)
-    self.system.addSSV(subcref, resource)
+    self.system.addSSVReference(subcref, resource)
+
+  def swapSSVReference(self, cref: CRef, resource1, resource2):
+    subcref = self._validateCref(cref)
+    self.system.swapSSVReference(subcref, resource1, resource2)
+
+  def listSSVReference(self, cref: CRef):
+    subcref = self._validateCref(cref)
+    return self.system.listSSVReference(subcref)
+
+  def removeSSVReference(self, cref: CRef, resource):
+    subcref = self._validateCref(cref)
+    self.system.removeSSVReference(subcref, resource)
 
   def addConnection(self, cref1: CRef, cref2: CRef):
     subcref1 = self._validateCref(cref1)
@@ -98,9 +110,9 @@ class SSD:
     subcref = self._validateCref(cref)
     return self.system._getComponentResourcePath(subcref)
 
-  def setValue(self, cref: CRef, value, unit = None):
+  def setValue(self, cref: CRef, value, unit = None, description = None):
     subcref = self._validateCref(cref)
-    self.system.setValue(subcref, value, unit)
+    self.system.setValue(subcref, value, unit, description)
 
   def addSystem(self, cref: CRef):
     if self.system is None:
