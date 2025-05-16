@@ -74,11 +74,9 @@ model.export('duplicatevariant1.ssp')
 ## |-- |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None, 'Gain of input signal 1')
 ## |-- |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, 'Gain of input signal 2')
 ## |-- |-- |-- |-- |-- Inline Parameter Bindings:
-## |-- |-- |-- |-- |-- |-- (Real u1, 10.0, None, 'None')
-## |-- |-- |-- |-- |-- |-- (Real u2, 20.0, None, 'None')
-## |-- |-- |-- |-- |-- |-- (Real k1, 30.0, None, 'None')
 ## |-- |-- |-- |-- |-- |-- (Real u1, 100.0, None, 'None')
 ## |-- |-- |-- |-- |-- |-- (Real u2, 200.0, None, 'None')
+## |-- |-- |-- |-- |-- |-- (Real k1, 30.0, None, 'None')
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0

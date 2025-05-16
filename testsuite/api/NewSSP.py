@@ -26,7 +26,7 @@ model.list()
 model.export('NewSSP.ssp')
 
 model2 = SSP('NewSSP.ssp', temp_dir="./tmp-NewSSP/model2/")
-variantC = model2.variants['Variant-B']
+variantC = model2.variants['Variant-B'].duplicate()
 variantC.name = 'Variant-C'
 model2.add(variantC)
 model2.list()
@@ -60,7 +60,7 @@ model2.list()
 ## |--   resources/Modelica.Blocks.Math.Add.fmu
 ## |-- Active Variant: Variant-B
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Variant "Variant-C": <hidden>
+## |-- Variant "Variant-B": <hidden>
 ## |-- |-- System: Variant-B 'None'
 ## |-- |-- |-- Connectors:
 ## |-- DefaultExperiment
@@ -74,7 +74,7 @@ model2.list()
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Variant "Variant-C": <hidden>
+## |-- Variant "Variant-C": None
 ## |-- |-- System: Variant-B 'None'
 ## |-- |-- |-- Connectors:
 ## |-- DefaultExperiment

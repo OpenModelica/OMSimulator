@@ -115,7 +115,7 @@ def parseParameterBindingHelper(parameters):
   if parameters is not None:
     parameterValues={}
     for param in parameters.findall("ssv:Parameter", namespaces=namespace.ns):
-      name = param.get("name")
+      name = CRef(param.get("name"))
       description = param.get("description")
       value_types = {
                       "ssv:Real": float,

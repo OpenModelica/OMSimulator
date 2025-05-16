@@ -98,6 +98,10 @@ class System:
   def name(self):
     return self._name
 
+  @name.setter
+  def name(self, name: str):
+    self._name = name
+
   @staticmethod
   def importFromNode(node, ssd, resources: dict | None = None):
     '''Imports a ssd:System'''
