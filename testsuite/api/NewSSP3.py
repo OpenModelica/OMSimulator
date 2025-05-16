@@ -26,8 +26,9 @@ model2.list()
 ## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
 ## |--   resources/Add.fmu
+## |-- Active Variant: default
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Active variant "default": None
+## |-- Variant "default": None
 ## |-- |-- System: default 'None'
 ## |-- |-- |-- Connectors:
 ## |-- |-- |-- Elements:
@@ -53,8 +54,9 @@ model2.list()
 ## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
 ## |--   resources/Add.fmu
+## |-- Active Variant: default
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Active variant "default": <hidden>
+## |-- Variant "default": <hidden>
 ## |-- |-- System: default 'None'
 ## |-- |-- |-- Connectors:
 ## |-- |-- |-- Elements:

@@ -69,7 +69,8 @@ def parseElements(node, resources = None):
       case _:
         raise ValueError(f"Unknown FMU implementation type: {implementation}")
 
-    elements[name] = Component(name, fmuType, source)
+    elements[name] = Component(name, source)
+    elements[name].fmuType = fmuType
     elements[name].description = description
     elements[name].connectors = Connector.importFromNode(component)
     elements[name].elementgeometry = ElementGeometry.importFromNode(component)
@@ -115,7 +116,7 @@ def parseParameterBindingHelper(parameters):
   if parameters is not None:
     parameterValues={}
     for param in parameters.findall("ssv:Parameter", namespaces=namespace.ns):
-      name = param.get("name")
+      name = CRef(param.get("name"))
       description = param.get("description")
       value_types = {
                       "ssv:Real": float,

@@ -31,7 +31,7 @@ model.variants['D16_aero_stimuli'].list()
 ##
 ## Active variant:
 ##  <class 'OMSimulator.ssd.SSD'>
-##  Active variant "D16_auto": <hidden>
+##  Variant "D16_auto": <hidden>
 ##  |-- System: D16_auto 'Demonstrator 1.6 automotive model (for integration in vehicle model)'
 ##  |-- |-- Connectors:
 ##  |-- |-- |-- (theta, Causality.output, SignalType.Real, deg, 'Wheel angle')
@@ -144,7 +144,7 @@ model.variants['D16_aero_stimuli'].list()
 ##
 ## Variant D16_aero_stimuli:
 ##  <class 'OMSimulator.ssd.SSD'>
-##  Inactive variant "D16_aero_stimuli": <hidden>
+##  Variant "D16_aero_stimuli": <hidden>
 ##  |-- System: D16_aero_stimuli 'Demonstrator 1.6 aerospace test model (ramp in input signal)'
 ##  |-- |-- Connectors:
 ##  |-- |-- |-- (m_dot_TB, Causality.output, SignalType.Real, kgps, 'Valve mass flow')

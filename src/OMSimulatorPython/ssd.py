@@ -16,30 +16,39 @@ logger = logging.getLogger(__name__)
 
 
 class SSD:
-  def __init__(self, name: str, model=None):
+  def __init__(self, name: str):
     '''Initialize an SSD object.'''
     from OMSimulator.ssp import SSP
 
     self._name = name
-    self._model: SSP = None
     self._filename = None
-    self.system = System(name, model=model)
+    ## TODO change the System name to "root" or "default" or "main" or "top" or something
+    self.system = System(name)
     self.startTime = 0.0
     self.stopTime = 1.0
     self.unitDefinitions = list()
-    if model:
-      model.add(self)
+
 
   @staticmethod
-  def importFromFile(filename: Path, resources = None):
+  def importFromFile(filename: Path | str, resources = None):
     '''Imports an SSD file and parses its contents.'''
     try:
-      tree = ET.parse(filename)
-      root = tree.getroot()
+      # Determine input type
+      if isinstance(filename, (str, Path)) and Path(filename).is_file():
+        tree = ET.parse(filename)
+        root = tree.getroot()
+        filename = Path(filename).resolve()
+      elif isinstance(filename, str):
+        # If filename is a string, parse it directly
+        root = ET.fromstring(filename.encode("utf-8"))
+        filename = None
+      else:
+        raise ValueError("Invalid filename or XML string provided")
+
       utils.validateSSP(root, filename, "SystemStructureDescription.xsd")
       variant_name = root.get("name")
       ssd = SSD(variant_name)
-      ssd._filename = Path(filename).resolve()
+      ssd._filename = filename
 
       system = root.find("ssd:System", namespaces=namespace.ns)
       if system is None:
@@ -59,6 +68,10 @@ class SSD:
   def name(self):
     return self._name
 
+  @name.setter
+  def name(self, name: str):
+    self._name = name
+
   @property
   def dirty(self):
     '''Returns True if the SSD has been modified since the last export.'''
@@ -73,7 +86,15 @@ class SSD:
         raise ValueError(f"System '{first}' not found in active variant")
     return cref.pop_first()
 
-  def addComponent(self, cref: CRef, resource: str, inst = None | FMU):
+  def duplicate(self, variant_name: str | None = None):
+    '''Duplicates the SSD and returns a new SSD object.'''
+    xml_code = self.export()
+    ssd = SSD.importFromFile(xml_code)
+    if variant_name:
+      ssd.name = variant_name
+    return ssd
+
+  def addComponent(self, cref: CRef, resource: str, inst : FMU | None = None):
     subcref = self._validateCref(cref)
     return self.system.addComponent(subcref, resource, inst)
 
@@ -128,10 +149,7 @@ class SSD:
   def list(self, prefix=""):
     '''Prints the SSD contents.'''
     print(f"{prefix} {type(self)}")
-    if self._model and self._model._activeVariantName == self._name:
-      print(f'{prefix} Active variant "{self._name}": {suppress_path_to_str(self._filename)}')
-    else:
-      print(f'{prefix} Inactive variant "{self._name}": {suppress_path_to_str(self._filename)}')
+    print(f'{prefix} Variant "{self._name}": {suppress_path_to_str(self._filename)}')
 
     if self.system:
       self.system.list(prefix=prefix + " |--")
@@ -145,7 +163,7 @@ class SSD:
     print(f"{prefix} |-- startTime: {self.startTime}")
     print(f"{prefix} |-- stopTime: {self.stopTime}")
 
-  def export(self, filename: str):
+  def export(self, filename: str | None = None):
     '''Exports the SSD as an XML file.'''
     root = ET.Element(
       namespace.tag("ssd", "SystemStructureDescription"),
@@ -161,13 +179,18 @@ class SSD:
     self._exportUnitDefinitions(root)
     self._exportDefaultExperiment(root)
 
-    with open(filename, "w", encoding="utf-8") as file:
-      xml_content = ET.tostring(
-        root, encoding="utf-8", xml_declaration=True, pretty_print=True
-      ).decode("utf-8")
-      file.write(xml_content)
+    xml_content = ET.tostring(root, encoding="utf-8", xml_declaration=True, pretty_print=True).decode("utf-8")
 
-    logger.info(f"SSD '{self._name}' exported to {suppress_path_to_str(filename)}")
+    if filename is None:
+      return xml_content
+    else:
+      with open(filename, "w", encoding="utf-8") as file:
+        xml_content = ET.tostring(
+          root, encoding="utf-8", xml_declaration=True, pretty_print=True
+        ).decode("utf-8")
+        file.write(xml_content)
+
+      logger.info(f"SSD '{self._name}' exported to {suppress_path_to_str(filename)}")
 
   def _exportUnitDefinitions(self, node):
     '''Exports unit definitions to the given XML node.'''

@@ -17,7 +17,8 @@ Settings.suppressPath = True
 # Finally, the SSP file is exported to a new file and then re-imported.
 
 model = SSP()
-variantB = SSD('Variant-B', model=model)
+variantB = SSD('Variant-B')
+model.add(variantB)
 model.activeVariantName = 'Variant-B'
 model.addResource('../resources/Modelica.Blocks.Math.Add.fmu', new_name='resources/Add.fmu')
 
@@ -36,15 +37,16 @@ model2.list()
 ## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
 ## |--   resources/Add.fmu
+## |-- Active Variant: Variant-B
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Inactive variant "default": None
+## |-- Variant "default": None
 ## |-- |-- System: default 'None'
 ## |-- |-- |-- Connectors:
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Active variant "Variant-B": None
+## |-- Variant "Variant-B": None
 ## |-- |-- System: Variant-B 'None'
 ## |-- |-- |-- Connectors:
 ## |-- DefaultExperiment
@@ -53,15 +55,16 @@ model2.list()
 ## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
 ## |--   resources/Add.fmu
+## |-- Active Variant: Variant-B
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Active variant "Variant-B": <hidden>
+## |-- Variant "Variant-B": <hidden>
 ## |-- |-- System: Variant-B 'None'
 ## |-- |-- |-- Connectors:
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Inactive variant "default": <hidden>
+## |-- Variant "default": <hidden>
 ## |-- |-- System: default 'None'
 ## |-- |-- |-- Connectors:
 ## |-- DefaultExperiment

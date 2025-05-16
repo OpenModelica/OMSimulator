@@ -44,8 +44,9 @@ model2.instantiate() ## internally generate the json file and also set the model
 ## |-- Resources:
 ## |--   resources/Add.fmu
 ## |--   resources/Gain.fmu
+## |-- Active Variant: default
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Active variant "default": None
+## |-- Variant "default": None
 ## |-- |-- System: default 'None'
 ## |-- |-- |-- Connectors:
 ## |-- |-- |-- |-- (param1, Causality.parameter, SignalType.Real, None, 'None')

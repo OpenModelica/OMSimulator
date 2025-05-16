@@ -14,7 +14,7 @@ ssd.list()
 
 ## Result:
 ##  <class 'OMSimulator.ssd.SSD'>
-##  Inactive variant "LOCtest": <hidden>
+##  Variant "LOCtest": <hidden>
 ##  |-- System: Root 'None'
 ##  |-- |-- Connectors:
 ##  |-- |-- Elements:

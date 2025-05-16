@@ -98,11 +98,14 @@ class System:
   def name(self):
     return self._name
 
+  @name.setter
+  def name(self, name: str):
+    self._name = name
+
   @staticmethod
   def importFromNode(node, ssd, resources: dict | None = None):
     '''Imports a ssd:System'''
     try:
-      temp_dir = ssd._filename.parent
       system = System(node.get("name"))
       system.description = node.get("description")
       system.connectors = Connector.importFromNode(node)
@@ -189,7 +192,8 @@ class System:
       if first in self.elements:
         raise ValueError(f"Component '{first}' already exists in {self.name}")
       connectors = inst.makeConnectors() if inst else list()
-      component = Component(first, inst.fmuType, resource, connectors)
+      component = Component(first, resource, connectors)
+      component.fmuType = inst.fmuType if inst else None
       self.elements[first] = component
       return component
 

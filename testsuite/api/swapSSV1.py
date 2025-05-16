@@ -86,8 +86,9 @@ model2.list()
 ## |--   |-- |-- (Real k1, 200.0, m, 'None')
 ## |--   |-- |-- (Real k2, 300.0, kg, 'None')
 ## |--   |-- |-- (String param3, ssp, None, 'None')
+## |-- Active Variant: default
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Active variant "default": <hidden>
+## |-- Variant "default": <hidden>
 ## |-- |-- System: default 'None'
 ## |-- |-- |-- Connectors:
 ## |-- |-- |-- Elements:
@@ -139,8 +140,9 @@ model2.list()
 ## |--   |-- |-- (Real k1, 200.0, m, 'None')
 ## |--   |-- |-- (Real k2, 300.0, kg, 'None')
 ## |--   |-- |-- (String param3, ssp, None, 'None')
+## |-- Active Variant: default
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Active variant "default": <hidden>
+## |-- Variant "default": <hidden>
 ## |-- |-- System: default 'None'
 ## |-- |-- |-- Connectors:
 ## |-- |-- |-- Elements:
@@ -190,8 +192,9 @@ model2.list()
 ## |--   |-- |-- (Real k1, 200.0, m, 'None')
 ## |--   |-- |-- (Real k2, 300.0, kg, 'None')
 ## |--   |-- |-- (String param3, ssp, None, 'None')
+## |-- Active Variant: default
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Active variant "default": <hidden>
+## |-- Variant "default": <hidden>
 ## |-- |-- System: default 'None'
 ## |-- |-- |-- Connectors:
 ## |-- |-- |-- Elements:

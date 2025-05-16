@@ -28,7 +28,7 @@ model.export('dcmotor.ssp')
 ##
 ## Active variant:
 ##  <class 'OMSimulator.ssd.SSD'>
-##  Active variant "DC-Motor": <hidden>
+##  Variant "DC-Motor": <hidden>
 ##  |-- System: DC-Motor 'A simple simulation model of a DC-Motor that has to accelerate against a Load MLoad = 1 Nm in 1s from 0 to 1000 rad/s, Voltage U = 48 V '
 ##  |-- |-- Connectors:
 ##  |-- |-- |-- (M_mot, Causality.output, SignalType.Real, Nm, 'None')
