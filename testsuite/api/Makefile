@@ -4,6 +4,7 @@ TESTFILES = \
 create_ssp_file.py \
 cref.py \
 duplicateVariant1.py \
+duplicateVariant2.py \
 exportJson1.py \
 exportJson2.py \
 exportJson4.py \

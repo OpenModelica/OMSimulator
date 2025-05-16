@@ -22,6 +22,7 @@ class SSD:
 
     self._name = name
     self._filename = None
+    ## TODO change the System name to "root" or "default" or "main" or "top" or something
     self.system = System(name)
     self.startTime = 0.0
     self.stopTime = 1.0
@@ -93,7 +94,7 @@ class SSD:
       ssd.name = variant_name
     return ssd
 
-  def addComponent(self, cref: CRef, resource: str, inst = None | FMU):
+  def addComponent(self, cref: CRef, resource: str, inst : FMU | None = None):
     subcref = self._validateCref(cref)
     return self.system.addComponent(subcref, resource, inst)
 

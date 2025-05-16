@@ -192,7 +192,7 @@ class System:
       if first in self.elements:
         raise ValueError(f"Component '{first}' already exists in {self.name}")
       connectors = inst.makeConnectors() if inst else list()
-      component = Component(first, inst.fmuType, resource, connectors)
+      component = Component(first, resource, connectors)
       self.elements[first] = component
       return component
 
