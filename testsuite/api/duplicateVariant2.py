@@ -60,7 +60,7 @@ model2.list()
 ## |-- |-- |-- Connectors:
 ## |-- |-- |-- Elements:
 ## |-- |-- |-- |-- FMU: Add1 'None'
-## |-- |-- |-- |-- |-- path: me_cs
+## |-- |-- |-- |-- |-- path: resources/Modelica.Blocks.Math.Add.fmu
 ## |-- |-- |-- |-- |-- Connectors:
 ## |-- |-- |-- |-- |-- |-- (u1, Causality.input, SignalType.Real, None, 'Connector of Real input signal 1')
 ## |-- |-- |-- |-- |-- |-- (u2, Causality.input, SignalType.Real, None, 'Connector of Real input signal 2')
@@ -80,7 +80,7 @@ model2.list()
 ## |-- |-- |-- Connectors:
 ## |-- |-- |-- Elements:
 ## |-- |-- |-- |-- FMU: Add1 'None'
-## |-- |-- |-- |-- |-- path: me_cs
+## |-- |-- |-- |-- |-- path: resources/Modelica.Blocks.Math.Add.fmu
 ## |-- |-- |-- |-- |-- Connectors:
 ## |-- |-- |-- |-- |-- |-- (u1, Causality.input, SignalType.Real, None, 'Connector of Real input signal 1')
 ## |-- |-- |-- |-- |-- |-- (u2, Causality.input, SignalType.Real, None, 'Connector of Real input signal 2')
@@ -100,7 +100,7 @@ model2.list()
 ## |-- |-- |-- Connectors:
 ## |-- |-- |-- Elements:
 ## |-- |-- |-- |-- FMU: Add1 'None'
-## |-- |-- |-- |-- |-- path: me_cs
+## |-- |-- |-- |-- |-- path: resources/Modelica.Blocks.Math.Add.fmu
 ## |-- |-- |-- |-- |-- Connectors:
 ## |-- |-- |-- |-- |-- |-- (u1, Causality.input, SignalType.Real, None, 'Connector of Real input signal 1')
 ## |-- |-- |-- |-- |-- |-- (u2, Causality.input, SignalType.Real, None, 'Connector of Real input signal 2')
