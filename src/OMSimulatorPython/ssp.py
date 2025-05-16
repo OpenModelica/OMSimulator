@@ -218,11 +218,11 @@ class SSP:
 
   def _addSSD(self, ssd: SSD):
     '''Handles adding an SSD to the SSP'''
+    if ssd in self.variants.values():
+      raise ValueError(f"SSD '{ssd.name}' is already part of the SSP, use the duplicate method to create a new variant.")
+
     if ssd.name in self.variants:
-      if self.variants[ssd.name] is ssd:
-        raise ValueError(f"Variant '{ssd.name}' is already part of the SSP")
-      else:
-        raise ValueError(f"Another variant with name '{ssd.name}' already exists in the SSP.")
+      raise ValueError(f"Another variant with name '{ssd.name}' already exists in the SSP.")
 
     self.variants[ssd.name] = ssd
 

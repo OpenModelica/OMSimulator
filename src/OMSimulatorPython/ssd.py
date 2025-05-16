@@ -29,15 +29,25 @@ class SSD:
 
 
   @staticmethod
-  def importFromFile(filename: Path, resources = None):
+  def importFromFile(filename: Path | str, resources = None):
     '''Imports an SSD file and parses its contents.'''
     try:
-      tree = ET.parse(filename)
-      root = tree.getroot()
+      # Determine input type
+      if isinstance(filename, (str, Path)) and Path(filename).is_file():
+        tree = ET.parse(filename)
+        root = tree.getroot()
+        filename = Path(filename).resolve()
+      elif isinstance(filename, str):
+        # If filename is a string, parse it directly
+        root = ET.fromstring(filename.encode("utf-8"))
+        filename = None
+      else:
+        raise ValueError("Invalid filename or XML string provided")
+
       utils.validateSSP(root, filename, "SystemStructureDescription.xsd")
       variant_name = root.get("name")
       ssd = SSD(variant_name)
-      ssd._filename = Path(filename).resolve()
+      ssd._filename = filename
 
       system = root.find("ssd:System", namespaces=namespace.ns)
       if system is None:
@@ -74,6 +84,14 @@ class SSD:
     if str(first) != self.system.name:
         raise ValueError(f"System '{first}' not found in active variant")
     return cref.pop_first()
+
+  def duplicate(self, variant_name: str | None = None):
+    '''Duplicates the SSD and returns a new SSD object.'''
+    xml_code = self.export()
+    ssd = SSD.importFromFile(xml_code)
+    if variant_name:
+      ssd.name = variant_name
+    return ssd
 
   def addComponent(self, cref: CRef, resource: str, inst = None | FMU):
     subcref = self._validateCref(cref)
@@ -144,7 +162,7 @@ class SSD:
     print(f"{prefix} |-- startTime: {self.startTime}")
     print(f"{prefix} |-- stopTime: {self.stopTime}")
 
-  def export(self, filename: str):
+  def export(self, filename: str | None = None):
     '''Exports the SSD as an XML file.'''
     root = ET.Element(
       namespace.tag("ssd", "SystemStructureDescription"),
@@ -160,13 +178,18 @@ class SSD:
     self._exportUnitDefinitions(root)
     self._exportDefaultExperiment(root)
 
-    with open(filename, "w", encoding="utf-8") as file:
-      xml_content = ET.tostring(
-        root, encoding="utf-8", xml_declaration=True, pretty_print=True
-      ).decode("utf-8")
-      file.write(xml_content)
+    xml_content = ET.tostring(root, encoding="utf-8", xml_declaration=True, pretty_print=True).decode("utf-8")
 
-    logger.info(f"SSD '{self._name}' exported to {suppress_path_to_str(filename)}")
+    if filename is None:
+      return xml_content
+    else:
+      with open(filename, "w", encoding="utf-8") as file:
+        xml_content = ET.tostring(
+          root, encoding="utf-8", xml_declaration=True, pretty_print=True
+        ).decode("utf-8")
+        file.write(xml_content)
+
+      logger.info(f"SSD '{self._name}' exported to {suppress_path_to_str(filename)}")
 
   def _exportUnitDefinitions(self, node):
     '''Exports unit definitions to the given XML node.'''

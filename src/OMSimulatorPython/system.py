@@ -102,7 +102,6 @@ class System:
   def importFromNode(node, ssd, resources: dict | None = None):
     '''Imports a ssd:System'''
     try:
-      temp_dir = ssd._filename.parent
       system = System(node.get("name"))
       system.description = node.get("description")
       system.connectors = Connector.importFromNode(node)
