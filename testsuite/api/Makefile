@@ -3,7 +3,7 @@ TEST = ../rtest -v
 TESTFILES = \
 create_ssp_file.py \
 cref.py \
-duplicatevariant1.py \
+duplicateVariant1.py \
 exportJson1.py \
 exportJson2.py \
 exportJson4.py \
