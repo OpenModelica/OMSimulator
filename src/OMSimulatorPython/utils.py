@@ -69,7 +69,8 @@ def parseElements(node, resources = None):
       case _:
         raise ValueError(f"Unknown FMU implementation type: {implementation}")
 
-    elements[name] = Component(name, fmuType, source)
+    elements[name] = Component(name, source)
+    elements[name].fmuType = fmuType
     elements[name].description = description
     elements[name].connectors = Connector.importFromNode(component)
     elements[name].elementgeometry = ElementGeometry.importFromNode(component)

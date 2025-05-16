@@ -193,6 +193,7 @@ class System:
         raise ValueError(f"Component '{first}' already exists in {self.name}")
       connectors = inst.makeConnectors() if inst else list()
       component = Component(first, resource, connectors)
+      component.fmuType = inst.fmuType if inst else None
       self.elements[first] = component
       return component
 

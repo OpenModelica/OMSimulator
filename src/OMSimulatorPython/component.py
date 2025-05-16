@@ -17,6 +17,7 @@ class Component:
     self.value = Values()
     self.solver = None
     self.parameterResources = []
+    self.fmuType = None
 
   def addConnector(self, connector):
     if connector in self.connectors:
