@@ -246,7 +246,7 @@ class SSP:
   def instantiate(self):
     if self.activeVariant is None:
       raise ValueError("No active variant set in the SSP.")
-    self.activeVariant.instantiate()
+    self.activeVariant.instantiate(self.resources)
 
   def export(self, filename: str):
     '''Exports the SSP to file'''

@@ -340,7 +340,7 @@ class System:
         raise ValueError(f"Component '{first}' not found in {self.name}")
       self.elements[first].setSolver(name)
 
-  def instantiate(self):
+  def instantiate(self, resources: dict | None = None):
     """Instantiates the system and its components."""
     data = {
         "simulation units": []
@@ -352,7 +352,7 @@ class System:
     solver_connections = defaultdict(list)
 
     # process the elements
-    self.processElements(self.elements, self.connections, data, solver_groups, componentSolver, solver_connections)
+    self.processElements(self.elements, self.connections, data, solver_groups, componentSolver, solver_connections, resources)
 
     ## group the simulation units
     for solver, components in solver_groups.items():
@@ -379,19 +379,27 @@ class System:
     print(json_string)
 
 
-  def processElements(self, elements_dict: dict, connections: list, data: dict, solver_groups : defaultdict, componentSolver : dict, solver_connections : defaultdict, systemName = None):
+  def processElements(self, elements_dict: dict, connections: list, data: dict, solver_groups : defaultdict, componentSolver : dict, solver_connections : defaultdict, resources :dict  ,systemName = None):
     """Processes the elements and connections in the system."""
     for key, element in elements_dict.items():
       if isinstance(element, Component):
+        if element.fmuType is None:
+          # get the fmuType from the resources
+          fmu = resources.get(str(element.fmuPath))
+          if fmu is None:
+            raise ValueError(f"Resource '{element.fmuPath}' not found in component {element.name}")
+          fmuType = fmu.fmuType
+        else:
+          fmuType = element.fmuType
         solver_groups[element.solver].append({
             "name": [self.name] + ([systemName] if systemName else []) + [str(element.name)],
-            "type": element.fmuType,
+            "type": fmuType,
             "path": str(element.fmuPath)
         })
         componentSolver[str(element.name)] = element.solver
       elif isinstance(element, System):
         # recurse into subsystems
-        self.processElements(element.elements, element.connections, data, solver_groups, componentSolver, solver_connections, systemName=str(element.name))
+        self.processElements(element.elements, element.connections, data, solver_groups, componentSolver, solver_connections, resources, systemName=str(element.name))
 
     for connection in connections:
       startElement = connection.startElement

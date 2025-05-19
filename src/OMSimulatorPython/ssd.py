@@ -141,10 +141,10 @@ class SSD:
 
     self.system.addSystem(cref.pop_first(first=self._name))
 
-  def instantiate(self):
+  def instantiate(self, resources: dict | None = None):
     if self.system is None:
       raise ValueError("Variant doesn't contain a system")
-    self.system.instantiate()
+    self.system.instantiate(resources)
 
   def list(self, prefix=""):
     '''Prints the SSD contents.'''
