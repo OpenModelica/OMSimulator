@@ -50,8 +50,9 @@ model2.list()
 ## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
 ## |--   Add.fmu
+## |-- Active Variant: default
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Active variant "default": <hidden>
+## |-- Variant "default": <hidden>
 ## |-- |-- System: default 'None'
 ## |-- |-- |-- Connectors:
 ## |-- |-- |-- |-- (param1, Causality.parameter, SignalType.Real, None, 'None')

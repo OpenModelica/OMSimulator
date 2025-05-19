@@ -218,16 +218,12 @@ class SSP:
 
   def _addSSD(self, ssd: SSD):
     '''Handles adding an SSD to the SSP'''
+    if ssd in self.variants.values():
+      raise ValueError(f"SSD '{ssd.name}' is already part of the SSP, use the duplicate method to create a new variant.")
+
     if ssd.name in self.variants:
-      if self.variants[ssd.name] is ssd:
-        raise ValueError(f"Variant '{ssd.name}' is already part of the SSP")
-      else:
-        raise ValueError(f"Another variant with name '{ssd.name}' already exists in the SSP.")
+      raise ValueError(f"Another variant with name '{ssd.name}' already exists in the SSP.")
 
-    if ssd._model is not None:
-      raise ValueError(f"SSD '{ssd.name}' already belongs to another SSP.")
-
-    ssd._model = self
     self.variants[ssd.name] = ssd
 
     if self.activeVariantName is None:
@@ -243,13 +239,14 @@ class SSP:
       if isinstance(self.resources[resource], SSV):
         print(f"|--   |-- Parameter Bindings:")
         self.resources[resource].list("|--   |-- |--")
+    print(f"|-- Active Variant: {self.activeVariantName}")
     for ssd in self.variants.values():
       ssd.list("|--")
 
   def instantiate(self):
     if self.activeVariant is None:
       raise ValueError("No active variant set in the SSP.")
-    self.activeVariant.instantiate()
+    self.activeVariant.instantiate(self.resources)
 
   def export(self, filename: str):
     '''Exports the SSP to file'''

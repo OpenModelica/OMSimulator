@@ -98,11 +98,14 @@ class System:
   def name(self):
     return self._name
 
+  @name.setter
+  def name(self, name: str):
+    self._name = name
+
   @staticmethod
   def importFromNode(node, ssd, resources: dict | None = None):
     '''Imports a ssd:System'''
     try:
-      temp_dir = ssd._filename.parent
       system = System(node.get("name"))
       system.description = node.get("description")
       system.connectors = Connector.importFromNode(node)
@@ -189,7 +192,8 @@ class System:
       if first in self.elements:
         raise ValueError(f"Component '{first}' already exists in {self.name}")
       connectors = inst.makeConnectors() if inst else list()
-      component = Component(first, inst.fmuType, resource, connectors)
+      component = Component(first, resource, connectors)
+      component.fmuType = inst.fmuType if inst else None
       self.elements[first] = component
       return component
 
@@ -336,7 +340,7 @@ class System:
         raise ValueError(f"Component '{first}' not found in {self.name}")
       self.elements[first].setSolver(name)
 
-  def instantiate(self):
+  def instantiate(self, resources: dict | None = None):
     """Instantiates the system and its components."""
     data = {
         "simulation units": []
@@ -348,7 +352,7 @@ class System:
     solver_connections = defaultdict(list)
 
     # process the elements
-    self.processElements(self.elements, self.connections, data, solver_groups, componentSolver, solver_connections)
+    self.processElements(self.elements, self.connections, data, solver_groups, componentSolver, solver_connections, resources)
 
     ## group the simulation units
     for solver, components in solver_groups.items():
@@ -375,19 +379,27 @@ class System:
     print(json_string)
 
 
-  def processElements(self, elements_dict: dict, connections: list, data: dict, solver_groups : defaultdict, componentSolver : dict, solver_connections : defaultdict, systemName = None):
+  def processElements(self, elements_dict: dict, connections: list, data: dict, solver_groups : defaultdict, componentSolver : dict, solver_connections : defaultdict, resources :dict  ,systemName = None):
     """Processes the elements and connections in the system."""
     for key, element in elements_dict.items():
       if isinstance(element, Component):
+        if element.implementation is None:
+          # get the fmuType from the resources
+          fmu = resources.get(str(element.fmuPath))
+          if fmu is None:
+            raise ValueError(f"Resource '{element.fmuPath}' not found in component {element.name}")
+          fmuType = fmu.fmuType
+        else:
+          fmuType = element.implementation
         solver_groups[element.solver].append({
             "name": [self.name] + ([systemName] if systemName else []) + [str(element.name)],
-            "type": element.fmuType,
+            "type": fmuType,
             "path": str(element.fmuPath)
         })
         componentSolver[str(element.name)] = element.solver
       elif isinstance(element, System):
         # recurse into subsystems
-        self.processElements(element.elements, element.connections, data, solver_groups, componentSolver, solver_connections, systemName=str(element.name))
+        self.processElements(element.elements, element.connections, data, solver_groups, componentSolver, solver_connections, resources, systemName=str(element.name))
 
     for connection in connections:
       startElement = connection.startElement

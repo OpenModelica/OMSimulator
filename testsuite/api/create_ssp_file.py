@@ -30,15 +30,16 @@ model2.list()
 ## INFO:OMSimulator.ssp:Temporary directory created: <hidden>
 ## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
+## |-- Active Variant: Variant-B
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Inactive variant "default": None
+## |-- Variant "default": None
 ## |-- |-- System: default 'None'
 ## |-- |-- |-- Connectors:
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Active variant "Variant-B": None
+## |-- Variant "Variant-B": None
 ## |-- |-- System: Variant-B 'None'
 ## |-- |-- |-- Connectors:
 ## |-- DefaultExperiment
@@ -46,15 +47,16 @@ model2.list()
 ## |-- |-- stopTime: 1.0
 ## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
+## |-- Active Variant: Variant-B
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Active variant "Variant-B": <hidden>
+## |-- Variant "Variant-B": <hidden>
 ## |-- |-- System: Variant-B 'None'
 ## |-- |-- |-- Connectors:
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Inactive variant "default": <hidden>
+## |-- Variant "default": <hidden>
 ## |-- |-- System: default 'None'
 ## |-- |-- |-- Connectors:
 ## |-- DefaultExperiment

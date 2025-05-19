@@ -7,9 +7,8 @@ from OMSimulator.elementgeometry import ElementGeometry
 from OMSimulator import namespace
 
 class Component:
-  def __init__(self, name: CRef, fmuType : str, fmuPath: Path | str, connectors=None, unitDefinitions=None):
+  def __init__(self, name: CRef, fmuPath: Path | str, connectors=None, unitDefinitions=None):
     self.name = CRef(name)
-    self.fmuType = fmuType
     self.fmuPath = Path(fmuPath)
     self.connectors = connectors or list()
     self.unitDefinitions = unitDefinitions or list()
@@ -18,6 +17,7 @@ class Component:
     self.value = Values()
     self.solver = None
     self.parameterResources = []
+    self.implementation = None
 
   def addConnector(self, connector):
     if connector in self.connectors:
