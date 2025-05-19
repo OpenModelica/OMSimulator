@@ -28,41 +28,44 @@ class SSD:
     self.stopTime = 1.0
     self.unitDefinitions = list()
 
-
   @staticmethod
-  def importFromFile(filename: Path | str, resources = None):
+  def importFromFile(filename: Path, resources = None):
     '''Imports an SSD file and parses its contents.'''
     try:
       # Determine input type
-      if isinstance(filename, (str, Path)) and Path(filename).is_file():
-        tree = ET.parse(filename)
-        root = tree.getroot()
-        filename = Path(filename).resolve()
-      elif isinstance(filename, str):
-        # If filename is a string, parse it directly
-        root = ET.fromstring(filename.encode("utf-8"))
-        filename = None
-      else:
-        raise ValueError("Invalid filename or XML string provided")
-
-      utils.validateSSP(root, filename, "SystemStructureDescription.xsd")
-      variant_name = root.get("name")
-      ssd = SSD(variant_name)
-      ssd._filename = filename
-
-      system = root.find("ssd:System", namespaces=namespace.ns)
-      if system is None:
-        raise ValueError(f"Invalid SSD file: Missing <ssd:System> in {filename}")
-
-      ssd.system = System.importFromNode(system, ssd, resources)
-      utils.parseDefaultExperiment(root, ssd)
-      Unit.importFromNode(root, ssd)
-      logger.debug(f"SSD '{variant_name}' successfully imported from {filename}")
-      return ssd
-
+      tree = ET.parse(filename)
+      root = tree.getroot()
+      filename = Path(filename).resolve()
+      return SSD.importFromNode(root, filename, resources)
     except ET.ParseError as e:
       logger.error(f"Error parsing SSD file '{filename}': {e}")
       return None
+
+  @staticmethod
+  def importFromString(xml_code: str, resources = None):
+    '''Imports an SSD from a string.'''
+    try:
+      root = ET.fromstring(xml_code.encode("utf-8"))
+      return SSD.importFromNode(root, None, resources)
+    except ET.ParseError as e:
+      logger.error(f"Error parsing SSD string: {e}")
+      return None
+
+  @staticmethod
+  def importFromNode(root, filename, resources = None):
+    '''Imports an SSD from an XML node.'''
+    utils.validateSSP(root, filename, "SystemStructureDescription.xsd")
+    variant_name = root.get("name")
+    ssd = SSD(variant_name)
+    ssd._filename = filename
+    system = root.find("ssd:System", namespaces=namespace.ns)
+    if system is None:
+      raise ValueError(f"Invalid SSD file: Missing <ssd:System> in {filename}")
+    ssd.system = System.importFromNode(system, ssd, resources)
+    utils.parseDefaultExperiment(root, ssd)
+    Unit.importFromNode(root, ssd)
+    logger.debug(f"SSD '{variant_name}' successfully imported from {filename}")
+    return ssd
 
   @property
   def name(self):
@@ -89,7 +92,7 @@ class SSD:
   def duplicate(self, variant_name: str | None = None):
     '''Duplicates the SSD and returns a new SSD object.'''
     xml_code = self.export()
-    ssd = SSD.importFromFile(xml_code)
+    ssd = SSD.importFromString(xml_code)
     if variant_name:
       ssd.name = variant_name
     return ssd

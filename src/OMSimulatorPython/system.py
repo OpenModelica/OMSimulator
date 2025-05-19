@@ -383,14 +383,14 @@ class System:
     """Processes the elements and connections in the system."""
     for key, element in elements_dict.items():
       if isinstance(element, Component):
-        if element.fmuType is None:
+        if element.implementation is None:
           # get the fmuType from the resources
           fmu = resources.get(str(element.fmuPath))
           if fmu is None:
             raise ValueError(f"Resource '{element.fmuPath}' not found in component {element.name}")
           fmuType = fmu.fmuType
         else:
-          fmuType = element.fmuType
+          fmuType = element.implementation
         solver_groups[element.solver].append({
             "name": [self.name] + ([systemName] if systemName else []) + [str(element.name)],
             "type": fmuType,
