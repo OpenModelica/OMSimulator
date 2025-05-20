@@ -34,6 +34,9 @@ class Component:
   def listSSVReference(self):
     return self.parameterResources
 
+  def exportSSVTemplate(self, node):
+    self.value.add_parameters(node)
+
   def removeSSVReference(self, resource: str):
     if resource in self.parameterResources:
       self.parameterResources.remove(resource)

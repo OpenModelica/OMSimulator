@@ -10,7 +10,8 @@ from OMSimulator.fmu import FMU
 from OMSimulator.settings import suppress_path_to_str
 from OMSimulator.ssv import SSV
 
-from OMSimulator import SSD, CRef
+from OMSimulator import SSD, CRef, namespace
+from lxml import etree as ET
 
 logger = logging.getLogger(__name__)
 
@@ -142,6 +143,29 @@ class SSP:
       logger.warning(f"Resource '{resource}' not found in the SSP resources. Add the resource using the addResource API")
 
     self.activeVariant.addSSVReference(cref, resource)
+
+  def exportSSVTemplate(self, cref: CRef, filename: Path | None = None):
+    if self.activeVariant is None:
+      raise ValueError("No active variant set in the SSP.")
+
+    if filename is None:
+      filename = self.activeVariant.name + '.ssv'
+
+    ssv_node = ET.Element(namespace.tag("ssv", "ParameterSet"),
+                                   nsmap={"ssc": "http://ssp-standard.org/SSP1/SystemStructureCommon",
+                                          "ssv": "http://ssp-standard.org/SSP1/SystemStructureParameterValues"},
+                                   version = "2.0",
+                                   name = "parameters")
+    parameters_node = ET.SubElement(ssv_node, namespace.tag("ssv", "Parameters"))
+
+    self.activeVariant.exportSSVTemplate(cref, parameters_node)
+
+    xml = ET.tostring(ssv_node, encoding='utf-8', xml_declaration=True, pretty_print=True).decode('utf-8')
+
+    ## write to filesystem
+    with open(Path(filename).resolve(), "w", encoding="utf-8") as file:
+      file.write(xml)
+    logger.info(f"SSV template '{filename}' successfully exported!")
 
   def swapSSVReference(self, cref: CRef, resource1: str, resource2: str):
     if self.activeVariant is None:

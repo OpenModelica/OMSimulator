@@ -105,6 +105,14 @@ class SSD:
     subcref = self._validateCref(cref)
     self.system.addSSVReference(subcref, resource)
 
+  def exportSSVTemplate(self, cref: CRef, node):
+    subcref = self._validateCref(cref)
+
+    if subcref is None:
+      return self.system.exportSSVTemplateHelper(node)
+
+    self.system.exportSSVTemplate(subcref, node)
+
   def swapSSVReference(self, cref: CRef, resource1, resource2):
     subcref = self._validateCref(cref)
     self.system.swapSSVReference(subcref, resource1, resource2)

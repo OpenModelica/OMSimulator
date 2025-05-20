@@ -261,6 +261,34 @@ class System:
       case _:
         raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component")
 
+  def exportSSVTemplateHelper(self, node):
+    """Exports all parameters in ssp to an XML node."""
+    self.value.add_parameters(node)
+    for key, element in self.elements.items():
+      if isinstance(element, System):
+        element.exportSSVTemplateHelper(node)
+      elif isinstance(element, Component):
+        element.exportSSVTemplate(node)
+      else:
+        # Handle other types of elements if needed
+        logger.error(f"Unknown element type '{type(element)}' for element '{key}'. Skipping export.")
+
+  def exportSSVTemplate(self, cref: CRef, node):
+    ## top level system
+    if cref is None:
+      self.value.add_parameters(node)
+      return
+
+    first = cref.first()
+
+    match self.elements.get(first):
+      case System():
+        self.elements[first].exportSSVTemplate(cref.pop_first(), node)
+      case Component():
+        self.elements[first].exportSSVTemplate(node)
+      case _:
+        raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component")
+
   def _addConnection(self, cref1: CRef, cref2: CRef) -> None:
     first1 = cref1.first()
     first2 = cref2.first()
