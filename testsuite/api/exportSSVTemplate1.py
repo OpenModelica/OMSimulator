@@ -74,22 +74,22 @@ read_file('exportSSVTemplate4.ssv')
 ##     <ssv:Parameter name="input1">
 ##       <ssv:Real value="300.0"/>
 ##     </ssv:Parameter>
-##     <ssv:Parameter name="param2">
+##     <ssv:Parameter name="sub-system.param2">
 ##       <ssv:Real value="400.0"/>
 ##     </ssv:Parameter>
-##     <ssv:Parameter name="input2">
+##     <ssv:Parameter name="sub-system.input2">
 ##       <ssv:Real value="500.0"/>
 ##     </ssv:Parameter>
-##     <ssv:Parameter name="k1">
+##     <ssv:Parameter name="Add1.k1">
 ##       <ssv:Real value="2.0"/>
 ##     </ssv:Parameter>
-##     <ssv:Parameter name="k2">
+##     <ssv:Parameter name="Add1.k2">
 ##       <ssv:Real value="3.0"/>
 ##     </ssv:Parameter>
-##     <ssv:Parameter name="k1">
+##     <ssv:Parameter name="Add2.k1">
 ##       <ssv:Real value="100.0"/>
 ##     </ssv:Parameter>
-##     <ssv:Parameter name="k2">
+##     <ssv:Parameter name="Add2.k2">
 ##       <ssv:Real value="300.0"/>
 ##     </ssv:Parameter>
 ##   </ssv:Parameters>

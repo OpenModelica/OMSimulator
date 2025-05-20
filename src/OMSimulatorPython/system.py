@@ -261,14 +261,14 @@ class System:
       case _:
         raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component")
 
-  def exportSSVTemplateHelper(self, node):
+  def exportSSVTemplateHelper(self, node, prefix = None):
     """Exports all parameters in ssp to an XML node."""
-    self.value.add_parameters(node)
+    self.value.add_parameters(node, prefix)
     for key, element in self.elements.items():
       if isinstance(element, System):
-        element.exportSSVTemplateHelper(node)
+        element.exportSSVTemplateHelper(node, key)
       elif isinstance(element, Component):
-        element.exportSSVTemplate(node)
+        element.exportSSVTemplate(node, key)
       else:
         # Handle other types of elements if needed
         logger.error(f"Unknown element type '{type(element)}' for element '{key}'. Skipping export.")
