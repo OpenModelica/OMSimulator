@@ -541,21 +541,48 @@ oms_status_enu_t oms::AlgLoop::fixPointIteration(System& syst, DirectedGraph& gr
     for (int i=0; i<size; ++i)
     {
       int output = SCC.connections[i].first;
-      if (oms_status_ok != syst.getReal(graph.getNodes()[output].getName(), res[i]))
+      if (graph.getNodes()[output].getType() == oms_signal_type_real)
       {
-        delete[] res;
-        return oms_status_error;
+        if (oms_status_ok != syst.getReal(graph.getNodes()[output].getName(), res[i]))
+        {
+          delete[] res;
+          return oms_status_error;
+        }
+      }
+      // check for boolean types in discrete connections
+      else if (graph.getNodes()[output].getType() == oms_signal_type_boolean)
+      {
+        bool value;
+        if (oms_status_ok != syst.getBoolean(graph.getNodes()[output].getName(), value))
+        {
+          delete[] res;
+          return oms_status_error;
+        }
+        res[i] = value ? 1.0 : 0.0;
       }
     }
+
 
     // update inputs
     for (int i=0; i<size; ++i)
     {
       int input = SCC.connections[i].second;
-      if (oms_status_ok != syst.setReal(graph.getNodes()[input].getName(), res[i]))
+      if (graph.getNodes()[input].getType() == oms_signal_type_real)
       {
-        delete[] res;
-        return oms_status_error;
+        if (oms_status_ok != syst.setReal(graph.getNodes()[input].getName(), res[i]))
+        {
+          delete[] res;
+          return oms_status_error;
+        }
+      }
+      // check for boolean types in discrete connections
+      else if (graph.getNodes()[input].getType() == oms_signal_type_boolean)
+      {
+        if (oms_status_ok != syst.setBoolean(graph.getNodes()[input].getName(), res[i] > 0.1))
+        {
+          delete[] res;
+          return oms_status_error;
+        }
       }
     }
 
@@ -577,12 +604,27 @@ oms_status_enu_t oms::AlgLoop::fixPointIteration(System& syst, DirectedGraph& gr
     for (int i=0; i<size; ++i)
     {
       int output = SCC.connections[i].first;
-      if (oms_status_ok != syst.getReal(graph.getNodes()[output].getName(), value))
+      if (graph.getNodes()[output].getType() == oms_signal_type_real)
       {
-        delete[] res;
-        return oms_status_error;
+        if (oms_status_ok != syst.getReal(graph.getNodes()[output].getName(), value))
+        {
+          delete[] res;
+          return oms_status_error;
+        }
+        res[i] -= value;
       }
-      res[i] -= value;
+      // check for boolean types in discrete connections
+      else if (graph.getNodes()[output].getType() == oms_signal_type_boolean)
+      {
+        bool _value;
+        if (oms_status_ok != syst.getBoolean(graph.getNodes()[output].getName(), _value))
+        {
+          delete[] res;
+          return oms_status_error;
+        }
+        value = _value ? 1.0 : 0.0;
+        res[i] -= value;
+      }
 
       if (Flags::DumpAlgLoops())
         ss << "  " << graph.getNodes()[output].getName().c_str() << ": " << value << std::endl;

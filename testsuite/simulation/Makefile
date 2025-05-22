@@ -13,6 +13,7 @@ deleteStartValues.lua \
 deleteStartValuesInSSV.lua \
 deleteStartValuesInSSV1.lua \
 deleteStartValuesInSSV2.lua \
+discreteConnection.lua \
 DualMassOscillator.lua \
 duplicateActivateVariant1.lua \
 duplicateActivateVariant2.py \
