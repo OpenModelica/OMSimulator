@@ -51,7 +51,7 @@ read_file("mapping2.ssm")
 ## </ssv:ParameterSet>
 ##
 ## <?xml version='1.0' encoding='utf-8'?>
-## <ssm:ParameterMapping xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" version="2.0" name="parameterMapping">
+## <ssm:ParameterMapping xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" version="2.0">
 ##   <ssm:MappingEntry source="Input1" target="Add1.u1"/>
 ##   <ssm:MappingEntry source="Input1" target="u2"/>
 ##   <ssm:MappingEntry source="Input1" target="u3"/>
