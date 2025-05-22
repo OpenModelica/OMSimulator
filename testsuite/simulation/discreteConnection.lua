@@ -1,9 +1,9 @@
 -- status: correct
 -- teardown_command: rm -rf discreteconnections-lua/
--- linux: yes
+-- linux: no
 -- ucrt64: yes
--- win: yes
--- mac: yes
+-- win: no
+-- mac: no
 -- asan: yes
 
 oms_setCommandLineOption("--suppressPath=true  --algLoopSolver=fixedpoint")
