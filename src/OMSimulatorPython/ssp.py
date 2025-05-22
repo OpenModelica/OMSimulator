@@ -9,6 +9,7 @@ from pathlib import Path
 from OMSimulator.fmu import FMU
 from OMSimulator.settings import suppress_path_to_str
 from OMSimulator.ssv import SSV
+from OMSimulator.ssm import SSM
 
 from OMSimulator import SSD, CRef, namespace
 from lxml import etree as ET
@@ -106,6 +107,8 @@ class SSP:
       self.resources[str(new_name)] = FMU(fmu_path = filePath)
     elif Path(filename).suffix == ".ssv":
       self.resources[str(new_name)] = SSV(ssv_path = filePath)
+    elif Path(filename).suffix == ".ssm":
+      self.resources[str(new_name)] = SSM(ssm_path = filePath)
     ##TODO check for .ssv file and if ssv instances provided
     else:
       self.resources[Path(filename).name] = new_name
@@ -262,6 +265,9 @@ class SSP:
       print(f"|--   {resource}")
       if isinstance(self.resources[resource], SSV):
         print(f"|--   |-- Parameter Bindings:")
+        self.resources[resource].list("|--   |-- |--")
+      elif isinstance(self.resources[resource], SSM):
+        print(f"|--   |-- Parameter Mapping:")
         self.resources[resource].list("|--   |-- |--")
     print(f"|-- Active Variant: {self.activeVariantName}")
     for ssd in self.variants.values():

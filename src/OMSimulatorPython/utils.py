@@ -9,6 +9,7 @@ from OMSimulator.unit import Unit
 from OMSimulator.variable import Causality, SignalType
 from OMSimulator.elementgeometry import ElementGeometry
 from OMSimulator import namespace, CRef
+from collections import defaultdict
 
 logger = logging.getLogger(__name__)
 
@@ -110,6 +111,17 @@ def parseSSV(filename):
   validateSSP(root, filename, "SystemStructureParameterValues.xsd")
   parameters = root.find("ssv:Parameters", namespaces=namespace.ns)
   return parseParameterBindingHelper(parameters)
+
+def parseSSM(filename):
+  tree = ET.parse(filename)
+  root = tree.getroot()
+  validateSSP(root, filename, "SystemStructureParameterMapping.xsd")
+  mappingEntry = defaultdict(list)
+  for mapping in root.findall("ssm:MappingEntry", namespaces=namespace.ns):
+    source = mapping.get("source")
+    target = mapping.get("target")
+    mappingEntry[source].append(target)
+  return mappingEntry
 
 def parseParameterBindingHelper(parameters):
   if parameters is not None:

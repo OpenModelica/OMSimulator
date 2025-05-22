@@ -36,8 +36,7 @@ class SSM:
     ssm_node = ET.Element(namespace.tag("ssm", "ParameterMapping"),
                                    nsmap={"ssc": "http://ssp-standard.org/SSP1/SystemStructureCommon",
                                           "ssm": "http://ssp-standard.org/SSP1/SystemStructureParameterMapping"},
-                                   version = "2.0",
-                                   name = "parameterMapping")
+                                   version = "2.0")
 
     for source, targets in self.mappingEntry.items():
       for target in targets:
@@ -53,4 +52,7 @@ class SSM:
       file.write(xml)
 
   def importFromSSM(self, filename):
-    pass
+    mappingentry = utils.parseSSM(filename)
+    for source, targets in mappingentry.items():
+      for target in targets:
+        self.map(source, target)
