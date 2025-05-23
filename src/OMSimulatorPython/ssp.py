@@ -138,14 +138,14 @@ class SSP:
       raise ValueError("No active variant set in the SSP.")
     self.activeVariant.newSolver(options)
 
-  def addSSVReference(self, cref: CRef, resource: str):
+  def addSSVReference(self, cref: CRef, resource1: str, resource2: str | None = None):
     if self.activeVariant is None:
       raise ValueError("No active variant set in the SSP.")
 
-    if resource not in self.resources:
-      logger.warning(f"Resource '{resource}' not found in the SSP resources. Add the resource using the addResource API")
+    if resource1 not in self.resources:
+      logger.warning(f"Resource '{resource1}' not found in the SSP resources. Add the resource using the addResource API")
 
-    self.activeVariant.addSSVReference(cref, resource)
+    self.activeVariant.addSSVReference(cref, resource1, resource2)
 
   def exportSSVTemplate(self, cref: CRef, filename: Path | None = None):
     if self.activeVariant is None:

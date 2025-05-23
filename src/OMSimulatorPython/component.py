@@ -24,8 +24,8 @@ class Component:
       raise ValueError(f"Connector '{connector.name}' already exists in {self.name}")
     self.connectors.append(connector)
 
-  def addSSVReference(self, resource: str):
-    self.parameterResources.append(resource)
+  def addSSVReference(self, resource1: str, resource2: str | None = None):
+    self.parameterResources.append({resource1: resource2})
 
   def swapSSVReference(self, resource1: str, resource2: str):
     self.removeSSVReference(resource1)
@@ -72,7 +72,10 @@ class Component:
     ## list parameteres in ssv files
     if len(self.parameterResources) > 0:
       for resource in self.parameterResources:
-        print(f"{prefix} Parameter Bindings: {resource}")
+        for key, value in resource.items():
+          print(f"{prefix} Parameter Bindings: {key}")
+          if value:
+            print(f"{prefix} |-- Parameter Mapping: {value}")
 
     ## list solver settings
     if self.solver:
@@ -104,8 +107,12 @@ class Component:
     if len(self.parameterResources) > 0:
       parameter_bindings_node = ET.SubElement(component_node, namespace.tag("ssd", "ParameterBindings"))
       for resource in self.parameterResources:
-        parameter_binding_node = ET.SubElement(parameter_bindings_node, namespace.tag("ssd", "ParameterBinding"))
-        parameter_binding_node.set("source", resource)
+        for key, value in resource.items():
+          parameter_binding_node = ET.SubElement(parameter_bindings_node, namespace.tag("ssd", "ParameterBinding"))
+          parameter_binding_node.set("source", key)
+          if value:
+            parameter_mapping_node = ET.SubElement(parameter_binding_node, namespace.tag("ssd", "ParameterMapping"))
+            parameter_mapping_node.set("source", value)
 
     ## export Annotations
     if self.solver:

@@ -145,7 +145,10 @@ class System:
     ## list parameteres in ssv files
     if len(self.parameterResources) > 0:
       for resource in self.parameterResources:
-        print(f"{prefix} Parameter Bindings: {resource}")
+        for key, value in resource.items():
+          print(f"{prefix} Parameter Bindings: {key}")
+          if value:
+            print(f"{prefix} |-- Parameter Mapping: {value}")
 
     ## list elements
     if len(self.elements) > 0:
@@ -197,19 +200,19 @@ class System:
       self.elements[first] = component
       return component
 
-  def addSSVReference(self, cref: CRef, resource: str):
+  def addSSVReference(self, cref: CRef, resource1: str, resource2: str | None = None):
     ## top level system
     if cref is None:
-      self.parameterResources.append(resource)
+      self.parameterResources.append({resource1: resource2})
       return
 
     first = cref.first()
 
     match self.elements.get(first):
       case System():
-        self.elements[first].addSSVReference(cref.pop_first(), resource)
+        self.elements[first].addSSVReference(cref.pop_first(), resource1, resource2)
       case Component():
-        self.elements[first].addSSVReference(resource)
+        self.elements[first].addSSVReference(resource1, resource2)
       case _:
         raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component")
 
@@ -469,8 +472,12 @@ class System:
     if len(self.parameterResources) > 0:
       parameter_bindings_node = ET.SubElement(node, namespace.tag("ssd", "ParameterBindings"))
       for resource in self.parameterResources:
-        parameter_binding_node = ET.SubElement(parameter_bindings_node, namespace.tag("ssd", "ParameterBinding"))
-        parameter_binding_node.set("source", resource)
+        for key, value in resource.items():
+          parameter_binding_node = ET.SubElement(parameter_bindings_node, namespace.tag("ssd", "ParameterBinding"))
+          parameter_binding_node.set("source", key)
+          if value:
+            parameter_mapping_node = ET.SubElement(parameter_binding_node, namespace.tag("ssd", "ParameterMapping"))
+            parameter_mapping_node.set("source", value)
 
     ## export elements
     if len(self.elements) > 0:
