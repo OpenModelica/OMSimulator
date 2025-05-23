@@ -65,11 +65,14 @@ class Values:
     parameters_node = ET.SubElement(node, namespace.tag("ssv", "Parameters"))
     self.add_parameters(parameters_node)
 
-  def add_parameters(self, parameters_node):
+  def add_parameters(self, parameters_node, prefix = None):
     """Generic function to add XML parameters based on the value type."""
     for key, (value, unit, description) in self.start_values.items():
       parameter_node = ET.SubElement(parameters_node, namespace.tag("ssv", "Parameter"))
-      parameter_node.set("name", str(key))
+      if prefix:
+        parameter_node.set("name", str(prefix) + "." + str(key))
+      else:
+        parameter_node.set("name", str(key))
       if description:
         parameter_node.set("description", description)
       match value:

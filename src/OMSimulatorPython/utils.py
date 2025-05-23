@@ -9,6 +9,7 @@ from OMSimulator.unit import Unit
 from OMSimulator.variable import Causality, SignalType
 from OMSimulator.elementgeometry import ElementGeometry
 from OMSimulator import namespace, CRef
+from collections import defaultdict
 
 logger = logging.getLogger(__name__)
 
@@ -87,11 +88,15 @@ def parseParameterBindings(node, obj, resources):
   if parameter_bindings is not None:
     for binding in parameter_bindings.findall("ssd:ParameterBinding", namespaces=namespace.ns):
       source = binding.get("source")
-      if binding.get("source"):
+      if source is not None:
         ## use the instantiated ssv class to set the parameter Resources
         if source not in resources:
           logger.warning(f"SSV file not found: {source}")
-        obj.parameterResources.append(source)
+        parameter_mapping = binding.find("ssd:ParameterMapping", namespaces=namespace.ns)
+        mapped_source = parameter_mapping.get("source") if parameter_mapping is not None else None
+        if mapped_source is not None and  mapped_source not in resources:
+          logger.warning(f"SSM file not found: {mapped_source}")
+        obj.parameterResources.append({source: mapped_source})
       else:
         values = binding.find("ssd:ParameterValues", namespaces=namespace.ns)
         if values is not None:
@@ -110,6 +115,17 @@ def parseSSV(filename):
   validateSSP(root, filename, "SystemStructureParameterValues.xsd")
   parameters = root.find("ssv:Parameters", namespaces=namespace.ns)
   return parseParameterBindingHelper(parameters)
+
+def parseSSM(filename):
+  tree = ET.parse(filename)
+  root = tree.getroot()
+  validateSSP(root, filename, "SystemStructureParameterMapping.xsd")
+  mappingEntry = defaultdict(list)
+  for mapping in root.findall("ssm:MappingEntry", namespaces=namespace.ns):
+    source = mapping.get("source")
+    target = mapping.get("target")
+    mappingEntry[source].append(target)
+  return mappingEntry
 
 def parseParameterBindingHelper(parameters):
   if parameters is not None:

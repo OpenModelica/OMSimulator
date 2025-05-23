@@ -8,6 +8,7 @@ duplicateVariant2.py \
 exportJson1.py \
 exportJson2.py \
 exportJson4.py \
+exportSSVTemplate1.py \
 fmuinfo.py \
 invalidSSD.py \
 invalidSSV.py \
@@ -26,6 +27,8 @@ setSolver2.py \
 setValueSSV1.py \
 setValueSSV2.py \
 setValueSSV3.py \
+setMappingSSM1.py \
+setMappingSSM2.py \
 swapSSV1.py \
 swapSSV2.py \
 swapSSV3.py \

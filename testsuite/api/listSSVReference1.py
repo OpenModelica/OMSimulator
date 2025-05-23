@@ -129,9 +129,9 @@ print(f"Component Add3 SSV resources      : {model2.listSSVReference(CRef('defau
 ## |-- |-- stopTime: 1.0
 ## List of SSV references
 ## =======================
-## Top level system SSV resources    : ['resources/list1.ssv']
-## Top level sub-system SSV resources: ['resources/list2.ssv']
-## Component Add1 SSV resources      : ['resources/list1.ssv', 'resources/list2.ssv']
-## Component Add2 SSV resources      : ['resources/list2.ssv']
-## Component Add3 SSV resources      : ['resources/list1.ssv']
+## Top level system SSV resources    : [{'resources/list1.ssv': None}]
+## Top level sub-system SSV resources: [{'resources/list2.ssv': None}]
+## Component Add1 SSV resources      : [{'resources/list1.ssv': None}, {'resources/list2.ssv': None}]
+## Component Add2 SSV resources      : [{'resources/list2.ssv': None}]
+## Component Add3 SSV resources      : [{'resources/list1.ssv': None}]
 ## endResult
