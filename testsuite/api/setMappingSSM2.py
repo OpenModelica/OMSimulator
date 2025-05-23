@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command: rm -rf setMappingSSM2.ssp tmp-setMappingSSM2/ myfile5.ssv myfile5.ssm
+## teardown_command: rm -rf setMappingSSM2.ssp tmp-setMappingSSM2/ mappingssm2.ssv mappingssm2.ssm
 ## linux: yes
 ## ucrt64: yes
 ## win: yes
@@ -35,7 +35,7 @@ component1 = model.addComponent(CRef('default', 'Add1'), 'resources/Add.fmu')
 ssv1 = SSV()
 ssv1.setValue("connector_param", 2.0)
 ssv1.setValue("connector_input", 3.0)
-ssv1.export("myfile5.ssv")
+ssv1.export("mappingssm2.ssv")
 
 ssm = SSM()
 ssm.map("connector_param", "param1")
@@ -43,18 +43,18 @@ ssm.map("connector_param", "param2")
 ssm.map("connector_param", "param3")
 ssm.map("connector_input", "input1")
 ssm.map("connector_input", "input2")
-ssm.export("myfile5.ssm")
+ssm.export("mappingssm2.ssm")
 
 
-## add myfile5.ssv to to ssp resources
-model.addResource("myfile5.ssv", "resources/myfile5.ssv")
-## add myfile5.ssm to to ssp resources
-model.addResource("myfile5.ssm", "resources/myfile5.ssm")
+## add mappingssm2.ssv to to ssp resources
+model.addResource("mappingssm2.ssv", "resources/mappingssm2.ssv")
+## add mappingssm2.ssm to to ssp resources
+model.addResource("mappingssm2.ssm", "resources/mappingssm2.ssm")
 
 ## add parameter mapping references to all components
-model.addSSVReference(CRef('default'), 'resources/myfile5.ssv', 'resources/myfile5.ssm')
-model.addSSVReference(CRef('default', 'sub-system'), 'resources/myfile5.ssv', 'resources/myfile5.ssm')
-model.addSSVReference(CRef('default', 'Add1'), 'resources/myfile5.ssv', 'resources/myfile5.ssm')
+model.addSSVReference(CRef('default'), 'resources/mappingssm2.ssv', 'resources/mappingssm2.ssm')
+model.addSSVReference(CRef('default', 'sub-system'), 'resources/mappingssm2.ssv', 'resources/mappingssm2.ssm')
+model.addSSVReference(CRef('default', 'Add1'), 'resources/mappingssm2.ssv', 'resources/mappingssm2.ssm')
 
 model.export('setMappingSSM2.ssp')
 
@@ -66,7 +66,7 @@ model2.list()
 ## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
 ## |--   resources/Add.fmu
-## |--   resources/myfile5.ssm
+## |--   resources/mappingssm2.ssm
 ## |--   |-- Parameter Mapping:
 ## |--   |-- |-- source: connector_param
 ## |--   |-- |-- |-- target: param1
@@ -75,7 +75,7 @@ model2.list()
 ## |--   |-- |-- source: connector_input
 ## |--   |-- |-- |-- target: input1
 ## |--   |-- |-- |-- target: input2
-## |--   resources/myfile5.ssv
+## |--   resources/mappingssm2.ssv
 ## |--   |-- Parameter Bindings:
 ## |--   |-- |-- (Real connector_param, 2.0, None, 'None')
 ## |--   |-- |-- (Real connector_input, 3.0, None, 'None')
@@ -89,15 +89,15 @@ model2.list()
 ## |-- |-- |-- |-- (param3, Causality.parameter, SignalType.Real, None, 'None')
 ## |-- |-- |-- |-- (input1, Causality.input, SignalType.Real, None, 'None')
 ## |-- |-- |-- |-- (input2, Causality.input, SignalType.Real, None, 'None')
-## |-- |-- |-- Parameter Bindings: resources/myfile5.ssv
-## |-- |-- |-- |-- Parameter Mapping: resources/myfile5.ssm
+## |-- |-- |-- Parameter Bindings: resources/mappingssm2.ssv
+## |-- |-- |-- |-- Parameter Mapping: resources/mappingssm2.ssm
 ## |-- |-- |-- Elements:
 ## |-- |-- |-- |-- System: sub-system 'None'
 ## |-- |-- |-- |-- |-- Connectors:
 ## |-- |-- |-- |-- |-- |-- (param2, Causality.parameter, SignalType.Real, None, 'None')
 ## |-- |-- |-- |-- |-- |-- (input2, Causality.input, SignalType.Real, None, 'None')
-## |-- |-- |-- |-- |-- Parameter Bindings: resources/myfile5.ssv
-## |-- |-- |-- |-- |-- |-- Parameter Mapping: resources/myfile5.ssm
+## |-- |-- |-- |-- |-- Parameter Bindings: resources/mappingssm2.ssv
+## |-- |-- |-- |-- |-- |-- Parameter Mapping: resources/mappingssm2.ssm
 ## |-- |-- |-- |-- FMU: Add1 'None'
 ## |-- |-- |-- |-- |-- path: resources/Add.fmu
 ## |-- |-- |-- |-- |-- Connectors:
@@ -106,8 +106,8 @@ model2.list()
 ## |-- |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, 'Connector of Real output signal')
 ## |-- |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None, 'Gain of input signal 1')
 ## |-- |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, 'Gain of input signal 2')
-## |-- |-- |-- |-- |-- Parameter Bindings: resources/myfile5.ssv
-## |-- |-- |-- |-- |-- |-- Parameter Mapping: resources/myfile5.ssm
+## |-- |-- |-- |-- |-- Parameter Bindings: resources/mappingssm2.ssv
+## |-- |-- |-- |-- |-- |-- Parameter Mapping: resources/mappingssm2.ssm
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
