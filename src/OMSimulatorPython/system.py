@@ -248,11 +248,18 @@ class System:
       case _:
         raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component")
 
+  def _remove(self, resource: str):
+    for entry in self.parameterResources:
+      for key, _ in entry.items():
+        if key == resource:
+          del entry[key]
+          return
+    raise ValueError(f"Resource '{resource}' not found in {self.name}")
+
   def removeSSVReference(self, cref: CRef, resource: str):
     ## top level system
     if cref is None:
-      self.parameterResources.remove(resource)
-      return
+      return self._remove(resource)
 
     first = cref.first()
 

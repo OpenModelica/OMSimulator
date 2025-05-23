@@ -38,10 +38,12 @@ class Component:
     self.value.add_parameters(node, prefix)
 
   def removeSSVReference(self, resource: str):
-    if resource in self.parameterResources:
-      self.parameterResources.remove(resource)
-    else:
-      raise ValueError(f"Resource '{resource}' not found in {self.name}")
+    for entry in self.parameterResources:
+      for key, value in entry.items():
+        if key == resource:
+          del entry[key]
+          return
+    raise ValueError(f"Resource '{resource}' not found in {self.name}")
 
   def list(self, prefix=""):
     print(f"{prefix} FMU: {self.name} '{self.description}'")
