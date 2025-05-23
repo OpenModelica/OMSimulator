@@ -46,18 +46,15 @@ ssm.map("connector_input", "input2")
 ssm.export("myfile5.ssm")
 
 
-
-
-
 ## add myfile5.ssv to to ssp resources
 model.addResource("myfile5.ssv", "resources/myfile5.ssv")
 ## add myfile5.ssm to to ssp resources
 model.addResource("myfile5.ssm", "resources/myfile5.ssm")
 
-
-model.addSSVReference(CRef('default'), 'resources/myfile5.ssv')
-
-# model.addSSVReference(CRef('default', 'sub-system'), 'resources/myfile6.ssv', 'resources/myfile2.ssm')
+## add parameter mapping references to all components
+model.addSSVReference(CRef('default'), 'resources/myfile5.ssv', 'resources/myfile5.ssm')
+model.addSSVReference(CRef('default', 'sub-system'), 'resources/myfile5.ssv', 'resources/myfile5.ssm')
+model.addSSVReference(CRef('default', 'Add1'), 'resources/myfile5.ssv', 'resources/myfile5.ssm')
 
 model.export('setMappingSSM2.ssp')
 
@@ -93,11 +90,14 @@ model2.list()
 ## |-- |-- |-- |-- (input1, Causality.input, SignalType.Real, None, 'None')
 ## |-- |-- |-- |-- (input2, Causality.input, SignalType.Real, None, 'None')
 ## |-- |-- |-- Parameter Bindings: resources/myfile5.ssv
+## |-- |-- |-- |-- Parameter Mapping: resources/myfile5.ssm
 ## |-- |-- |-- Elements:
 ## |-- |-- |-- |-- System: sub-system 'None'
 ## |-- |-- |-- |-- |-- Connectors:
 ## |-- |-- |-- |-- |-- |-- (param2, Causality.parameter, SignalType.Real, None, 'None')
 ## |-- |-- |-- |-- |-- |-- (input2, Causality.input, SignalType.Real, None, 'None')
+## |-- |-- |-- |-- |-- Parameter Bindings: resources/myfile5.ssv
+## |-- |-- |-- |-- |-- |-- Parameter Mapping: resources/myfile5.ssm
 ## |-- |-- |-- |-- FMU: Add1 'None'
 ## |-- |-- |-- |-- |-- path: resources/Add.fmu
 ## |-- |-- |-- |-- |-- Connectors:
@@ -106,6 +106,8 @@ model2.list()
 ## |-- |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, 'Connector of Real output signal')
 ## |-- |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None, 'Gain of input signal 1')
 ## |-- |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, 'Gain of input signal 2')
+## |-- |-- |-- |-- |-- Parameter Bindings: resources/myfile5.ssv
+## |-- |-- |-- |-- |-- |-- Parameter Mapping: resources/myfile5.ssm
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
