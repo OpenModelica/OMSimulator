@@ -337,10 +337,11 @@ class System:
     element = self.elements.get(element_name, None)
 
     ## check if element is a top level system connectors
-    if self._connectorExists(cref):
+    ## or allow non existing connectors to support parameter mapping throgh SSM inline or ssm file by checking if cref
+    if self._connectorExists(cref) or cref.is_root():
       return
 
-    if element is None and not self._connectorExists(cref):
+    if element is None:
       raise ValueError(f"Element '{element_name}' not found in System '{self.name}'")
 
     match element:
@@ -353,9 +354,9 @@ class System:
 
   def setValue(self, cref: CRef, value, unit = None, description = None):
     first = cref.first()
-
-    # Check if the cref is a top level system connector
-    if self._connectorExists(first):
+    ## Check if the cref is a top level system connector
+    ## or allow non existing connectors to support parameter mapping throgh SSM inline or ssm file by checking if cref
+    if self._connectorExists(first) or cref.is_root():
       self.value.setValue(cref, value, unit)
       return
 
