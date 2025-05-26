@@ -146,6 +146,11 @@ class SSD:
     subcref = self._validateCref(cref)
     self.system.setValue(subcref, value, unit, description)
 
+  def mapParameter(self, cref: CRef, source: str, target: str):
+    '''Maps a parameter from source to target in the system.'''
+    subcref = self._validateCref(cref)
+    self.system.mapParameter(subcref, source, target)
+
   def addSystem(self, cref: CRef):
     if self.system is None:
       raise ValueError("Variant doesn't contain a system")

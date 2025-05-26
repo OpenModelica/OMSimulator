@@ -29,6 +29,7 @@ setValueSSV2.py \
 setValueSSV3.py \
 setMappingSSM1.py \
 setMappingSSM2.py \
+setMappingSSM3.py \
 swapSSV1.py \
 swapSSV2.py \
 swapSSV3.py \

@@ -8,6 +8,7 @@ from OMSimulator import namespace
 
 class Component:
   def __init__(self, name: CRef, fmuPath: Path | str, connectors=None, unitDefinitions=None):
+    from OMSimulator.ssm import SSM
     self.name = CRef(name)
     self.fmuPath = Path(fmuPath)
     self.connectors = connectors or list()
@@ -15,6 +16,7 @@ class Component:
     self.elementgeometry = None
     self.description = None
     self.value = Values()
+    self.parameterMapping = SSM()
     self.solver = None
     self.parameterResources = []
     self.implementation = None
@@ -26,6 +28,9 @@ class Component:
 
   def addSSVReference(self, resource1: str, resource2: str | None = None):
     self.parameterResources.append({resource1: resource2})
+
+  def mapParameter(self, source: str, target: str):
+    self.parameterMapping.map(source, target)
 
   def swapSSVReference(self, resource1: str, resource2: str):
     self.removeSSVReference(resource1)
@@ -64,6 +69,9 @@ class Component:
     if not self.value.empty():
       print(f"{prefix} Inline Parameter Bindings:")
       self.value.list(prefix=prefix + " |--")
+      if not self.parameterMapping.empty():
+        print(f"{prefix} |-- Inline Parameter Mapping:")
+        self.parameterMapping.list(prefix=prefix + " |-- |--")
 
     ## list unit definitions
     if len(self.unitDefinitions) > 0:

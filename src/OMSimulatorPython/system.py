@@ -4,9 +4,8 @@ from lxml import etree as ET
 from OMSimulator.component import Component
 from OMSimulator.connector import Connector
 from OMSimulator.connection import Connection
-from OMSimulator.fmu import FMU
 from OMSimulator.values import Values
-from OMSimulator.ssv import SSV
+from OMSimulator.ssm import SSM
 from OMSimulator.elementgeometry import ElementGeometry
 
 from OMSimulator import CRef, namespace, utils
@@ -88,6 +87,7 @@ class System:
     self.elements = dict()
     self.connections = list()
     self.value = Values()
+    self.parameterMapping = SSM()
     self.parameterResources = []
     self.model = model
     self.elementgeometry = None
@@ -141,6 +141,9 @@ class System:
     if not self.value.empty():
       print(f"{prefix} Inline Parameter Bindings:")
       self.value.list(prefix=prefix + " |--")
+      if not self.parameterMapping.empty():
+        print(f"{prefix} |-- Inline Parameter Mapping:")
+        self.parameterMapping.list(prefix=prefix + " |-- |--")
 
     ## list parameteres in ssv files
     if len(self.parameterResources) > 0:
@@ -365,6 +368,21 @@ class System:
         self.elements[first].setValue(cref.pop_first(), value, unit, description)
       case Component():
         self.elements[first].setValue(cref.last(), value, unit, description)
+      case _:
+        raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component or a Connector")
+
+  def mapParameter(self, cref: CRef, source: str, target: str):
+    if cref is None:
+      self.parameterMapping.map(source, target)
+      return
+
+    first = cref.first()
+
+    match self.elements.get(first):
+      case System():
+        self.elements[first].mapParameter(cref.pop_first(), source, target)
+      case Component():
+        self.elements[first].mapParameter(source, target)
       case _:
         raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component or a Connector")
 

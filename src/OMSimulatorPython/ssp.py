@@ -220,6 +220,13 @@ class SSP:
 
     self.activeVariant.setValue(cref, value, unit, description)
 
+  def mapParameter(self, cref: CRef, source: str, target: str):
+    """Maps a parameter from source to target in the active variant."""
+    if self.activeVariant is None:
+      raise ValueError("No active variant set in the SSP.")
+
+    self.activeVariant.mapParameter(cref, source, target)
+
   def setSolver(self, cref: CRef, name: str):
     if self.activeVariant is None:
       raise ValueError("No active variant set in the SSP.")
