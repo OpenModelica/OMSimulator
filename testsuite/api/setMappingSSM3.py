@@ -1,11 +1,11 @@
 ## status: correct
-## teardown_command: rm -rf setMappingSSM3.ssp
+## teardown_command: rm -rf setMappingSSM3.ssp tmp-setMappingSSM3
 ## linux: yes
 ## ucrt64: yes
 ## win: yes
 ## mac: yes
 
-from OMSimulator import SSP, CRef, Settings, SSV, SSM, Connector, Causality, SignalType
+from OMSimulator import SSP, CRef, Settings, Connector, Causality, SignalType
 
 Settings.suppressPath = True
 
@@ -63,7 +63,7 @@ model2.list()
 ## |--   resources/Add.fmu
 ## |-- Active Variant: default
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Variant "default": None
+## |-- Variant "default": <hidden>
 ## |-- |-- System: default 'None'
 ## |-- |-- |-- Connectors:
 ## |-- |-- |-- |-- (param1, Causality.parameter, SignalType.Real, None, 'None')
@@ -78,7 +78,7 @@ model2.list()
 ## |-- |-- |-- |-- |-- source: connector_param
 ## |-- |-- |-- |-- |-- |-- targets: ['param1', 'param2', 'param3']
 ## |-- |-- |-- |-- |-- source: connector_input
-## |-- |-- |-- |-- |-- |-- targets: ['input1', 'input2', 'input2']
+## |-- |-- |-- |-- |-- |-- targets: ['input1', 'input2']
 ## |-- |-- |-- Elements:
 ## |-- |-- |-- |-- System: sub-system 'None'
 ## |-- |-- |-- |-- |-- Connectors:
@@ -90,6 +90,8 @@ model2.list()
 ## |-- |-- |-- |-- |-- |-- Inline Parameter Mapping:
 ## |-- |-- |-- |-- |-- |-- |-- source: connector_param
 ## |-- |-- |-- |-- |-- |-- |-- |-- targets: ['param2']
+## |-- |-- |-- |-- |-- |-- |-- source: connector_input
+## |-- |-- |-- |-- |-- |-- |-- |-- targets: ['input2']
 ## |-- |-- |-- |-- FMU: Add1 'None'
 ## |-- |-- |-- |-- |-- path: resources/Add.fmu
 ## |-- |-- |-- |-- |-- Connectors:

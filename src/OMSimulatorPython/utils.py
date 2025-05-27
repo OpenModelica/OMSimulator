@@ -105,8 +105,13 @@ def parseParameterBindings(node, obj, resources):
             parameters = param_set.find("ssv:Parameters", namespaces=namespace.ns)
             parameterValues = parseParameterBindingHelper(parameters)
             _setParameters(parameterValues, obj)
+          ## parse parameter mapping
+          parameter_mapping_ssd = binding.find("ssd:ParameterMapping", namespaces=namespace.ns)
+          if parameter_mapping_ssd is not None:
+            parameter_mapping_ssm = parameter_mapping_ssd.find("ssm:ParameterMapping", namespaces=namespace.ns)
+            for mapping in parameter_mapping_ssm.findall("ssm:MappingEntry", namespaces=namespace.ns):
+              obj.parameterMapping.map(mapping.get("source"), mapping.get("target"))
 
-          units = param_set.find("ssv:Units", namespaces=namespace.ns)
           Unit.importFromNode(param_set, obj, tagname="ssv:Units")
 
 def parseSSV(filename):

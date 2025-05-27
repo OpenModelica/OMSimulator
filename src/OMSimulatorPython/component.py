@@ -111,7 +111,7 @@ class Component:
       self.elementgeometry.exportToSSD(component_node)
 
     ## export parameter bindings
-    self.value.exportToSSD(component_node, self.unitDefinitions)
+    self.value.exportToSSD(component_node, self.parameterMapping, self.unitDefinitions)
 
     ## export parameters binding to ssd file with reference to ssv file
     if len(self.parameterResources) > 0:
