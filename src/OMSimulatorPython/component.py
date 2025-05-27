@@ -30,7 +30,7 @@ class Component:
     self.parameterResources.append({resource1: resource2})
 
   def mapParameter(self, source: str, target: str):
-    self.parameterMapping.map(source, target)
+    self.parameterMapping.mapParameter(source, target)
 
   def swapSSVReference(self, resource1: str, resource2: str):
     self.removeSSVReference(resource1)

@@ -15,7 +15,7 @@ class SSM:
       ##TODO import from ssm
       self.importFromSSM(self.filename)
 
-  def map(self, source: str, target: str):
+  def mapParameter(self, source: str, target: str):
     self.mappingEntry[source].append(target)
 
   def empty(self) -> bool:
@@ -73,4 +73,4 @@ class SSM:
     mappingentry = utils.parseSSM(filename)
     for source, targets in mappingentry.items():
       for target in targets:
-        self.map(source, target)
+        self.mapParameter(source, target)

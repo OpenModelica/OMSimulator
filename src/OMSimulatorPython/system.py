@@ -373,7 +373,7 @@ class System:
 
   def mapParameter(self, cref: CRef, source: str, target: str):
     if cref is None:
-      self.parameterMapping.map(source, target)
+      self.parameterMapping.mapParameter(source, target)
       return
 
     first = cref.first()

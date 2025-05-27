@@ -26,11 +26,11 @@ read_file("mapping1.ssv")
 
 ## set parameter mapping
 ssm1 = SSM()
-ssm1.map("Input1", "Add1.u1")
-ssm1.map("Input1", "u2")
-ssm1.map("Input1", "u3")
-ssm1.map("param1", "k1")
-ssm1.map("param2", "k2")
+ssm1.mapParameter("Input1", "Add1.u1")
+ssm1.mapParameter("Input1", "u2")
+ssm1.mapParameter("Input1", "u3")
+ssm1.mapParameter("param1", "k1")
+ssm1.mapParameter("param2", "k2")
 ssm1.export("mapping2.ssm")
 read_file("mapping2.ssm")
 

@@ -38,11 +38,11 @@ ssv1.setValue("connector_input", 3.0)
 ssv1.export("mappingssm2.ssv")
 
 ssm = SSM()
-ssm.map("connector_param", "param1")
-ssm.map("connector_param", "param2")
-ssm.map("connector_param", "param3")
-ssm.map("connector_input", "input1")
-ssm.map("connector_input", "input2")
+ssm.mapParameter("connector_param", "param1")
+ssm.mapParameter("connector_param", "param2")
+ssm.mapParameter("connector_param", "param3")
+ssm.mapParameter("connector_input", "input1")
+ssm.mapParameter("connector_input", "input2")
 ssm.export("mappingssm2.ssm")
 
 
