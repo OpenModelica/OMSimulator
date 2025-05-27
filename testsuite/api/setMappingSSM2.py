@@ -69,12 +69,9 @@ model2.list()
 ## |--   resources/mappingssm2.ssm
 ## |--   |-- Parameter Mapping:
 ## |--   |-- |-- source: connector_param
-## |--   |-- |-- |-- target: param1
-## |--   |-- |-- |-- target: param2
-## |--   |-- |-- |-- target: param3
+## |--   |-- |-- |-- targets: ['param1', 'param2', 'param3']
 ## |--   |-- |-- source: connector_input
-## |--   |-- |-- |-- target: input1
-## |--   |-- |-- |-- target: input2
+## |--   |-- |-- |-- targets: ['input1', 'input2']
 ## |--   resources/mappingssm2.ssv
 ## |--   |-- Parameter Bindings:
 ## |--   |-- |-- (Real connector_param, 2.0, None, 'None')
