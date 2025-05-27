@@ -2,7 +2,6 @@ import logging
 from lxml import etree as ET
 from pathlib import Path
 
-from OMSimulator.component import Component
 from OMSimulator.connection import Connection, ConnectionGeometry
 from OMSimulator.connector import Connector, ConnectorGeometry
 from OMSimulator.unit import Unit
@@ -30,6 +29,7 @@ def parseDefaultExperiment(node, root):
 def parseElements(node, resources = None):
   """Extract components from <ssd:Elements> section"""
   from OMSimulator.system import System, SystemGeometry
+  from OMSimulator.component import Component
 
   elements = {}
   elements_node = node.find("ssd:Elements", namespaces=namespace.ns)

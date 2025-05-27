@@ -41,7 +41,7 @@ model.setValue(CRef('default', 'sub-system', 'connector_param'), 20.0)
 model.setValue(CRef('default', 'sub-system', 'connector_input'), 30.0)
 ## map sub-system parameters
 model.mapParameter(CRef('default', 'sub-system'), 'connector_param', 'param2')
-model.mapParameter(CRef('default'), 'connector_input', 'input2')
+model.mapParameter(CRef('default', 'sub-system'), 'connector_input', 'input2')
 
 model.addResource('../resources/Modelica.Blocks.Math.Add.fmu', new_name='resources/Add.fmu')
 component1 = model.addComponent(CRef('default', 'Add1'), 'resources/Add.fmu')
@@ -49,12 +49,12 @@ model.setValue(CRef("default", "Add1", "connector_param"), 40.0)
 ## map component parameters
 model.mapParameter(CRef('default', 'Add1'), 'connector_param', 'k1')
 model.mapParameter(CRef('default', 'Add1'), 'connector_param', 'k2')
-model.list()
-
 
 model.export('setMappingSSM3.ssp')
 
 model2 = SSP('setMappingSSM3.ssp')
+
+model2.list()
 
 
 ## Result:

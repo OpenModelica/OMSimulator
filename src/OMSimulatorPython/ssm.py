@@ -29,27 +29,45 @@ class SSM:
       print(f"{prefix} source: {source}")
       print(f"{prefix} |-- targets: {targets}")
 
+  def exportToSSD(self, node):
+    """Exports the SSM mapping to an SSD node."""
+    if not self.mappingEntry:
+      return
+
+    parameter_mapping_node_ssd = ET.SubElement(node, namespace.tag("ssd", "ParameterMapping"))
+    parameter_mapping_node_ssm = ET.SubElement(parameter_mapping_node_ssd, namespace.tag("ssm", "ParameterMapping"))
+
+    self.exportMappingEntry(parameter_mapping_node_ssm)
+
   def export(self, filename : str):
     if not filename:
       raise ValueError("Filename cannot be empty")
+
+    if not self.mappingEntry:
+      return
 
     ssm_node = ET.Element(namespace.tag("ssm", "ParameterMapping"),
                                    nsmap={"ssc": "http://ssp-standard.org/SSP1/SystemStructureCommon",
                                           "ssm": "http://ssp-standard.org/SSP1/SystemStructureParameterMapping"},
                                    version = "2.0")
 
-    for source, targets in self.mappingEntry.items():
-      for target in targets:
-        mapping_node = ET.SubElement(ssm_node, namespace.tag("ssm", "MappingEntry"))
-        mapping_node.set("source", str(source))
-        mapping_node.set("target", str(target))
+    self.exportMappingEntry(ssm_node)
 
+    ## export to xml
     xml = ET.tostring(ssm_node, encoding='utf-8', xml_declaration=True, pretty_print=True).decode('utf-8')
 
     ## write to filesystem
     self.filename = Path(filename).resolve()
     with open(self.filename, "w", encoding="utf-8") as file:
       file.write(xml)
+
+  def exportMappingEntry(self, node):
+    """Exports the SSM mapping entries to an SSD node."""
+    for source, targets in self.mappingEntry.items():
+      for target in targets:
+        ssm_mapping_node = ET.SubElement(node, namespace.tag("ssm", "MappingEntry"))
+        ssm_mapping_node.set("source", str(source))
+        ssm_mapping_node.set("target", str(target))
 
   def importFromSSM(self, filename):
     mappingentry = utils.parseSSM(filename)

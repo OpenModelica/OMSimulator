@@ -1,6 +1,6 @@
 from lxml import etree as ET
 from OMSimulator.unit import Unit
-
+from OMSimulator.ssm import SSM
 from OMSimulator import namespace
 
 
@@ -37,7 +37,7 @@ class Values:
             raise TypeError(f"Unsupported type: {type(value)}")
       print(f"{prefix} ({type_tag} {key}, {value}, {unit}, '{description}')")
 
-  def exportToSSD(self, node, unitDefinitions=None):
+  def exportToSSD(self, node, parameterMapping : SSM | None = None, unitDefinitions = None):
     if self.empty():
       return
 
@@ -50,6 +50,10 @@ class Values:
     parameters_node = ET.SubElement(parameter_set_node, namespace.tag("ssv", "Parameters"))
 
     self.add_parameters(parameters_node)
+
+    ## export parameter mapping inline
+    if parameterMapping:
+      parameterMapping.exportToSSD(parameter_binding_node)
 
     ## export unit definitions
     if unitDefinitions:

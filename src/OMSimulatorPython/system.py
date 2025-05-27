@@ -493,7 +493,8 @@ class System:
         self.elementgeometry.exportToSSD(node)
 
     ## export top level parameter bindings
-    self.value.exportToSSD(node)
+    self.value.exportToSSD(node, self.parameterMapping)
+
     ## export parameters binding to ssd file with reference to ssv file
     if len(self.parameterResources) > 0:
       parameter_bindings_node = ET.SubElement(node, namespace.tag("ssd", "ParameterBindings"))
