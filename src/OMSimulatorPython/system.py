@@ -302,6 +302,35 @@ class System:
       case _:
         raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component")
 
+  def exportSSMTemplateHelper(self, node, prefix = None):
+    """Exports all connectors in ssp to an XML node."""
+    self.parameterMapping.exportSSMTemplate(node, self.connectors, prefix)
+    for key, element in self.elements.items():
+      if isinstance(element, System):
+        element.exportSSMTemplateHelper(node, key)
+      elif isinstance(element, Component):
+        element.exportSSMTemplate(node, key)
+      else:
+        # Handle other types of elements if needed
+        logger.error(f"Unknown element type '{type(element)}' for element '{key}'. Skipping export.")
+
+
+  def exportSSMTemplate(self, cref: CRef, node):
+    ## top level system
+    if cref is None:
+      self.parameterMapping.exportSSMTemplate(node, self.connectors)
+      return
+
+    first = cref.first()
+
+    match self.elements.get(first):
+      case System():
+        self.elements[first].exportSSMTemplate(cref.pop_first(), node)
+      case Component():
+        self.elements[first].exportSSMTemplate(node)
+      case _:
+        raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component")
+
   def _addConnection(self, cref1: CRef, cref2: CRef) -> None:
     first1 = cref1.first()
     first2 = cref2.first()

@@ -69,6 +69,15 @@ class SSM:
         ssm_mapping_node.set("source", str(source))
         ssm_mapping_node.set("target", str(target))
 
+  def exportSSMTemplate(self, node, connectors : list, prefix = None):
+    if not connectors:
+      return
+    for connector in connectors:
+      ssm_mapping_node = ET.SubElement(node, namespace.tag("ssm", "MappingEntry"))
+      ssm_mapping_node.set("source", "")
+      target_name = f"{prefix}.{str(connector.name)}" if prefix else str(connector.name)
+      ssm_mapping_node.set("target", target_name)
+
   def importFromSSM(self, filename):
     mappingentry = utils.parseSSM(filename)
     for source, targets in mappingentry.items():

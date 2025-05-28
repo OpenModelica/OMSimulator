@@ -42,6 +42,9 @@ class Component:
   def exportSSVTemplate(self, node, prefix=None):
     self.value.add_parameters(node, prefix)
 
+  def exportSSMTemplate(self, node, prefix=None):
+    self.parameterMapping.exportSSMTemplate(node, self.connectors, prefix)
+
   def removeSSVReference(self, resource: str):
     for entry in self.parameterResources:
       for key, value in entry.items():

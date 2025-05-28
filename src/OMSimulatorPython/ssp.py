@@ -170,6 +170,29 @@ class SSP:
       file.write(xml)
     logger.info(f"SSV template '{filename}' successfully exported!")
 
+  def exportSSMTemplate(self, cref: CRef, filename: Path | None = None):
+    if self.activeVariant is None:
+      raise ValueError("No active variant set in the SSP.")
+
+    if filename is None:
+      filename = self.activeVariant.name + '.ssm'
+
+
+    ssm_node = ET.Element(namespace.tag("ssm", "ParameterMapping"),
+                                   nsmap={"ssc": "http://ssp-standard.org/SSP1/SystemStructureCommon",
+                                          "ssm": "http://ssp-standard.org/SSP1/SystemStructureParameterMapping"},
+                                   version = "2.0")
+
+
+    self.activeVariant.exportSSMTemplate(cref, ssm_node)
+
+    xml = ET.tostring(ssm_node, encoding='utf-8', xml_declaration=True, pretty_print=True).decode('utf-8')
+
+    ## write to filesystem
+    with open(Path(filename).resolve(), "w", encoding="utf-8") as file:
+      file.write(xml)
+    logger.info(f"SSM template '{filename}' successfully exported!")
+
   def swapSSVReference(self, cref: CRef, resource1: str, resource2: str):
     if self.activeVariant is None:
       raise ValueError("No active variant set in the SSP.")
