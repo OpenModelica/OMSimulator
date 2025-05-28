@@ -9,6 +9,9 @@ exportJson1.py \
 exportJson2.py \
 exportJson4.py \
 exportSSVTemplate1.py \
+exportSSVTemplate2.py \
+exportSSMTemplate1.py \
+exportSSMTemplate2.py \
 fmuinfo.py \
 invalidSSD.py \
 invalidSSV.py \
