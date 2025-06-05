@@ -4,9 +4,8 @@ from lxml import etree as ET
 from OMSimulator.component import Component
 from OMSimulator.connector import Connector
 from OMSimulator.connection import Connection
-from OMSimulator.fmu import FMU
 from OMSimulator.values import Values
-from OMSimulator.ssv import SSV
+from OMSimulator.ssm import SSM
 from OMSimulator.elementgeometry import ElementGeometry
 
 from OMSimulator import CRef, namespace, utils
@@ -88,6 +87,7 @@ class System:
     self.elements = dict()
     self.connections = list()
     self.value = Values()
+    self.parameterMapping = SSM()
     self.parameterResources = []
     self.model = model
     self.elementgeometry = None
@@ -141,11 +141,17 @@ class System:
     if not self.value.empty():
       print(f"{prefix} Inline Parameter Bindings:")
       self.value.list(prefix=prefix + " |--")
+      if not self.parameterMapping.empty():
+        print(f"{prefix} |-- Inline Parameter Mapping:")
+        self.parameterMapping.list(prefix=prefix + " |-- |--")
 
     ## list parameteres in ssv files
     if len(self.parameterResources) > 0:
       for resource in self.parameterResources:
-        print(f"{prefix} Parameter Bindings: {resource}")
+        for key, value in resource.items():
+          print(f"{prefix} Parameter Bindings: {key}")
+          if value:
+            print(f"{prefix} |-- Parameter Mapping: {value}")
 
     ## list elements
     if len(self.elements) > 0:
@@ -197,19 +203,19 @@ class System:
       self.elements[first] = component
       return component
 
-  def addSSVReference(self, cref: CRef, resource: str):
+  def addSSVReference(self, cref: CRef, resource1: str, resource2: str | None = None):
     ## top level system
     if cref is None:
-      self.parameterResources.append(resource)
+      self.parameterResources.append({resource1: resource2})
       return
 
     first = cref.first()
 
     match self.elements.get(first):
       case System():
-        self.elements[first].addSSVReference(cref.pop_first(), resource)
+        self.elements[first].addSSVReference(cref.pop_first(), resource1, resource2)
       case Component():
-        self.elements[first].addSSVReference(resource)
+        self.elements[first].addSSVReference(resource1, resource2)
       case _:
         raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component")
 
@@ -245,11 +251,18 @@ class System:
       case _:
         raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component")
 
+  def _remove(self, resource: str):
+    for entry in self.parameterResources:
+      for key, _ in entry.items():
+        if key == resource:
+          del entry[key]
+          return
+    raise ValueError(f"Resource '{resource}' not found in {self.name}")
+
   def removeSSVReference(self, cref: CRef, resource: str):
     ## top level system
     if cref is None:
-      self.parameterResources.remove(resource)
-      return
+      return self._remove(resource)
 
     first = cref.first()
 
@@ -258,6 +271,63 @@ class System:
         self.elements[first].removeSSVReference(cref.pop_first(), resource)
       case Component():
         self.elements[first].removeSSVReference(resource)
+      case _:
+        raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component")
+
+  def exportSSVTemplateHelper(self, node, prefix = None):
+    """Exports all parameters in ssp to an XML node."""
+    self.value.add_parameters(node, prefix)
+    for key, element in self.elements.items():
+      if isinstance(element, System):
+        element.exportSSVTemplateHelper(node, key)
+      elif isinstance(element, Component):
+        element.exportSSVTemplate(node, key)
+      else:
+        # Handle other types of elements if needed
+        logger.error(f"Unknown element type '{type(element)}' for element '{key}'. Skipping export.")
+
+  def exportSSVTemplate(self, cref: CRef, node):
+    ## top level system
+    if cref is None:
+      self.value.add_parameters(node)
+      return
+
+    first = cref.first()
+
+    match self.elements.get(first):
+      case System():
+        self.elements[first].exportSSVTemplate(cref.pop_first(), node)
+      case Component():
+        self.elements[first].exportSSVTemplate(node)
+      case _:
+        raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component")
+
+  def exportSSMTemplateHelper(self, node, prefix = None):
+    """Exports all connectors in ssp to an XML node."""
+    self.parameterMapping.exportSSMTemplate(node, self.connectors, prefix)
+    for key, element in self.elements.items():
+      if isinstance(element, System):
+        element.exportSSMTemplateHelper(node, key)
+      elif isinstance(element, Component):
+        element.exportSSMTemplate(node, key)
+      else:
+        # Handle other types of elements if needed
+        logger.error(f"Unknown element type '{type(element)}' for element '{key}'. Skipping export.")
+
+
+  def exportSSMTemplate(self, cref: CRef, node):
+    ## top level system
+    if cref is None:
+      self.parameterMapping.exportSSMTemplate(node, self.connectors)
+      return
+
+    first = cref.first()
+
+    match self.elements.get(first):
+      case System():
+        self.elements[first].exportSSMTemplate(cref.pop_first(), node)
+      case Component():
+        self.elements[first].exportSSMTemplate(node)
       case _:
         raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component")
 
@@ -299,10 +369,11 @@ class System:
     element = self.elements.get(element_name, None)
 
     ## check if element is a top level system connectors
-    if self._connectorExists(cref):
+    ## or allow non existing connectors to support parameter mapping throgh SSM inline or ssm file by checking if cref
+    if self._connectorExists(cref) or cref.is_root():
       return
 
-    if element is None and not self._connectorExists(cref):
+    if element is None:
       raise ValueError(f"Element '{element_name}' not found in System '{self.name}'")
 
     match element:
@@ -315,9 +386,9 @@ class System:
 
   def setValue(self, cref: CRef, value, unit = None, description = None):
     first = cref.first()
-
-    # Check if the cref is a top level system connector
-    if self._connectorExists(first):
+    ## Check if the cref is a top level system connector
+    ## or allow non existing connectors to support parameter mapping throgh SSM inline or ssm file by checking if cref
+    if self._connectorExists(first) or cref.is_root():
       self.value.setValue(cref, value, unit)
       return
 
@@ -326,6 +397,21 @@ class System:
         self.elements[first].setValue(cref.pop_first(), value, unit, description)
       case Component():
         self.elements[first].setValue(cref.last(), value, unit, description)
+      case _:
+        raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component or a Connector")
+
+  def mapParameter(self, cref: CRef, source: str, target: str):
+    if cref is None:
+      self.parameterMapping.mapParameter(source, target)
+      return
+
+    first = cref.first()
+
+    match self.elements.get(first):
+      case System():
+        self.elements[first].mapParameter(cref.pop_first(), source, target)
+      case Component():
+        self.elements[first].mapParameter(source, target)
       case _:
         raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component or a Connector")
 
@@ -436,13 +522,18 @@ class System:
         self.elementgeometry.exportToSSD(node)
 
     ## export top level parameter bindings
-    self.value.exportToSSD(node)
+    self.value.exportToSSD(node, self.parameterMapping)
+
     ## export parameters binding to ssd file with reference to ssv file
     if len(self.parameterResources) > 0:
       parameter_bindings_node = ET.SubElement(node, namespace.tag("ssd", "ParameterBindings"))
       for resource in self.parameterResources:
-        parameter_binding_node = ET.SubElement(parameter_bindings_node, namespace.tag("ssd", "ParameterBinding"))
-        parameter_binding_node.set("source", resource)
+        for key, value in resource.items():
+          parameter_binding_node = ET.SubElement(parameter_bindings_node, namespace.tag("ssd", "ParameterBinding"))
+          parameter_binding_node.set("source", key)
+          if value:
+            parameter_mapping_node = ET.SubElement(parameter_binding_node, namespace.tag("ssd", "ParameterMapping"))
+            parameter_mapping_node.set("source", value)
 
     ## export elements
     if len(self.elements) > 0:

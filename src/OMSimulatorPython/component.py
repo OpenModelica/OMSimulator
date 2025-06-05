@@ -8,6 +8,7 @@ from OMSimulator import namespace
 
 class Component:
   def __init__(self, name: CRef, fmuPath: Path | str, connectors=None, unitDefinitions=None):
+    from OMSimulator.ssm import SSM
     self.name = CRef(name)
     self.fmuPath = Path(fmuPath)
     self.connectors = connectors or list()
@@ -15,6 +16,7 @@ class Component:
     self.elementgeometry = None
     self.description = None
     self.value = Values()
+    self.parameterMapping = SSM()
     self.solver = None
     self.parameterResources = []
     self.implementation = None
@@ -24,8 +26,11 @@ class Component:
       raise ValueError(f"Connector '{connector.name}' already exists in {self.name}")
     self.connectors.append(connector)
 
-  def addSSVReference(self, resource: str):
-    self.parameterResources.append(resource)
+  def addSSVReference(self, resource1: str, resource2: str | None = None):
+    self.parameterResources.append({resource1: resource2})
+
+  def mapParameter(self, source: str, target: str):
+    self.parameterMapping.mapParameter(source, target)
 
   def swapSSVReference(self, resource1: str, resource2: str):
     self.removeSSVReference(resource1)
@@ -34,11 +39,19 @@ class Component:
   def listSSVReference(self):
     return self.parameterResources
 
+  def exportSSVTemplate(self, node, prefix=None):
+    self.value.add_parameters(node, prefix)
+
+  def exportSSMTemplate(self, node, prefix=None):
+    self.parameterMapping.exportSSMTemplate(node, self.connectors, prefix)
+
   def removeSSVReference(self, resource: str):
-    if resource in self.parameterResources:
-      self.parameterResources.remove(resource)
-    else:
-      raise ValueError(f"Resource '{resource}' not found in {self.name}")
+    for entry in self.parameterResources:
+      for key, value in entry.items():
+        if key == resource:
+          del entry[key]
+          return
+    raise ValueError(f"Resource '{resource}' not found in {self.name}")
 
   def list(self, prefix=""):
     print(f"{prefix} FMU: {self.name} '{self.description}'")
@@ -59,6 +72,9 @@ class Component:
     if not self.value.empty():
       print(f"{prefix} Inline Parameter Bindings:")
       self.value.list(prefix=prefix + " |--")
+      if not self.parameterMapping.empty():
+        print(f"{prefix} |-- Inline Parameter Mapping:")
+        self.parameterMapping.list(prefix=prefix + " |-- |--")
 
     ## list unit definitions
     if len(self.unitDefinitions) > 0:
@@ -69,7 +85,10 @@ class Component:
     ## list parameteres in ssv files
     if len(self.parameterResources) > 0:
       for resource in self.parameterResources:
-        print(f"{prefix} Parameter Bindings: {resource}")
+        for key, value in resource.items():
+          print(f"{prefix} Parameter Bindings: {key}")
+          if value:
+            print(f"{prefix} |-- Parameter Mapping: {value}")
 
     ## list solver settings
     if self.solver:
@@ -95,14 +114,18 @@ class Component:
       self.elementgeometry.exportToSSD(component_node)
 
     ## export parameter bindings
-    self.value.exportToSSD(component_node, self.unitDefinitions)
+    self.value.exportToSSD(component_node, self.parameterMapping, self.unitDefinitions)
 
     ## export parameters binding to ssd file with reference to ssv file
     if len(self.parameterResources) > 0:
       parameter_bindings_node = ET.SubElement(component_node, namespace.tag("ssd", "ParameterBindings"))
       for resource in self.parameterResources:
-        parameter_binding_node = ET.SubElement(parameter_bindings_node, namespace.tag("ssd", "ParameterBinding"))
-        parameter_binding_node.set("source", resource)
+        for key, value in resource.items():
+          parameter_binding_node = ET.SubElement(parameter_bindings_node, namespace.tag("ssd", "ParameterBinding"))
+          parameter_binding_node.set("source", key)
+          if value:
+            parameter_mapping_node = ET.SubElement(parameter_binding_node, namespace.tag("ssd", "ParameterMapping"))
+            parameter_mapping_node.set("source", value)
 
     ## export Annotations
     if self.solver:

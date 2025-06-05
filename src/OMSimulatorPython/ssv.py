@@ -20,7 +20,7 @@ class SSV:
   def list(self, prefix = ""):
     self.value.list(prefix)
 
-  def export(self, filename = str):
+  def export(self, filename : str):
     if not filename:
       raise ValueError("Filename cannot be empty")
 

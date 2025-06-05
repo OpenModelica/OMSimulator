@@ -9,8 +9,10 @@ from pathlib import Path
 from OMSimulator.fmu import FMU
 from OMSimulator.settings import suppress_path_to_str
 from OMSimulator.ssv import SSV
+from OMSimulator.ssm import SSM
 
-from OMSimulator import SSD, CRef
+from OMSimulator import SSD, CRef, namespace
+from lxml import etree as ET
 
 logger = logging.getLogger(__name__)
 
@@ -105,6 +107,8 @@ class SSP:
       self.resources[str(new_name)] = FMU(fmu_path = filePath)
     elif Path(filename).suffix == ".ssv":
       self.resources[str(new_name)] = SSV(ssv_path = filePath)
+    elif Path(filename).suffix == ".ssm":
+      self.resources[str(new_name)] = SSM(ssm_path = filePath)
     ##TODO check for .ssv file and if ssv instances provided
     else:
       self.resources[Path(filename).name] = new_name
@@ -134,14 +138,60 @@ class SSP:
       raise ValueError("No active variant set in the SSP.")
     self.activeVariant.newSolver(options)
 
-  def addSSVReference(self, cref: CRef, resource: str):
+  def addSSVReference(self, cref: CRef, resource1: str, resource2: str | None = None):
     if self.activeVariant is None:
       raise ValueError("No active variant set in the SSP.")
 
-    if resource not in self.resources:
-      logger.warning(f"Resource '{resource}' not found in the SSP resources. Add the resource using the addResource API")
+    if resource1 not in self.resources:
+      logger.warning(f"Resource '{resource1}' not found in the SSP resources. Add the resource using the addResource API")
 
-    self.activeVariant.addSSVReference(cref, resource)
+    self.activeVariant.addSSVReference(cref, resource1, resource2)
+
+  def exportSSVTemplate(self, cref: CRef, filename: Path | None = None):
+    if self.activeVariant is None:
+      raise ValueError("No active variant set in the SSP.")
+
+    if filename is None:
+      filename = self.activeVariant.name + '.ssv'
+
+    ssv_node = ET.Element(namespace.tag("ssv", "ParameterSet"),
+                                   nsmap={"ssc": "http://ssp-standard.org/SSP1/SystemStructureCommon",
+                                          "ssv": "http://ssp-standard.org/SSP1/SystemStructureParameterValues"},
+                                   version = "2.0",
+                                   name = "parameters")
+    parameters_node = ET.SubElement(ssv_node, namespace.tag("ssv", "Parameters"))
+
+    self.activeVariant.exportSSVTemplate(cref, parameters_node)
+
+    xml = ET.tostring(ssv_node, encoding='utf-8', xml_declaration=True, pretty_print=True).decode('utf-8')
+
+    ## write to filesystem
+    with open(Path(filename).resolve(), "w", encoding="utf-8") as file:
+      file.write(xml)
+    logger.info(f"SSV template '{filename}' successfully exported!")
+
+  def exportSSMTemplate(self, cref: CRef, filename: Path | None = None):
+    if self.activeVariant is None:
+      raise ValueError("No active variant set in the SSP.")
+
+    if filename is None:
+      filename = self.activeVariant.name + '.ssm'
+
+
+    ssm_node = ET.Element(namespace.tag("ssm", "ParameterMapping"),
+                                   nsmap={"ssc": "http://ssp-standard.org/SSP1/SystemStructureCommon",
+                                          "ssm": "http://ssp-standard.org/SSP1/SystemStructureParameterMapping"},
+                                   version = "2.0")
+
+
+    self.activeVariant.exportSSMTemplate(cref, ssm_node)
+
+    xml = ET.tostring(ssm_node, encoding='utf-8', xml_declaration=True, pretty_print=True).decode('utf-8')
+
+    ## write to filesystem
+    with open(Path(filename).resolve(), "w", encoding="utf-8") as file:
+      file.write(xml)
+    logger.info(f"SSM template '{filename}' successfully exported!")
 
   def swapSSVReference(self, cref: CRef, resource1: str, resource2: str):
     if self.activeVariant is None:
@@ -193,6 +243,13 @@ class SSP:
 
     self.activeVariant.setValue(cref, value, unit, description)
 
+  def mapParameter(self, cref: CRef, source: str, target: str):
+    """Maps a parameter from source to target in the active variant."""
+    if self.activeVariant is None:
+      raise ValueError("No active variant set in the SSP.")
+
+    self.activeVariant.mapParameter(cref, source, target)
+
   def setSolver(self, cref: CRef, name: str):
     if self.activeVariant is None:
       raise ValueError("No active variant set in the SSP.")
@@ -238,6 +295,9 @@ class SSP:
       print(f"|--   {resource}")
       if isinstance(self.resources[resource], SSV):
         print(f"|--   |-- Parameter Bindings:")
+        self.resources[resource].list("|--   |-- |--")
+      elif isinstance(self.resources[resource], SSM):
+        print(f"|--   |-- Parameter Mapping:")
         self.resources[resource].list("|--   |-- |--")
     print(f"|-- Active Variant: {self.activeVariantName}")
     for ssd in self.variants.values():
