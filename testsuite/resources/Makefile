@@ -15,6 +15,7 @@ BouncingBall \
 Dahlquist \
 DualMassOscillator.System1 \
 DualMassOscillator.System2 \
+DiscreteTest \
 Enum1 \
 equationPair.equation1 \
 equationPair.equation2 \
