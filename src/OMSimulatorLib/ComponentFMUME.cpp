@@ -1018,6 +1018,14 @@ oms_status_enu_t oms::ComponentFMUME::getInteger(const fmi2ValueReference& vr, i
   return oms_status_ok;
 }
 
+oms_status_enu_t oms::ComponentFMUME::setTime(double time)
+{
+  fmi2Status fmistatus = fmi2_setTime(fmu, time);
+  if (fmi2OK != fmistatus)
+    return logError_FMUCall("fmi2_setTime", this);
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms::ComponentFMUME::getInteger(const ComRef& cref, int& value)
 {
   CallClock callClock(clock);
