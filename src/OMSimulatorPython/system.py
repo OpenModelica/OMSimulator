@@ -252,7 +252,7 @@ class System:
       case _:
         raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component")
 
-  def remove(self, resource: str, raise_error: bool = True):
+  def _remove(self, resource: str, raise_error: bool = True):
     for entry in self.parameterResources:
       for key, _ in entry.items():
         if key == resource:
