@@ -129,6 +129,10 @@ class SSD:
     subcref = self._validateCref(cref)
     return self.system.listSSVReference(subcref)
 
+  def deleteResource(self, resource: str):
+    '''Removes a resource from the SSP.'''
+    self.system.deleteResource(resource)
+
   def removeSSVReference(self, cref: CRef, resource):
     subcref = self._validateCref(cref)
     self.system.removeSSVReference(subcref, resource)

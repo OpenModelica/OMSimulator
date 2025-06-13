@@ -45,13 +45,14 @@ class Component:
   def exportSSMTemplate(self, node, prefix=None):
     self.parameterMapping.exportSSMTemplate(node, self.connectors, prefix)
 
-  def removeSSVReference(self, resource: str):
+  def removeSSVReference(self, resource: str, raise_error=True):
     for entry in self.parameterResources:
       for key, value in entry.items():
         if key == resource:
           del entry[key]
           return
-    raise ValueError(f"Resource '{resource}' not found in {self.name}")
+    if raise_error:
+      raise ValueError(f"Resource '{resource}' not found in {self.name}")
 
   def list(self, prefix=""):
     print(f"{prefix} FMU: {self.name} '{self.description}'")

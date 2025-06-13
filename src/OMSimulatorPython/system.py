@@ -9,6 +9,7 @@ from OMSimulator.ssm import SSM
 from OMSimulator.elementgeometry import ElementGeometry
 
 from OMSimulator import CRef, namespace, utils
+from pathlib import Path
 
 from collections import defaultdict
 import json
@@ -251,13 +252,14 @@ class System:
       case _:
         raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component")
 
-  def _remove(self, resource: str):
+  def remove(self, resource: str, raise_error: bool = True):
     for entry in self.parameterResources:
       for key, _ in entry.items():
         if key == resource:
           del entry[key]
           return
-    raise ValueError(f"Resource '{resource}' not found in {self.name}")
+    if raise_error:
+      raise ValueError(f"Resource '{resource}' not found in {self.name}")
 
   def removeSSVReference(self, cref: CRef, resource: str):
     ## top level system
@@ -273,6 +275,41 @@ class System:
         self.elements[first].removeSSVReference(resource)
       case _:
         raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component")
+
+  def delete():
+    """Removes the system and all its elements."""
+    raise NotImplementedError("System deletion is not implemented yet.")
+
+  def deleteComponent(self, resource: str):
+    """Removes an element from the system by matching FMU path."""
+    keys_to_delete = [
+        key for key, element in self.elements.items()
+        if isinstance(element, Component) and str(element.fmuPath) == str(resource)
+    ]
+
+    for key in keys_to_delete:
+      del self.elements[key]
+
+  def deleteResource(self, resource: str):
+    """Removes a resource from the SSP and its associated SSV references"""
+
+    if Path(resource).suffix == '.fmu':
+      self.deleteComponent(resource)
+      return
+
+    # Remove the ssv resource from the parameter resources
+    if Path(resource).suffix == '.ssv':
+      self._remove(resource, raise_error = False)
+      for key, element in self.elements.items():
+        if isinstance(element, System):
+          element.removeSSVReference(resource)
+        elif isinstance(element, Component):
+          element.removeSSVReference(resource, raise_error = False)
+        else:
+          # Handle other types of elements if needed
+          logger.error(f"Unknown element type '{type(element)}' for element '{key}'. Skipping deletion.")
+    else:
+      logger.error(f"Unsupported resource type '{Path(resource).suffix}' for deletion in system '{self.name}'")
 
   def exportSSVTemplateHelper(self, node, prefix = None):
     """Exports all parameters in ssp to an XML node."""
