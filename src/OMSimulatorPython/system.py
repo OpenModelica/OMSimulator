@@ -276,9 +276,36 @@ class System:
       case _:
         raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component")
 
-  def delete():
+  def _deleteConnector(self, cref: CRef):
+    """Check if a connector exists in the system."""
+    for c in self.connectors:
+      if c.name == cref:
+        self.connectors.remove(c)
+
+  def delete(self, cref: CRef):
     """Removes the system and all its elements."""
-    raise NotImplementedError("System deletion is not implemented yet.")
+
+    first = cref.first()
+
+    ## Check if the cref is a top level system connector
+    if self._connectorExists(first, delete = True):
+      return
+
+    match self.elements.get(first):
+      case System():
+        # If cref is root, delete the whole system
+        if cref.is_root():
+          del self.elements[first]
+          return
+        # Otherwise, delete connector
+        self.elements[first].delete(cref.pop_first())
+      case Component():
+        if cref.is_root():
+          del self.elements[first]
+          return
+        self.elements[first].deleteConnector(cref.last())
+      case _:
+        raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component or a Connector")
 
   def deleteComponent(self, resource: str):
     """Removes an element from the system by matching FMU path."""
@@ -397,9 +424,14 @@ class System:
 
     self.connections.append(Connection(startElement, startConnector, endElement, endConnector))
 
-  def _connectorExists(self, cref: CRef) -> bool:
+  def _connectorExists(self, cref: CRef, delete = False) -> bool:
     """Check if a connector exists in the system."""
-    return any(c.name == cref for c in self.connectors)
+    for i, connector in enumerate(self.connectors):
+      if connector.name == cref:
+        if delete:
+          del self.connectors[i]
+        return True
+    return False
 
   def _getComponentResourcePath(self, cref):
     element_name = cref.first()

@@ -133,6 +133,11 @@ class SSP:
 
     return self.activeVariant.addComponent(cref, resource, inst=fmu_inst)
 
+  def delete(self, cref: CRef):
+    if self.activeVariant is None:
+      raise ValueError("No active variant set in the SSP.")
+    self.activeVariant.delete(cref)
+
   def newSolver(self, options: dict):
     if self.activeVariant is None:
       raise ValueError("No active variant set in the SSP.")
