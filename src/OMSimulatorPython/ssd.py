@@ -103,6 +103,10 @@ class SSD:
 
   def delete(self, cref: CRef):
     subcref = self._validateCref(cref)
+    if subcref is None:
+      del self.system # Delete the entire system
+      self.system = None
+      return
     return self.system.delete(subcref)
 
   def addSSVReference(self, cref: CRef, resource1: str, resource2: str | None = None):

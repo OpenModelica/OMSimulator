@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command: rm deleteConnector1.ssp
+## teardown_command: rm deleteSystem1.ssp
 ## linux: yes
 ## ucrt64: yes
 ## win: yes
@@ -8,9 +8,9 @@
 from OMSimulator import SSP, CRef, Settings, Connector, Causality, SignalType
 
 Settings.suppressPath = True
-
 # This example creates a new SSP file with an FMU instantiated as a component and
-# It demonstrates how to delete connectors from system, subsystem and components from an existing ssp file.
+# It demonstrates how to delete system, subsystem and components from an existing ssp file.
+
 
 model = SSP()
 model.addResource('../resources/Modelica.Blocks.Math.Add.fmu', new_name='resources/Add.fmu')
@@ -35,15 +35,29 @@ model.addConnection(CRef('default', 'param1'), CRef('default', 'Add1', 'u1'))
 model.addConnection(CRef('default', 'Add1', 'y'), CRef('default', 'sub-system', 'input'))
 model.addConnection(CRef('default', 'sub-system', 'Add2', 'u1'), CRef('default', 'sub-system', 'input'))
 
-model.export('deleteConnector1.ssp')
+model.export('deleteSystem1.ssp')
 
-model2 = SSP('deleteConnector1.ssp')
-model2.delete(CRef('default', 'param1'))
-model2.delete(CRef('default', 'sub-system', 'input'))
-model2.delete(CRef('default', 'sub-system', 'Add2', 'u1'))
-model2.delete(CRef('default', 'Add1', 'u1'))
-print("## After deleting connectors:")
-print("=============================")
+model2 = SSP('deleteSystem1.ssp')
+print("## original model:")
+print("===================")
+model2.list()
+# model2.delete(CRef('default', 'param1'))
+model2.delete(CRef('default', 'sub-system', 'Add2'))
+print("## After deleting component Add2 from sub-system:")
+print("=================================================")
+model2.list()
+model2.delete(CRef('default', 'Add1'))
+print("## After deleting component Add1 from top level system:")
+print("========================================================")
+model2.list()
+model2.delete(CRef('default', 'sub-system'))
+print("## After deleting sub-system:")
+print("==============================")
+model2.list()
+
+model2.delete(CRef('default'))
+print("## After deleting full system:")
+print("==============================")
 model2.list()
 
 ## Result:
