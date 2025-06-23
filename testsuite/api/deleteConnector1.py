@@ -71,8 +71,6 @@ model2.list()
 ## |-- |-- |-- |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, 'Gain of input signal 2')
 ## |-- |-- |-- |-- |-- |-- |-- Solver Settings:
 ## |-- |-- |-- |-- |-- |-- |-- |-- name: solver1
-## |-- |-- |-- |-- |-- Connections:
-## |-- |-- |-- |-- |-- |-- Add2.u1 -> .input
 ## |-- |-- |-- |-- FMU: Add1 'None'
 ## |-- |-- |-- |-- |-- path: resources/Add.fmu
 ## |-- |-- |-- |-- |-- Connectors:
@@ -82,9 +80,6 @@ model2.list()
 ## |-- |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, 'Gain of input signal 2')
 ## |-- |-- |-- |-- |-- Solver Settings:
 ## |-- |-- |-- |-- |-- |-- name: solver1
-## |-- |-- |-- Connections:
-## |-- |-- |-- |-- .param1 -> Add1.u1
-## |-- |-- |-- |-- Add1.y -> sub-system.input
 ## |-- |-- |-- Solver Settings:
 ## |-- |-- |-- |-- (name=solver1, method=euler, tolerance=1e-06)
 ## |-- DefaultExperiment

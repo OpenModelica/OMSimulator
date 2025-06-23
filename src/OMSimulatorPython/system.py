@@ -276,11 +276,16 @@ class System:
       case _:
         raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component")
 
-  def _deleteConnector(self, cref: CRef):
-    """Check if a connector exists in the system."""
-    for c in self.connectors:
-      if c.name == cref:
-        self.connectors.remove(c)
+  def deleteAllConnection(self, cref: CRef):
+    """Deletes a connection from the system."""
+    for connection in self.connections[:]:
+      # Check if the connection is associated with the connector
+      if str(cref) in {connection.startElement, connection.endElement, connection.startConnector, connection.endConnector}:
+        self.connections.remove(connection)
+    # Also delete connections in elements
+    for key, element in self.elements.items():
+      if isinstance(element, System):
+        element.deleteAllConnection(cref)
 
   def delete(self, cref: CRef):
     """Removes the system and all its elements."""
@@ -299,11 +304,13 @@ class System:
           return
         # Otherwise, delete connector
         self.elements[first].delete(cref.pop_first())
+        self.deleteAllConnection(cref.pop_first())
       case Component():
         if cref.is_root():
           del self.elements[first]
           return
         self.elements[first].deleteConnector(cref.last())
+        self.deleteAllConnection(cref.last())
       case _:
         raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component or a Connector")
 
@@ -430,6 +437,8 @@ class System:
       if connector.name == cref:
         if delete:
           del self.connectors[i]
+          # Remove connections associated with this connector
+          self.deleteAllConnection(cref)
         return True
     return False
 
