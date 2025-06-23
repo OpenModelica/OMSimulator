@@ -41,7 +41,7 @@ model2 = SSP('deleteSystem1.ssp')
 print("## original model:")
 print("===================")
 model2.list()
-# model2.delete(CRef('default', 'param1'))
+
 model2.delete(CRef('default', 'sub-system', 'Add2'))
 print("## After deleting component Add2 from sub-system:")
 print("=================================================")
@@ -124,8 +124,6 @@ model2.list()
 ## |-- |-- |-- |-- System: sub-system 'None'
 ## |-- |-- |-- |-- |-- Connectors:
 ## |-- |-- |-- |-- |-- |-- (input, Causality.input, SignalType.Real, None, 'None')
-## |-- |-- |-- |-- |-- Connections:
-## |-- |-- |-- |-- |-- |-- Add2.u1 -> .input
 ## |-- |-- |-- |-- FMU: Add1 'None'
 ## |-- |-- |-- |-- |-- path: resources/Add.fmu
 ## |-- |-- |-- |-- |-- Connectors:
@@ -160,11 +158,6 @@ model2.list()
 ## |-- |-- |-- |-- System: sub-system 'None'
 ## |-- |-- |-- |-- |-- Connectors:
 ## |-- |-- |-- |-- |-- |-- (input, Causality.input, SignalType.Real, None, 'None')
-## |-- |-- |-- |-- |-- Connections:
-## |-- |-- |-- |-- |-- |-- Add2.u1 -> .input
-## |-- |-- |-- Connections:
-## |-- |-- |-- |-- .param1 -> Add1.u1
-## |-- |-- |-- |-- Add1.y -> sub-system.input
 ## |-- |-- |-- Solver Settings:
 ## |-- |-- |-- |-- (name=solver1, method=euler, tolerance=1e-06)
 ## |-- DefaultExperiment
@@ -182,9 +175,6 @@ model2.list()
 ## |-- |-- System: default 'None'
 ## |-- |-- |-- Connectors:
 ## |-- |-- |-- |-- (param1, Causality.parameter, SignalType.Real, None, 'None')
-## |-- |-- |-- Connections:
-## |-- |-- |-- |-- .param1 -> Add1.u1
-## |-- |-- |-- |-- Add1.y -> sub-system.input
 ## |-- |-- |-- Solver Settings:
 ## |-- |-- |-- |-- (name=solver1, method=euler, tolerance=1e-06)
 ## |-- DefaultExperiment

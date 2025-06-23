@@ -301,6 +301,7 @@ class System:
         # If cref is root, delete the whole system
         if cref.is_root():
           del self.elements[first]
+          self.deleteAllConnection(first)
           return
         # Otherwise, delete connector
         self.elements[first].delete(cref.pop_first())
@@ -308,6 +309,7 @@ class System:
       case Component():
         if cref.is_root():
           del self.elements[first]
+          self.deleteAllConnection(first)
           return
         self.elements[first].deleteConnector(cref.last())
         self.deleteAllConnection(cref.last())
