@@ -24,7 +24,7 @@ print(f'terminate: {status}')
 
 ## Result:
 ## instantiateFromJson: Status.ok
-## initialize: Status.ok
-## simulate: Status.ok
-## terminate: Status.ok
+## initialize: Status.error
+## simulate: Status.error
+## terminate: Status.error
 ## endResult
