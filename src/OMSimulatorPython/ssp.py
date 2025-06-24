@@ -133,6 +133,11 @@ class SSP:
 
     return self.activeVariant.addComponent(cref, resource, inst=fmu_inst)
 
+  def delete(self, cref: CRef):
+    if self.activeVariant is None:
+      raise ValueError("No active variant set in the SSP.")
+    self.activeVariant.delete(cref)
+
   def newSolver(self, options: dict):
     if self.activeVariant is None:
       raise ValueError("No active variant set in the SSP.")
@@ -210,6 +215,18 @@ class SSP:
       raise ValueError("No active variant set in the SSP.")
 
     return self.activeVariant.listSSVReference(cref)
+
+  def listResource(self):
+    '''Lists all resources in the SSP.'''
+    return sorted(self.resources.keys())
+
+  def deleteResource(self, resource: str):
+    '''Removes a resource from the SSP.'''
+    if resource not in self.resources:
+      raise ValueError(f"Resource '{resource}' does not exist in the SSP.")
+    self.activeVariant.deleteResource(resource)
+    del self.resources[resource]
+    logger.info(f"Resource '{resource}' removed from the SSP.")
 
   def removeSSVReference(self, cref: CRef, resource: str):
     if self.activeVariant is None:

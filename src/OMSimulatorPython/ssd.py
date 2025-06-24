@@ -101,6 +101,14 @@ class SSD:
     subcref = self._validateCref(cref)
     return self.system.addComponent(subcref, resource, inst)
 
+  def delete(self, cref: CRef):
+    subcref = self._validateCref(cref)
+    if subcref is None:
+      del self.system # Delete the entire system
+      self.system = None
+      return
+    return self.system.delete(subcref)
+
   def addSSVReference(self, cref: CRef, resource1: str, resource2: str | None = None):
     subcref = self._validateCref(cref)
     self.system.addSSVReference(subcref, resource1, resource2)
@@ -128,6 +136,10 @@ class SSD:
   def listSSVReference(self, cref: CRef):
     subcref = self._validateCref(cref)
     return self.system.listSSVReference(subcref)
+
+  def deleteResource(self, resource: str):
+    '''Removes a resource from the SSP.'''
+    self.system.deleteResource(resource)
 
   def removeSSVReference(self, cref: CRef, resource):
     subcref = self._validateCref(cref)

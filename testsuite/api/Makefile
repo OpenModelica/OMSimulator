@@ -3,6 +3,9 @@ TEST = ../rtest -v
 TESTFILES = \
 create_ssp_file.py \
 cref.py \
+deleteResources1.py \
+deleteConnector1.py \
+deleteSystem1.py \
 duplicateVariant1.py \
 duplicateVariant2.py \
 exportJson1.py \

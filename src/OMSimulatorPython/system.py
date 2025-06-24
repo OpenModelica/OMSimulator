@@ -9,6 +9,7 @@ from OMSimulator.ssm import SSM
 from OMSimulator.elementgeometry import ElementGeometry
 
 from OMSimulator import CRef, namespace, utils
+from pathlib import Path
 
 from collections import defaultdict
 import json
@@ -251,13 +252,14 @@ class System:
       case _:
         raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component")
 
-  def _remove(self, resource: str):
+  def _remove(self, resource: str, raise_error: bool = True):
     for entry in self.parameterResources:
       for key, _ in entry.items():
         if key == resource:
           del entry[key]
           return
-    raise ValueError(f"Resource '{resource}' not found in {self.name}")
+    if raise_error:
+      raise ValueError(f"Resource '{resource}' not found in {self.name}")
 
   def removeSSVReference(self, cref: CRef, resource: str):
     ## top level system
@@ -273,6 +275,77 @@ class System:
         self.elements[first].removeSSVReference(resource)
       case _:
         raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component")
+
+  def deleteAllConnection(self, cref: CRef):
+    """Deletes a connection from the system."""
+    for connection in self.connections[:]:
+      # Check if the connection is associated with the connector
+      if str(cref) in {connection.startElement, connection.endElement, connection.startConnector, connection.endConnector}:
+        self.connections.remove(connection)
+    # Also delete connections in elements
+    for key, element in self.elements.items():
+      if isinstance(element, System):
+        element.deleteAllConnection(cref)
+
+  def delete(self, cref: CRef):
+    """Removes the system and all its elements."""
+
+    first = cref.first()
+
+    ## Check if the cref is a top level system connector
+    if self._connectorExists(first, delete = True):
+      return
+
+    match self.elements.get(first):
+      case System():
+        # If cref is root, delete the whole system
+        if cref.is_root():
+          del self.elements[first]
+          self.deleteAllConnection(first)
+          return
+        # Otherwise, delete connector
+        self.elements[first].delete(cref.pop_first())
+        self.deleteAllConnection(cref.pop_first())
+      case Component():
+        if cref.is_root():
+          del self.elements[first]
+          self.deleteAllConnection(first)
+          return
+        self.elements[first].deleteConnector(cref.last())
+        self.deleteAllConnection(cref.last())
+      case _:
+        raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component or a Connector")
+
+  def deleteComponent(self, resource: str):
+    """Removes an element from the system by matching FMU path."""
+    keys_to_delete = [
+        key for key, element in self.elements.items()
+        if isinstance(element, Component) and str(element.fmuPath) == str(resource)
+    ]
+
+    for key in keys_to_delete:
+      del self.elements[key]
+
+  def deleteResource(self, resource: str):
+    """Removes a resource from the SSP and its associated SSV references"""
+
+    if Path(resource).suffix == '.fmu':
+      self.deleteComponent(resource)
+      return
+
+    # Remove the ssv resource from the parameter resources
+    if Path(resource).suffix == '.ssv':
+      self._remove(resource, raise_error = False)
+      for key, element in self.elements.items():
+        if isinstance(element, System):
+          element.removeSSVReference(resource)
+        elif isinstance(element, Component):
+          element.removeSSVReference(resource, raise_error = False)
+        else:
+          # Handle other types of elements if needed
+          logger.error(f"Unknown element type '{type(element)}' for element '{key}'. Skipping deletion.")
+    else:
+      logger.error(f"Unsupported resource type '{Path(resource).suffix}' for deletion in system '{self.name}'")
 
   def exportSSVTemplateHelper(self, node, prefix = None):
     """Exports all parameters in ssp to an XML node."""
@@ -360,9 +433,16 @@ class System:
 
     self.connections.append(Connection(startElement, startConnector, endElement, endConnector))
 
-  def _connectorExists(self, cref: CRef) -> bool:
+  def _connectorExists(self, cref: CRef, delete = False) -> bool:
     """Check if a connector exists in the system."""
-    return any(c.name == cref for c in self.connectors)
+    for i, connector in enumerate(self.connectors):
+      if connector.name == cref:
+        if delete:
+          del self.connectors[i]
+          # Remove connections associated with this connector
+          self.deleteAllConnection(cref)
+        return True
+    return False
 
   def _getComponentResourcePath(self, cref):
     element_name = cref.first()
