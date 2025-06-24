@@ -30,19 +30,41 @@
  */
 
 #pragma once
-#include "oms3/SimulationUnit.h"
-#include "json.hpp"
 #include <vector>
+#include <string>
+#include "Connection.h"
+
 namespace oms3
 {
-  class Model
+  class Solver
   {
-  public:
-    Model(char* model_json_desc);
-    ~Model();
-    std::vector<SimulationUnit> simulationUnits;
-  private:
-    void parseSimulationUnits(nlohmann::json & model_json);
-    void dumpSimulationUnits();
+    public:
+      std::string type; // Default type
+      double stepSize;  // Default step size
+      double tolerance; // Default tolerance
+      Solver();
+      Solver(const std::string &type, double stepSize, double tolerance);
   };
-}
+  class Component
+  {
+    public:
+      std::string name;
+      std::string type;
+      std::string path;
+      std::vector<std::string> variables;
+      Component(const std::string &name, const std::string &type,
+                const std::string &path, const std::vector<std::string> &variables);
+      ~Component();
+  };
+  class SimulationUnit
+  {
+    public:
+      SimulationUnit(const std::vector<oms3::Component> &components,
+                     oms3::Solver &solver,
+                     const std::vector<oms::Connection> &connections);
+      ~SimulationUnit();
+      std::vector<oms3::Component> components;
+      oms3::Solver solver;
+      std::vector<oms::Connection> connections;
+  };
+} // namespace oms3

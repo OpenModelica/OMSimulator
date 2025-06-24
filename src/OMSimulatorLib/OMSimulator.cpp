@@ -1700,7 +1700,7 @@ oms_status_enu_t oms3_instantiateFromJson(char* model_json_desc, void** out_mode
   try
   {
     logDebug(model_json_desc);
-    oms3::Model *model = new oms3::Model();
+    oms3::Model *model = new oms3::Model(model_json_desc);
     *out_model_ptr = static_cast<void*>(model);
   }
   catch (const std::exception& e)

@@ -29,20 +29,47 @@
  *
  */
 
-#pragma once
-#include "oms3/SimulationUnit.h"
-#include "json.hpp"
 #include <vector>
-namespace oms3
+#include <string>
+#include "oms3/SimulationUnit.h"
+
+
+oms3::Component::Component(const std::string& name, const std::string& type,
+                            const std::string& path, const std::vector<std::string>& variables)
 {
-  class Model
-  {
-  public:
-    Model(char* model_json_desc);
-    ~Model();
-    std::vector<SimulationUnit> simulationUnits;
-  private:
-    void parseSimulationUnits(nlohmann::json & model_json);
-    void dumpSimulationUnits();
-  };
+  this->name = name;
+  this->type = type;
+  this->path = path;
+  this->variables = variables;
+}
+
+oms3::Component::~Component()
+{
+}
+
+oms3::Solver::Solver(const std::string& type, double stepSize, double tolerance)
+{
+  // Default constructor logic if needed
+  this->type = type;
+  this->stepSize = stepSize;
+  this->tolerance = tolerance;
+}
+oms3::Solver::Solver()
+{
+  this->type = "default"; // Default solver type
+  this->stepSize = 0.01; // Default step size
+  this->tolerance = 1e-6; // Default tolerance
+}
+
+oms3::SimulationUnit::SimulationUnit(const std::vector<oms3::Component>& components,
+                                     oms3::Solver& solver,
+                                     const std::vector<oms::Connection>& connections)
+{
+  this->components = components;
+  this->solver = solver;
+  this->connections = connections;
+}
+oms3::SimulationUnit::~SimulationUnit()
+{
+    // Destructor logic if needed
 }
