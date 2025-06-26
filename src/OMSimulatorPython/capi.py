@@ -38,16 +38,6 @@ class capi:
 
     self.obj.oms_getVersion.argtypes = None
     self.obj.oms_getVersion.restype = ctypes.c_char_p
-    self.obj.oms3_instantiateFromJson.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_void_p)]
-    self.obj.oms3_instantiateFromJson.restype = ctypes.c_int
-    self.obj.oms3_initialize.argtypes = [ctypes.c_void_p]
-    self.obj.oms3_initialize.restype = ctypes.c_int
-    self.obj.oms3_simulate.argtypes = [ctypes.c_void_p]
-    self.obj.oms3_simulate.restype = ctypes.c_int
-    self.obj.oms3_stepUntil.argtypes = [ctypes.c_void_p, ctypes.c_double]
-    self.obj.oms3_stepUntil.restype = ctypes.c_int
-    self.obj.oms3_terminate.argtypes = [ctypes.c_void_p]
-    self.obj.oms3_terminate.restype = ctypes.c_int
 
     self.obj.oms_newModel.argtypes = [ctypes.c_char_p]
     self.obj.oms_newModel.restype = ctypes.c_int
@@ -89,14 +79,6 @@ class capi:
     status = self.obj.oms_addConnection(crefA.encode(), crefB.encode(), suppressUnit)
     return Status(status)
 
-  def instantiateFromJson(self, model_json_desc) -> tuple:
-    '''Instantiate a model from a JSON description.'''
-    model_ptr = ctypes.c_void_p()
-    status = self.obj.oms3_instantiateFromJson(model_json_desc.encode('utf-8'), ctypes.byref(model_ptr))
-    if status != Status.ok:
-      return None, Status(status)
-    return model_ptr, Status(status)
-
   def instantiate(self, cref):
     status = self.obj.oms_instantiate(cref.encode())
     return Status(status)
@@ -114,7 +96,7 @@ class capi:
   def stepUntil(self, model, stopTime) -> Status:
     '''Step the simulation until the specified stop time.
     Note: If the model is in initialization mode, this will exit initialization mode.'''
-    status = self.obj.oms3_stepUntil(model, stopTime)
+    status = self.obj.oms_stepUntil(model, stopTime)
     return Status(status)
 
   def terminate(self, cref) -> Status:
