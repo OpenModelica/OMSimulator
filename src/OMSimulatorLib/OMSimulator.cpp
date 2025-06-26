@@ -57,8 +57,6 @@
 #include <string>
 #include <thread>
 
-#include "oms3/Model.h"
-
 #if defined(OMS_STATIC)
 extern "C"
 {
@@ -1692,42 +1690,4 @@ oms_status_enu_t oms_setTolerance(const char* cref, double relativeTolerance)
     return system->setTolerance(relativeTolerance);
 
   return logError_SystemNotInModel(model->getCref(), front);
-}
-
-
-oms_status_enu_t oms3_instantiateFromJson(char* model_json_desc, void** out_model_ptr)
-{
-  try
-  {
-    logDebug(model_json_desc);
-    oms3::Model *model = new oms3::Model(model_json_desc);
-    *out_model_ptr = static_cast<void*>(model);
-  }
-  catch (const std::exception& e)
-  {
-    *out_model_ptr = nullptr;
-    return logError("Failed to instantiate model from JSON: " + std::string(e.what()));
-  }
-
-  return oms_status_ok;
-}
-
-oms_status_enu_t oms3_initialize(void* model)
-{
-  return oms_status_error;
-}
-
-oms_status_enu_t oms3_simulate(void* model)
-{
-  return oms_status_error;
-}
-
-oms_status_enu_t oms3_stepUntil(void* model, double stopTime)
-{
-  return oms_status_error;
-}
-
-oms_status_enu_t oms3_terminate(void* model)
-{
-  return oms_status_error;
 }

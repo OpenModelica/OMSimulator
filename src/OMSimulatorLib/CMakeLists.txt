@@ -43,8 +43,6 @@ set(OMSIMULATORLIB_SOURCES
       MatVer4.cpp
       MATWriter.cpp
       Model.cpp
-      oms3/Model.cpp
-      oms3/SimulationUnit.cpp
       OMSFileSystem.cpp
       OMSimulator.cpp
       OMSString.cpp
