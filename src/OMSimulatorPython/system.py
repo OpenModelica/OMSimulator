@@ -8,7 +8,6 @@ from OMSimulator.component import Component
 from OMSimulator.connection import Connection
 from OMSimulator.connector import Connector
 from OMSimulator.elementgeometry import ElementGeometry
-from OMSimulator.instantiated_model import InstantiatedModel
 from OMSimulator.ssm import SSM
 from OMSimulator.values import Values
 
@@ -506,7 +505,7 @@ class System:
         raise ValueError(f"Component '{first}' not found in {self.name}")
       self.elements[first].setSolver(name)
 
-  def instantiate(self, resources: dict | None = None) -> InstantiatedModel:
+  def generateJson(self, resources: dict | None = None, tempdir : str | None = None) -> str:
     """Instantiates the system and its components."""
     data = {
         "simulation units": []
@@ -518,18 +517,21 @@ class System:
     solver_connections = defaultdict(list)
 
     # process the elements
-    self.processElements(self.elements, self.connections, data, solver_groups, componentSolver, solver_connections, resources)
+    self.processElements(self.elements, self.connections, data, solver_groups, componentSolver, solver_connections, resources, tempdir)
 
     ## group the simulation units
     for solver, components in solver_groups.items():
+      #print(f"Processing solver: {solver} with components: {components}")
       unit = {
           "components": components,
-          "solver": {
-              "type": "co-simulation",
-              "name": solver
-          },
           "connections": solver_connections.get(solver, [])
       }
+      if solver is not None:
+         unit["solver"] = {
+            "name": solver,
+            "method": "cvode",
+            "tolerance": 1e-6
+        }
       data["simulation units"].append(unit)
 
     # Add top-level simulation metadata
@@ -542,9 +544,9 @@ class System:
 
     # Dump JSON
     json_string = json.dumps(data, indent=2)
-    return InstantiatedModel(json_string)
+    return json_string
 
-  def processElements(self, elements_dict: dict, connections: list, data: dict, solver_groups : defaultdict, componentSolver : dict, solver_connections : defaultdict, resources :dict  ,systemName = None):
+  def processElements(self, elements_dict: dict, connections: list, data: dict, solver_groups : defaultdict, componentSolver : dict, solver_connections : defaultdict, resources :dict, tempdir : str, systemName = None):
     """Processes the elements and connections in the system."""
     for key, element in elements_dict.items():
       if isinstance(element, Component):
@@ -559,7 +561,7 @@ class System:
         solver_groups[element.solver].append({
             "name": [self.name] + ([systemName] if systemName else []) + [str(element.name)],
             "type": fmuType,
-            "path": str(element.fmuPath)
+            "path": str(Path(tempdir, str(element.fmuPath)))
         })
         componentSolver[str(element.name)] = element.solver
       elif isinstance(element, System):

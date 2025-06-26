@@ -49,8 +49,45 @@ class capi:
     self.obj.oms3_terminate.argtypes = [ctypes.c_void_p]
     self.obj.oms3_terminate.restype = ctypes.c_int
 
+    self.obj.oms_newModel.argtypes = [ctypes.c_char_p]
+    self.obj.oms_newModel.restype = ctypes.c_int
+    self.obj.oms_addSubModel.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms_addSubModel.restype = ctypes.c_int
+    self.obj.oms_addSystem.argtypes = [ctypes.c_char_p, ctypes.c_int]
+    self.obj.oms_addSystem.restype = ctypes.c_int
+    self.obj.oms_addConnection.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_bool]
+    self.obj.oms_addConnection.restype = ctypes.c_int
+    self.obj.oms_instantiate.argtypes = [ctypes.c_char_p]
+    self.obj.oms_instantiate.restype = ctypes.c_int
+    self.obj.oms_initialize.argtypes = [ctypes.c_char_p]
+    self.obj.oms_initialize.restype = ctypes.c_int
+    self.obj.oms_simulate.argtypes = [ctypes.c_char_p]
+    self.obj.oms_simulate.restype = ctypes.c_int
+    self.obj.oms_terminate.argtypes = [ctypes.c_char_p]
+    self.obj.oms_terminate.restype = ctypes.c_int
+
   def getVersion(self):
     return self.obj.oms_getVersion().decode('utf-8')
+
+  def newModel(self, model_name: str = "default") -> Status:
+    '''Create a new model with the given name.'''
+    status = self.obj.oms_newModel(model_name.encode('utf-8'))
+    return Status(status)
+
+  def addSubModel(self, model_name: str, submodel_path: str) -> Status:
+    '''Add a submodel to the current model.'''
+    status = self.obj.oms_addSubModel(model_name.encode('utf-8'), submodel_path.encode('utf-8'))
+    return Status(status)
+
+  def addSystem(self, system_name: str, system_type: int) -> Status:
+    '''Add a system to the current model.
+    system_type: 0 for system, 1 for sub-system.'''
+    status = self.obj.oms_addSystem(system_name.encode('utf-8'), system_type)
+    return Status(status)
+
+  def addConnection(self, crefA, crefB, suppressUnit=False):
+    status = self.obj.oms_addConnection(crefA.encode(), crefB.encode(), suppressUnit)
+    return Status(status)
 
   def instantiateFromJson(self, model_json_desc) -> tuple:
     '''Instantiate a model from a JSON description.'''
@@ -60,14 +97,18 @@ class capi:
       return None, Status(status)
     return model_ptr, Status(status)
 
-  def initialize(self, model) -> Status:
-    '''Enters initialization mode.'''
-    status = self.obj.oms3_initialize(model)
+  def instantiate(self, cref):
+    status = self.obj.oms_instantiate(cref.encode())
     return Status(status)
 
-  def simulate(self, model) -> Status:
+  def initialize(self, cref) -> Status:
+    '''Enters initialization mode.'''
+    status = self.obj.oms_initialize(cref.encode())
+    return Status(status)
+
+  def simulate(self, cref) -> Status:
     '''Exits initialization mode and runs the simulation until stopTime is reached.'''
-    status = self.obj.oms3_simulate(model)
+    status = self.obj.oms_simulate(cref.encode())
     return Status(status)
 
   def stepUntil(self, model, stopTime) -> Status:
@@ -76,9 +117,9 @@ class capi:
     status = self.obj.oms3_stepUntil(model, stopTime)
     return Status(status)
 
-  def terminate(self, model) -> Status:
+  def terminate(self, cref) -> Status:
     '''Terminate the simulation and free resources.'''
-    status = self.obj.oms3_terminate(model)
+    status = self.obj.oms_terminate(cref.encode())
     return Status(status)
 
 

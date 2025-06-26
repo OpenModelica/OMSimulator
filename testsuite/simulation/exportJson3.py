@@ -39,10 +39,13 @@ model.addConnection(CRef('default', 'Gain2', 'y'), CRef('default', 'Add2', 'u2')
 #model.list()
 model.export('exportJson3.ssp')
 
-model2 = SSP('exportJson3.ssp')
+model2 = SSP('exportJson3.ssp', temp_dir="./tmptest")
 
 model2.list()
-model2.instantiate() ## internally generate the json file and also set the model state like virgin,
+instantiated_model = model2.instantiate() ## internally generate the json file and also set the model state like virgin,
+instantiated_model.initialize()
+instantiated_model.simulate()
+instantiated_model.terminate()
 
 ## Result:
 ## <class 'OMSimulator.ssp.SSP'>
