@@ -566,7 +566,7 @@ class System:
         componentSolver[str(element.name)] = element.solver
       elif isinstance(element, System):
         # recurse into subsystems
-        self.processElements(element.elements, element.connections, data, solver_groups, componentSolver, solver_connections, resources, systemName=str(element.name))
+        self.processElements(element.elements, element.connections, data, solver_groups, componentSolver, solver_connections, resources, tempdir, systemName=str(element.name))
 
     for connection in connections:
       startElement = connection.startElement

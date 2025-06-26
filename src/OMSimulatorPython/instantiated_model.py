@@ -4,7 +4,7 @@ class InstantiatedModel:
   def __init__(self, json_description):
 
     config = json.loads(json_description)
-    self.modelName = "model" ## create random name
+    self.modelName = "model" ## create random name, but we cannot commits test as jenkins will gerate new model name
     self.apiCall = []
 
     status = Capi.setCommandLineOption("--suppressPath=true")
@@ -38,7 +38,7 @@ class InstantiatedModel:
         solver_path = f"{self.modelName}.root"
 
       for comp in unit["components"]:
-        comp_path = ".".join([solver_path] + comp["name"][1:])
+        comp_path = ".".join([solver_path] + [comp["name"][-1]])
         self.apiCall.append(f'oms_addSubModel("{comp_path}", "{comp["path"]}")')
         status = Capi.addSubModel(comp_path, comp["path"])
         if status != Status.ok:
@@ -46,8 +46,8 @@ class InstantiatedModel:
 
 
       for conn in unit["connections"]:
-        start = ".".join([solver_path] + conn["start element"][1:]) + f".{conn['start connector']}"
-        end = ".".join([solver_path] + conn["end element"][1:]) + f".{conn['end connector']}"
+        start = ".".join([solver_path] + [conn["start element"][-1]]) + f".{conn['start connector']}"
+        end = ".".join([solver_path] + [conn["end element"][-1]]) + f".{conn['end connector']}"
         self.apiCall.append(f'oms_addConnection("{start}", "{end}")')
         status = Capi.addConnection(start, end)
         if status != Status.ok:

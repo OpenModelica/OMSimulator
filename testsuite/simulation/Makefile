@@ -3,9 +3,11 @@ TEST = ../rtest -v
 TESTFILES = \
 exportJson1.py \
 exportJson2.py \
-exportJson3.py \
 exportJson4.py \
+tankYPipe.py \
 SimpleSimulation.py \
+SimpleSimulation2.py \
+SimpleSimulation3.py \
 
 # Run make failingtest
 FAILINGTESTFILES = \

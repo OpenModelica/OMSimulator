@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command: rm exportJson3.ssp
+## teardown_command: rm SimpleSimulation3.ssp
 ## linux: yes
 ## ucrt64: yes
 ## win: yes
@@ -11,7 +11,8 @@ Settings.suppressPath = True
 
 
 # This example creates a new SSP file with an FMU instantiated as a component and sets two differents solver for the components and the system.
-# It then exports the SSP file and re-imports it to verify the solver settings.
+# It then exports the SSP file and re-imports it to verify the solver settings. and simulates the model.
+
 model = SSP()
 model.addResource('../resources/Modelica.Blocks.Math.Add.fmu', new_name='resources/Add.fmu')
 model.addResource('../resources/Modelica.Blocks.Math.Gain.fmu', new_name='resources/Gain.fmu')
@@ -37,9 +38,9 @@ model.addConnection(CRef('default', 'Gain2', 'y'), CRef('default', 'Add2', 'u1')
 model.addConnection(CRef('default', 'Gain2', 'y'), CRef('default', 'Add2', 'u2'))
 
 #model.list()
-model.export('exportJson3.ssp')
+model.export('SimpleSimulation3.ssp')
 
-model2 = SSP('exportJson3.ssp')
+model2 = SSP('SimpleSimulation3.ssp')
 
 model2.list()
 print("", flush=True)

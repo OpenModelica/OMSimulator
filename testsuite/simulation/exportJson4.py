@@ -38,6 +38,11 @@ model.export('exportJson4.ssp')
 model2 = SSP('exportJson4.ssp')
 
 model2.instantiate() ## internally generate the json file and also set the model state like virgin,
+instantiated_model = model2.instantiate() ## internally generate the json file and also set the model state like virgin,
+instantiated_model.initialize()
+instantiated_model.simulate()
+instantiated_model.terminate()
+instantiated_model.delete()
 
 ## Result:
 ## <class 'OMSimulator.ssp.SSP'>
