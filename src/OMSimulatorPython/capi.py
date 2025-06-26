@@ -42,6 +42,8 @@ class capi:
     self.obj.oms_addSubModel.restype = ctypes.c_int
     self.obj.oms_addSystem.argtypes = [ctypes.c_char_p, ctypes.c_int]
     self.obj.oms_addSystem.restype = ctypes.c_int
+    self.obj.oms_delete.argtypes = [ctypes.c_char_p]
+    self.obj.oms_delete.restype = ctypes.c_int
     self.obj.oms_getVersion.argtypes = None
     self.obj.oms_getVersion.restype = ctypes.c_char_p
     self.obj.oms_initialize.argtypes = [ctypes.c_char_p]
@@ -50,6 +52,8 @@ class capi:
     self.obj.oms_instantiate.restype = ctypes.c_int
     self.obj.oms_newModel.argtypes = [ctypes.c_char_p]
     self.obj.oms_newModel.restype = ctypes.c_int
+    self.obj.oms_setCommandLineOption.argtypes = [ctypes.c_char_p]
+    self.obj.oms_setCommandLineOption.restype = ctypes.c_int
     self.obj.oms_simulate.argtypes = [ctypes.c_char_p]
     self.obj.oms_simulate.restype = ctypes.c_int
     self.obj.oms_stepUntil.argtypes = [ctypes.c_char_p, ctypes.c_double]
@@ -72,6 +76,10 @@ class capi:
     status = self.obj.oms_addSystem(system_name.encode('utf-8'), system_type)
     return Status(status)
 
+  def delete(self, cref):
+    status = self.obj.oms_delete(cref.encode())
+    return Status(status)
+
   def getVersion(self):
     return self.obj.oms_getVersion().decode('utf-8')
 
@@ -87,6 +95,10 @@ class capi:
   def newModel(self, model_name: str = "default") -> Status:
     '''Create a new model with the given name.'''
     status = self.obj.oms_newModel(model_name.encode('utf-8'))
+    return Status(status)
+
+  def setCommandLineOption(self, cmd):
+    status = self.obj.oms_setCommandLineOption(cmd.encode())
     return Status(status)
 
   def simulate(self, cref) -> Status:

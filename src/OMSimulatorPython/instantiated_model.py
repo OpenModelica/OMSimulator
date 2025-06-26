@@ -7,10 +7,14 @@ class InstantiatedModel:
     self.modelName = "model" ## create random name
     self.apiCall = []
 
+    status = Capi.setCommandLineOption("--suppressPath=true")
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set command line option: {status}")
+    # Create a new model
     status = Capi.newModel("model")
     if status != Status.ok:
       raise RuntimeError(f"Failed to create new model: {status}")
-
+    # Add a root system
     status = Capi.addSystem("model.root", 1)  #oms_system_wc
     if status != Status.ok:
       raise RuntimeError(f"Failed to create oms_addSystem: {status}")
@@ -84,3 +88,10 @@ class InstantiatedModel:
     status = Capi.terminate(self.modelName)
     if status != Status.ok:
       raise RuntimeError(f"Failed to terminate model: {status}")
+
+  def delete(self):
+    status = Capi.delete(self.modelName)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to delete model: {status}")
+    self.modelName = None  # Clear the model name after deletion
+    self.apiCall.clear()  # Clear the API call history
