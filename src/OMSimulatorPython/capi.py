@@ -54,6 +54,8 @@ class capi:
     self.obj.oms_newModel.restype = ctypes.c_int
     self.obj.oms_setCommandLineOption.argtypes = [ctypes.c_char_p]
     self.obj.oms_setCommandLineOption.restype = ctypes.c_int
+    self.obj.oms_setTempDirectory.argtypes = [ctypes.c_char_p]
+    self.obj.oms_setTempDirectory.restype = ctypes.c_int
     self.obj.oms_simulate.argtypes = [ctypes.c_char_p]
     self.obj.oms_simulate.restype = ctypes.c_int
     self.obj.oms_stepUntil.argtypes = [ctypes.c_char_p, ctypes.c_double]
@@ -99,6 +101,10 @@ class capi:
 
   def setCommandLineOption(self, cmd):
     status = self.obj.oms_setCommandLineOption(cmd.encode())
+    return Status(status)
+
+  def setTempDirectory(self, newTempDir):
+    status = self.obj.oms_setTempDirectory(newTempDir.encode())
     return Status(status)
 
   def simulate(self, cref) -> Status:

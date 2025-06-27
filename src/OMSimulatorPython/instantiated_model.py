@@ -1,5 +1,6 @@
 from OMSimulator.capi import Capi, Status
 import json
+import tempfile
 class InstantiatedModel:
   def __init__(self, json_description):
 
@@ -10,6 +11,9 @@ class InstantiatedModel:
     status = Capi.setCommandLineOption("--suppressPath=true")
     if status != Status.ok:
       raise RuntimeError(f"Failed to set command line option: {status}")
+    status = Capi.setTempDirectory(tempfile.mkdtemp())
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set temp directory: {status}")
     # Create a new model
     status = Capi.newModel("model")
     if status != Status.ok:
