@@ -561,7 +561,7 @@ class System:
         solver_groups[element.solver].append({
             "name": [self.name] + ([systemName] if systemName else []) + [str(element.name)],
             "type": fmuType,
-            "path": str(Path(tempdir, str(element.fmuPath)))
+            "path": str(Path(tempdir, str(element.fmuPath))) if tempdir is not None else str(element.fmuPath)
         })
         componentSolver[str(element.name)] = element.solver
       elif isinstance(element, System):
