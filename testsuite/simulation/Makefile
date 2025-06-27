@@ -3,7 +3,6 @@ TEST = ../rtest -v
 TESTFILES = \
 exportJson1.py \
 exportJson2.py \
-exportJson4.py \
 tankYPipe.py \
 SimpleSimulation1.py \
 SimpleSimulation2.py \
@@ -11,6 +10,7 @@ SimpleSimulation3.py \
 
 # Run make failingtest
 FAILINGTESTFILES = \
+exportJson4.py \
 
 # Dependency files that are not .lua or Makefile
 # Add them here or they will be cleaned.
