@@ -102,6 +102,7 @@ namespace oms
     virtual oms_status_enu_t setRealInputDerivative(const ComRef& cref, const SignalDerivative& der) { return logError_NotImplemented; }
     virtual oms_status_enu_t stepUntil(double stopTime) { return logError_NotImplemented; }
     virtual oms_status_enu_t setTime(double time) { return logError_NotImplemented; }
+    virtual oms_status_enu_t setExportName(const std::string & exportName) { return oms_status_ok; }
     virtual oms_status_enu_t newResources(const std::string& ssvFileName, const std::string& ssmFileName, bool externalResources) { return logError_NotImplemented; }
     virtual oms_status_enu_t addResources(std::string& filename) { return logError_NotImplemented; }
     virtual oms_status_enu_t deleteReferencesInSSD(const std::string& filename) {return logError_NotImplemented;}

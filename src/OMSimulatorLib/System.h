@@ -87,6 +87,7 @@ namespace oms
     oms_system_enu_t getType() const {return type;}
     oms_status_enu_t addSubSystem(const ComRef& cref, oms_system_enu_t type);
     oms_status_enu_t addSubModel(const ComRef& cref, const std::string& fmuPath);
+    oms_status_enu_t setExportName(const ComRef& cref, const std::string& exportName);
     oms_status_enu_t replaceSubModel(const ComRef& cref, const std::string& fmuPath, bool dryRun, int& warningCount);
     bool isValidScalarVariable(Component* referenceComponent, Component* replacingComponent, Connection* connection, const ComRef& crefA, const ComRef& crefB, const ComRef& signalName, const std::string& path, std::vector<std::string>& warningList);
     bool validCref(const ComRef& cref);

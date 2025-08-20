@@ -47,6 +47,10 @@ class InstantiatedModel:
         status = Capi.addSubModel(comp_path, comp["path"])
         if status != Status.ok:
           raise RuntimeError(f"Failed to add oms_addSubModel: {status}")
+        export_name = ".".join(comp["name"])
+        status = Capi.setExportName(comp_path, export_name)  # Set export name if provided
+        if status != Status.ok:
+          raise RuntimeError(f"Failed to set export name: {status}")
 
 
       for conn in unit["connections"]:
@@ -70,7 +74,7 @@ class InstantiatedModel:
   def setValues(self):
     pass
 
-  def getValues(self):
+  def getValues(self, Cref):
     pass
 
   def initialize(self):

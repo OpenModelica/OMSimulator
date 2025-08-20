@@ -46,6 +46,8 @@ class capi:
     self.obj.oms_delete.restype = ctypes.c_int
     self.obj.oms_getVersion.argtypes = None
     self.obj.oms_getVersion.restype = ctypes.c_char_p
+    self.obj.oms_getReal.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_double)]
+    self.obj.oms_getReal.restype = ctypes.c_int
     self.obj.oms_initialize.argtypes = [ctypes.c_char_p]
     self.obj.oms_initialize.restype = ctypes.c_int
     self.obj.oms_instantiate.argtypes = [ctypes.c_char_p]
@@ -56,6 +58,8 @@ class capi:
     self.obj.oms_setCommandLineOption.restype = ctypes.c_int
     self.obj.oms_setTempDirectory.argtypes = [ctypes.c_char_p]
     self.obj.oms_setTempDirectory.restype = ctypes.c_int
+    self.obj.oms_setExportName.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms_setExportName.restype = ctypes.c_int
     self.obj.oms_simulate.argtypes = [ctypes.c_char_p]
     self.obj.oms_simulate.restype = ctypes.c_int
     self.obj.oms_stepUntil.argtypes = [ctypes.c_char_p, ctypes.c_double]
@@ -85,6 +89,11 @@ class capi:
   def getVersion(self):
     return self.obj.oms_getVersion().decode('utf-8')
 
+  def getReal(self, cref):
+    value = ctypes.c_double()
+    status = self.obj.oms_getReal(cref.encode(), ctypes.byref(value))
+    return [value.value, Status(status)]
+
   def initialize(self, cref) -> Status:
     '''Enters initialization mode.'''
     status = self.obj.oms_initialize(cref.encode())
@@ -105,6 +114,12 @@ class capi:
 
   def setTempDirectory(self, newTempDir):
     status = self.obj.oms_setTempDirectory(newTempDir.encode())
+    return Status(status)
+
+  def setExportName(self, cref, exportName):
+    '''Set the export name for a model or system.
+    This is used to specify the name under which the model will be exported.'''
+    status = self.obj.oms_setExportName(cref.encode(), exportName.encode())
     return Status(status)
 
   def simulate(self, cref) -> Status:

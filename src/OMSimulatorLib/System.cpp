@@ -305,6 +305,70 @@ oms_status_enu_t oms::System::addSubModel(const oms::ComRef& cref, const std::st
   return system->addSubModel(tail, path);
 }
 
+
+oms_status_enu_t oms::System::setExportName(const oms::ComRef& cref, const std::string& exportName)
+{
+  std::cout << "setExportName: cref 1= " << cref.c_str() << ", exportName = " << exportName << std::endl;
+
+  auto component = getComponent(cref);
+  if (!component)
+    return logError("Component \"" + std::string(getFullCref() + cref) + "\" does not exist in the scope");
+  std::cout << "setExportName: cref 3 = " << component->getCref().c_str() << "=>" << component->setExportName(exportName) << std::endl;
+  return oms_status_ok;
+
+  // if (cref.isValidIdent())
+  // {
+  //   if (!validCref(cref))
+  //     return logError_AlreadyInScope(getFullCref() + cref);
+
+  //   std::cout << "setExportName: cref 2 = " << cref.c_str() << ", exportName = " << exportName << std::endl;
+  //   auto component = getComponent(cref);
+  //   if (!component)
+  //     return logError("Component \"" + std::string(getFullCref() + cref) + "\" does not exist in the scope");
+  //   std::cout << "setExportName: cref 3 = " << component->getCref().c_str();
+
+  // //   Component* component = NULL;
+
+  // //   std::string extension = "";
+  // //   if (path.length() > 4)
+  // //     extension = path.substr(path.length() - 4);
+
+  // //   // unpack the modelDescription.xml in memory to detect the fmiVersion
+  // //   std::string fmiVersion = "";
+  // //   if (extension == ".fmu")
+  // //     fmiVersion = getFmiVersion(path);
+
+  // //   if (extension == ".fmu" && oms_system_wc == type && fmiVersion == "2.0")
+  // //     component = ComponentFMUCS::NewComponent(cref, this, path_.string());
+  // //   else if (extension == ".fmu" && oms_system_wc == type && fmiVersion == "3.0")
+  // //     component = ComponentFMU3CS::NewComponent(cref, this, path_.string());
+  // //   else if (extension == ".fmu" && oms_system_sc == type)
+  // //     component = ComponentFMUME::NewComponent(cref, this, path_.string());
+  // //   else if (extension == ".csv" || extension == ".mat")
+  // //     component = ComponentTable::NewComponent(cref, this, path_.string());
+  // //   else
+  // //     return logError("supported sub-model formats are \".fmu\", \".csv\", \".mat\"");
+
+  // //   if (!component)
+  // //     return oms_status_error;
+
+  // //   components[cref] = component;
+  // //   subelements.back() = reinterpret_cast<oms_element_t*>(component->getElement());
+  // //   subelements.push_back(NULL);
+  // //   element.setSubElements(&subelements[0]);
+  //   return oms_status_ok;
+  // }
+
+  // ComRef tail(cref);
+  // ComRef front = tail.pop_front();
+
+  // System* system = this->getSystem(front);
+  // if (!system)
+  //   return logError("System \"" + std::string(getFullCref()) + "\" does not contain system \"" + std::string(front) + "\"");
+
+  // return system->setExportName(tail, exportName);
+}
+
 std::string oms::System::getFmiVersion(const std::string& path)
 {
   // unpack the modelDescription.xml in memory to detect the fmiVersion
