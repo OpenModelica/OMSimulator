@@ -48,6 +48,7 @@ class InstantiatedModel:
         if status != Status.ok:
           raise RuntimeError(f"Failed to add oms_addSubModel: {status}")
         export_name = ".".join(comp["name"])
+        #print(f"Setting export name for {comp_path} to {export_name}")
         status = Capi.setExportName(comp_path, export_name)  # Set export name if provided
         if status != Status.ok:
           raise RuntimeError(f"Failed to set export name: {status}")
