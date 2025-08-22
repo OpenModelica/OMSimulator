@@ -7,6 +7,7 @@ tankYPipe.py \
 SimpleSimulation1.py \
 SimpleSimulation2.py \
 SimpleSimulation3.py \
+SimpleSimulation4.py \
 
 # Run make failingtest
 FAILINGTESTFILES = \
