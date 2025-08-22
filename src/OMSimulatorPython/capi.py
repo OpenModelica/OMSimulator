@@ -60,6 +60,8 @@ class capi:
     self.obj.oms_setTempDirectory.restype = ctypes.c_int
     self.obj.oms_setExportName.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms_setExportName.restype = ctypes.c_int
+    self.obj.oms_setReal.argtypes = [ctypes.c_char_p, ctypes.c_double]
+    self.obj.oms_setReal.restype = ctypes.c_int
     self.obj.oms_simulate.argtypes = [ctypes.c_char_p]
     self.obj.oms_simulate.restype = ctypes.c_int
     self.obj.oms_stepUntil.argtypes = [ctypes.c_char_p, ctypes.c_double]
@@ -120,6 +122,11 @@ class capi:
     '''Set the export name for a model or system.
     This is used to specify the name under which the model will be exported.'''
     status = self.obj.oms_setExportName(cref.encode(), exportName.encode())
+    return Status(status)
+
+  def setReal(self, cref, value):
+    '''Set a real value for a model or system.'''
+    status = self.obj.oms_setReal(cref.encode(), value)
     return Status(status)
 
   def simulate(self, cref) -> Status:

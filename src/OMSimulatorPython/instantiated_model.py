@@ -76,8 +76,16 @@ class InstantiatedModel:
     """Returns the generated API calls as a string."""
     return "\n".join(self.apiCall)
 
-  def setValue(self):
-    pass
+  def setValue(self, cref: CRef, value):
+    """Sets a value for a specific CRef in the model."""
+    name = ".".join(cref.names[:-1])
+    if name in self.mappedCrefs:
+      mapped_cref = ".".join([self.mappedCrefs[name], cref.names[-1]])
+      status = Capi.setReal(mapped_cref, value) # Get the value from the CAPI
+      if status != Status.ok:
+        raise RuntimeError(f"Failed to set value for {mapped_cref}: {status}")
+    else:
+      raise ValueError(f"CRef {cref} not found in mapped CRefs.")
 
   def getValue(self, cref: CRef):
     ##TODO check the var type and call the correct CAPI function

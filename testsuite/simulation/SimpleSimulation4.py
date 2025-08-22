@@ -23,7 +23,6 @@ print(f"info:    default.CauerLowPassAnalog.R1.T: {model.getValue(CRef('default'
 print(f"info:    default.CauerLowPassAnalog.C1.C: {model.getValue(CRef('default', 'CauerLowPassAnalog', 'C1.C'))}", flush=True)
 
 instantiated_model = model2.instantiate() ## internally generate the json file and also set the model state like virgin,
-value = instantiated_model.getValue(CRef('default', 'CauerLowPassAnalog', 'R1.T'))
 
 print(f"info: After instantiation:")
 print(f"info:    default.CauerLowPassAnalog.R1.T: {instantiated_model.getValue(CRef('default', 'CauerLowPassAnalog', 'R1.T'))}", flush=True)
