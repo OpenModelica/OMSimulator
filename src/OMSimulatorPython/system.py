@@ -479,6 +479,22 @@ class System:
       case _:
         raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component or a Connector")
 
+  def getValue(self, cref: CRef):
+    first = cref.first()
+    ## Check if the cref is a top level system connector
+    ## or allow non existing connectors to support parameter mapping throgh SSM inline or ssm file by checking if cref
+    if self._connectorExists(first) or cref.is_root():
+      self.value.getValue(cref)
+      return
+
+    match self.elements.get(first):
+      case System():
+        self.elements[first].getValue(cref.pop_first())
+      case Component():
+        self.elements[first].getValue(cref.last())
+      case _:
+        raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component or a Connector")
+
   def mapParameter(self, cref: CRef, source: str, target: str):
     if cref is None:
       self.parameterMapping.mapParameter(source, target)

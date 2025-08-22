@@ -13,6 +13,9 @@ class Values:
       raise TypeError("Unit can only be set for Real values.")
     self.start_values[name] = (value, unit, description)
 
+  def getValue(self, name):
+    return self.start_values.get(name)
+
   def empty(self) -> bool:
     return not self.start_values
 

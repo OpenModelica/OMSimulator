@@ -1,4 +1,5 @@
 from OMSimulator.capi import Capi, Status
+from OMSimulator.cref import CRef
 import json
 import tempfile
 class InstantiatedModel:
@@ -7,6 +8,7 @@ class InstantiatedModel:
     config = json.loads(json_description)
     self.modelName = "model" ## create random name, but we cannot commits test as jenkins will gerate new model name
     self.apiCall = []
+    self.mappedCrefs = {}  # Store mapped CRefs associated with their export names
 
     status = Capi.setCommandLineOption("--suppressPath=true")
     if status != Status.ok:
@@ -49,6 +51,8 @@ class InstantiatedModel:
           raise RuntimeError(f"Failed to add oms_addSubModel: {status}")
         export_name = ".".join(comp["name"])
         #print(f"Setting export name for {comp_path} to {export_name}")
+        if not export_name in self.mappedCrefs:
+          self.mappedCrefs[export_name] = comp_path
         status = Capi.setExportName(comp_path, export_name)  # Set export name if provided
         if status != Status.ok:
           raise RuntimeError(f"Failed to set export name: {status}")
@@ -72,11 +76,20 @@ class InstantiatedModel:
     """Returns the generated API calls as a string."""
     return "\n".join(self.apiCall)
 
-  def setValues(self):
+  def setValue(self):
     pass
 
-  def getValues(self, Cref):
-    pass
+  def getValue(self, cref: CRef):
+    ##TODO check the var type and call the correct CAPI function
+    name = ".".join(cref.names[:-1])
+    if name in self.mappedCrefs:
+      mapped_cref = ".".join([self.mappedCrefs[name], cref.names[-1]])
+      value, status = Capi.getReal(mapped_cref) # Get the value from the CAPI
+      if status != Status.ok:
+        raise RuntimeError(f"Failed to get value for {mapped_cref}: {status}")
+      return value
+    else:
+      raise ValueError(f"CRef {cref} not found in mapped CRefs.")
 
   def initialize(self):
     status = Capi.initialize(self.modelName)

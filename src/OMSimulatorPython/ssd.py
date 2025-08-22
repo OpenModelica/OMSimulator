@@ -167,6 +167,10 @@ class SSD:
     subcref = self._validateCref(cref)
     self.system.setValue(subcref, value, unit, description)
 
+  def getValue(self, cref: CRef):
+    subcref = self._validateCref(cref)
+    self.system.getValue(subcref)
+
   def mapParameter(self, cref: CRef, source: str, target: str):
     '''Maps a parameter from source to target in the system.'''
     subcref = self._validateCref(cref)

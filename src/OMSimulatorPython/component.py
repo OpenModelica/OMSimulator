@@ -143,5 +143,8 @@ class Component:
   def setValue(self, cref:str, value, unit=None, description = None):
     self.value.setValue(cref, value, unit, description)
 
+  def getValue(self, cref:str):
+    return self.value.getValue(cref)
+
   def setSolver(self, name: str):
     self.solver = name
