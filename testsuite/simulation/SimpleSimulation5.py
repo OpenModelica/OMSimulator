@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command: rm -rf SimpleSimulation5.ssp
+## teardown_command: rm -rf SimpleSimulation5.ssp SimpleSimulation5_res.mat
 ## linux: yes
 ## ucrt64: yes
 ## win: yes
@@ -29,6 +29,7 @@ model.export('SimpleSimulation5.ssp')
 model2 = SSP('SimpleSimulation5.ssp')
 
 instantiated_model = model2.instantiate() ## internally generate the json file and also set the model state like virgin,
+instantiated_model.setResultFile("SimpleSimulation5_res.mat")
 instantiated_model.setValue(CRef('default', 'Gain1', 'k'), 2.0)
 instantiated_model.setValue(CRef('default', 'Gain1', 'u'), 6.0)
 
@@ -55,7 +56,7 @@ instantiated_model.delete()
 ## info:    default.Gain1.u: 6.0
 ## info:    default.Gain1.y: 12.0
 ## info:    default.Add1.u1: 0.0
-## info:    Result file: model_res.mat (bufferSize=10)
+## info:    Result file: SimpleSimulation5_res.mat (bufferSize=1)
 ## info: After simulation:
 ## info:    default.Gain1.k: 2.0
 ## info:    default.Gain1.u: 6.0

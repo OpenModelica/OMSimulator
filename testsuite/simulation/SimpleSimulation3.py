@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command: rm SimpleSimulation3.ssp
+## teardown_command: rm SimpleSimulation3.ssp SimpleSimulation3_res.mat
 ## linux: yes
 ## ucrt64: yes
 ## win: yes
@@ -45,6 +45,8 @@ model2 = SSP('SimpleSimulation3.ssp')
 model2.list()
 print("", flush=True)
 instantiated_model = model2.instantiate() ## internally generate the json file and also set the model state like virgin,
+instantiated_model.setResultFile("SimpleSimulation3_res.mat")
+
 instantiated_model.initialize()
 instantiated_model.simulate()
 instantiated_model.terminate()
@@ -112,7 +114,7 @@ instantiated_model.delete()
 ## info:    model doesn't contain any continuous state
 ## info:    maximum step size for 'model.root.solver2': 0.001000
 ## info:    maximum step size for 'model.root.solver1': 0.001000
-## info:    Result file: model_res.mat (bufferSize=10)
+## info:    Result file: SimpleSimulation3_res.mat (bufferSize=1)
 ## info:    Final Statistics for 'model.root.solver2':
 ##          NumSteps = 1001 NumRhsEvals  = 1002 NumLinSolvSetups = 51
 ##          NumNonlinSolvIters = 1001 NumNonlinSolvConvFails = 0 NumErrTestFails = 0

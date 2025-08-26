@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command: rm -rf tankYpipe.ssp
+## teardown_command: rm -rf tankYpipe.ssp tankYpipe_rest.mat
 ## linux: no
 ## ucrt64: yes
 ## win: yes
@@ -36,6 +36,7 @@ model2 = SSP('tankYPipe.ssp')
 model2.list()
 print("", flush=True)
 instantiated_model = model2.instantiate() ## internally generate the json file and also set the model state like virgin,
+instantiated_model.setResultFile("tankYpipe_rest.mat")
 instantiated_model.initialize()
 instantiated_model.simulate()
 instantiated_model.terminate()
@@ -95,5 +96,5 @@ instantiated_model.delete()
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
 ##
-## info:    Result file: model_res.mat (bufferSize=10)
+## info:    Result file: tankYpipe_rest.mat (bufferSize=1)
 ## endResult

@@ -1,10 +1,10 @@
 from OMSimulator.capi import Capi, Status
 from OMSimulator.cref import CRef
+from OMSimulator.system import System
 import json
 import tempfile
 class InstantiatedModel:
-  def __init__(self, json_description):
-
+  def __init__(self, json_description, system: System | None = None):
     config = json.loads(json_description)
     self.modelName = "model" ## create random name, but we cannot commits test as jenkins will gerate new model name
     self.apiCall = []
@@ -113,6 +113,11 @@ class InstantiatedModel:
     status = Capi.stepUntil(self.modelName, stopTime)
     if status != Status.ok:
       raise RuntimeError(f"Failed to step until {stopTime}: {status}")
+
+  def setResultFile(self, filename: str):
+    status = Capi.setResultFile("model", filename)
+    if status !=Status.ok:
+      raise RuntimeError(f"Failed to setResultFile {filename}: {status}")
 
   def terminate(self):
     status = Capi.terminate(self.modelName)

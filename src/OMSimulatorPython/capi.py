@@ -38,6 +38,8 @@ class capi:
 
     self.obj.oms_addConnection.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_bool]
     self.obj.oms_addConnection.restype = ctypes.c_int
+    self.obj.oms_addConnector.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int]
+    self.obj.oms_addConnector.restype = ctypes.c_int
     self.obj.oms_addSubModel.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms_addSubModel.restype = ctypes.c_int
     self.obj.oms_addSystem.argtypes = [ctypes.c_char_p, ctypes.c_int]
@@ -62,6 +64,8 @@ class capi:
     self.obj.oms_setExportName.restype = ctypes.c_int
     self.obj.oms_setReal.argtypes = [ctypes.c_char_p, ctypes.c_double]
     self.obj.oms_setReal.restype = ctypes.c_int
+    self.obj.oms_setResultFile.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int]
+    self.obj.oms_setResultFile.restype = ctypes.c_int
     self.obj.oms_simulate.argtypes = [ctypes.c_char_p]
     self.obj.oms_simulate.restype = ctypes.c_int
     self.obj.oms_stepUntil.argtypes = [ctypes.c_char_p, ctypes.c_double]
@@ -71,6 +75,10 @@ class capi:
 
   def addConnection(self, crefA, crefB, suppressUnit=False):
     status = self.obj.oms_addConnection(crefA.encode(), crefB.encode(), suppressUnit)
+    return Status(status)
+
+  def addConnector(self, cref, causality : int, signal_type : int):
+    status = self.obj.oms_addConnector(cref.encode(), causality, signal_type)
     return Status(status)
 
   def addSubModel(self, model_name: str, submodel_path: str) -> Status:
@@ -127,6 +135,12 @@ class capi:
   def setReal(self, cref, value):
     '''Set a real value for a model or system.'''
     status = self.obj.oms_setReal(cref.encode(), value)
+    return Status(status)
+
+  def setResultFile(self, cref, filename, bufferSize=1) -> Status:
+    '''Set the result file for a model or system.
+    The bufferSize specifies how many values are buffered before writing to the file.'''
+    status = self.obj.oms_setResultFile(cref.encode(), filename.encode(), bufferSize)
     return Status(status)
 
   def simulate(self, cref) -> Status:

@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command: rm -rf SimpleSimulaton4.ssp
+## teardown_command: rm -rf SimpleSimulaton4.ssp SimpleSimulaton4_res.mat
 ## linux: no
 ## ucrt64: yes
 ## win: yes
@@ -23,6 +23,7 @@ print(f"info:    default.CauerLowPassAnalog.R1.T: {model.getValue(CRef('default'
 print(f"info:    default.CauerLowPassAnalog.C1.C: {model.getValue(CRef('default', 'CauerLowPassAnalog', 'C1.C'))}", flush=True)
 
 instantiated_model = model2.instantiate() ## internally generate the json file and also set the model state like virgin,
+instantiated_model.setResultFile("SimpleSimulation4_res.mat")
 
 print(f"info: After instantiation:")
 print(f"info:    default.CauerLowPassAnalog.R1.T: {instantiated_model.getValue(CRef('default', 'CauerLowPassAnalog', 'R1.T'))}", flush=True)
@@ -46,7 +47,7 @@ instantiated_model.delete()
 ## info: After instantiation:
 ## info:    default.CauerLowPassAnalog.R1.T: 300.15
 ## info:    default.CauerLowPassAnalog.C1.C: 1.072
-## info:    Result file: model_res.mat (bufferSize=10)
+## info:    Result file: SimpleSimulation4_res.mat (bufferSize=1)
 ## info: After Simulation:
 ## info:    default.CauerLowPassAnalog.R1.T: 300.15
 ## info:    default.CauerLowPassAnalog.C1.C: 1.072
