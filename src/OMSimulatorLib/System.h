@@ -227,6 +227,7 @@ namespace oms
     System* parentSystem;
     std::map<ComRef, System*> subsystems;
     std::map<ComRef, Component*> components;
+    std::string exportName; ///< export name for top system and subsystem-level connector, used in the result file
 
     Values values;  ///< system level connectors, parameters and their start values defined before instantiating the FMU and external inputs defined after initialization
 

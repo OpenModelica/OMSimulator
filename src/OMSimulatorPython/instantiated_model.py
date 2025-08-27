@@ -29,6 +29,21 @@ class InstantiatedModel:
     self.apiCall.append(f'oms_newModel("{self.modelName}")')
     self.apiCall.append(f'oms_addSystem("{self.modelName}.root", "oms_system_wc")')
 
+    ## top level system connector
+    for connector in system.connectors:
+      name = [system.name] + [str(connector.name)]
+      connector_path = ".".join([self.modelName, "root", str(connector.name)])
+      self.apiCall.append(f'oms_addConnector("{connector_path}", "{connector.causality}", {connector.signal_type})')
+      status = Capi.addConnector(connector_path, connector.causality.value, connector.signal_type.value)
+      if status != Status.ok:
+        raise RuntimeError(f"Failed to add oms_addConnector:{status}")
+      export_name = system.name
+      if not export_name in self.mappedCrefs:
+        self.mappedCrefs[export_name] = connector_path
+      status = Capi.setExportName(connector_path, export_name)  # Set export name if provided
+      if status != Status.ok:
+        raise RuntimeError(f"Failed to set export name: {status}")
+
     # Iterate over simulation units
     for unit in config["simulation units"]:
       ## check if unit has solver as key
@@ -43,6 +58,23 @@ class InstantiatedModel:
       else:
         solver_path = f"{self.modelName}.root"
 
+      ## add system connectors
+      for key, element in system.elements.items():
+        if isinstance(element, System):
+          for connector in element.connectors:
+            export_name = ".".join([system.name] + [str(element.name)])
+            connector_path = ".".join([solver_path] + [str(connector.name)])
+            status = Capi.addConnector(connector_path, connector.causality.value, connector.signal_type.value)
+            self.apiCall.append(f'oms_addConnector("{connector_path}", "{connector.causality}", {connector.signal_type})')
+            if status != Status.ok:
+              raise RuntimeError(f"Failed to add oms_addConnector:{status}")
+            if not export_name in self.mappedCrefs:
+              self.mappedCrefs[export_name] = connector_path
+            status = Capi.setExportName(connector_path, export_name)
+            if status != Status.ok:
+              raise RuntimeError(f"Failed to set export name: {status}")
+
+      ## add components
       for comp in unit["components"]:
         comp_path = ".".join([solver_path] + [comp["name"][-1]])
         self.apiCall.append(f'oms_addSubModel("{comp_path}", "{comp["path"]}")')
@@ -57,7 +89,7 @@ class InstantiatedModel:
         if status != Status.ok:
           raise RuntimeError(f"Failed to set export name: {status}")
 
-
+      ## add connections
       for conn in unit["connections"]:
         start = ".".join([solver_path] + [conn["start element"][-1]]) + f".{conn['start connector']}"
         end = ".".join([solver_path] + [conn["end element"][-1]]) + f".{conn['end connector']}"

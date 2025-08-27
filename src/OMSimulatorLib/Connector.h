@@ -70,6 +70,8 @@ namespace oms
     void setName(const oms::ComRef& name);
     void setOwner(const oms::ComRef& owner);
     void setGeometry(const oms::ssd::ConnectorGeometry* newGeometry);
+    oms_status_enu_t setExportName(const std::string & exportName) { this->exportName = exportName; return oms_status_ok;};
+    std::string getExportName() const { return this->exportName; }
 
     std::map<std::string, std::map<std::string, std::string>> connectorUnits;  ///< single entry map which contains unit as key and BaseUnits as value for a connector
     std::map<std::string, std::string> enumerationName;  ///< single entry map which contains connector name as key and enumerationName as value for a connector of type ssc:Enumeration
@@ -95,6 +97,7 @@ namespace oms
   private:
     friend bool operator==(const Connector& v1, const Connector& v2);
     friend bool operator!=(const Connector& v1, const Connector& v2);
+    std::string exportName;  ///< name to be used in result file
   };
 
   bool operator==(const Connector& v1, const Connector& v2);
