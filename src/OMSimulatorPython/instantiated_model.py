@@ -9,6 +9,7 @@ class InstantiatedModel:
     self.modelName = "model" ## create random name, but we cannot commits test as jenkins will gerate new model name
     self.apiCall = []
     self.mappedCrefs = {}  # Store mapped CRefs associated with their export names
+    self.system = system
 
     status = Capi.setCommandLineOption("--suppressPath=true")
     if status != Status.ok:
@@ -29,21 +30,6 @@ class InstantiatedModel:
     self.apiCall.append(f'oms_newModel("{self.modelName}")')
     self.apiCall.append(f'oms_addSystem("{self.modelName}.root", "oms_system_wc")')
 
-    ## top level system connector
-    for connector in system.connectors:
-      name = [system.name] + [str(connector.name)]
-      connector_path = ".".join([self.modelName, "root", str(connector.name)])
-      self.apiCall.append(f'oms_addConnector("{connector_path}", "{connector.causality}", {connector.signal_type})')
-      status = Capi.addConnector(connector_path, connector.causality.value, connector.signal_type.value)
-      if status != Status.ok:
-        raise RuntimeError(f"Failed to add oms_addConnector:{status}")
-      export_name = system.name
-      if not export_name in self.mappedCrefs:
-        self.mappedCrefs[export_name] = connector_path
-      status = Capi.setExportName(connector_path, export_name)  # Set export name if provided
-      if status != Status.ok:
-        raise RuntimeError(f"Failed to set export name: {status}")
-
     # Iterate over simulation units
     for unit in config["simulation units"]:
       ## check if unit has solver as key
@@ -58,22 +44,6 @@ class InstantiatedModel:
       else:
         solver_path = f"{self.modelName}.root"
 
-      ## add system connectors
-      for key, element in system.elements.items():
-        if isinstance(element, System):
-          for connector in element.connectors:
-            export_name = ".".join([system.name] + [str(element.name)])
-            connector_path = ".".join([solver_path] + [str(connector.name)])
-            status = Capi.addConnector(connector_path, connector.causality.value, connector.signal_type.value)
-            self.apiCall.append(f'oms_addConnector("{connector_path}", "{connector.causality}", {connector.signal_type})')
-            if status != Status.ok:
-              raise RuntimeError(f"Failed to add oms_addConnector:{status}")
-            if not export_name in self.mappedCrefs:
-              self.mappedCrefs[export_name] = connector_path
-            status = Capi.setExportName(connector_path, export_name)
-            if status != Status.ok:
-              raise RuntimeError(f"Failed to set export name: {status}")
-
       ## add components
       for comp in unit["components"]:
         comp_path = ".".join([solver_path] + [comp["name"][-1]])
@@ -85,6 +55,7 @@ class InstantiatedModel:
         #print(f"Setting export name for {comp_path} to {export_name}")
         if not export_name in self.mappedCrefs:
           self.mappedCrefs[export_name] = comp_path
+          self.mappedCrefs[".".join(comp["name"][:-1])] = solver_path # map parent system too for connector lookup
         status = Capi.setExportName(comp_path, export_name)  # Set export name if provided
         if status != Status.ok:
           raise RuntimeError(f"Failed to set export name: {status}")
@@ -98,11 +69,32 @@ class InstantiatedModel:
         if status != Status.ok:
           raise RuntimeError(f"Failed to add oms_addConnection: {status}")
 
+    # add top level system connectors
+    self._addConnector(self.system.connectors, self.system.name)
+    # add sub-system connectors
+    for key, element in system.elements.items():
+      if isinstance(element, System):
+        self._addConnector(element.connectors, ".".join([system.name, str(element.name)]))
+
     self.apiCall.append(f'oms_instantiate("{self.modelName}")')
     status = Capi.instantiate(self.modelName)
     if status != Status.ok:
       raise RuntimeError(f"Failed to instantiate model: {status}")
 
+  def _addConnector(self, connectors, systemName):
+    for connector in connectors:
+      name = [systemName] + [str(connector.name)]
+      connector_path = ".".join([self.mappedCrefs[systemName], str(connector.name)])
+      self.apiCall.append(f'oms_addConnector("{connector_path}", "{connector.causality}", {connector.signal_type})')
+      status = Capi.addConnector(connector_path, connector.causality.value, connector.signal_type.value)
+      if status != Status.ok:
+        raise RuntimeError(f"Failed to add oms_addConnector:{status}")
+      export_name = systemName
+      if not export_name in self.mappedCrefs:
+        self.mappedCrefs[export_name] = connector_path
+      status = Capi.setExportName(connector_path, export_name)  # Set export name if provided
+      if status != Status.ok:
+        raise RuntimeError(f"Failed to set export name: {status}")
 
   def dumpApiCalls(self):
     """Returns the generated API calls as a string."""
