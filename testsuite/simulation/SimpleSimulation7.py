@@ -44,6 +44,8 @@ instantiated_model = model2.instantiate() ## internally generate the json file a
 instantiated_model.setResultFile("SimpleSimulation7_res.mat")
 instantiated_model.setValue(CRef('default', 'Gain1', 'k'), 2.0)
 instantiated_model.setValue(CRef('default', 'Gain1', 'u'), 6.0)
+instantiated_model.setValue(CRef('default', 'param1'), 100.0)
+instantiated_model.setValue(CRef('default', 'sub-system', 'input'), 200.0)
 
 print(f"info: After instantiation:")
 print(f"info:    default.param1 : {instantiated_model.getValue(CRef('default', 'param1'))}", flush=True)
@@ -76,24 +78,24 @@ instantiated_model.delete()
 ## Result:
 ## info:    model doesn't contain any continuous state
 ## info: After instantiation:
-## info:    default.param1 : 0.0
+## info:    default.param1 : 100.0
 ## info:    default.Gain1.k: 2.0
 ## info:    default.Gain1.u: 6.0
 ## info:    default.Gain1.y: 12.0
 ## info:    default.Add1.u1: 0.0
-## info:    default.sub-system.input: 0.0
+## info:    default.sub-system.input: 200.0
 ## info:    default.sub-system.Gain2.k: 1.0
 ## info:    default.sub-system.Gain2.u: 0.0
 ## info:    default.sub-system.Gain2.y: 0.0
 ## info:    maximum step size for 'model.root.solver2': 0.001000
 ## info:    Result file: SimpleSimulation7_res.mat (bufferSize=1)
 ## info: After simulation:
-## info:    default.param1 : 0.0
+## info:    default.param1 : 100.0
 ## info:    default.Gain1.k: 2.0
 ## info:    default.Gain1.u: 6.0
 ## info:    default.Gain1.y: 12.0
 ## info:    default.Add1.u1: 12.0
-## info:    default.sub-system.input: 0.0
+## info:    default.sub-system.input: 200.0
 ## info:    default.sub-system.Gain2.k: 1.0
 ## info:    default.sub-system.Gain2.u: 0.0
 ## info:    default.sub-system.Gain2.y: 0.0
