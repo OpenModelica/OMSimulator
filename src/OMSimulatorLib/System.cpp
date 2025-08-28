@@ -308,22 +308,15 @@ oms_status_enu_t oms::System::addSubModel(const oms::ComRef& cref, const std::st
 
 oms_status_enu_t oms::System::setExportName(const oms::ComRef& cref, const std::string& exportName)
 {
-  // std::cout << "setExportName: " << cref.c_str() << " to \"" << exportName << "==>" << this->getCref().c_str() << std::endl;
-
-  // auto system = getSystem(cref);
-  // if (system)
-  //   system->setExportName(cref, exportName);
-
   auto component = getComponent(cref);
   if (component)
     return component->setExportName(exportName);
 
+    // set export name for top level system connectors
   auto connector = getConnector(cref);
   if (connector)
-  {
-    //std::cout << "Found connector: " << connector->getName().c_str();
     return connector->setExportName(exportName);
-  }
+
   return oms_status_ok;
 }
 
@@ -2342,6 +2335,12 @@ oms_status_enu_t oms::System::registerSignalsForResultFile(ResultWriter& resultF
       continue;
 
     auto const& connector = connectors[i];
+    // check for exportName, to be used in result file to map the variable to the correct signal in ssp
+    std::string name;
+    if (!connector->getExportName().empty())
+      name = connector->getExportName().c_str();
+    else
+      name = getFullCref().c_str();
 
     if (oms_signal_type_real == connector->getType())
     {

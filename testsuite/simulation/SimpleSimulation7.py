@@ -46,10 +46,12 @@ instantiated_model.setValue(CRef('default', 'Gain1', 'k'), 2.0)
 instantiated_model.setValue(CRef('default', 'Gain1', 'u'), 6.0)
 
 print(f"info: After instantiation:")
+print(f"info:    default.param1 : {instantiated_model.getValue(CRef('default', 'param1'))}", flush=True)
 print(f"info:    default.Gain1.k: {instantiated_model.getValue(CRef('default', 'Gain1', 'k'))}", flush=True)
 print(f"info:    default.Gain1.u: {instantiated_model.getValue(CRef('default', 'Gain1', 'u'))}", flush=True)
 print(f"info:    default.Gain1.y: {instantiated_model.getValue(CRef('default', 'Gain1', 'y'))}", flush=True)
 print(f"info:    default.Add1.u1: {instantiated_model.getValue(CRef('default', 'Add1', 'u1'))}", flush=True)
+print(f"info:    default.sub-system.input: {instantiated_model.getValue(CRef('default', 'sub-system', 'input'))}", flush=True)
 print(f"info:    default.sub-system.Gain2.k: {instantiated_model.getValue(CRef('default', 'sub-system', 'Gain2', 'k'))}", flush=True)
 print(f"info:    default.sub-system.Gain2.u: {instantiated_model.getValue(CRef('default', 'sub-system', 'Gain2', 'u'))}", flush=True)
 print(f"info:    default.sub-system.Gain2.y: {instantiated_model.getValue(CRef('default', 'sub-system', 'Gain2', 'y'))}", flush=True)
@@ -58,10 +60,12 @@ print(f"info:    default.sub-system.Gain2.y: {instantiated_model.getValue(CRef('
 instantiated_model.initialize()
 instantiated_model.simulate()
 print(f"info: After simulation:")
+print(f"info:    default.param1 : {instantiated_model.getValue(CRef('default', 'param1'))}", flush=True)
 print(f"info:    default.Gain1.k: {instantiated_model.getValue(CRef('default', 'Gain1', 'k'))}", flush=True)
 print(f"info:    default.Gain1.u: {instantiated_model.getValue(CRef('default', 'Gain1', 'u'))}", flush=True)
 print(f"info:    default.Gain1.y: {instantiated_model.getValue(CRef('default', 'Gain1', 'y'))}", flush=True)
 print(f"info:    default.Add1.u1: {instantiated_model.getValue(CRef('default', 'Add1', 'u1'))}", flush=True)
+print(f"info:    default.sub-system.input: {instantiated_model.getValue(CRef('default', 'sub-system', 'input'))}", flush=True)
 print(f"info:    default.sub-system.Gain2.k: {instantiated_model.getValue(CRef('default', 'sub-system', 'Gain2', 'k'))}", flush=True)
 print(f"info:    default.sub-system.Gain2.u: {instantiated_model.getValue(CRef('default', 'sub-system', 'Gain2', 'u'))}", flush=True)
 print(f"info:    default.sub-system.Gain2.y: {instantiated_model.getValue(CRef('default', 'sub-system', 'Gain2', 'y'))}", flush=True)
@@ -72,20 +76,24 @@ instantiated_model.delete()
 ## Result:
 ## info:    model doesn't contain any continuous state
 ## info: After instantiation:
+## info:    default.param1 : 0.0
 ## info:    default.Gain1.k: 2.0
 ## info:    default.Gain1.u: 6.0
 ## info:    default.Gain1.y: 12.0
 ## info:    default.Add1.u1: 0.0
+## info:    default.sub-system.input: 0.0
 ## info:    default.sub-system.Gain2.k: 1.0
 ## info:    default.sub-system.Gain2.u: 0.0
 ## info:    default.sub-system.Gain2.y: 0.0
 ## info:    maximum step size for 'model.root.solver2': 0.001000
 ## info:    Result file: SimpleSimulation7_res.mat (bufferSize=1)
 ## info: After simulation:
+## info:    default.param1 : 0.0
 ## info:    default.Gain1.k: 2.0
 ## info:    default.Gain1.u: 6.0
 ## info:    default.Gain1.y: 12.0
 ## info:    default.Add1.u1: 12.0
+## info:    default.sub-system.input: 0.0
 ## info:    default.sub-system.Gain2.k: 1.0
 ## info:    default.sub-system.Gain2.u: 0.0
 ## info:    default.sub-system.Gain2.y: 0.0
