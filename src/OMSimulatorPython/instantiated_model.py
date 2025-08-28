@@ -48,7 +48,6 @@ class InstantiatedModel:
       currentSystem = ""
       for comp in unit["components"]:
         comp_path = ".".join([solver_path] + [comp["name"][-1]])
-        #print(comp["name"][:-1])
         currentSystem = ".".join(comp["name"][:-1])
         self.apiCall.append(f'oms_addSubModel("{comp_path}", "{comp["path"]}")')
         status = Capi.addSubModel(comp_path, comp["path"])
@@ -75,9 +74,11 @@ class InstantiatedModel:
             self._addConnector(element.connectors, connector_path)
 
       ## add connections
-      for conn in unit["connections"]:
-        start = ".".join([solver_path] + [conn["start element"][-1]]) + f".{conn['start connector']}"
-        end = ".".join([solver_path] + [conn["end element"][-1]]) + f".{conn['end connector']}"
+      for connection in unit["connections"]:
+        start_element = ".".join(connection['start element'])
+        end_element = ".".join(connection['end element'])
+        start = self.mappedCrefs[start_element] + f".{connection['start connector']}"
+        end = self.mappedCrefs[end_element] + f".{connection['end connector']}"
         self.apiCall.append(f'oms_addConnection("{start}", "{end}")')
         status = Capi.addConnection(start, end)
         if status != Status.ok:

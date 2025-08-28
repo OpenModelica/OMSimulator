@@ -33,14 +33,14 @@ model.newSolver(solver2)
 model.setSolver(CRef('default', 'sub-system', 'Gain2'), 'solver2')
 
 model.addConnection(CRef('default', 'Gain1', 'y'), CRef('default', 'Add1', 'u1'))
-
-#model.list()
+## System.Input to Element.Input
+model.addConnection(CRef('default', 'sub-system', 'input'), CRef('default', 'sub-system', 'Gain2', 'u'))
 model.export('SimpleSimulation7.ssp')
 
 model2 = SSP('SimpleSimulation7.ssp')
 #model2.list()
 instantiated_model = model2.instantiate() ## internally generate the json file and also set the model state like virgin,
-#print(instantiated_model.dumpApiCalls(), flush=True)
+# print(instantiated_model.dumpApiCalls(), flush=True)
 instantiated_model.setResultFile("SimpleSimulation7_res.mat")
 instantiated_model.setValue(CRef('default', 'Gain1', 'k'), 2.0)
 instantiated_model.setValue(CRef('default', 'Gain1', 'u'), 6.0)
@@ -97,8 +97,8 @@ instantiated_model.delete()
 ## info:    default.Add1.u1: 12.0
 ## info:    default.sub-system.input: 200.0
 ## info:    default.sub-system.Gain2.k: 1.0
-## info:    default.sub-system.Gain2.u: 0.0
-## info:    default.sub-system.Gain2.y: 0.0
+## info:    default.sub-system.Gain2.u: 200.0
+## info:    default.sub-system.Gain2.y: 200.0
 ## info:    Final Statistics for 'model.root.solver2':
 ##          NumSteps = 1001 NumRhsEvals  = 1002 NumLinSolvSetups = 51
 ##          NumNonlinSolvIters = 1001 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
