@@ -62,8 +62,14 @@ class capi:
     self.obj.oms_setTempDirectory.restype = ctypes.c_int
     self.obj.oms_setExportName.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms_setExportName.restype = ctypes.c_int
+    self.obj.oms_setBoolean.argtypes = [ctypes.c_char_p, ctypes.c_bool]
+    self.obj.oms_setBoolean.restype = ctypes.c_int
+    self.obj.oms_setInteger.argtypes = [ctypes.c_char_p, ctypes.c_int]
+    self.obj.oms_setInteger.restype = ctypes.c_int
     self.obj.oms_setReal.argtypes = [ctypes.c_char_p, ctypes.c_double]
     self.obj.oms_setReal.restype = ctypes.c_int
+    self.obj.oms_setString.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms_setString.restype = ctypes.c_int
     self.obj.oms_setResultFile.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int]
     self.obj.oms_setResultFile.restype = ctypes.c_int
     self.obj.oms_simulate.argtypes = [ctypes.c_char_p]
@@ -135,6 +141,21 @@ class capi:
   def setReal(self, cref, value):
     '''Set a real value for a model or system.'''
     status = self.obj.oms_setReal(cref.encode(), value)
+    return Status(status)
+
+  def setInteger(self, cref, value):
+    '''Set a integer value for a model or system.'''
+    status = self.obj.oms_setInteger(cref.encode(), value)
+    return Status(status)
+
+  def setBoolean(self, cref, value):
+    '''Set a boolean value for a model or system.'''
+    status = self.obj.oms_setBoolean(cref.encode(), value)
+    return Status(status)
+
+  def setString(self, cref, value):
+    '''Set a string value for a model or system.'''
+    status = self.obj.oms_setString(cref.encode(), value)
     return Status(status)
 
   def setResultFile(self, cref, filename, bufferSize=1) -> Status:
