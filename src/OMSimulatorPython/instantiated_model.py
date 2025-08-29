@@ -1,6 +1,7 @@
 from OMSimulator.capi import Capi, Status
 from OMSimulator.cref import CRef
 from OMSimulator.system import System
+from OMSimulator.values import Values
 import json
 import tempfile
 class InstantiatedModel:
@@ -69,7 +70,7 @@ class InstantiatedModel:
       ## add connectors mapped with currentSystem
       for key, element in self.system.elements.items():
         if isinstance(element, System):
-          connector_path = ".".join([system.name, str(element.name)])
+          connector_path = ".".join([self.system.name, str(element.name)])
           if currentSystem == connector_path:
             self._addConnector(element.connectors, connector_path)
 
@@ -84,10 +85,38 @@ class InstantiatedModel:
         if status != Status.ok:
           raise RuntimeError(f"Failed to add oms_addConnection: {status}")
 
+    ## set start values
+    self.setStartValues(self.system.value, self.system.name)
+    ## iterate start values from sub-system
+    for key, element in self.system.elements.items():
+      systemName = ".".join([system.name, str(element.name)])
+      self.setStartValues(element.value, systemName)
+
     self.apiCall.append(f'oms_instantiate("{self.modelName}")')
     status = Capi.instantiate(self.modelName)
     if status != Status.ok:
       raise RuntimeError(f"Failed to instantiate model: {status}")
+
+  def setStartValues(self, value: Values, systemName):
+    if value.empty():
+      return
+    for key, (value, _, _) in value.start_values.items():
+      if systemName not in self.mappedCrefs:
+        raise KeyError(f"Missing required key: '{systemName}'")
+
+      value_path = ".".join([self.mappedCrefs[systemName], str(key)])
+
+      match value:
+        case float():
+          self._setReal(value_path, value)
+        case bool():  # Check for boolean first, because it is a subclass of int
+          self._setBoolean(value_path, value)
+        case int():
+          self._setInteger(value_path, value)
+        case str():
+          self._setString(value_path, value)
+        case _:
+          raise TypeError(f"Unsupported type: {type(value)}")
 
   def _addConnector(self, connectors, systemName):
     for connector in connectors:
@@ -111,13 +140,42 @@ class InstantiatedModel:
   def setValue(self, cref: CRef, value):
     """Sets a value for a specific CRef in the model."""
     name = ".".join(cref.names[:-1])
-    if name in self.mappedCrefs:
-      mapped_cref = ".".join([self.mappedCrefs[name], cref.names[-1]])
-      status = Capi.setReal(mapped_cref, value) # Get the value from the CAPI
-      if status != Status.ok:
-        raise RuntimeError(f"Failed to set value for {mapped_cref}: {status}")
-    else:
-      raise ValueError(f"CRef {cref} not found in mapped CRefs.")
+    if name not in self.mappedCrefs:
+      raise KeyError(f"Missing required key: '{name}'")
+
+    value_path = ".".join([self.mappedCrefs[name], cref.names[-1]])
+
+    match value:
+      case float():
+        self._setReal(value_path, value)
+      case bool():  # Check for boolean first, because it is a subclass of int
+        self._setBoolean(value_path, value)
+      case int():
+        self._setInteger(value_path, value)
+      case str():
+        self._setString(value_path, value)
+      case _:
+        raise TypeError(f"Unsupported type: {type(value)}")
+
+  def _setReal(self, mapped_cref: str, value: float):
+    status = Capi.setReal(mapped_cref, value) # Get the value from the CAPI
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set value for {mapped_cref}: {status}")
+
+  def _setInteger(self, mapped_cref: str, value: int):
+    status = Capi.setInteger(mapped_cref, value) # Get the value from the CAPI
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set value for {mapped_cref}: {status}")
+
+  def _setBoolean(self, mapped_cref: str, value: bool):
+    status = Capi.setBoolean(mapped_cref, value) # Get the value from the CAPI
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set value for {mapped_cref}: {status}")
+
+  def _setString(self, mapped_cref: str, value: str):
+    status = Capi.setString(mapped_cref, value) # Get the value from the CAPI
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set value for {mapped_cref}: {status}")
 
   def getValue(self, cref: CRef):
     ##TODO check the var type and call the correct CAPI function

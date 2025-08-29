@@ -11,6 +11,7 @@ SimpleSimulation4.py \
 SimpleSimulation5.py \
 SimpleSimulation6.py \
 SimpleSimulation7.py \
+SimpleSimulation8.py \
 
 # Run make failingtest
 FAILINGTESTFILES = \
