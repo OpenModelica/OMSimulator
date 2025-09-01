@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command: rm -rf setMappingSSM2.ssp tmp-setMappingSSM2/ mappingssm2.ssv mappingssm2.ssm
+## teardown_command: rm -rf setMappingSSM2.ssp tmp-setMappingSSM2/ mappingssm2.ssv mappingssm3.ssv mappingssm2.ssm
 ## linux: yes
 ## ucrt64: yes
 ## win: yes
@@ -37,6 +37,12 @@ ssv1.setValue("connector_param", 2.0)
 ssv1.setValue("connector_input", 3.0)
 ssv1.export("mappingssm2.ssv")
 
+## set top level parameter values which will be used in all components with parameter mapping
+ssv2 = SSV()
+ssv2.setValue("connector_param", 4.0)
+ssv2.setValue("connector_input", 5.0)
+ssv2.export("mappingssm3.ssv")
+
 ssm = SSM()
 ssm.mapParameter("connector_param", "param1")
 ssm.mapParameter("connector_param", "param2")
@@ -48,13 +54,20 @@ ssm.export("mappingssm2.ssm")
 
 ## add mappingssm2.ssv to to ssp resources
 model.addResource("mappingssm2.ssv", "resources/mappingssm2.ssv")
+## add mappingssm3.ssv to to ssp resources
+model.addResource("mappingssm3.ssv", "resources/mappingssm3.ssv")
 ## add mappingssm2.ssm to to ssp resources
 model.addResource("mappingssm2.ssm", "resources/mappingssm2.ssm")
 
 ## add parameter mapping references to all components
 model.addSSVReference(CRef('default'), 'resources/mappingssm2.ssv', 'resources/mappingssm2.ssm')
+model.addSSVReference(CRef('default'), 'resources/mappingssm3.ssv', 'resources/mappingssm2.ssm')
+
 model.addSSVReference(CRef('default', 'sub-system'), 'resources/mappingssm2.ssv', 'resources/mappingssm2.ssm')
+model.addSSVReference(CRef('default', 'sub-system'), 'resources/mappingssm3.ssv', 'resources/mappingssm2.ssm')
+
 model.addSSVReference(CRef('default', 'Add1'), 'resources/mappingssm2.ssv', 'resources/mappingssm2.ssm')
+model.addSSVReference(CRef('default', 'Add1'), 'resources/mappingssm3.ssv', 'resources/mappingssm2.ssm')
 
 model.export('setMappingSSM2.ssp')
 
@@ -76,6 +89,10 @@ model2.list()
 ## |--   |-- Parameter Bindings:
 ## |--   |-- |-- (Real connector_param, 2.0, None, 'None')
 ## |--   |-- |-- (Real connector_input, 3.0, None, 'None')
+## |--   resources/mappingssm3.ssv
+## |--   |-- Parameter Bindings:
+## |--   |-- |-- (Real connector_param, 4.0, None, 'None')
+## |--   |-- |-- (Real connector_input, 5.0, None, 'None')
 ## |-- Active Variant: default
 ## |-- <class 'OMSimulator.ssd.SSD'>
 ## |-- Variant "default": <hidden>
@@ -88,12 +105,16 @@ model2.list()
 ## |-- |-- |-- |-- (input2, Causality.input, SignalType.Real, None, 'None')
 ## |-- |-- |-- Parameter Bindings: resources/mappingssm2.ssv
 ## |-- |-- |-- |-- Parameter Mapping: resources/mappingssm2.ssm
+## |-- |-- |-- Parameter Bindings: resources/mappingssm3.ssv
+## |-- |-- |-- |-- Parameter Mapping: resources/mappingssm2.ssm
 ## |-- |-- |-- Elements:
 ## |-- |-- |-- |-- System: sub-system 'None'
 ## |-- |-- |-- |-- |-- Connectors:
 ## |-- |-- |-- |-- |-- |-- (param2, Causality.parameter, SignalType.Real, None, 'None')
 ## |-- |-- |-- |-- |-- |-- (input2, Causality.input, SignalType.Real, None, 'None')
 ## |-- |-- |-- |-- |-- Parameter Bindings: resources/mappingssm2.ssv
+## |-- |-- |-- |-- |-- |-- Parameter Mapping: resources/mappingssm2.ssm
+## |-- |-- |-- |-- |-- Parameter Bindings: resources/mappingssm3.ssv
 ## |-- |-- |-- |-- |-- |-- Parameter Mapping: resources/mappingssm2.ssm
 ## |-- |-- |-- |-- FMU: Add1 'None'
 ## |-- |-- |-- |-- |-- path: resources/Add.fmu
@@ -104,6 +125,8 @@ model2.list()
 ## |-- |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None, 'Gain of input signal 1')
 ## |-- |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, 'Gain of input signal 2')
 ## |-- |-- |-- |-- |-- Parameter Bindings: resources/mappingssm2.ssv
+## |-- |-- |-- |-- |-- |-- Parameter Mapping: resources/mappingssm2.ssm
+## |-- |-- |-- |-- |-- Parameter Bindings: resources/mappingssm3.ssv
 ## |-- |-- |-- |-- |-- |-- Parameter Mapping: resources/mappingssm2.ssm
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
