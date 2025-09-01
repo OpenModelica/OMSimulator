@@ -146,17 +146,24 @@ class InstantiatedModel:
 
     value_path = ".".join([self.mappedCrefs[name], cref.names[-1]])
 
-    match value:
-      case float():
-        self._setReal(value_path, value)
-      case bool():  # Check for boolean first, because it is a subclass of int
-        self._setBoolean(value_path, value)
-      case int():
-        self._setInteger(value_path, value)
-      case str():
-        self._setString(value_path, value)
+    # Determine the variable type
+    type, status = Capi.getVariableType(value_path)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to get variable type for {cref}: {status}")
+
+    match SignalType(type):
+      case SignalType.Real:  # oms_signal_type_real
+        return self._setReal(value_path, value)
+      case SignalType.Integer:  # oms_signal_type_integer
+        return self._setInteger(value_path, value)
+      case SignalType.Boolean:  # oms_signal_type_boolean
+        return self._setBoolean(value_path, value)
+      case SignalType.String:  # oms_signal_type_string
+        return self._setString(value_path, value)
+      case SignalType.Enumeration:  # oms_signal_type_enumeration
+        return self._setInteger(value_path, value)  # Treat enumeration as integer
       case _:
-        raise TypeError(f"Unsupported type: {type(value)}")
+        raise TypeError(f"Unsupported type: {type}")
 
   def _setReal(self, mapped_cref: str, value: float):
     status = Capi.setReal(mapped_cref, value) # Get the value from the CAPI
