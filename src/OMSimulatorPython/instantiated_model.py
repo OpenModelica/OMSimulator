@@ -2,6 +2,7 @@ from OMSimulator.capi import Capi, Status
 from OMSimulator.cref import CRef
 from OMSimulator.system import System
 from OMSimulator.values import Values
+from OMSimulator.variable import Causality, SignalType
 import json
 import tempfile
 class InstantiatedModel:
@@ -178,16 +179,54 @@ class InstantiatedModel:
       raise RuntimeError(f"Failed to set value for {mapped_cref}: {status}")
 
   def getValue(self, cref: CRef):
-    ##TODO check the var type and call the correct CAPI function
     name = ".".join(cref.names[:-1])
-    if name in self.mappedCrefs:
-      mapped_cref = ".".join([self.mappedCrefs[name], cref.names[-1]])
-      value, status = Capi.getReal(mapped_cref) # Get the value from the CAPI
-      if status != Status.ok:
-        raise RuntimeError(f"Failed to get value for {mapped_cref}: {status}")
-      return value
-    else:
-      raise ValueError(f"CRef {cref} not found in mapped CRefs.")
+    if name not in self.mappedCrefs:
+      raise KeyError(f"Missing required key: '{name}'")
+
+    value_path = ".".join([self.mappedCrefs[name], cref.names[-1]])
+
+    # Determine the variable type
+    type, status = Capi.getVariableType(value_path)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to get variable type for {cref}: {status}")
+
+    match SignalType(type):
+      case SignalType.Real:  # oms_signal_type_real
+        return self._getReal(value_path)
+      case SignalType.Integer:  # oms_signal_type_integer
+        return self._getInteger(value_path)
+      case SignalType.Boolean:  # oms_signal_type_boolean
+        return self._getBoolean(value_path)
+      case SignalType.String:  # oms_signal_type_string
+        return self._getString(value_path)
+      case SignalType.Enumeration:  # oms_signal_type_enumeration
+        return self._getInteger(value_path)  # Treat enumeration as integer
+      case _:
+        raise TypeError(f"Unsupported type: {type}")
+
+  def _getReal(self, cref: CRef):
+    value, status = Capi.getReal(cref) # Get the value from the CAPI
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to get value for {cref}: {status}")
+    return value
+
+  def _getInteger(self, cref: CRef):
+    value, status = Capi.getInteger(cref)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to get value for {cref}: {status}")
+    return value
+
+  def _getBoolean(self, cref: CRef):
+    value, status = Capi.getBoolean(cref)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to get value for {cref}: {status}")
+    return value
+
+  def _getString(self, cref: CRef):
+    value, status = Capi.getString(cref)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to get value for {cref}: {status}")
+    return value
 
   def initialize(self):
     status = Capi.initialize(self.modelName)

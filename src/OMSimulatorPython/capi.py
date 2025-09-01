@@ -48,8 +48,16 @@ class capi:
     self.obj.oms_delete.restype = ctypes.c_int
     self.obj.oms_getVersion.argtypes = None
     self.obj.oms_getVersion.restype = ctypes.c_char_p
+    self.obj.oms_getBoolean.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_bool)]
+    self.obj.oms_getBoolean.restype = ctypes.c_int
+    self.obj.oms_getInteger.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_int)]
+    self.obj.oms_getInteger.restype = ctypes.c_int
     self.obj.oms_getReal.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_double)]
     self.obj.oms_getReal.restype = ctypes.c_int
+    self.obj.oms_getString.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_char_p)]
+    self.obj.oms_getString.restype = ctypes.c_int
+    self.obj.oms_getVariableType.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_int)]
+    self.obj.oms_getVariableType.restype = ctypes.c_int
     self.obj.oms_initialize.argtypes = [ctypes.c_char_p]
     self.obj.oms_initialize.restype = ctypes.c_int
     self.obj.oms_instantiate.argtypes = [ctypes.c_char_p]
@@ -108,6 +116,28 @@ class capi:
   def getReal(self, cref):
     value = ctypes.c_double()
     status = self.obj.oms_getReal(cref.encode(), ctypes.byref(value))
+    return [value.value, Status(status)]
+
+  def getInteger(self, cref):
+    value = ctypes.c_int()
+    status = self.obj.oms_getInteger(cref.encode(), ctypes.byref(value))
+    return [value.value, Status(status)]
+
+  def getString(self, cref):
+    value = ctypes.c_char_p()
+    status = self.obj.oms_getString(cref.encode(), ctypes.byref(value))
+    value_ = value.value.decode('utf-8') if value.value else None
+    self.obj.oms_freeMemory(value)
+    return [value_, Status(status)]
+
+  def getBoolean(self, cref):
+    value = ctypes.c_bool()
+    status = self.obj.oms_getBoolean(cref.encode(), ctypes.byref(value))
+    return [value.value, Status(status)]
+
+  def getVariableType(self, cref):
+    value = ctypes.c_int()
+    status = self.obj.oms_getVariableType(cref.encode(), ctypes.byref(value))
     return [value.value, Status(status)]
 
   def initialize(self, cref) -> Status:

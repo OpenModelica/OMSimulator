@@ -179,6 +179,35 @@ oms::Component* oms::System::getComponent(const oms::ComRef& cref)
   return nullptr;
 }
 
+
+oms_status_enu_t oms::System::getVariableType(const ComRef& cref, oms_signal_type_enu_t& value)
+{
+  oms::ComRef tail(cref);
+  oms::ComRef head = tail.pop_front();
+
+  auto subsystem = subsystems.find(head);
+  if (subsystem != subsystems.end())
+    return subsystem->second->getVariableType(tail, value);
+
+  auto component = components.find(head);
+  if (component != components.end())
+  {
+    oms::Variable * var = component->second->getVariable(tail);
+    value = var->getType();
+    return oms_status_ok;
+  }
+
+  // check connectors
+  for (auto& connector : connectors)
+   if (connector && connector->getName() == cref)
+   {
+    value = connector->getType();
+    return oms_status_ok;
+   }
+
+  return oms_status_error;
+}
+
 oms::Variable* oms::System::getVariable(const ComRef& cref)
 {
   oms::ComRef tail(cref);
