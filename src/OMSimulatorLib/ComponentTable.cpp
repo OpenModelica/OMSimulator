@@ -110,7 +110,8 @@ oms::Component* oms::ComponentTable::NewComponent(const pugi::xml_node& node, om
   std::string type = node.attribute("type").as_string();
   std::string source = node.attribute("source").as_string();
 
-  if (type != "application/table")
+  // Support both "legacy" application/table MIME type and text/csv according to MA-CSV proposal
+  if (type != "application/table" && type != "text/csv")
   {
     logError("Unexpected component type: " + type);
     return NULL;
@@ -164,7 +165,7 @@ oms::Component* oms::ComponentTable::NewComponent(const pugi::xml_node& node, om
 oms_status_enu_t oms::ComponentTable::exportToSSD(pugi::xml_node& node, Snapshot& snapshot, std::string variantName) const
 {
   node.append_attribute("name") = this->getCref().c_str();
-  node.append_attribute("type") = "application/table";
+  node.append_attribute("type") = "text/csv";
   node.append_attribute("source") = getPath().c_str();
   pugi::xml_node node_connectors = node.append_child(oms::ssp::Draft20180219::ssd::connectors);
 

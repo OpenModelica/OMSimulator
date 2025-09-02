@@ -907,7 +907,7 @@ oms_status_enu_t oms::System::importFromSnapshot(const pugi::xml_node& node, con
             else
               return logError("wrong xml schema detected: " + name);
           }
-          else if ("application/table" == type)
+          else if ("application/table" == type || "text/csv" == type)
             component = ComponentTable::NewComponent(*itElements, this, sspVersion, snapshot);
 #if !defined(NO_TLM)
           else if (itElements->attribute("type") == nullptr && getType() == oms_system_tlm) {
