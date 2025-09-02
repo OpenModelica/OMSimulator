@@ -123,7 +123,8 @@ namespace oms
     oms_status_enu_t newResources(const std::string& ssvFilename, const std::string& ssmFilename, bool externalResources);
     oms_status_enu_t setResourcesHelper1(Values value);
     oms_status_enu_t setResourcesHelper2(Values value);
-
+    oms_status_enu_t setExportName(const std::string & exportName) { this->exportName = exportName; return oms_status_ok;};
+    std::string getExportName() const { return this->exportName; }
     oms_status_enu_t deleteReferencesInSSD(const std::string& filename);
     oms_status_enu_t deleteResourcesInSSP(const std::string& filename);
 
@@ -154,6 +155,7 @@ namespace oms
     std::vector<unsigned int> outputs;
     std::vector<unsigned int> parameters;
     std::vector<bool> exportVariables;
+    std::string exportName; ///< export name of the FMU, used for the result file
 
     Values values; ///< start values defined before instantiating the FMU and external inputs defined after initialization
 

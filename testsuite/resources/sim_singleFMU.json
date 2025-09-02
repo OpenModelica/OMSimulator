@@ -1,0 +1,33 @@
+{
+  "temp dir": "temp",
+  "working dir": "working",
+  "simulation units": [
+    {
+      "components": [
+        {
+          "name": "",
+          "type": "FMI 2 ME",
+          "path": "resources/Controller.fmu",
+          "variables": {
+            "output": 15,
+            "state1": 0
+          }
+        }
+      ],
+      "solver": {
+        "type": "model exchange",
+        "solver": "CVODE",
+        "stepSize": 0.01,
+        "tolerance": 1e-5
+      },
+      "connections": []
+    }
+  ],
+  "connections": [],
+  "result file": "simulation_result.csv",
+  "simulation settings": {
+    "start time": 0.0,
+    "stop time": 10.0,
+    "tolerance": 1e-6
+  }
+}

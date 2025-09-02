@@ -1,45 +1,21 @@
 TEST = ../rtest -v
 
 TESTFILES = \
-create_ssp_file.py \
-cref.py \
-deleteConnector1.py \
-deleteResources1.py \
-deleteSystem1.py \
-duplicateVariant1.py \
-duplicateVariant2.py \
-exportSSMTemplate1.py \
-exportSSMTemplate2.py \
-exportSSVTemplate1.py \
-exportSSVTemplate2.py \
-fmuinfo.py \
-invalidSSD.py \
-invalidSSV.py \
-listSSVReference1.py \
-LOC.py \
-NestedSystem.py \
-NewSSP.py \
-NewSSP2.py \
-NewSSP3.py \
-setMappingSSM1.py \
-setMappingSSM2.py \
-setMappingSSM3.py \
-setSolver1.py \
-setSolver2.py \
-setValue1.py \
-setValue2.py \
-setValue3.py \
-setValue4.py \
-setValueSSV1.py \
-setValueSSV2.py \
-setValueSSV3.py \
-swapSSV1.py \
-swapSSV2.py \
-swapSSV3.py \
-swapSSV4.py \
+exportJson1.py \
+exportJson2.py \
+tankYPipe.py \
+SimpleSimulation1.py \
+SimpleSimulation2.py \
+SimpleSimulation3.py \
+SimpleSimulation4.py \
+SimpleSimulation5.py \
+SimpleSimulation6.py \
+SimpleSimulation7.py \
+SimpleSimulation8.py \
 
 # Run make failingtest
 FAILINGTESTFILES = \
+exportJson4.py \
 
 # Dependency files that are not .lua or Makefile
 # Add them here or they will be cleaned.
@@ -59,7 +35,7 @@ test:
 
 baseline:
 	@echo
-	@echo Updating baselines...
+	@echo Updating badelines...
 	@$(TEST) -b $(TESTFILES)
 
 # Cleans all files that are not listed as dependencies

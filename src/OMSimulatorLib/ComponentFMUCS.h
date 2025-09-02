@@ -107,7 +107,8 @@ namespace oms
 
     oms_status_enu_t getRealOutputDerivative(const ComRef& cref, SignalDerivative& der);
     oms_status_enu_t setRealInputDerivative(const ComRef& cref, const SignalDerivative& der);
-
+    oms_status_enu_t setExportName(const std::string & exportName) { this->exportName = exportName; return oms_status_ok;};
+    std::string getExportName() const { return this->exportName; }
     oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultFile);
     oms_status_enu_t updateSignals(ResultWriter& resultWriter);
     oms_status_enu_t addSignalsToResults(const char* regex);
@@ -151,7 +152,7 @@ namespace oms
     std::vector<unsigned int> outputs;
     std::vector<unsigned int> parameters;
     std::vector<bool> exportVariables;
-
+    std::string exportName; ///< export name for the component, used in the result file
     Values values; ///< start values defined before instantiating the FMU and external inputs defined after initialization
 
     std::unordered_map<unsigned int /*result file var ID*/, unsigned int /*allVariables ID*/> resultFileMapping;

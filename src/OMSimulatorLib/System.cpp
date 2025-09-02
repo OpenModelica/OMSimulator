@@ -179,6 +179,35 @@ oms::Component* oms::System::getComponent(const oms::ComRef& cref)
   return nullptr;
 }
 
+
+oms_status_enu_t oms::System::getVariableType(const ComRef& cref, oms_signal_type_enu_t& value)
+{
+  oms::ComRef tail(cref);
+  oms::ComRef head = tail.pop_front();
+
+  auto subsystem = subsystems.find(head);
+  if (subsystem != subsystems.end())
+    return subsystem->second->getVariableType(tail, value);
+
+  auto component = components.find(head);
+  if (component != components.end())
+  {
+    oms::Variable * var = component->second->getVariable(tail);
+    value = var->getType();
+    return oms_status_ok;
+  }
+
+  // check connectors
+  for (auto& connector : connectors)
+   if (connector && connector->getName() == cref)
+   {
+    value = connector->getType();
+    return oms_status_ok;
+   }
+
+  return oms_status_error;
+}
+
 oms::Variable* oms::System::getVariable(const ComRef& cref)
 {
   oms::ComRef tail(cref);
@@ -303,6 +332,21 @@ oms_status_enu_t oms::System::addSubModel(const oms::ComRef& cref, const std::st
     return logError("System \"" + std::string(getFullCref()) + "\" does not contain system \"" + std::string(front) + "\"");
 
   return system->addSubModel(tail, path);
+}
+
+
+oms_status_enu_t oms::System::setExportName(const oms::ComRef& cref, const std::string& exportName)
+{
+  auto component = getComponent(cref);
+  if (component)
+    return component->setExportName(exportName);
+
+    // set export name for top level system connectors
+  auto connector = getConnector(cref);
+  if (connector)
+    return connector->setExportName(exportName);
+
+  return oms_status_ok;
 }
 
 std::string oms::System::getFmiVersion(const std::string& path)
@@ -2303,6 +2347,14 @@ oms_status_enu_t oms::System::registerSignalsForResultFile(ResultWriter& resultF
       return oms_status_error;
 
   resultFileMapping.clear();
+
+  // check for exportName, to be used in result file to map the variable to the correct signal in ssp
+  std::string name;
+  if (!exportName.empty())
+    name = this->exportName;
+  else
+    name = getFullCref();
+
   for (unsigned int i=0; i<connectors.size(); ++i)
   {
     if (!connectors[i])
@@ -2312,20 +2364,26 @@ oms_status_enu_t oms::System::registerSignalsForResultFile(ResultWriter& resultF
       continue;
 
     auto const& connector = connectors[i];
+    // check for exportName, to be used in result file to map the variable to the correct signal in ssp
+    std::string name;
+    if (!connector->getExportName().empty())
+      name = connector->getExportName().c_str();
+    else
+      name = getFullCref().c_str();
 
     if (oms_signal_type_real == connector->getType())
     {
-      unsigned int ID = resultFile.addSignal(std::string(getFullCref() + connector->getName()), "connector", SignalType_REAL);
+      unsigned int ID = resultFile.addSignal(std::string(ComRef(name) + connector->getName()), "connector", SignalType_REAL);
       resultFileMapping[ID] = i;
     }
     else if (oms_signal_type_integer == connector->getType())
     {
-      unsigned int ID = resultFile.addSignal(std::string(connector->getName()), "connector", SignalType_INT);
+      unsigned int ID = resultFile.addSignal(std::string(ComRef(name) + connector->getName()), "connector", SignalType_INT);
       resultFileMapping[ID] = i;
     }
     else if (oms_signal_type_boolean == connector->getType())
     {
-      unsigned int ID = resultFile.addSignal(std::string(connector->getName()), "connector", SignalType_BOOL);
+      unsigned int ID = resultFile.addSignal(std::string(ComRef(name) + connector->getName()), "connector", SignalType_BOOL);
       resultFileMapping[ID] = i;
     }
   }

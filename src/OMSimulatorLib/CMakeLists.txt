@@ -25,8 +25,8 @@ set(OMSIMULATORLIB_SOURCES
       Clock.cpp
       Clocks.cpp
       Component.cpp
-      ComponentFMUCS.cpp
       ComponentFMU3CS.cpp
+      ComponentFMUCS.cpp
       ComponentFMUME.cpp
       ComponentTable.cpp
       ComRef.cpp
@@ -51,18 +51,18 @@ set(OMSIMULATORLIB_SOURCES
       Scope.cpp
       SignalDerivative.cpp
       Snapshot.cpp
+      ssd/ConnectionGeometry.cpp
+      ssd/ConnectorGeometry.cpp
+      ssd/ElementGeometry.cpp
+      ssd/SystemGeometry.cpp
+      ssd/Tags.cpp
       System.cpp
       SystemSC.cpp
       SystemWC.cpp
       Values.cpp
       Variable.cpp
       whereami.c
-      XercesValidator.cpp
-      ssd/ConnectionGeometry.cpp
-      ssd/ConnectorGeometry.cpp
-      ssd/ElementGeometry.cpp
-      ssd/SystemGeometry.cpp
-      ssd/Tags.cpp)
+      XercesValidator.cpp)
 
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/Version.cpp.in" "${CMAKE_CURRENT_BINARY_DIR}/Version.cpp" @ONLY)
 list(APPEND OMSIMULATORLIB_SOURCES "${CMAKE_CURRENT_BINARY_DIR}/Version.cpp")

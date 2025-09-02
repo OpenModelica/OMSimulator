@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command: rm exportJson3.ssp
+## teardown_command: rm SimpleSimulation3.ssp SimpleSimulation3_res.mat
 ## linux: yes
 ## ucrt64: yes
 ## win: yes
@@ -11,7 +11,8 @@ Settings.suppressPath = True
 
 
 # This example creates a new SSP file with an FMU instantiated as a component and sets two differents solver for the components and the system.
-# It then exports the SSP file and re-imports it to verify the solver settings.
+# It then exports the SSP file and re-imports it to verify the solver settings. and simulates the model.
+
 model = SSP()
 model.addResource('../resources/Modelica.Blocks.Math.Add.fmu', new_name='resources/Add.fmu')
 model.addResource('../resources/Modelica.Blocks.Math.Gain.fmu', new_name='resources/Gain.fmu')
@@ -37,20 +38,28 @@ model.addConnection(CRef('default', 'Gain2', 'y'), CRef('default', 'Add2', 'u1')
 model.addConnection(CRef('default', 'Gain2', 'y'), CRef('default', 'Add2', 'u2'))
 
 #model.list()
-model.export('exportJson3.ssp')
+model.export('SimpleSimulation3.ssp')
 
-model2 = SSP('exportJson3.ssp')
+model2 = SSP('SimpleSimulation3.ssp')
 
 model2.list()
-model2.instantiate() ## internally generate the json file and also set the model state like virgin,
+print("", flush=True)
+instantiated_model = model2.instantiate() ## internally generate the json file and also set the model state like virgin,
+instantiated_model.setResultFile("SimpleSimulation3_res.mat")
+
+instantiated_model.initialize()
+instantiated_model.simulate()
+instantiated_model.terminate()
+instantiated_model.delete()
 
 ## Result:
 ## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
 ## |--   resources/Add.fmu
 ## |--   resources/Gain.fmu
+## |-- Active Variant: default
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Active variant "default": <hidden>
+## |-- Variant "default": <hidden>
 ## |-- |-- System: default 'None'
 ## |-- |-- |-- Connectors:
 ## |-- |-- |-- Elements:
@@ -100,102 +109,16 @@ model2.instantiate() ## internally generate the json file and also set the model
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
-## {
-##   "simulation units": [
-##     {
-##       "components": [
-##         {
-##           "name": [
-##             "default",
-##             "Add1"
-##           ],
-##           "type": "me_cs",
-##           "path": "resources/Add.fmu"
-##         },
-##         {
-##           "name": [
-##             "default",
-##             "Gain1"
-##           ],
-##           "type": "me_cs",
-##           "path": "resources/Gain.fmu"
-##         }
-##       ],
-##       "solver": {
-##         "type": "co-simulation",
-##         "name": "solver1"
-##       },
-##       "connections": [
-##         {
-##           "start element": [
-##             "default",
-##             "Gain1"
-##           ],
-##           "start connector": "y",
-##           "end element": [
-##             "default",
-##             "Add1"
-##           ],
-##           "end connector": "u1"
-##         }
-##       ]
-##     },
-##     {
-##       "components": [
-##         {
-##           "name": [
-##             "default",
-##             "Add2"
-##           ],
-##           "type": "me_cs",
-##           "path": "resources/Add.fmu"
-##         },
-##         {
-##           "name": [
-##             "default",
-##             "Gain2"
-##           ],
-##           "type": "me_cs",
-##           "path": "resources/Gain.fmu"
-##         }
-##       ],
-##       "solver": {
-##         "type": "co-simulation",
-##         "name": "solver2"
-##       },
-##       "connections": [
-##         {
-##           "start element": [
-##             "default",
-##             "Gain2"
-##           ],
-##           "start connector": "y",
-##           "end element": [
-##             "default",
-##             "Add2"
-##           ],
-##           "end connector": "u1"
-##         },
-##         {
-##           "start element": [
-##             "default",
-##             "Gain2"
-##           ],
-##           "start connector": "y",
-##           "end element": [
-##             "default",
-##             "Add2"
-##           ],
-##           "end connector": "u2"
-##         }
-##       ]
-##     }
-##   ],
-##   "result file": "simulation_result.csv",
-##   "simulation settings": {
-##     "start time": 0,
-##     "stop time": 10,
-##     "tolerance": 1e-06
-##   }
-## }
+##
+## info:    model doesn't contain any continuous state
+## info:    model doesn't contain any continuous state
+## info:    maximum step size for 'model.root.solver2': 0.001000
+## info:    maximum step size for 'model.root.solver1': 0.001000
+## info:    Result file: SimpleSimulation3_res.mat (bufferSize=1)
+## info:    Final Statistics for 'model.root.solver2':
+##          NumSteps = 1001 NumRhsEvals  = 1002 NumLinSolvSetups = 51
+##          NumNonlinSolvIters = 1001 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
+## info:    Final Statistics for 'model.root.solver1':
+##          NumSteps = 1001 NumRhsEvals  = 1002 NumLinSolvSetups = 51
+##          NumNonlinSolvIters = 1001 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
 ## endResult

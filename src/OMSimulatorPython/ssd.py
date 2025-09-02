@@ -9,6 +9,7 @@ from OMSimulator.settings import suppress_path_to_str
 from OMSimulator.system import System
 from OMSimulator.ssv import SSV
 from OMSimulator.unit import Unit
+from OMSimulator.instantiated_model import InstantiatedModel
 from OMSimulator import namespace, utils
 from datetime import datetime
 
@@ -166,6 +167,10 @@ class SSD:
     subcref = self._validateCref(cref)
     self.system.setValue(subcref, value, unit, description)
 
+  def getValue(self, cref: CRef):
+    subcref = self._validateCref(cref)
+    self.system.getValue(subcref)
+
   def mapParameter(self, cref: CRef, source: str, target: str):
     '''Maps a parameter from source to target in the system.'''
     subcref = self._validateCref(cref)
@@ -177,10 +182,11 @@ class SSD:
 
     self.system.addSystem(cref.pop_first(first=self._name))
 
-  def instantiate(self, resources: dict | None = None):
+  def instantiate(self, resources: dict | None = None, tempdir: str | None = None ) -> InstantiatedModel:
     if self.system is None:
       raise ValueError("Variant doesn't contain a system")
-    self.system.instantiate(resources)
+    json_desc = self.system.generateJson(resources, tempdir)
+    return InstantiatedModel(json_desc, self.system)
 
   def list(self, prefix=""):
     '''Prints the SSD contents.'''

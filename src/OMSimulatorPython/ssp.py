@@ -260,6 +260,20 @@ class SSP:
 
     self.activeVariant.setValue(cref, value, unit, description)
 
+  def getValue(self, cref: CRef):
+    if self.activeVariant is None:
+      raise ValueError("No active variant set in the SSP.")
+
+    ## look up in the resource and get the component path
+    resource = self._getComponentResourcePath(cref)
+
+    # Check if the resource exists and validate the variable
+    fmu_inst = self.resources.get(resource)
+    if fmu_inst and not fmu_inst.varExist(cref.last()):
+        raise KeyError(f"Variable '{cref.last()}' does not exist in the variables list of component '{resource}'")
+
+    self.activeVariant.getValue(cref)
+
   def mapParameter(self, cref: CRef, source: str, target: str):
     """Maps a parameter from source to target in the active variant."""
     if self.activeVariant is None:
@@ -323,7 +337,7 @@ class SSP:
   def instantiate(self):
     if self.activeVariant is None:
       raise ValueError("No active variant set in the SSP.")
-    self.activeVariant.instantiate(self.resources)
+    return self.activeVariant.instantiate(self.resources, self.temp_dir)
 
   def export(self, filename: str):
     '''Exports the SSP to file'''

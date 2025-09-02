@@ -2,7 +2,7 @@
 
 all: difftool resources test
 
-test: api.log parker.log dcmotor.log
+test: api.log parker.log dcmotor.log simulation.log
 
 partest: difftool resources
 	cd partest && time ./runtests.pl -nocolour -with-xml
@@ -24,3 +24,7 @@ parker.log: difftool
 dcmotor.log: difftool
 	@$(MAKE) -C dcmotor -f Makefile test > $@
 	@grep == dcmotor.log
+
+simulation.log: difftool
+	@$(MAKE) -C simulation -f Makefile test > $@
+	@grep == simulation.log

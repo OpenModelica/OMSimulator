@@ -1919,7 +1919,12 @@ oms_status_enu_t oms::ComponentFMU3CS::registerSignalsForResultFile(ResultWriter
       continue;
 
     auto const &var = allVariables[i];
-    std::string name = std::string(getFullCref() + var.getCref());
+    std::string name;
+    // check for exportName, to be used in result file to map the variable to the correct signal in ssp
+    if (!exportName.empty())
+      name = std::string(ComRef(exportName) + var.getCref());
+    else
+      name = std::string(getFullCref() + var.getCref());
     const std::string& description = var.getDescription();
     if (var.isParameter())
     {

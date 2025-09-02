@@ -6,8 +6,8 @@ project(OMSimulator)
 
 # Options to enable/disable specific components
 option(OMS_ENABLE_OMSimulator "Enable OMSimulator component" ON)
-option(OMS_ENABLE_OMSimulatorGui "Enable OMSimulator GUI component" ON)
-option(OMS_ENABLE_PIP "Enable pip component" ON)
+option(OMS_ENABLE_OMSimulatorGui "Enable OMSimulator GUI component" OFF)
+option(OMS_ENABLE_PIP "Enable pip component" OFF)
 option(OMS_ENABLE_TESTSUITE "Enable the OMSimulator testsuite" OFF)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/config.cmake/")

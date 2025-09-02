@@ -87,6 +87,7 @@ namespace oms
     oms_system_enu_t getType() const {return type;}
     oms_status_enu_t addSubSystem(const ComRef& cref, oms_system_enu_t type);
     oms_status_enu_t addSubModel(const ComRef& cref, const std::string& fmuPath);
+    oms_status_enu_t setExportName(const ComRef& cref, const std::string& exportName);
     oms_status_enu_t replaceSubModel(const ComRef& cref, const std::string& fmuPath, bool dryRun, int& warningCount);
     bool isValidScalarVariable(Component* referenceComponent, Component* replacingComponent, Connection* connection, const ComRef& crefA, const ComRef& crefB, const ComRef& signalName, const std::string& path, std::vector<std::string>& warningList);
     bool validCref(const ComRef& cref);
@@ -139,6 +140,7 @@ namespace oms
     oms_status_enu_t setReal(const ComRef& cref, double value);
     oms_status_enu_t setString(const ComRef& cref, const std::string& value);
     oms_status_enu_t setUnit(const ComRef& cref, const std::string& value);
+    oms_status_enu_t getVariableType(const ComRef& cref, oms_signal_type_enu_t& type);
 
     oms_status_enu_t getReals(const std::vector<ComRef> &crefs, std::vector<double> &values);
     oms_status_enu_t setReals(const std::vector<ComRef> &crefs, std::vector<double> values);
@@ -226,6 +228,7 @@ namespace oms
     System* parentSystem;
     std::map<ComRef, System*> subsystems;
     std::map<ComRef, Component*> components;
+    std::string exportName; ///< export name for top system and subsystem-level connector, used in the result file
 
     Values values;  ///< system level connectors, parameters and their start values defined before instantiating the FMU and external inputs defined after initialization
 

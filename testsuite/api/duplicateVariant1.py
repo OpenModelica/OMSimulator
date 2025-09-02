@@ -33,7 +33,7 @@ variantB.setValue(CRef('default', 'Add1', 'u1'), 100.0)
 variantB.setValue(CRef('default', 'Add1', 'u2'), 200.0)
 
 model.list()
-model.export('duplicatevariant1.ssp')
+model.export('duplicateVariant1.ssp')
 
 ## Result:
 ## <class 'OMSimulator.ssp.SSP'>

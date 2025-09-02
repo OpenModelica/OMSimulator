@@ -483,6 +483,23 @@ oms_status_enu_t oms_getSystemType(const char* cref, oms_system_enu_t* type)
   return oms_status_ok;
 }
 
+oms_status_enu_t oms_getVariableType(const char* cref, oms_signal_type_enu_t* type)
+{
+  oms::ComRef tail(cref);
+  oms::ComRef front = tail.pop_front();
+
+  oms::Model* model = oms::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  front = tail.pop_front();
+  oms::System* system = model->getSystem(front);
+  if (!system)
+    return logError_SystemNotInModel(model->getCref(), front);
+
+  return system->getVariableType(tail, *type);
+}
+
 oms_status_enu_t oms_addConnection(const char *crefA, const char *crefB, bool suppressUnitConversion)
 {
   oms::ComRef tailA(crefA);
@@ -702,6 +719,23 @@ oms_status_enu_t oms_addSubModel(const char* cref, const char* fmuPath)
     return logError_SystemNotInModel(model->getCref(), front);
 
   return system->addSubModel(tail, fmuPath);
+}
+
+oms_status_enu_t oms_setExportName(const char* cref, const char* exportName)
+{
+  oms::ComRef tail(cref);
+  oms::ComRef front = tail.pop_front();
+
+  oms::Model* model = oms::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  front = tail.pop_front();
+  oms::System* system = model->getSystem(front);
+  if (!system)
+    return logError_SystemNotInModel(model->getCref(), front);
+
+  return system->setExportName(tail, exportName);
 }
 
 oms_status_enu_t oms_activateVariant(const char* crefA, const char* crefB)

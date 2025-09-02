@@ -38,8 +38,14 @@ model.export('exportJson4.ssp')
 model2 = SSP('exportJson4.ssp')
 
 model2.instantiate() ## internally generate the json file and also set the model state like virgin,
+instantiated_model = model2.instantiate() ## internally generate the json file and also set the model state like virgin,
+instantiated_model.initialize()
+instantiated_model.simulate()
+instantiated_model.terminate()
+instantiated_model.delete()
 
 ## Result:
+## error:   [addConnection] Connector "sub-system.input" not found in system "model.root.solver1"
 ## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
 ## |--   resources/Add.fmu
@@ -85,77 +91,19 @@ model2.instantiate() ## internally generate the json file and also set the model
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
-## {
-##   "simulation units": [
-##     {
-##       "components": [
-##         {
-##           "name": [
-##             "default",
-##             "sub-system",
-##             "Add2"
-##           ],
-##           "type": "me_cs",
-##           "path": "resources/Add.fmu"
-##         },
-##         {
-##           "name": [
-##             "default",
-##             "Add1"
-##           ],
-##           "type": "me_cs",
-##           "path": "resources/Add.fmu"
-##         }
-##       ],
-##       "solver": {
-##         "type": "co-simulation",
-##         "name": "solver1"
-##       },
-##       "connections": [
-##         {
-##           "start element": [
-##             "default",
-##             "sub-system",
-##             "Add2"
-##           ],
-##           "start connector": "u1",
-##           "end element": [
-##             "default",
-##             "sub-system"
-##           ],
-##           "end connector": "input"
-##         },
-##         {
-##           "start element": [
-##             "default"
-##           ],
-##           "start connector": "param1",
-##           "end element": [
-##             "default",
-##             "Add1"
-##           ],
-##           "end connector": "u1"
-##         },
-##         {
-##           "start element": [
-##             "default",
-##             "Add1"
-##           ],
-##           "start connector": "y",
-##           "end element": [
-##             "default",
-##             "sub-system"
-##           ],
-##           "end connector": "input"
-##         }
-##       ]
-##     }
-##   ],
-##   "result file": "simulation_result.csv",
-##   "simulation settings": {
-##     "start time": 0,
-##     "stop time": 10,
-##     "tolerance": 1e-06
-##   }
-## }
+## Traceback (most recent call last):
+##   File "C:/OPENMODELICAGIT/OpenModelica/OMSimulator/testsuite/simulation/exportJson4.py", line 40, in <module>
+##     model2.instantiate() ## internally generate the json file and also set the model state like virgin,
+##     ^^^^^^^^^^^^^^^^^^^^
+##   File "C:/OPENMODELICAGIT/OpenModelica/OMSimulator/install/lib/OMSimulator/ssp.py", line 326, in instantiate
+##     return self.activeVariant.instantiate(self.resources, self.temp_dir)
+##            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+##   File "C:/OPENMODELICAGIT/OpenModelica/OMSimulator/install/lib/OMSimulator/ssd.py", line 185, in instantiate
+##     return InstantiatedModel(json_desc)
+##            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+##   File "C:/OPENMODELICAGIT/OpenModelica/OMSimulator/install/lib/OMSimulator/instantiated_model.py", line 54, in __init__
+##     raise RuntimeError(f"Failed to add oms_addConnection: {status}")
+## RuntimeError: Failed to add oms_addConnection: Status.error
+## info:    0 warnings
+## info:    1 errors
 ## endResult

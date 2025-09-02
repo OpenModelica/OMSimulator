@@ -1537,10 +1537,6 @@ oms_status_enu_t oms::Values::parseModelDescription(const filesystem::path& root
 
   const char* modelDescription = ::miniunz_onefile_to_memory(root.generic_string().c_str(), "modelDescription.xml");
 
-  // validate modeldescription.xml against schema fmi2ModelDescription.xsd
-  XercesValidator xercesValidator;
-  xercesValidator.validateFMU(modelDescription, root.generic_string());
-
   Snapshot snapshot;
   oms_status_enu_t status = snapshot.importResourceMemory("modelDescription.xml", modelDescription);
   ::miniunz_free(modelDescription);
