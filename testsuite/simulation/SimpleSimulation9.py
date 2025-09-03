@@ -62,6 +62,7 @@ model2 = SSP('SimpleSimulation9.ssp')
 model2.list()
 instantiated_model = model2.instantiate() ## internally generate the json file and also set the model state like virgin,
 # print(instantiated_model.dumpApiCalls(), flush=True)
+instantiated_model.setResultFile("SimpleSimulation9_res.mat")
 
 print(f"info: After instantiation:")
 print(f"info:    default.param1 : {instantiated_model.getValue(CRef('default', 'param1'))}", flush=True)
@@ -207,7 +208,6 @@ instantiated_model.delete()
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
-## resources/parameters1.ssv Parameter Bindings: None
 ## info: After instantiation:
 ## info:    default.param1 : 200.0
 ## info:    default.input1 : 300.0
@@ -220,7 +220,7 @@ instantiated_model.delete()
 ## info:    default.sub-system.Gain2.u: 0.0
 ## info:    default.sub-system.Gain2.y: 0.0
 ## info:    maximum step size for 'model.root.solver2': 0.001000
-## info:    Result file: model_res.mat (bufferSize=10)
+## info:    Result file: SimpleSimulation9_res.mat (bufferSize=1)
 ## info: After simulation:
 ## info:    default.param1 : 200.0
 ## info:    default.input1 : 300.0
