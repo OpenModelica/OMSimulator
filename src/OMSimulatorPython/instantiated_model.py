@@ -6,12 +6,13 @@ from OMSimulator.variable import Causality, SignalType
 import json
 import tempfile
 class InstantiatedModel:
-  def __init__(self, json_description, system: System | None = None):
+  def __init__(self, json_description, system: System, resources: dict):
     config = json.loads(json_description)
     self.modelName = "model" ## create random name, but we cannot commits test as jenkins will gerate new model name
     self.apiCall = []
     self.mappedCrefs = {}  # Store mapped CRefs associated with their export names
     self.system = system
+    self.resources = resources
 
     status = Capi.setCommandLineOption("--suppressPath=true")
     if status != Status.ok:
@@ -93,10 +94,36 @@ class InstantiatedModel:
       systemName = ".".join([system.name, str(element.name)])
       self.setStartValues(element.value, systemName)
 
+    ## list parameteres in ssv files
+    if len(self.system.parameterResources) > 0:
+      for resource in self.system.parameterResources:
+        for key, value in resource.items():
+          if key in self.resources:
+            ssv = self.resources.get(key)
+            self.setStartValues(ssv.value, self.system.name)
+
     self.apiCall.append(f'oms_instantiate("{self.modelName}")')
     status = Capi.instantiate(self.modelName)
     if status != Status.ok:
       raise RuntimeError(f"Failed to instantiate model: {status}")
+
+  ## map cref with the longest path
+  ## e.g. default.sub-system.gain1.k -> model.root.gain1.k
+  ## e.g. default.sub-system.gain1.R1.T. -> model.root.solver2.gain1.R1.T
+  def map_cref(self, system_name, var_str):
+    # Combine system name and variable
+    cref = f"{system_name}.{var_str}"
+    # Split into parts
+    parts = cref.split(".")
+    ## map with the longest path
+    for i in range(len(parts), 0, -1):
+      prefix = ".".join(parts[:i])
+      if prefix in self.mappedCrefs:
+        mapped_prefix = self.mappedCrefs[prefix]
+        suffix = ".".join(parts[i:])
+        return mapped_prefix + ("." + suffix if suffix else "")
+
+    raise KeyError(f"No mapping found for {cref}")
 
   def setStartValues(self, value: Values, systemName):
     if value.empty():
@@ -105,19 +132,26 @@ class InstantiatedModel:
       if systemName not in self.mappedCrefs:
         raise KeyError(f"Missing required key: '{systemName}'")
 
-      value_path = ".".join([self.mappedCrefs[systemName], str(key)])
+      value_path = self.map_cref(systemName, str(key))
 
-      match value:
-        case float():
+      # Determine the variable type
+      type, status = Capi.getVariableType(value_path)
+      if status != Status.ok:
+        raise RuntimeError(f"Failed to get variable type for {value_path}: {status}")
+
+      match SignalType(type):
+        case SignalType.Real:  # oms_signal_type_real
           self._setReal(value_path, value)
-        case bool():  # Check for boolean first, because it is a subclass of int
-          self._setBoolean(value_path, value)
-        case int():
+        case SignalType.Integer:  # oms_signal_type_integer
           self._setInteger(value_path, value)
-        case str():
+        case SignalType.Boolean:  # oms_signal_type_boolean
+          self._setBoolean(value_path, value)
+        case SignalType.String:  # oms_signal_type_string
           self._setString(value_path, value)
+        case SignalType.Enumeration:  # oms_signal_type_enumeration
+          self._setInteger(value_path, value)  # Treat enumeration as integer
         case _:
-          raise TypeError(f"Unsupported type: {type(value)}")
+          raise TypeError(f"Unsupported type: {type}")
 
   def _addConnector(self, connectors, systemName):
     for connector in connectors:
@@ -166,21 +200,25 @@ class InstantiatedModel:
         raise TypeError(f"Unsupported type: {type}")
 
   def _setReal(self, mapped_cref: str, value: float):
+    self.apiCall.append(f'oms_setReal("{mapped_cref}, {value})')
     status = Capi.setReal(mapped_cref, value) # Get the value from the CAPI
     if status != Status.ok:
       raise RuntimeError(f"Failed to set value for {mapped_cref}: {status}")
 
   def _setInteger(self, mapped_cref: str, value: int):
+    self.apiCall.append(f'oms_setInteger("{mapped_cref}, {value})')
     status = Capi.setInteger(mapped_cref, value) # Get the value from the CAPI
     if status != Status.ok:
       raise RuntimeError(f"Failed to set value for {mapped_cref}: {status}")
 
   def _setBoolean(self, mapped_cref: str, value: bool):
+    self.apiCall.append(f'oms_setBoolean("{mapped_cref}, {value})')
     status = Capi.setBoolean(mapped_cref, value) # Get the value from the CAPI
     if status != Status.ok:
       raise RuntimeError(f"Failed to set value for {mapped_cref}: {status}")
 
   def _setString(self, mapped_cref: str, value: str):
+    self.apiCall.append(f'oms_setString("{mapped_cref}, {value})')
     status = Capi.setString(mapped_cref, value) # Get the value from the CAPI
     if status != Status.ok:
       raise RuntimeError(f"Failed to set value for {mapped_cref}: {status}")

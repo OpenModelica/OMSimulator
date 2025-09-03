@@ -186,7 +186,7 @@ class SSD:
     if self.system is None:
       raise ValueError("Variant doesn't contain a system")
     json_desc = self.system.generateJson(resources, tempdir)
-    return InstantiatedModel(json_desc, self.system)
+    return InstantiatedModel(json_desc, self.system, resources)
 
   def list(self, prefix=""):
     '''Prints the SSD contents.'''
