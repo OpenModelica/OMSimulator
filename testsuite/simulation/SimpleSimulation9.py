@@ -55,7 +55,6 @@ model.addConnection(CRef('default', 'Gain1', 'y'), CRef('default', 'Add1', 'u1')
 
 ## Sub-system.Input to Element.Input
 model.addConnection(CRef('default', 'sub-system', 'input'), CRef('default', 'sub-system', 'Gain2', 'u'))
-model.list()
 model.export('SimpleSimulation9.ssp')
 
 model2 = SSP('SimpleSimulation9.ssp')
@@ -96,62 +95,6 @@ instantiated_model.delete()
 
 ## Result:
 ## info:    model doesn't contain any continuous state
-## <class 'OMSimulator.ssp.SSP'>
-## |-- Resources:
-## |--   resources/Add.fmu
-## |--   resources/Gain.fmu
-## |--   resources/parameters1.ssv
-## |--   |-- Parameter Bindings:
-## |--   |-- |-- (Real param1, 200.0, None, 'None')
-## |--   |-- |-- (Real input1, 300.0, None, 'None')
-## |--   |-- |-- (Real Gain1.k, 2.0, None, 'None')
-## |--   |-- |-- (Real sub-system.input, 400.0, None, 'None')
-## |--   |-- |-- (Real sub-system.Gain2.k, 500.0, None, 'None')
-## |-- Active Variant: default
-## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Variant "default": None
-## |-- |-- System: default 'None'
-## |-- |-- |-- Connectors:
-## |-- |-- |-- |-- (param1, Causality.parameter, SignalType.Real, None, 'None')
-## |-- |-- |-- |-- (input1, Causality.input, SignalType.Real, None, 'None')
-## |-- |-- |-- Parameter Bindings: resources/parameters1.ssv
-## |-- |-- |-- Elements:
-## |-- |-- |-- |-- System: sub-system 'None'
-## |-- |-- |-- |-- |-- Connectors:
-## |-- |-- |-- |-- |-- |-- (input, Causality.input, SignalType.Real, None, 'None')
-## |-- |-- |-- |-- |-- Elements:
-## |-- |-- |-- |-- |-- |-- FMU: Gain2 'None'
-## |-- |-- |-- |-- |-- |-- |-- path: resources/Gain.fmu
-## |-- |-- |-- |-- |-- |-- |-- Connectors:
-## |-- |-- |-- |-- |-- |-- |-- |-- (u, Causality.input, SignalType.Real, None, 'Input signal connector')
-## |-- |-- |-- |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, 'Output signal connector')
-## |-- |-- |-- |-- |-- |-- |-- |-- (k, Causality.parameter, SignalType.Real, 1, 'Gain value multiplied with input signal')
-## |-- |-- |-- |-- |-- |-- |-- Solver Settings:
-## |-- |-- |-- |-- |-- |-- |-- |-- name: solver2
-## |-- |-- |-- |-- |-- Connections:
-## |-- |-- |-- |-- |-- |-- .input -> Gain2.u
-## |-- |-- |-- |-- FMU: Add1 'None'
-## |-- |-- |-- |-- |-- path: resources/Add.fmu
-## |-- |-- |-- |-- |-- Connectors:
-## |-- |-- |-- |-- |-- |-- (u1, Causality.input, SignalType.Real, None, 'Connector of Real input signal 1')
-## |-- |-- |-- |-- |-- |-- (u2, Causality.input, SignalType.Real, None, 'Connector of Real input signal 2')
-## |-- |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, 'Connector of Real output signal')
-## |-- |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None, 'Gain of input signal 1')
-## |-- |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, 'Gain of input signal 2')
-## |-- |-- |-- |-- FMU: Gain1 'None'
-## |-- |-- |-- |-- |-- path: resources/Gain.fmu
-## |-- |-- |-- |-- |-- Connectors:
-## |-- |-- |-- |-- |-- |-- (u, Causality.input, SignalType.Real, None, 'Input signal connector')
-## |-- |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, 'Output signal connector')
-## |-- |-- |-- |-- |-- |-- (k, Causality.parameter, SignalType.Real, 1, 'Gain value multiplied with input signal')
-## |-- |-- |-- Connections:
-## |-- |-- |-- |-- .input1 -> Gain1.u
-## |-- |-- |-- |-- Gain1.y -> Add1.u1
-## |-- |-- |-- Solver Settings:
-## |-- |-- |-- |-- (name=solver2, method=cvode, tolerance=0.0001)
-## |-- DefaultExperiment
-## |-- |-- startTime: 0.0
-## |-- |-- stopTime: 1.0
 ## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
 ## |--   resources/Add.fmu
