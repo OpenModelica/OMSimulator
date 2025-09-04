@@ -51,7 +51,7 @@ model.export('SimpleSimulation8.ssp')
 model2 = SSP('SimpleSimulation8.ssp')
 model2.list()
 instantiated_model = model2.instantiate() ## internally generate the json file and also set the model state like virgin,
-print(instantiated_model.dumpApiCalls(), flush=True)
+#print(instantiated_model.dumpApiCalls(), flush=True)
 instantiated_model.setResultFile("SimpleSimulation8_res.mat")
 
 print(f"info: After instantiation:")

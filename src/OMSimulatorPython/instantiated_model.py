@@ -2,6 +2,7 @@ from OMSimulator.capi import Capi, Status
 from OMSimulator.cref import CRef
 from OMSimulator.system import System
 from OMSimulator.values import Values
+from OMSimulator.ssm import SSM
 from OMSimulator.variable import Causality, SignalType
 import json
 import tempfile
@@ -88,7 +89,7 @@ class InstantiatedModel:
           raise RuntimeError(f"Failed to add oms_addConnection: {status}")
 
     ## set start values
-    self.setStartValues(self.system.value, self.system.name)
+    self.setStartValues(self.system.value, self.system.name, self.system.parameterMapping)
     ## set start values from ssv files
     self.setStartValuesFromSSV(self.system.parameterResources, self.system.name)
     ## iterate start values from sub-system both inline and ssv files if exist
@@ -102,7 +103,7 @@ class InstantiatedModel:
   def setStartValuesFromElements(self, elements, systemName):
     for key, element in elements.items():
       new_system_name = ".".join([systemName, str(element.name)])
-      self.setStartValues(element.value, new_system_name)
+      self.setStartValues(element.value, new_system_name, element.parameterMapping)
       self.setStartValuesFromSSV(element.parameterResources, new_system_name)
 
       ## recursive for sub-system
@@ -114,10 +115,14 @@ class InstantiatedModel:
     if not parameterResources:
       return
     for resource in parameterResources:
-      for (key, _) in resource.items():
+      for (key, mapping) in resource.items():
         if key in self.resources:
           ssv = self.resources.get(key)
-          self.setStartValues(ssv.value, systemName)
+          ssm = self.resources.get(mapping, None)  # get the ssm mapping if exist
+          # if mapping:
+          #   if mapping in self.resources:
+          #     ssm = self.resources.get(mapping) # get the ssm mapping
+          self.setStartValues(ssv.value, systemName, ssm)
         else:
           raise KeyError(f"Missing required resource: '{key}'")
 
@@ -139,33 +144,45 @@ class InstantiatedModel:
 
     raise KeyError(f"No mapping found for {cref}")
 
-  def setStartValues(self, value: Values, systemName):
+  def setStartValues(self, value: Values, systemName: str, ssm: SSM | None):
     if value.empty():
       return
-    for key, (value, _, _) in value.start_values.items():
-      if systemName not in self.mappedCrefs:
-        raise KeyError(f"Missing required key: '{systemName}'")
 
-      value_path = self.map_cref(systemName, str(key))
+    if systemName not in self.mappedCrefs:
+      raise KeyError(f"Missing required key: '{systemName}'")
 
-      # Determine the variable type
-      type, status = Capi.getVariableType(value_path)
-      if status != Status.ok:
-        raise RuntimeError(f"Failed to get variable type for {value_path}: {status}")
+    ## apply ssm mapping if exist and apply start values from mapped parameters
+    if ssm and ssm.mappingEntry:
+      for source, targets in ssm.mappingEntry.items():
+        if CRef(source) in value.start_values:
+          source_value, _, _ = value.start_values[CRef(source)]
+          for target in targets:
+            value_path = self.map_cref(systemName, str(target))
+            self.apply_start_value(value_path, source_value)
+    else:
+      for key, (source_value, _, _) in value.start_values.items():
+        value_path = self.map_cref(systemName, str(key))
+        self.apply_start_value(value_path, source_value)
 
-      match SignalType(type):
-        case SignalType.Real:  # oms_signal_type_real
-          self._setReal(value_path, value)
-        case SignalType.Integer:  # oms_signal_type_integer
-          self._setInteger(value_path, value)
-        case SignalType.Boolean:  # oms_signal_type_boolean
-          self._setBoolean(value_path, value)
-        case SignalType.String:  # oms_signal_type_string
-          self._setString(value_path, value)
-        case SignalType.Enumeration:  # oms_signal_type_enumeration
-          self._setInteger(value_path, value)  # Treat enumeration as integer
-        case _:
-          raise TypeError(f"Unsupported type: {type}")
+  def apply_start_value(self, value_path:str, value):
+    # Determine the variable type
+    type, status = Capi.getVariableType(value_path)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to get variable type for {value_path}: {status}")
+
+    match SignalType(type):
+      case SignalType.Real:  # oms_signal_type_real
+        self._setReal(value_path, value)
+      case SignalType.Integer:  # oms_signal_type_integer
+        self._setInteger(value_path, value)
+      case SignalType.Boolean:  # oms_signal_type_boolean
+        self._setBoolean(value_path, value)
+      case SignalType.String:  # oms_signal_type_string
+        self._setString(value_path, value)
+      case SignalType.Enumeration:  # oms_signal_type_enumeration
+        self._setInteger(value_path, value)  # Treat enumeration as integer
+      case _:
+        raise TypeError(f"Unsupported type: {type}")
 
   def _addConnector(self, connectors, systemName):
     for connector in connectors:
