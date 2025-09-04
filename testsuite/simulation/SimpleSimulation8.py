@@ -38,6 +38,7 @@ model.setValue(CRef('default','param1'), 200.0)
 model.setValue(CRef('default','input1'), 300.0)
 model.setValue(CRef('default', 'Gain1', 'k'), 2.0)
 model.setValue(CRef('default','sub-system','input'), 400.0)
+model.setValue(CRef('default','sub-system','Gain2', 'k'), 500.0)
 
 ## System.Input to Element.Input
 model.addConnection(CRef('default', 'input1'), CRef('default', 'Gain1', 'u'))
@@ -50,7 +51,7 @@ model.export('SimpleSimulation8.ssp')
 model2 = SSP('SimpleSimulation8.ssp')
 model2.list()
 instantiated_model = model2.instantiate() ## internally generate the json file and also set the model state like virgin,
-#print(instantiated_model.dumpApiCalls(), flush=True)
+print(instantiated_model.dumpApiCalls(), flush=True)
 instantiated_model.setResultFile("SimpleSimulation8_res.mat")
 
 print(f"info: After instantiation:")
@@ -112,6 +113,8 @@ instantiated_model.delete()
 ## |-- |-- |-- |-- |-- |-- |-- |-- (u, Causality.input, SignalType.Real, None, 'Input signal connector')
 ## |-- |-- |-- |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, 'Output signal connector')
 ## |-- |-- |-- |-- |-- |-- |-- |-- (k, Causality.parameter, SignalType.Real, 1, 'Gain value multiplied with input signal')
+## |-- |-- |-- |-- |-- |-- |-- Inline Parameter Bindings:
+## |-- |-- |-- |-- |-- |-- |-- |-- (Real k, 500.0, None, 'None')
 ## |-- |-- |-- |-- |-- |-- |-- Solver Settings:
 ## |-- |-- |-- |-- |-- |-- |-- |-- name: solver2
 ## |-- |-- |-- |-- |-- Connections:
@@ -140,6 +143,24 @@ instantiated_model.delete()
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
+## oms_newModel("model")
+## oms_addSystem("model.root", "oms_system_wc")
+## oms_addSystem("model.root.solver2", "oms_system_sc")
+## oms_addSubModel("model.root.solver2.Gain2", "C:/OMDev/tools/msys/tmp/tmpxy71ek8i/resources/Gain.fmu")
+## oms_addConnector("model.root.solver2.input", "Causality.input", SignalType.Real)
+## oms_addConnection("model.root.solver2.input", "model.root.solver2.Gain2.u")
+## oms_addSubModel("model.root.Add1", "C:/OMDev/tools/msys/tmp/tmpxy71ek8i/resources/Add.fmu")
+## oms_addSubModel("model.root.Gain1", "C:/OMDev/tools/msys/tmp/tmpxy71ek8i/resources/Gain.fmu")
+## oms_addConnector("model.root.param1", "Causality.parameter", SignalType.Real)
+## oms_addConnector("model.root.input1", "Causality.input", SignalType.Real)
+## oms_addConnection("model.root.input1", "model.root.Gain1.u")
+## oms_addConnection("model.root.Gain1.y", "model.root.Add1.u1")
+## oms_setReal("model.root.param1, 200.0)
+## oms_setReal("model.root.input1, 300.0)
+## oms_setReal("model.root.solver2.input, 400.0)
+## oms_setReal("model.root.solver2.Gain2.k, 500.0)
+## oms_setReal("model.root.Gain1.k, 2.0)
+## oms_instantiate("model")
 ## info: After instantiation:
 ## info:    default.param1 : 200.0
 ## info:    default.input1 : 300.0
@@ -148,7 +169,7 @@ instantiated_model.delete()
 ## info:    default.Gain1.y: 0.0
 ## info:    default.Add1.u1: 0.0
 ## info:    default.sub-system.input: 400.0
-## info:    default.sub-system.Gain2.k: 1.0
+## info:    default.sub-system.Gain2.k: 500.0
 ## info:    default.sub-system.Gain2.u: 0.0
 ## info:    default.sub-system.Gain2.y: 0.0
 ## info:    maximum step size for 'model.root.solver2': 0.001000
@@ -161,9 +182,9 @@ instantiated_model.delete()
 ## info:    default.Gain1.y: 600.0
 ## info:    default.Add1.u1: 600.0
 ## info:    default.sub-system.input: 400.0
-## info:    default.sub-system.Gain2.k: 1.0
+## info:    default.sub-system.Gain2.k: 500.0
 ## info:    default.sub-system.Gain2.u: 400.0
-## info:    default.sub-system.Gain2.y: 400.0
+## info:    default.sub-system.Gain2.y: 200000.0
 ## info:    Final Statistics for 'model.root.solver2':
 ##          NumSteps = 1001 NumRhsEvals  = 1002 NumLinSolvSetups = 51
 ##          NumNonlinSolvIters = 1001 NumNonlinSolvConvFails = 0 NumErrTestFails = 0

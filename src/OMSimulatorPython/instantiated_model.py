@@ -89,28 +89,42 @@ class InstantiatedModel:
 
     ## set start values
     self.setStartValues(self.system.value, self.system.name)
-    ## iterate start values from sub-system
-    for key, element in self.system.elements.items():
-      systemName = ".".join([system.name, str(element.name)])
-      self.setStartValues(element.value, systemName)
-
-    ## list parameteres in ssv files
-    if len(self.system.parameterResources) > 0:
-      for resource in self.system.parameterResources:
-        for key, value in resource.items():
-          if key in self.resources:
-            ssv = self.resources.get(key)
-            self.setStartValues(ssv.value, self.system.name)
+    ## set start values from ssv files
+    self.setStartValuesFromSSV(self.system.parameterResources, self.system.name)
+    ## iterate start values from sub-system both inline and ssv files if exist
+    self.setStartValuesFromElements(self.system.elements, self.system.name)
 
     self.apiCall.append(f'oms_instantiate("{self.modelName}")')
     status = Capi.instantiate(self.modelName)
     if status != Status.ok:
       raise RuntimeError(f"Failed to instantiate model: {status}")
 
-  ## map cref with the longest path
-  ## e.g. default.sub-system.gain1.k -> model.root.gain1.k
-  ## e.g. default.sub-system.gain1.R1.T. -> model.root.solver2.gain1.R1.T
+  def setStartValuesFromElements(self, elements, systemName):
+    for key, element in elements.items():
+      new_system_name = ".".join([systemName, str(element.name)])
+      self.setStartValues(element.value, new_system_name)
+      self.setStartValuesFromSSV(element.parameterResources, new_system_name)
+
+      ## recursive for sub-system
+      if isinstance(element, System):
+        new_system_name = ".".join([systemName, str(element.name)])
+        self.setStartValuesFromElements(element.elements, new_system_name)
+
+  def setStartValuesFromSSV(self, parameterResources, systemName):
+    if not parameterResources:
+      return
+    for resource in parameterResources:
+      for (key, _) in resource.items():
+        if key in self.resources:
+          ssv = self.resources.get(key)
+          self.setStartValues(ssv.value, systemName)
+        else:
+          raise KeyError(f"Missing required resource: '{key}'")
+
   def map_cref(self, system_name, var_str):
+    ## map cref with the longest path
+    ## e.g. default.sub-system.gain1.k -> model.root.gain1.k
+    ## e.g. default.sub-system.gain1.R1.T. -> model.root.solver2.gain1.R1.T
     # Combine system name and variable
     cref = f"{system_name}.{var_str}"
     # Split into parts
