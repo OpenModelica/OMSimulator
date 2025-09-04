@@ -143,24 +143,6 @@ instantiated_model.delete()
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
-## oms_newModel("model")
-## oms_addSystem("model.root", "oms_system_wc")
-## oms_addSystem("model.root.solver2", "oms_system_sc")
-## oms_addSubModel("model.root.solver2.Gain2", "C:/OMDev/tools/msys/tmp/tmpxy71ek8i/resources/Gain.fmu")
-## oms_addConnector("model.root.solver2.input", "Causality.input", SignalType.Real)
-## oms_addConnection("model.root.solver2.input", "model.root.solver2.Gain2.u")
-## oms_addSubModel("model.root.Add1", "C:/OMDev/tools/msys/tmp/tmpxy71ek8i/resources/Add.fmu")
-## oms_addSubModel("model.root.Gain1", "C:/OMDev/tools/msys/tmp/tmpxy71ek8i/resources/Gain.fmu")
-## oms_addConnector("model.root.param1", "Causality.parameter", SignalType.Real)
-## oms_addConnector("model.root.input1", "Causality.input", SignalType.Real)
-## oms_addConnection("model.root.input1", "model.root.Gain1.u")
-## oms_addConnection("model.root.Gain1.y", "model.root.Add1.u1")
-## oms_setReal("model.root.param1, 200.0)
-## oms_setReal("model.root.input1, 300.0)
-## oms_setReal("model.root.solver2.input, 400.0)
-## oms_setReal("model.root.solver2.Gain2.k, 500.0)
-## oms_setReal("model.root.Gain1.k, 2.0)
-## oms_instantiate("model")
 ## info: After instantiation:
 ## info:    default.param1 : 200.0
 ## info:    default.input1 : 300.0
