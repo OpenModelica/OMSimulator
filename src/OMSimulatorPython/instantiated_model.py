@@ -119,9 +119,6 @@ class InstantiatedModel:
         if key in self.resources:
           ssv = self.resources.get(key)
           ssm = self.resources.get(mapping, None)  # get the ssm mapping if exist
-          # if mapping:
-          #   if mapping in self.resources:
-          #     ssm = self.resources.get(mapping) # get the ssm mapping
           self.setStartValues(ssv.value, systemName, ssm)
         else:
           raise KeyError(f"Missing required resource: '{key}'")
