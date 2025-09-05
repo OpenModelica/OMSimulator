@@ -136,10 +136,22 @@ class InstantiatedModel:
       prefix = ".".join(parts[:i])
       if prefix in self.mappedCrefs:
         mapped_prefix = self.mappedCrefs[prefix]
-        suffix = ".".join(parts[i:])
-        return mapped_prefix + ("." + suffix if suffix else "")
+        validate_path = self.validatePath(mapped_prefix.split("."), parts[i:])
+        return validate_path
 
     raise KeyError(f"No mapping found for {cref}")
+
+  def validatePath(self, mapped_prefix : list, suffix : list):
+    ## remove common path from suffix
+    ## e.g. mapped_prefix = model.root.solver2.gain1
+    ##      suffix = gain1.R1.T
+    ##      result = model.root.solver2.gain1.R1.T
+    result = []
+    for item in suffix:
+      if item not in mapped_prefix:
+        result.append(item)
+
+    return ".".join(mapped_prefix + result)
 
   def setStartValues(self, value: Values, systemName: str, ssm: SSM | None):
     if value.empty():
