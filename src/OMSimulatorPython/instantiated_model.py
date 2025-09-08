@@ -48,11 +48,13 @@ class InstantiatedModel:
       else:
         solver_path = f"{self.modelName}.root"
 
+      listofsystems = []
       ## add components
-      currentSystem = ""
       for comp in unit["components"]:
         comp_path = ".".join([solver_path] + [comp["name"][-1]])
         currentSystem = ".".join(comp["name"][:-1])
+        if currentSystem not in listofsystems:
+          listofsystems.append(currentSystem)
         self.apiCall.append(f'oms_addSubModel("{comp_path}", "{comp["path"]}")')
         status = Capi.addSubModel(comp_path, comp["path"])
         if status != Status.ok:
@@ -66,12 +68,13 @@ class InstantiatedModel:
         if status != Status.ok:
           raise RuntimeError(f"Failed to set export name: {status}")
 
+      ## add top level system connectors before adding connections
+      for current_system in listofsystems:
         ## top level connectors:
-        if currentSystem == self.system.name:
+        if current_system == self.system.name:
           self._addConnector(self.system.connectors, self.system.name)
-
         ## add top sub-system level connectors mapped with currentSystem
-        self.addConnectorFromElements(self.system.elements, currentSystem)
+        self.addConnectorFromElements(self.system.elements, current_system)
 
       ## add connections
       for connection in unit["connections"]:
