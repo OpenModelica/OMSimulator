@@ -38,6 +38,7 @@
 #include "Component.h"
 #include "ComponentFMUCS.h"
 #include "ComponentFMU3CS.h"
+#include "ComponentDCP.h"
 #include "ComponentFMUME.h"
 #include "ComponentFMU3ME.h"
 #include "ComponentTable.h"
@@ -306,6 +307,8 @@ oms_status_enu_t oms::System::addSubModel(const oms::ComRef& cref, const std::st
 
     if (extension == ".fmu" && oms_system_wc == type && fmiVersion == "2.0")
       component = ComponentFMUCS::NewComponent(cref, this, path_.string());
+    else if (extension == ".dcp")
+      component = ComponentDCP::NewComponent(cref, this, path_.string());
     else if (extension == ".fmu" && oms_system_wc == type && fmiVersion == "3.0")
       component = ComponentFMU3CS::NewComponent(cref, this, path_.string());
     else if (extension == ".fmu" && oms_system_sc == type && fmiVersion == "2.0")
@@ -315,7 +318,7 @@ oms_status_enu_t oms::System::addSubModel(const oms::ComRef& cref, const std::st
     else if (extension == ".csv" || extension == ".mat")
       component = ComponentTable::NewComponent(cref, this, path_.string());
     else
-      return logError("supported sub-model formats are \".fmu\", \".csv\", \".mat\"");
+      return logError("supported sub-model formats are \".fmu\", \".dcp\", \".csv\", \".mat\"");
 
     if (!component)
       return oms_status_error;
