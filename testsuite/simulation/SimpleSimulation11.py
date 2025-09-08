@@ -1,17 +1,17 @@
 ## status: correct
-## teardown_command: rm -rf SimpleSimulation8.ssp SimpleSimulation8_res.mat
+## teardown_command: rm -rf SimpleSimulation11.ssp SimpleSimulation11_res.mat mappedParameter1.ssv mappedEntry1.ssm
 ## linux: yes
 ## ucrt64: yes
 ## win: yes
 ## mac: yes
 
-from OMSimulator import SSP, CRef, Settings, Connector, Causality, SignalType
+from OMSimulator import SSP, CRef, Settings, Connector, Causality, SignalType, SSV, SSM
 
 Settings.suppressPath = True
 
 
 # This example creates a new SSP file with an FMU instantiated as a component and sets two differents solver for the components and the system.
-# It then exports the SSP file and re-imports it to verify the solver settings and the simulates the model.
+# It then exports the SSP file and re-imports the ssp and instantiate the model, set parameter values from ssv files and map the parameters to ssm file and simulates the model.
 
 model = SSP()
 model.addResource('../resources/Modelica.Blocks.Math.Add.fmu', new_name='resources/Add.fmu')
@@ -34,11 +34,32 @@ solver2 = {'name' : 'solver2',  'method': 'cvode', 'tolerance': 1e-4}
 model.newSolver(solver2)
 model.setSolver(CRef('default', 'sub-system', 'Gain2'), 'solver2')
 
-model.setValue(CRef('default','param1'), 200.0)
-model.setValue(CRef('default','input1'), 300.0)
-model.setValue(CRef('default', 'Gain1', 'k'), 2.0)
-model.setValue(CRef('default','sub-system','input'), 400.0)
-model.setValue(CRef('default','sub-system','Gain2', 'k'), 500.0)
+ssv1 = SSV()
+ssv1.setValue('mapped_param1', 200.0)
+ssv1.setValue('mapped_input1', 300.0)
+ssv1.setValue('mapped_Gain_k', 2.0)
+ssv1.setValue('mapped_sub_system_input', 400.0)
+ssv1.setValue('mapped_sub_system_Gain2_k', 500.0)
+
+ssv1.export("mappedParameter1.ssv")
+
+ssm = SSM()
+ssm.mapParameter("mapped_param1", "param1")
+ssm.mapParameter("mapped_input1", "input1")
+ssm.mapParameter("mapped_Gain_k", "Gain1.k")
+ssm.mapParameter("mapped_sub_system_input", "sub-system.input")
+ssm.mapParameter("mapped_sub_system_Gain2_k", "sub-system.Gain2.k")
+ssm.export("mappedEntry1.ssm")
+
+
+## add parameter1.ssv to ssp resources
+model.addResource("mappedParameter1.ssv", "resources/mappedParameter1.ssv")
+## add mappedEntry1.ssm to ssp resources
+model.addResource("mappedEntry1.ssm", "resources/mappedEntry1.ssm")
+
+## reference parameters1.ssv to top level system
+model.addSSVReference(CRef('default'), 'resources/mappedParameter1.ssv', 'resources/mappedEntry1.ssm')
+
 
 ## System.Input to Element.Input
 model.addConnection(CRef('default', 'input1'), CRef('default', 'Gain1', 'u'))
@@ -46,13 +67,13 @@ model.addConnection(CRef('default', 'Gain1', 'y'), CRef('default', 'Add1', 'u1')
 
 ## Sub-system.Input to Element.Input
 model.addConnection(CRef('default', 'sub-system', 'input'), CRef('default', 'sub-system', 'Gain2', 'u'))
-model.export('SimpleSimulation8.ssp')
+model.export('SimpleSimulation11.ssp')
 
-model2 = SSP('SimpleSimulation8.ssp')
+model2 = SSP('SimpleSimulation11.ssp')
 model2.list()
 instantiated_model = model2.instantiate() ## internally generate the json file and also set the model state like virgin,
-#print(instantiated_model.dumpApiCalls(), flush=True)
-instantiated_model.setResultFile("SimpleSimulation8_res.mat")
+# print(instantiated_model.dumpApiCalls(), flush=True)
+instantiated_model.setResultFile("SimpleSimulation11_res.mat")
 
 print(f"info: After instantiation:")
 print(f"info:    default.param1 : {instantiated_model.getValue(CRef('default', 'param1'))}", flush=True)
@@ -90,6 +111,25 @@ instantiated_model.delete()
 ## |-- Resources:
 ## |--   resources/Add.fmu
 ## |--   resources/Gain.fmu
+## |--   resources/mappedEntry1.ssm
+## |--   |-- Parameter Mapping:
+## |--   |-- |-- source: mapped_param1
+## |--   |-- |-- |-- targets: ['param1']
+## |--   |-- |-- source: mapped_input1
+## |--   |-- |-- |-- targets: ['input1']
+## |--   |-- |-- source: mapped_Gain_k
+## |--   |-- |-- |-- targets: ['Gain1.k']
+## |--   |-- |-- source: mapped_sub_system_input
+## |--   |-- |-- |-- targets: ['sub-system.input']
+## |--   |-- |-- source: mapped_sub_system_Gain2_k
+## |--   |-- |-- |-- targets: ['sub-system.Gain2.k']
+## |--   resources/mappedParameter1.ssv
+## |--   |-- Parameter Bindings:
+## |--   |-- |-- (Real mapped_param1, 200.0, None, 'None')
+## |--   |-- |-- (Real mapped_input1, 300.0, None, 'None')
+## |--   |-- |-- (Real mapped_Gain_k, 2.0, None, 'None')
+## |--   |-- |-- (Real mapped_sub_system_input, 400.0, None, 'None')
+## |--   |-- |-- (Real mapped_sub_system_Gain2_k, 500.0, None, 'None')
 ## |-- Active Variant: default
 ## |-- <class 'OMSimulator.ssd.SSD'>
 ## |-- Variant "default": <hidden>
@@ -97,15 +137,12 @@ instantiated_model.delete()
 ## |-- |-- |-- Connectors:
 ## |-- |-- |-- |-- (param1, Causality.parameter, SignalType.Real, None, 'None')
 ## |-- |-- |-- |-- (input1, Causality.input, SignalType.Real, None, 'None')
-## |-- |-- |-- Inline Parameter Bindings:
-## |-- |-- |-- |-- (Real param1, 200.0, None, 'None')
-## |-- |-- |-- |-- (Real input1, 300.0, None, 'None')
+## |-- |-- |-- Parameter Bindings: resources/mappedParameter1.ssv
+## |-- |-- |-- |-- Parameter Mapping: resources/mappedEntry1.ssm
 ## |-- |-- |-- Elements:
 ## |-- |-- |-- |-- System: sub-system 'None'
 ## |-- |-- |-- |-- |-- Connectors:
 ## |-- |-- |-- |-- |-- |-- (input, Causality.input, SignalType.Real, None, 'None')
-## |-- |-- |-- |-- |-- Inline Parameter Bindings:
-## |-- |-- |-- |-- |-- |-- (Real input, 400.0, None, 'None')
 ## |-- |-- |-- |-- |-- Elements:
 ## |-- |-- |-- |-- |-- |-- FMU: Gain2 'None'
 ## |-- |-- |-- |-- |-- |-- |-- path: resources/Gain.fmu
@@ -113,8 +150,6 @@ instantiated_model.delete()
 ## |-- |-- |-- |-- |-- |-- |-- |-- (u, Causality.input, SignalType.Real, None, 'Input signal connector')
 ## |-- |-- |-- |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, 'Output signal connector')
 ## |-- |-- |-- |-- |-- |-- |-- |-- (k, Causality.parameter, SignalType.Real, 1, 'Gain value multiplied with input signal')
-## |-- |-- |-- |-- |-- |-- |-- Inline Parameter Bindings:
-## |-- |-- |-- |-- |-- |-- |-- |-- (Real k, 500.0, None, 'None')
 ## |-- |-- |-- |-- |-- |-- |-- Solver Settings:
 ## |-- |-- |-- |-- |-- |-- |-- |-- name: solver2
 ## |-- |-- |-- |-- |-- Connections:
@@ -133,8 +168,6 @@ instantiated_model.delete()
 ## |-- |-- |-- |-- |-- |-- (u, Causality.input, SignalType.Real, None, 'Input signal connector')
 ## |-- |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, 'Output signal connector')
 ## |-- |-- |-- |-- |-- |-- (k, Causality.parameter, SignalType.Real, 1, 'Gain value multiplied with input signal')
-## |-- |-- |-- |-- |-- Inline Parameter Bindings:
-## |-- |-- |-- |-- |-- |-- (Real k, 2.0, None, 'None')
 ## |-- |-- |-- Connections:
 ## |-- |-- |-- |-- .input1 -> Gain1.u
 ## |-- |-- |-- |-- Gain1.y -> Add1.u1
@@ -155,7 +188,7 @@ instantiated_model.delete()
 ## info:    default.sub-system.Gain2.u: 0.0
 ## info:    default.sub-system.Gain2.y: 0.0
 ## info:    maximum step size for 'model.root.solver2': 0.001000
-## info:    Result file: SimpleSimulation8_res.mat (bufferSize=1)
+## info:    Result file: SimpleSimulation11_res.mat (bufferSize=1)
 ## info: After simulation:
 ## info:    default.param1 : 200.0
 ## info:    default.input1 : 300.0

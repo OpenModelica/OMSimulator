@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command: rm setSolver1.ssp
+## teardown_command: rm -rf setSolver1.ssp
 ## linux: yes
 ## ucrt64: yes
 ## win: yes
