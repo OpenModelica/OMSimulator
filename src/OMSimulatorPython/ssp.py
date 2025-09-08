@@ -43,6 +43,7 @@ from OMSimulator.settings import suppress_path_to_str
 from OMSimulator.ssv import SSV
 from OMSimulator.ssm import SSM
 from OMSimulator.componenttable import ResultReader
+from OMSimulator.dcp import DCP
 
 from OMSimulator import SSD, CRef, namespace
 from lxml import etree as ET
@@ -144,6 +145,8 @@ class SSP:
       self.resources[str(new_name)] = SSM(ssm_path = filePath)
     elif Path(filename).suffix == ".csv" or Path(filename).suffix == ".mat":
       self.resources[str(new_name)] = ResultReader(filePath = filePath)
+    elif Path(filename).suffix == ".dcp":
+      self.resources[str(new_name)] = DCP(dcp_path = filePath)
     ##TODO check for .ssv file and if ssv instances provided
     else:
       self.resources[str(new_name)] = new_name
