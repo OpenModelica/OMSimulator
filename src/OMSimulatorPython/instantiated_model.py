@@ -66,16 +66,12 @@ class InstantiatedModel:
         if status != Status.ok:
           raise RuntimeError(f"Failed to set export name: {status}")
 
-      ## top level connectors:
-      if currentSystem == self.system.name:
-        self._addConnector(self.system.connectors, self.system.name)
+        ## top level connectors:
+        if currentSystem == self.system.name:
+          self._addConnector(self.system.connectors, self.system.name)
 
-      ## add connectors mapped with currentSystem
-      for key, element in self.system.elements.items():
-        if isinstance(element, System):
-          connector_path = ".".join([self.system.name, str(element.name)])
-          if currentSystem == connector_path:
-            self._addConnector(element.connectors, connector_path)
+        ## add top sub-system level connectors mapped with currentSystem
+        self.addConnectorFromElements(self.system.elements, currentSystem)
 
       ## add connections
       for connection in unit["connections"]:
@@ -207,6 +203,17 @@ class InstantiatedModel:
       status = Capi.setExportName(connector_path, export_name)  # Set export name if provided
       if status != Status.ok:
         raise RuntimeError(f"Failed to set export name: {status}")
+
+  def addConnectorFromElements(self, elements, currentSystem):
+    ## add connectors mapped with currentSystem
+    for key, element in elements.items():
+      connector_path = ".".join([self.system.name, str(element.name)])
+      if currentSystem == connector_path:
+          self._addConnector(element.connectors, connector_path)
+
+      ## recurse into subsystem
+      if isinstance(element, System):
+        self.addConnectorFromElements(element.elements, currentSystem)
 
   def dumpApiCalls(self):
     """Returns the generated API calls as a string."""

@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command: rm exportJson4.ssp
+## teardown_command: rm -rf exportJson4.ssp export_json4_res.mat
 ## linux: yes
 ## ucrt64: yes
 ## win: yes
@@ -18,6 +18,7 @@ model.addSystem(CRef('default', 'sub-system'))
 model.activeVariant.system.addConnector(Connector('param1', Causality.parameter, SignalType.Real))
 ## add top level sub-system connector
 model.activeVariant.system.elements[CRef('sub-system')].addConnector(Connector('input', Causality.input, SignalType.Real))
+model.activeVariant.system.elements[CRef('sub-system')].addConnector(Connector('output', Causality.output, SignalType.Real))
 
 component1 = model.addComponent(CRef('default', 'Add1'), 'resources/Add.fmu')
 component2 = model.addComponent(CRef('default', 'sub-system', 'Add2'), 'resources/Add.fmu')
@@ -29,23 +30,43 @@ model.setSolver(CRef('default', 'Add1'), 'solver1')
 model.setSolver(CRef('default', 'sub-system', 'Add2'), 'solver1')
 
 model.addConnection(CRef('default', 'param1'), CRef('default', 'Add1', 'u1'))
-model.addConnection(CRef('default', 'Add1', 'y'), CRef('default', 'sub-system', 'input'))
+model.addConnection(CRef('default', 'Add1', 'y'), CRef('default', 'sub-system', 'output'))
 model.addConnection(CRef('default', 'sub-system', 'Add2', 'u1'), CRef('default', 'sub-system', 'input'))
 
-model.list() ## internally generate the json file and also set the model state like virgin,
 model.export('exportJson4.ssp')
 
 model2 = SSP('exportJson4.ssp')
+model.list() ## internally generate the json file and also set the model state like virgin,
 
-model2.instantiate() ## internally generate the json file and also set the model state like virgin,
 instantiated_model = model2.instantiate() ## internally generate the json file and also set the model state like virgin,
+# print(instantiated_model.dumpApiCalls(), flush=True)
+instantiated_model.setResultFile("export_json4_res.mat")
+instantiated_model.setValue(CRef('default', 'param1'), 2.0)
+instantiated_model.setValue(CRef('default', 'Add1', 'u2'), 3.0)
+
+print(f"info: After instantiation:")
+print(f"info:    default.param1           : {instantiated_model.getValue(CRef('default', 'param1'))}", flush=True)
+print(f"info:    default.sub-system.input : {instantiated_model.getValue(CRef('default', 'sub-system', 'input'))}", flush=True)
+print(f"info:    default.sub-system.output: {instantiated_model.getValue(CRef('default', 'sub-system', 'output'))}", flush=True)
+print(f"info:    default.Add1.u1          : {instantiated_model.getValue(CRef('default', 'Add1', 'u1'))}", flush=True)
+print(f"info:    default.Add1.u2          : {instantiated_model.getValue(CRef('default', 'Add1', 'u2'))}", flush=True)
+print(f"info:    default.Add1.y           : {instantiated_model.getValue(CRef('default', 'Add1', 'y'))}", flush=True)
+
 instantiated_model.initialize()
 instantiated_model.simulate()
+print(f"info: After simulation:")
+print(f"info:    default.param1           : {instantiated_model.getValue(CRef('default', 'param1'))}", flush=True)
+print(f"info:    default.sub-system.input : {instantiated_model.getValue(CRef('default', 'sub-system', 'input'))}", flush=True)
+print(f"info:    default.sub-system.output: {instantiated_model.getValue(CRef('default', 'sub-system', 'output'))}", flush=True)
+print(f"info:    default.Add1.u1          : {instantiated_model.getValue(CRef('default', 'Add1', 'u1'))}", flush=True)
+print(f"info:    default.Add1.u2          : {instantiated_model.getValue(CRef('default', 'Add1', 'u2'))}", flush=True)
+print(f"info:    default.Add1.y           : {instantiated_model.getValue(CRef('default', 'Add1', 'y'))}", flush=True)
+
 instantiated_model.terminate()
 instantiated_model.delete()
 
 ## Result:
-## error:   [addConnection] Connector "sub-system.input" not found in system "model.root.solver1"
+## info:    model doesn't contain any continuous state
 ## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
 ## |--   resources/Add.fmu
@@ -60,6 +81,7 @@ instantiated_model.delete()
 ## |-- |-- |-- |-- System: sub-system 'None'
 ## |-- |-- |-- |-- |-- Connectors:
 ## |-- |-- |-- |-- |-- |-- (input, Causality.input, SignalType.Real, None, 'None')
+## |-- |-- |-- |-- |-- |-- (output, Causality.output, SignalType.Real, None, 'None')
 ## |-- |-- |-- |-- |-- Elements:
 ## |-- |-- |-- |-- |-- |-- FMU: Add2 'None'
 ## |-- |-- |-- |-- |-- |-- |-- path: resources/Add.fmu
@@ -85,25 +107,29 @@ instantiated_model.delete()
 ## |-- |-- |-- |-- |-- |-- name: solver1
 ## |-- |-- |-- Connections:
 ## |-- |-- |-- |-- .param1 -> Add1.u1
-## |-- |-- |-- |-- Add1.y -> sub-system.input
+## |-- |-- |-- |-- Add1.y -> sub-system.output
 ## |-- |-- |-- Solver Settings:
 ## |-- |-- |-- |-- (name=solver1, method=euler, tolerance=1e-06)
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
-## Traceback (most recent call last):
-##   File "C:/OPENMODELICAGIT/OpenModelica/OMSimulator/testsuite/simulation/exportJson4.py", line 40, in <module>
-##     model2.instantiate() ## internally generate the json file and also set the model state like virgin,
-##     ^^^^^^^^^^^^^^^^^^^^
-##   File "C:/OPENMODELICAGIT/OpenModelica/OMSimulator/install/lib/OMSimulator/ssp.py", line 326, in instantiate
-##     return self.activeVariant.instantiate(self.resources, self.temp_dir)
-##            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-##   File "C:/OPENMODELICAGIT/OpenModelica/OMSimulator/install/lib/OMSimulator/ssd.py", line 185, in instantiate
-##     return InstantiatedModel(json_desc)
-##            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-##   File "C:/OPENMODELICAGIT/OpenModelica/OMSimulator/install/lib/OMSimulator/instantiated_model.py", line 54, in __init__
-##     raise RuntimeError(f"Failed to add oms_addConnection: {status}")
-## RuntimeError: Failed to add oms_addConnection: Status.error
-## info:    0 warnings
-## info:    1 errors
+## info: After instantiation:
+## info:    default.param1           : 2.0
+## info:    default.sub-system.input : 0.0
+## info:    default.sub-system.output: 0.0
+## info:    default.Add1.u1          : 0.0
+## info:    default.Add1.u2          : 3.0
+## info:    default.Add1.y           : 3.0
+## info:    maximum step size for 'model.root.solver1': 0.001000
+## info:    Result file: export_json4_res.mat (bufferSize=1)
+## info: After simulation:
+## info:    default.param1           : 2.0
+## info:    default.sub-system.input : 0.0
+## info:    default.sub-system.output: 5.0
+## info:    default.Add1.u1          : 2.0
+## info:    default.Add1.u2          : 3.0
+## info:    default.Add1.y           : 5.0
+## info:    Final Statistics for 'model.root.solver1':
+##          NumSteps = 1001 NumRhsEvals  = 1002 NumLinSolvSetups = 51
+##          NumNonlinSolvIters = 1001 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
 ## endResult
