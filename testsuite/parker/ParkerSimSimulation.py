@@ -1,9 +1,9 @@
 ## status: correct
 ## teardown_command: rm -rf parker_simulation_res.mat
-## linux: yes
+## linux: no
 ## ucrt64: yes
 ## win: yes
-## mac: yes
+## mac: no
 
 import logging
 logging.basicConfig(level=logging.INFO)
