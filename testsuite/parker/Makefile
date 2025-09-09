@@ -2,6 +2,7 @@ TEST = ../rtest -v
 
 TESTFILES = \
 ParkerSim.py \
+ParkerSimSimulation.py \
 
 # Run make failingtest
 FAILINGTESTFILES = \
