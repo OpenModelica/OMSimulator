@@ -121,3 +121,39 @@ set simulation parameters, and run a simulation.
 .. include:: api/oms3/addComponent.rst
 
 .. include:: api/oms3/addSSVReference.rst
+
+.. include:: api/oms3/removeSSVReference.rst
+
+.. include:: api/oms3/swapSSVReference.rst
+
+.. include:: api/oms3/listSSVReference.rst
+
+.. include:: api/oms3/exportSSVTemplate.rst
+
+.. include:: api/oms3/exportSSMTemplate.rst
+
+.. include:: api/oms3/setValue.rst
+
+.. include:: api/oms3/getValue.rst
+
+.. include:: api/oms3/mapParameter.rst
+
+.. include:: api/oms3/duplicateAndActivateVariant.rst
+
+.. include:: api/oms3/getVariant.rst
+
+.. include:: api/oms3/listResource.rst
+
+.. include:: api/oms3/deleteResource.rst
+
+.. include:: api/oms3/delete.rst
+
+.. include:: api/oms3/instantiate.rst
+
+.. include:: api/oms3/setResultFile.rst
+
+.. include:: api/oms3/initialize.rst
+
+.. include:: api/oms3/simulate.rst
+
+.. include:: api/oms3/terminate.rst
