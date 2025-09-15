@@ -1,5 +1,6 @@
 import zipfile
 import logging
+import tempfile
 from pathlib import Path
 from typing import Union
 
@@ -8,11 +9,12 @@ from OMSimulator.connector import Connector
 from OMSimulator.unit import Unit
 from OMSimulator.variable import Variable, SignalType
 from OMSimulator import namespace
+from OMSimulator.capi import Capi, Status
 
 logger = logging.getLogger(__name__)
 
 class FMU:
-  def __init__(self, fmu_path: Union[str, Path]):
+  def __init__(self, fmu_path: Union[str, Path], instanceName: str = None):
     '''Initialize the FMU by loading modelDescription.xml from the FMU archive.'''
     self._fmu_path = Path(fmu_path)
     self._fmiVersion = None
@@ -26,7 +28,8 @@ class FMU:
     self._variables = []
     self._states = []
     self._unitDefinitions = []
-
+    self.apiCall = []
+    self.instanceName = instanceName
     self._load_model_description()
 
   @property
@@ -257,3 +260,99 @@ class FMU:
     with open(Path(filename).resolve(), "w", encoding="utf-8") as file:
       file.write(xml)
     logger.info(f"SSM template '{filename}' successfully exported!")
+
+  def dumpApiCalls(self):
+    """Returns the generated API calls as a string."""
+    return "\n".join(self.apiCall)
+
+  def splitModelName(self):
+    '''Splits the model name into its hierarchical components.'''
+    if self.modelName is None:
+      raise ValueError("modelName is not set")
+    parts = self.modelName.split('.')
+    if len(parts) == 1:
+      return parts[0]
+    else:
+      return parts[-1]
+
+
+  def instantiate(self):
+    '''Instantiate the FMU for simulation.'''
+    print(f"Instantiating FMU: {self._fmu_path}, {self.modelName}, {self.fmuType}")
+    # Placeholder for actual instantiation logic
+
+    status = Capi.setCommandLineOption("--suppressPath=true")
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set command line option: {status}")
+    status = Capi.setTempDirectory(tempfile.mkdtemp())
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set temp directory: {status}")
+
+    if self.instanceName is None:
+      self.instanceName = self.splitModelName()
+
+    # Create a new model
+    status = Capi.newModel(self.instanceName)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to create new model: {status}")
+    self.apiCall.append(f'oms.newModel({self.instanceName})')
+
+    ## add system type: wc (weakly coupled) or sc (strongly coupled)
+    match self.fmuType:
+      case 'me_cs' | 'cs':
+        system_type = 1  # wc
+      case 'me':
+        system_type = 2  # sc
+      case _:
+        raise ValueError(f"Unsupported fmuType: {self.fmuType}")
+    root_name = f"{self.instanceName}.root"
+    status = Capi.addSystem(root_name, system_type)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to add system: {status}")
+
+    self.apiCall.append(f'oms.addSystem({root_name}, {system_type})')
+
+    # Add the FMU to the model
+    status = Capi.addSubModel(f"{root_name}.{self.instanceName}", str(self._fmu_path))
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to add submodel: {status}")
+
+    self.apiCall.append(f'oms.addSubModel({root_name}.{self.instanceName}, {self._fmu_path})')
+
+    # set export name
+    status = Capi.setExportName(f"{root_name}.{self.instanceName}", self.instanceName)  # Set export name if provided
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set export name: {status}")
+
+    status = Capi.instantiate(self.instanceName)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to instantiate model: {status}")
+
+    self.apiCall.append(f'oms.instantiate("{self.instanceName}")')
+
+  def initialize(self):
+    status = Capi.initialize(self.instanceName)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to initialize model: {status}")
+
+  def simulate(self):
+    status = Capi.simulate(self.instanceName)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to simulate model: {status}")
+
+  def stepUntil(self, stopTime):
+    status = Capi.stepUntil(self.instanceName, stopTime)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to step until {stopTime}: {status}")
+
+  def terminate(self):
+    status = Capi.terminate(self.instanceName)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to terminate model: {status}")
+
+  def delete(self):
+    status = Capi.delete(self.instanceName)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to delete model: {status}")
+    self.instanceName = None  # Clear the model name after deletion
+    self.apiCall.clear()  # Clear the API call history
