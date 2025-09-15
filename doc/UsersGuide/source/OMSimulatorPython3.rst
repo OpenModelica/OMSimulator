@@ -44,12 +44,16 @@ the main functionalities provided by the package.
 +----------------------+-------------------------------------------------------------+
 
 
-Example
--------
-The following example demonstrates how to create a simple model,
-add components, establish connections and export the model to an SSP file.
-The example also shows how to re-import the exported SSP file, instantiate FMUs,
-set simulation parameters, and run a simulation.
+Quick start Example
+-------------------
+The following example demonstrates how to
+
+- Create a new SSP model
+- Add FMU components as resources
+- Establish connections between components
+- Export the model to an SSP file
+- Re-import the exported SSP file
+- Instantiate the model, set parameter values, and run a simulation
 
 .. code-block:: python
 
