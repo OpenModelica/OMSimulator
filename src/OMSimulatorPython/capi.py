@@ -80,6 +80,14 @@ class capi:
     self.obj.oms_setString.restype = ctypes.c_int
     self.obj.oms_setResultFile.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int]
     self.obj.oms_setResultFile.restype = ctypes.c_int
+    self.obj.oms_setStartTime.argtypes = [ctypes.c_char_p, ctypes.c_double]
+    self.obj.oms_setStartTime.restype = ctypes.c_int
+    self.obj.oms_setStopTime.argtypes = [ctypes.c_char_p, ctypes.c_double]
+    self.obj.oms_setStopTime.restype = ctypes.c_int
+    self.obj.oms_setTolerance.argtypes = [ctypes.c_char_p, ctypes.c_double]
+    self.obj.oms_setTolerance.restype = ctypes.c_int
+    self.obj.oms_setVariableStepSize.argtypes = [ctypes.c_char_p, ctypes.c_double, ctypes.c_double, ctypes.c_double]
+    self.obj.oms_setVariableStepSize.restype = ctypes.c_int
     self.obj.oms_simulate.argtypes = [ctypes.c_char_p]
     self.obj.oms_simulate.restype = ctypes.c_int
     self.obj.oms_stepUntil.argtypes = [ctypes.c_char_p, ctypes.c_double]
@@ -192,6 +200,26 @@ class capi:
     '''Set the result file for a model or system.
     The bufferSize specifies how many values are buffered before writing to the file.'''
     status = self.obj.oms_setResultFile(cref.encode(), filename.encode(), bufferSize)
+    return Status(status)
+
+  def setStartTime(self, cref, startTime) -> Status:
+    '''Set the start time for the simulation.'''
+    status = self.obj.oms_setStartTime(cref.encode(), startTime)
+    return Status(status)
+
+  def setStopTime(self, cref, stopTime) -> Status:
+    '''Set the stop time for the simulation.'''
+    status = self.obj.oms_setStopTime(cref.encode(), stopTime)
+    return Status(status)
+
+  def setTolerance(self, cref, relativeTolerance) -> Status:
+    '''Set the relative and absolute tolerance for the simulation.'''
+    status = self.obj.oms_setTolerance(cref.encode(), relativeTolerance)
+    return Status(status)
+
+  def setVariableStepSize(self, cref, initialStepSize, minStepSize, maxStepSize) -> Status:
+    '''Set the variable step size parameters for the simulation.'''
+    status = self.obj.oms_setVariableStepSize(cref.encode(), initialStepSize, minStepSize, maxStepSize)
     return Status(status)
 
   def simulate(self, cref) -> Status:

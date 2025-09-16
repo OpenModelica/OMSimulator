@@ -29,6 +29,7 @@ class FMU:
     self._variables = []
     self._states = []
     self._unitDefinitions = []
+    self.defaultExperiment = {}
     self.apiCall = []
     self.instanceName = instanceName
     self.fmuInstantitated = False
@@ -111,6 +112,9 @@ class FMU:
           elif has_cs:
             self._fmuType = 'cs'
 
+          # Parse default experiment settings
+          self._parse_default_experiment(model_description)
+
           # Parse UnitDefinitions
           self._parse_units(model_description)
 
@@ -119,6 +123,21 @@ class FMU:
 
     except ET.XMLSyntaxError as e:
       raise ValueError(f'Error parsing {model_desc_name}: {e}')
+
+  def _parse_default_experiment(self, model_description):
+    """Extract default experiment settings from modelDescription.xml."""
+    default_experiment = model_description.find('.//DefaultExperiment')
+
+    def _get(attr, default):
+      val = default_experiment.get(attr) if default_experiment is not None else None
+      return float(val) if val is not None else default
+
+    self.defaultExperiment = {
+      'startTime': _get('startTime', 0.0),
+      'stopTime': _get('stopTime', 1.0),
+      'tolerance': _get('tolerance', 1e-6),
+      'stepSize': _get('stepSize', 1e-3),
+    }
 
   def _parse_variables(self, model_description):
     '''Parses variables from the ModelVariables section of modelDescription.xml'''
@@ -327,7 +346,48 @@ class FMU:
     if status != Status.ok:
       raise RuntimeError(f"Failed to instantiate model: {status}")
     self.fmuInstantitated = True
+
+    self.setDefaultExperiment()
+
     self.apiCall.append(f'oms.instantiate("{self.instanceName}")')
+
+  def setDefaultExperiment(self):
+    self.setStartTime(self.defaultExperiment.get('startTime'))
+    self.setStopTime(self.defaultExperiment.get('stopTime'))
+    self.setTolerance(self.defaultExperiment.get('tolerance'))
+    self.setStepSize(self.defaultExperiment.get('stepSize'))
+
+  def setStartTime(self, startTime: float):
+    if self.fmuInstantitated is False:
+      raise RuntimeError("FMU must be instantiated before setting start time")
+
+    status = Capi.setStartTime(self.instanceName, startTime)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set start time: {status}")
+
+  def setStopTime(self, stopTime: float):
+    if self.fmuInstantitated is False:
+      raise RuntimeError("FMU must be instantiated before setting stop time")
+
+    status = Capi.setStopTime(self.instanceName, stopTime)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set stop time: {status}")
+
+  def setTolerance(self, tolerance: float):
+    if self.fmuInstantitated is False:
+      raise RuntimeError("FMU must be instantiated before setting tolerance")
+
+    status = Capi.setTolerance(self.instanceName, tolerance)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set tolerance: {status}")
+
+  def setStepSize(self, stepSize: float):
+    if self.fmuInstantitated is False:
+      raise RuntimeError("FMU must be instantiated before setting variable step size")
+
+    status = Capi.setVariableStepSize(self.instanceName, 1e-6, 1e-12, stepSize)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set variable step size: {status}")
 
   def getValue(self, cref: str):
     if self.fmuInstantitated is False:
