@@ -10,6 +10,7 @@ from OMSimulator.unit import Unit
 from OMSimulator.variable import Variable, SignalType
 from OMSimulator import namespace
 from OMSimulator.capi import Capi, Status
+from OMSimulator.cref import CRef
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +31,7 @@ class FMU:
     self._unitDefinitions = []
     self.apiCall = []
     self.instanceName = instanceName
+    self.fmuInstantitated = False
     self._load_model_description()
 
   @property
@@ -278,9 +280,6 @@ class FMU:
 
   def instantiate(self):
     '''Instantiate the FMU for simulation.'''
-    print(f"Instantiating FMU: {self._fmu_path}, {self.modelName}, {self.fmuType}")
-    # Placeholder for actual instantiation logic
-
     status = Capi.setCommandLineOption("--suppressPath=true")
     if status != Status.ok:
       raise RuntimeError(f"Failed to set command line option: {status}")
@@ -327,15 +326,136 @@ class FMU:
     status = Capi.instantiate(self.instanceName)
     if status != Status.ok:
       raise RuntimeError(f"Failed to instantiate model: {status}")
-
+    self.fmuInstantitated = True
     self.apiCall.append(f'oms.instantiate("{self.instanceName}")')
 
+  def getValue(self, cref: str):
+    if self.fmuInstantitated is False:
+      raise RuntimeError("FMU must be instantiated before getting values")
+
+    '''Get the value of a variable by its name.'''
+    if not self.varExist(CRef(cref)):
+      raise KeyError(f"Variable '{cref}' does not exist in the FMU")
+
+    mappedCrefs = f"{self.instanceName}.root.{self.instanceName}.{cref}"
+
+    # Determine the variable type
+    type, status = Capi.getVariableType(mappedCrefs)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to get variable type for {cref}: {status}")
+
+    match SignalType(type):
+      case SignalType.Real:  # oms_signal_type_real
+        return self._getReal(mappedCrefs)
+      case SignalType.Integer:  # oms_signal_type_integer
+        return self._getInteger(mappedCrefs)
+      case SignalType.Boolean:  # oms_signal_type_boolean
+        return self._getBoolean(mappedCrefs)
+      case SignalType.String:  # oms_signal_type_string
+        return self._getString(mappedCrefs)
+      case SignalType.Enumeration:  # oms_signal_type_enumeration
+        return self._getInteger(mappedCrefs)  # Treat enumeration as integer
+      case _:
+        raise TypeError(f"Unsupported type: {type}")
+
+  def _getReal(self, cref: CRef):
+    value, status = Capi.getReal(cref) # Get the value from the CAPI
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to get value for {cref}: {status}")
+    return value
+
+  def _getInteger(self, cref: CRef):
+    value, status = Capi.getInteger(cref)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to get value for {cref}: {status}")
+    return value
+
+  def _getBoolean(self, cref: CRef):
+    value, status = Capi.getBoolean(cref)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to get value for {cref}: {status}")
+    return value
+
+  def _getString(self, cref: CRef):
+    value, status = Capi.getString(cref)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to get value for {cref}: {status}")
+    return value
+
+  def setValue(self, cref: str, value):
+    """Sets a value for a specific CRef in the model."""
+
+    if self.fmuInstantitated is False:
+      raise RuntimeError("FMU must be instantiated before setting values")
+
+    if not self.varExist(CRef(cref)):
+      raise KeyError(f"Variable '{cref}' does not exist in the FMU")
+
+    mappedCrefs = f"{self.instanceName}.root.{self.instanceName}.{cref}"
+
+    # Determine the variable type
+    type, status = Capi.getVariableType(mappedCrefs)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to get variable type for {cref}: {status}")
+
+    match SignalType(type):
+      case SignalType.Real:  # oms_signal_type_real
+        return self._setReal(mappedCrefs, value)
+      case SignalType.Integer:  # oms_signal_type_integer
+        return self._setInteger(mappedCrefs, value)
+      case SignalType.Boolean:  # oms_signal_type_boolean
+        return self._setBoolean(mappedCrefs, value)
+      case SignalType.String:  # oms_signal_type_string
+        return self._setString(mappedCrefs, value)
+      case SignalType.Enumeration:  # oms_signal_type_enumeration
+        return self._setInteger(mappedCrefs, value)  # Treat enumeration as integer
+      case _:
+        raise TypeError(f"Unsupported type: {type}")
+
+  def _setReal(self, mapped_cref: str, value: float):
+    self.apiCall.append(f'oms_setReal("{mapped_cref}, {value})')
+    status = Capi.setReal(mapped_cref, value) # Get the value from the CAPI
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set value for {mapped_cref}: {status}")
+
+  def _setInteger(self, mapped_cref: str, value: int):
+    self.apiCall.append(f'oms_setInteger("{mapped_cref}, {value})')
+    status = Capi.setInteger(mapped_cref, value) # Get the value from the CAPI
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set value for {mapped_cref}: {status}")
+
+  def _setBoolean(self, mapped_cref: str, value: bool):
+    self.apiCall.append(f'oms_setBoolean("{mapped_cref}, {value})')
+    status = Capi.setBoolean(mapped_cref, value) # Get the value from the CAPI
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set value for {mapped_cref}: {status}")
+
+  def _setString(self, mapped_cref: str, value: str):
+    self.apiCall.append(f'oms_setString("{mapped_cref}, {value})')
+    status = Capi.setString(mapped_cref, value) # Get the value from the CAPI
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set value for {mapped_cref}: {status}")
+
+  def setResultFile(self, filename: str):
+    if self.fmuInstantitated is False:
+      raise RuntimeError("FMU must be instantiated before setting result file")
+
+    status = Capi.setResultFile(self.instanceName, filename)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to setResultFile {filename}: {status}")
+
   def initialize(self):
+    if self.fmuInstantitated is False:
+      raise RuntimeError("FMU must be instantiated before initialization")
+
     status = Capi.initialize(self.instanceName)
     if status != Status.ok:
       raise RuntimeError(f"Failed to initialize model: {status}")
 
   def simulate(self):
+    if self.fmuInstantitated is False:
+      raise RuntimeError("FMU must be instantiated before simulation")
+
     status = Capi.simulate(self.instanceName)
     if status != Status.ok:
       raise RuntimeError(f"Failed to simulate model: {status}")
