@@ -14,6 +14,7 @@ class InstantiatedModel:
     self.mappedCrefs = {}  # Store mapped CRefs associated with their export names
     self.system = system
     self.resources = resources
+    self.fmuInstantitated = False
 
     status = Capi.setCommandLineOption("--suppressPath=true")
     if status != Status.ok:
@@ -98,6 +99,7 @@ class InstantiatedModel:
     status = Capi.instantiate(self.modelName)
     if status != Status.ok:
       raise RuntimeError(f"Failed to instantiate model: {status}")
+    self.fmuInstantitated = True
 
   def setStartValuesFromElements(self, elements, systemName):
     for key, element in elements.items():
@@ -342,6 +344,50 @@ class InstantiatedModel:
     status = Capi.setResultFile("model", filename)
     if status !=Status.ok:
       raise RuntimeError(f"Failed to setResultFile {filename}: {status}")
+
+  def setStartTime(self, startTime: float):
+    status = Capi.setStartTime(self.modelName, startTime)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set start time: {status}")
+
+  def setStopTime(self, stopTime: float):
+    if self.fmuInstantitated is False:
+      raise RuntimeError("FMU must be instantiated before setting stop time")
+
+    status = Capi.setStopTime(self.modelName, stopTime)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set stop time: {status}")
+
+  def setTolerance(self, tolerance: float):
+    if self.fmuInstantitated is False:
+      raise RuntimeError("FMU must be instantiated before setting tolerance")
+
+    status = Capi.setTolerance(self.modelName, tolerance)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set tolerance: {status}")
+
+  def setStepSize(self, stepSize: float):
+    if self.fmuInstantitated is False:
+      raise RuntimeError("FMU must be instantiated before setting variable step size")
+
+    status = Capi.setVariableStepSize(self.modelName, 1e-6, 1e-12, stepSize)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set variable step size: {status}")
+
+  def setLoggingLevel(self, level: int):
+    status = Capi.setLoggingLevel(level)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set logging level: {status}")
+
+  def setLogFile(self, filename: str):
+    status = Capi.setLogFile(filename)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set log file: {status}")
+
+  def setLoggingInterval(self, interval: float):
+    status = Capi.setLoggingInterval(self.modelName, interval)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set logging interval: {status}")
 
   def terminate(self):
     status = Capi.terminate(self.modelName)

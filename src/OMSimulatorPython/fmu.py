@@ -1,5 +1,6 @@
 import zipfile
 import logging
+import tempfile
 from pathlib import Path
 from typing import Union
 
@@ -8,11 +9,13 @@ from OMSimulator.connector import Connector
 from OMSimulator.unit import Unit
 from OMSimulator.variable import Variable, SignalType
 from OMSimulator import namespace
+from OMSimulator.capi import Capi, Status
+from OMSimulator.cref import CRef
 
 logger = logging.getLogger(__name__)
 
 class FMU:
-  def __init__(self, fmu_path: Union[str, Path]):
+  def __init__(self, fmu_path: Union[str, Path], instanceName: str = None):
     '''Initialize the FMU by loading modelDescription.xml from the FMU archive.'''
     self._fmu_path = Path(fmu_path)
     self._fmiVersion = None
@@ -26,7 +29,10 @@ class FMU:
     self._variables = []
     self._states = []
     self._unitDefinitions = []
-
+    self.defaultExperiment = {}
+    self.apiCall = []
+    self.instanceName = instanceName
+    self.fmuInstantitated = False
     self._load_model_description()
 
   @property
@@ -106,6 +112,9 @@ class FMU:
           elif has_cs:
             self._fmuType = 'cs'
 
+          # Parse default experiment settings
+          self._parse_default_experiment(model_description)
+
           # Parse UnitDefinitions
           self._parse_units(model_description)
 
@@ -114,6 +123,21 @@ class FMU:
 
     except ET.XMLSyntaxError as e:
       raise ValueError(f'Error parsing {model_desc_name}: {e}')
+
+  def _parse_default_experiment(self, model_description):
+    """Extract default experiment settings from modelDescription.xml."""
+    default_experiment = model_description.find('.//DefaultExperiment')
+
+    def _get(attr, default):
+      val = default_experiment.get(attr) if default_experiment is not None else None
+      return float(val) if val is not None else default
+
+    self.defaultExperiment = {
+      'startTime': _get('startTime', 0.0),
+      'stopTime': _get('stopTime', 1.0),
+      'tolerance': _get('tolerance', 1e-6),
+      'stepSize': _get('stepSize', 1e-3),
+    }
 
   def _parse_variables(self, model_description):
     '''Parses variables from the ModelVariables section of modelDescription.xml'''
@@ -257,3 +281,273 @@ class FMU:
     with open(Path(filename).resolve(), "w", encoding="utf-8") as file:
       file.write(xml)
     logger.info(f"SSM template '{filename}' successfully exported!")
+
+  def dumpApiCalls(self):
+    """Returns the generated API calls as a string."""
+    return "\n".join(self.apiCall)
+
+  def splitModelName(self):
+    '''Splits the model name into its hierarchical components.'''
+    if self.modelName is None:
+      raise ValueError("modelName is not set")
+    parts = self.modelName.split('.')
+    if len(parts) == 1:
+      return parts[0]
+    else:
+      return parts[-1]
+
+
+  def instantiate(self):
+    '''Instantiate the FMU for simulation.'''
+    status = Capi.setCommandLineOption("--suppressPath=true")
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set command line option: {status}")
+    status = Capi.setTempDirectory(tempfile.mkdtemp())
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set temp directory: {status}")
+
+    if self.instanceName is None:
+      self.instanceName = self.splitModelName()
+
+    # Create a new model
+    status = Capi.newModel(self.instanceName)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to create new model: {status}")
+    self.apiCall.append(f'oms.newModel({self.instanceName})')
+
+    ## add system type: wc (weakly coupled) or sc (strongly coupled)
+    match self.fmuType:
+      case 'me_cs' | 'cs':
+        system_type = 1  # wc
+      case 'me':
+        system_type = 2  # sc
+      case _:
+        raise ValueError(f"Unsupported fmuType: {self.fmuType}")
+    root_name = f"{self.instanceName}.root"
+    status = Capi.addSystem(root_name, system_type)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to add system: {status}")
+
+    self.apiCall.append(f'oms.addSystem({root_name}, {system_type})')
+
+    # Add the FMU to the model
+    status = Capi.addSubModel(f"{root_name}.{self.instanceName}", str(self._fmu_path))
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to add submodel: {status}")
+
+    self.apiCall.append(f'oms.addSubModel({root_name}.{self.instanceName}, {self._fmu_path})')
+
+    # set export name
+    status = Capi.setExportName(f"{root_name}.{self.instanceName}", self.instanceName)  # Set export name if provided
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set export name: {status}")
+
+    status = Capi.instantiate(self.instanceName)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to instantiate model: {status}")
+    self.fmuInstantitated = True
+
+    self.setDefaultExperiment()
+
+    self.apiCall.append(f'oms.instantiate("{self.instanceName}")')
+
+  def setDefaultExperiment(self):
+    self.setStartTime(self.defaultExperiment.get('startTime'))
+    self.setStopTime(self.defaultExperiment.get('stopTime'))
+    self.setTolerance(self.defaultExperiment.get('tolerance'))
+    self.setStepSize(self.defaultExperiment.get('stepSize'))
+
+  def setStartTime(self, startTime: float):
+    if self.fmuInstantitated is False:
+      raise RuntimeError("FMU must be instantiated before setting start time")
+
+    status = Capi.setStartTime(self.instanceName, startTime)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set start time: {status}")
+
+  def setStopTime(self, stopTime: float):
+    if self.fmuInstantitated is False:
+      raise RuntimeError("FMU must be instantiated before setting stop time")
+
+    status = Capi.setStopTime(self.instanceName, stopTime)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set stop time: {status}")
+
+  def setTolerance(self, tolerance: float):
+    if self.fmuInstantitated is False:
+      raise RuntimeError("FMU must be instantiated before setting tolerance")
+
+    status = Capi.setTolerance(self.instanceName, tolerance)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set tolerance: {status}")
+
+  def setStepSize(self, stepSize: float):
+    if self.fmuInstantitated is False:
+      raise RuntimeError("FMU must be instantiated before setting variable step size")
+
+    status = Capi.setVariableStepSize(self.instanceName, 1e-6, 1e-12, stepSize)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set variable step size: {status}")
+
+  def getValue(self, cref: str):
+    if self.fmuInstantitated is False:
+      raise RuntimeError("FMU must be instantiated before getting values")
+
+    '''Get the value of a variable by its name.'''
+    if not self.varExist(CRef(cref)):
+      raise KeyError(f"Variable '{cref}' does not exist in the FMU")
+
+    mappedCrefs = f"{self.instanceName}.root.{self.instanceName}.{cref}"
+
+    # Determine the variable type
+    type, status = Capi.getVariableType(mappedCrefs)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to get variable type for {cref}: {status}")
+
+    match SignalType(type):
+      case SignalType.Real:  # oms_signal_type_real
+        return self._getReal(mappedCrefs)
+      case SignalType.Integer:  # oms_signal_type_integer
+        return self._getInteger(mappedCrefs)
+      case SignalType.Boolean:  # oms_signal_type_boolean
+        return self._getBoolean(mappedCrefs)
+      case SignalType.String:  # oms_signal_type_string
+        return self._getString(mappedCrefs)
+      case SignalType.Enumeration:  # oms_signal_type_enumeration
+        return self._getInteger(mappedCrefs)  # Treat enumeration as integer
+      case _:
+        raise TypeError(f"Unsupported type: {type}")
+
+  def _getReal(self, cref: CRef):
+    value, status = Capi.getReal(cref) # Get the value from the CAPI
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to get value for {cref}: {status}")
+    return value
+
+  def _getInteger(self, cref: CRef):
+    value, status = Capi.getInteger(cref)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to get value for {cref}: {status}")
+    return value
+
+  def _getBoolean(self, cref: CRef):
+    value, status = Capi.getBoolean(cref)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to get value for {cref}: {status}")
+    return value
+
+  def _getString(self, cref: CRef):
+    value, status = Capi.getString(cref)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to get value for {cref}: {status}")
+    return value
+
+  def setValue(self, cref: str, value):
+    """Sets a value for a specific CRef in the model."""
+
+    if self.fmuInstantitated is False:
+      raise RuntimeError("FMU must be instantiated before setting values")
+
+    if not self.varExist(CRef(cref)):
+      raise KeyError(f"Variable '{cref}' does not exist in the FMU")
+
+    mappedCrefs = f"{self.instanceName}.root.{self.instanceName}.{cref}"
+
+    # Determine the variable type
+    type, status = Capi.getVariableType(mappedCrefs)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to get variable type for {cref}: {status}")
+
+    match SignalType(type):
+      case SignalType.Real:  # oms_signal_type_real
+        return self._setReal(mappedCrefs, value)
+      case SignalType.Integer:  # oms_signal_type_integer
+        return self._setInteger(mappedCrefs, value)
+      case SignalType.Boolean:  # oms_signal_type_boolean
+        return self._setBoolean(mappedCrefs, value)
+      case SignalType.String:  # oms_signal_type_string
+        return self._setString(mappedCrefs, value)
+      case SignalType.Enumeration:  # oms_signal_type_enumeration
+        return self._setInteger(mappedCrefs, value)  # Treat enumeration as integer
+      case _:
+        raise TypeError(f"Unsupported type: {type}")
+
+  def _setReal(self, mapped_cref: str, value: float):
+    self.apiCall.append(f'oms_setReal("{mapped_cref}, {value})')
+    status = Capi.setReal(mapped_cref, value) # Get the value from the CAPI
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set value for {mapped_cref}: {status}")
+
+  def _setInteger(self, mapped_cref: str, value: int):
+    self.apiCall.append(f'oms_setInteger("{mapped_cref}, {value})')
+    status = Capi.setInteger(mapped_cref, value) # Get the value from the CAPI
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set value for {mapped_cref}: {status}")
+
+  def _setBoolean(self, mapped_cref: str, value: bool):
+    self.apiCall.append(f'oms_setBoolean("{mapped_cref}, {value})')
+    status = Capi.setBoolean(mapped_cref, value) # Get the value from the CAPI
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set value for {mapped_cref}: {status}")
+
+  def _setString(self, mapped_cref: str, value: str):
+    self.apiCall.append(f'oms_setString("{mapped_cref}, {value})')
+    status = Capi.setString(mapped_cref, value) # Get the value from the CAPI
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set value for {mapped_cref}: {status}")
+
+  def setResultFile(self, filename: str):
+    if self.fmuInstantitated is False:
+      raise RuntimeError("FMU must be instantiated before setting result file")
+
+    status = Capi.setResultFile(self.instanceName, filename)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to setResultFile {filename}: {status}")
+
+  def initialize(self):
+    if self.fmuInstantitated is False:
+      raise RuntimeError("FMU must be instantiated before initialization")
+
+    status = Capi.initialize(self.instanceName)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to initialize model: {status}")
+
+  def simulate(self):
+    if self.fmuInstantitated is False:
+      raise RuntimeError("FMU must be instantiated before simulation")
+
+    status = Capi.simulate(self.instanceName)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to simulate model: {status}")
+
+  def stepUntil(self, stopTime):
+    status = Capi.stepUntil(self.instanceName, stopTime)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to step until {stopTime}: {status}")
+
+  def setLoggingLevel(self, level: int):
+    status = Capi.setLoggingLevel(level)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set logging level: {status}")
+
+  def setLogFile(self, filename: str):
+    status = Capi.setLogFile(filename)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set log file: {status}")
+
+  def setLoggingInterval(self, interval: float):
+    status = Capi.setLoggingInterval(self.instanceName, interval)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set logging interval: {status}")
+
+  def terminate(self):
+    status = Capi.terminate(self.instanceName)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to terminate model: {status}")
+
+  def delete(self):
+    status = Capi.delete(self.instanceName)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to delete model: {status}")
+    self.instanceName = None  # Clear the model name after deletion
+    self.apiCall.clear()  # Clear the API call history

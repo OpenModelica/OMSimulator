@@ -80,6 +80,20 @@ class capi:
     self.obj.oms_setString.restype = ctypes.c_int
     self.obj.oms_setResultFile.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int]
     self.obj.oms_setResultFile.restype = ctypes.c_int
+    self.obj.oms_setStartTime.argtypes = [ctypes.c_char_p, ctypes.c_double]
+    self.obj.oms_setStartTime.restype = ctypes.c_int
+    self.obj.oms_setStopTime.argtypes = [ctypes.c_char_p, ctypes.c_double]
+    self.obj.oms_setStopTime.restype = ctypes.c_int
+    self.obj.oms_setTolerance.argtypes = [ctypes.c_char_p, ctypes.c_double]
+    self.obj.oms_setTolerance.restype = ctypes.c_int
+    self.obj.oms_setVariableStepSize.argtypes = [ctypes.c_char_p, ctypes.c_double, ctypes.c_double, ctypes.c_double]
+    self.obj.oms_setVariableStepSize.restype = ctypes.c_int
+    self.obj.oms_setLogFile.argtypes = [ctypes.c_char_p]
+    self.obj.oms_setLogFile.restype = ctypes.c_int
+    self.obj.oms_setLoggingInterval.argtypes = [ctypes.c_char_p, ctypes.c_double]
+    self.obj.oms_setLoggingInterval.restype = ctypes.c_int
+    self.obj.oms_setLoggingLevel.argtypes = [ctypes.c_int]
+    self.obj.oms_setLoggingLevel.restype = ctypes.c_int
     self.obj.oms_simulate.argtypes = [ctypes.c_char_p]
     self.obj.oms_simulate.restype = ctypes.c_int
     self.obj.oms_stepUntil.argtypes = [ctypes.c_char_p, ctypes.c_double]
@@ -194,15 +208,47 @@ class capi:
     status = self.obj.oms_setResultFile(cref.encode(), filename.encode(), bufferSize)
     return Status(status)
 
+  def setStartTime(self, cref, startTime) -> Status:
+    '''Set the start time for the simulation.'''
+    status = self.obj.oms_setStartTime(cref.encode(), startTime)
+    return Status(status)
+
+  def setStopTime(self, cref, stopTime) -> Status:
+    '''Set the stop time for the simulation.'''
+    status = self.obj.oms_setStopTime(cref.encode(), stopTime)
+    return Status(status)
+
+  def setTolerance(self, cref, relativeTolerance) -> Status:
+    '''Set the relative and absolute tolerance for the simulation.'''
+    status = self.obj.oms_setTolerance(cref.encode(), relativeTolerance)
+    return Status(status)
+
+  def setVariableStepSize(self, cref, initialStepSize, minStepSize, maxStepSize) -> Status:
+    '''Set the variable step size parameters for the simulation.'''
+    status = self.obj.oms_setVariableStepSize(cref.encode(), initialStepSize, minStepSize, maxStepSize)
+    return Status(status)
+
   def simulate(self, cref) -> Status:
     '''Exits initialization mode and runs the simulation until stopTime is reached.'''
     status = self.obj.oms_simulate(cref.encode())
     return Status(status)
 
-  def stepUntil(self, model, stopTime) -> Status:
+  def stepUntil(self, cref, stopTime) -> Status:
     '''Step the simulation until the specified stop time.
     Note: If the model is in initialization mode, this will exit initialization mode.'''
-    status = self.obj.oms_stepUntil(model, stopTime)
+    status = self.obj.oms_stepUntil(cref.encode(), stopTime)
+    return Status(status)
+
+  def setLogFile(self, filename):
+    status = self.obj.oms_setLogFile(filename.encode())
+    return Status(status)
+
+  def setLoggingInterval(self, cref, loggingInterval):
+    status = self.obj.oms_setLoggingInterval(cref.encode(), loggingInterval)
+    return Status(status)
+
+  def setLoggingLevel(self, level):
+    status = self.obj.oms_setLoggingLevel(level)
     return Status(status)
 
   def terminate(self, cref) -> Status:

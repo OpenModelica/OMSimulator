@@ -4,6 +4,7 @@ TESTFILES = \
 exportJson1.py \
 exportJson2.py \
 exportJson4.py \
+fmuSimulation1.py \
 tankYPipe.py \
 SimpleSimulation1.py \
 SimpleSimulation2.py \
@@ -19,6 +20,7 @@ SimpleSimulation11.py \
 SimpleSimulation12.py \
 SimpleSimulation13.py \
 SimpleSimulation14.py \
+stepUntil.py \
 
 # Run make failingtest
 FAILINGTESTFILES = \
