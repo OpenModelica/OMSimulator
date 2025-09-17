@@ -343,6 +343,35 @@ class InstantiatedModel:
     if status !=Status.ok:
       raise RuntimeError(f"Failed to setResultFile {filename}: {status}")
 
+  def setStartTime(self, startTime: float):
+    status = Capi.setStartTime(self.modelName, startTime)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set start time: {status}")
+
+  def setStopTime(self, stopTime: float):
+    if self.fmuInstantitated is False:
+      raise RuntimeError("FMU must be instantiated before setting stop time")
+
+    status = Capi.setStopTime(self.modelName, stopTime)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set stop time: {status}")
+
+  def setTolerance(self, tolerance: float):
+    if self.fmuInstantitated is False:
+      raise RuntimeError("FMU must be instantiated before setting tolerance")
+
+    status = Capi.setTolerance(self.modelName, tolerance)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set tolerance: {status}")
+
+  def setStepSize(self, stepSize: float):
+    if self.fmuInstantitated is False:
+      raise RuntimeError("FMU must be instantiated before setting variable step size")
+
+    status = Capi.setVariableStepSize(self.modelName, 1e-6, 1e-12, stepSize)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set variable step size: {status}")
+
   def terminate(self):
     status = Capi.terminate(self.modelName)
     if status != Status.ok:

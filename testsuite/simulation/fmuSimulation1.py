@@ -20,6 +20,12 @@ fmu.setResultFile('Gain_res.mat')
 fmu.setValue('k', 5.0)
 fmu.setValue('u', 10.0)
 
+fmu.setStopTime(10.0)
+
+fmu.setStepSize(0.1)
+
+fmu.setTolerance(1e-6)
+
 print(f"info: After instantiation:")
 print(f"info:    k: {fmu.getValue('k')}", flush=True)
 print(f"info:    u: {fmu.getValue('u')}", flush=True)

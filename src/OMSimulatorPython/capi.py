@@ -227,10 +227,10 @@ class capi:
     status = self.obj.oms_simulate(cref.encode())
     return Status(status)
 
-  def stepUntil(self, model, stopTime) -> Status:
+  def stepUntil(self, cref, stopTime) -> Status:
     '''Step the simulation until the specified stop time.
     Note: If the model is in initialization mode, this will exit initialization mode.'''
-    status = self.obj.oms_stepUntil(model, stopTime)
+    status = self.obj.oms_stepUntil(cref.encode(), stopTime)
     return Status(status)
 
   def terminate(self, cref) -> Status:
