@@ -525,6 +525,21 @@ class FMU:
     if status != Status.ok:
       raise RuntimeError(f"Failed to step until {stopTime}: {status}")
 
+  def setLoggingLevel(self, level: int):
+    status = Capi.setLoggingLevel(level)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set logging level: {status}")
+
+  def setLogFile(self, filename: str):
+    status = Capi.setLogFile(filename)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set log file: {status}")
+
+  def setLoggingInterval(self, interval: float):
+    status = Capi.setLoggingInterval(self.instanceName, interval)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set logging interval: {status}")
+
   def terminate(self):
     status = Capi.terminate(self.instanceName)
     if status != Status.ok:

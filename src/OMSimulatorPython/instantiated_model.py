@@ -14,6 +14,7 @@ class InstantiatedModel:
     self.mappedCrefs = {}  # Store mapped CRefs associated with their export names
     self.system = system
     self.resources = resources
+    self.fmuInstantitated = False
 
     status = Capi.setCommandLineOption("--suppressPath=true")
     if status != Status.ok:
@@ -98,6 +99,7 @@ class InstantiatedModel:
     status = Capi.instantiate(self.modelName)
     if status != Status.ok:
       raise RuntimeError(f"Failed to instantiate model: {status}")
+    self.fmuInstantitated = True
 
   def setStartValuesFromElements(self, elements, systemName):
     for key, element in elements.items():
@@ -371,6 +373,21 @@ class InstantiatedModel:
     status = Capi.setVariableStepSize(self.modelName, 1e-6, 1e-12, stepSize)
     if status != Status.ok:
       raise RuntimeError(f"Failed to set variable step size: {status}")
+
+  def setLoggingLevel(self, level: int):
+    status = Capi.setLoggingLevel(level)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set logging level: {status}")
+
+  def setLogFile(self, filename: str):
+    status = Capi.setLogFile(filename)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set log file: {status}")
+
+  def setLoggingInterval(self, interval: float):
+    status = Capi.setLoggingInterval(self.modelName, interval)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set logging interval: {status}")
 
   def terminate(self):
     status = Capi.terminate(self.modelName)

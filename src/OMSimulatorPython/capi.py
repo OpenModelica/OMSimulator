@@ -88,6 +88,12 @@ class capi:
     self.obj.oms_setTolerance.restype = ctypes.c_int
     self.obj.oms_setVariableStepSize.argtypes = [ctypes.c_char_p, ctypes.c_double, ctypes.c_double, ctypes.c_double]
     self.obj.oms_setVariableStepSize.restype = ctypes.c_int
+    self.obj.oms_setLogFile.argtypes = [ctypes.c_char_p]
+    self.obj.oms_setLogFile.restype = ctypes.c_int
+    self.obj.oms_setLoggingInterval.argtypes = [ctypes.c_char_p, ctypes.c_double]
+    self.obj.oms_setLoggingInterval.restype = ctypes.c_int
+    self.obj.oms_setLoggingLevel.argtypes = [ctypes.c_int]
+    self.obj.oms_setLoggingLevel.restype = ctypes.c_int
     self.obj.oms_simulate.argtypes = [ctypes.c_char_p]
     self.obj.oms_simulate.restype = ctypes.c_int
     self.obj.oms_stepUntil.argtypes = [ctypes.c_char_p, ctypes.c_double]
@@ -231,6 +237,18 @@ class capi:
     '''Step the simulation until the specified stop time.
     Note: If the model is in initialization mode, this will exit initialization mode.'''
     status = self.obj.oms_stepUntil(cref.encode(), stopTime)
+    return Status(status)
+
+  def setLogFile(self, filename):
+    status = self.obj.oms_setLogFile(filename.encode())
+    return Status(status)
+
+  def setLoggingInterval(self, cref, loggingInterval):
+    status = self.obj.oms_setLoggingInterval(cref.encode(), loggingInterval)
+    return Status(status)
+
+  def setLoggingLevel(self, level):
+    status = self.obj.oms_setLoggingLevel(level)
     return Status(status)
 
   def terminate(self, cref) -> Status:
