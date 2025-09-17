@@ -20,6 +20,7 @@ SimpleSimulation11.py \
 SimpleSimulation12.py \
 SimpleSimulation13.py \
 SimpleSimulation14.py \
+stepUnitl.py \
 
 # Run make failingtest
 FAILINGTESTFILES = \
