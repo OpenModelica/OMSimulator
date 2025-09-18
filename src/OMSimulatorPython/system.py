@@ -5,9 +5,11 @@ from pathlib import Path
 
 from lxml import etree as ET
 from OMSimulator.component import Component
+from OMSimulator.componenttable import ComponentTable
 from OMSimulator.connection import Connection
 from OMSimulator.connector import Connector
 from OMSimulator.elementgeometry import ElementGeometry
+from OMSimulator.fmu import FMU
 from OMSimulator.ssm import SSM
 from OMSimulator.values import Values
 
@@ -197,11 +199,15 @@ class System:
     else:
       if first in self.elements:
         raise ValueError(f"Component '{first}' already exists in {self.name}")
-      connectors = inst.makeConnectors() if inst else list()
-      component = Component(first, resource, connectors)
-      component.fmuType = inst.fmuType if inst else None
-      self.elements[first] = component
-      return component
+      if isinstance(inst, FMU):
+        connectors = inst.makeConnectors() if inst else list()
+        component = Component(first, resource, connectors)
+        component.fmuType = inst.fmuType if inst else None
+        self.elements[first] = component
+        return component
+      elif isinstance(inst, ComponentTable):
+        inst.name = first
+        self.elements[first] = inst
 
   def addSSVReference(self, cref: CRef, resource1: str, resource2: str | None = None):
     ## top level system
