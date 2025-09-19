@@ -9,6 +9,7 @@ class ComponentTable:
   def __init__(self, filePath : str ):
     self.filePath = Path(filePath)
     self._name =  None
+    self._resourcePath = None
     self.headers = []
     self.connectors = []
     self.parse_csv()
@@ -21,6 +22,14 @@ class ComponentTable:
   @name.setter
   def name(self, cref: str):
     self._name = cref
+
+  @property
+  def resourcePath(self):
+    return self._resourcePath
+
+  @resourcePath.setter
+  def resourcePath(self, cref: str):
+    self._resourcePath = cref
 
   def parse_csv(self):
     """Read only the header row from the CSV file."""
@@ -37,7 +46,7 @@ class ComponentTable:
   def list(self, prefix=""):
     print(f"{prefix} Table: {self.name}")
     prefix += ' |--'
-    print(f"{prefix} path: {self.filePath}")
+    print(f"{prefix} path: {self.resourcePath}")
 
     if len(self.connectors) > 0:
       print(f"{prefix} Connectors:")
@@ -48,7 +57,7 @@ class ComponentTable:
     component_node = ET.SubElement(node, namespace.tag("ssd", "Component"))
     component_node.set("name", str(self.name))
     component_node.set("type", "text/csv")
-    component_node.set("source", str(self.filePath))
+    component_node.set("source", str(self.resourcePath))
 
     if len(self.connectors) > 0:
       connectors_node = ET.SubElement(component_node, namespace.tag("ssd", "Connectors"))

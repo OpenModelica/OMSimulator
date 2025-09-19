@@ -207,7 +207,9 @@ class System:
         return component
       elif isinstance(inst, ComponentTable):
         inst.name = first
+        inst.resourcePath = resource
         self.elements[first] = inst
+        return inst
 
   def addSSVReference(self, cref: CRef, resource1: str, resource2: str | None = None):
     ## top level system
