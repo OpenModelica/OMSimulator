@@ -1,7 +1,9 @@
 from pathlib import Path
+from lxml import etree as ET
 import csv
 from OMSimulator.connector import Connector
 from OMSimulator.variable import Causality, SignalType
+from OMSimulator import namespace
 
 class ComponentTable:
   def __init__(self, filePath : str ):
@@ -41,3 +43,15 @@ class ComponentTable:
       print(f"{prefix} Connectors:")
       for connector in self.connectors:
         connector.list(prefix=prefix + " |--")
+
+  def exportToSSD(self, node):
+    component_node = ET.SubElement(node, namespace.tag("ssd", "Component"))
+    component_node.set("name", str(self.name))
+    component_node.set("type", "text/csv")
+    component_node.set("source", str(self.filePath))
+
+    if len(self.connectors) > 0:
+      connectors_node = ET.SubElement(component_node, namespace.tag("ssd", "Connectors"))
+      ## export component connectors
+      for connector in self.connectors:
+        connector.exportToSSD(connectors_node)

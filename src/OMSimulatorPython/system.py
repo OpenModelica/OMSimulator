@@ -646,6 +646,8 @@ class System:
           element.export(element_node)
         elif isinstance(element, Component):
           element.exportToSSD(element_node)
+        elif isinstance(element, ComponentTable):
+          element.exportToSSD(element_node)
         else:
           # Handle other types of elements if needed
           logger.error(f"Unknown element type '{type(element)}' for element '{key}'. Skipping export.")
