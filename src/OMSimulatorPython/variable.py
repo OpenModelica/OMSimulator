@@ -25,7 +25,7 @@ class SignalType(Enum):
 
 class Variable:
   '''Class for storing variable information'''
-  def __init__(self, name: Union[str, CRef], description : str, valueReference: Union[str, int], causality, variability, signal_type, unit, start_value):
+  def __init__(self, name: Union[str, CRef], description : str, valueReference: Union[str, int], causality, variability, signal_type, unit, start_value, declaredType):
     self.name = CRef(name)
     self.description = description
     self.valueReference = int(valueReference)
@@ -34,7 +34,9 @@ class Variable:
     self.signal_type = signal_type if isinstance(signal_type, SignalType) else SignalType[signal_type]
     self.unit = unit
     self.modelDescriptionStartValue = start_value
+    self.declaredType = declaredType
     self.unitDefinition = []
+    self.enumerationDefinition = []
 
   def isInput(self):
     return self.causality == Causality.input

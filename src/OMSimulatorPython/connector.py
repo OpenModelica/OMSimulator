@@ -43,6 +43,7 @@ class Connector:
     self.unit = None
     self.connectorGeometry = None
     self.description = None
+    self.enumName = None
 
   def getCref(self):
     return self.name
@@ -55,6 +56,9 @@ class Connector:
 
   def setUnit(self, unit: str):
     self.unit = unit
+
+  def setEnumerationName(self, name: str):
+    self.enumName = name
 
   def list(self, prefix=""):
     print(f"{prefix} ({self.name}, {self.causality}, {self.signal_type}, {self.unit}, '{self.description}')")
@@ -70,6 +74,8 @@ class Connector:
     connectors_type = ET.SubElement(connector_node, namespace.tag("ssc", self.signal_type.name))
     if self.unit is not None:
       connectors_type.set("unit", self.unit)
+    if self.enumName is not None:
+      connectors_type.set("name", self.enumName)
     if self.connectorGeometry is not None:
       self.connectorGeometry.exportToSSD(connector_node)
 
@@ -92,18 +98,21 @@ class Connector:
 
       # Find the connector type (Real, Integer, Boolean)
       con = None
-      for connectortype in ["ssc:Real", "ssc:Integer", "ssc:Boolean"]:  # Expected connector types
+      for connectortype in ["ssc:Real", "ssc:Integer", "ssc:Boolean", "ssc:Enumeration"]:  # Expected connector types
         type_element = connector.find(connectortype, namespaces=namespace.ns)
         if type_element is not None:
           signal_type = connectortype.split(":")[-1]  # Extracts 'Real', 'Integer', or 'Boolean'
           con = Connector(name, kind, SignalType[signal_type])
           unit = type_element.get("unit")
+          enumName = type_element.get("name")
           if description:
             con.description = description
           # Set unit if it exists
           if unit:
-              con.setUnit(unit)
-          # print(f"Connector: {name}, Kind: {kind}, SignalType: {signal_type}, Unit: {unit}")
+            con.setUnit(unit)
+          if enumName:
+            con.setEnumerationName(enumName)
+          # print(f"Connector: {name}, Kind: {kind}, SignalType: {signal_type}, Unit: {unit}, Enum: {enumName}")
           break  # Stop after the first valid type is found
 
       # Check if connector has geometry information

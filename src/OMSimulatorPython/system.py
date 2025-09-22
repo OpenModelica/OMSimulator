@@ -201,7 +201,7 @@ class System:
         raise ValueError(f"Component '{first}' already exists in {self.name}")
       if isinstance(inst, FMU):
         connectors = inst.makeConnectors() if inst else list()
-        component = Component(first, resource, connectors)
+        component = Component(first, resource, connectors, inst._unitDefinitions, inst._enumerationDefinitions)
         component.fmuType = inst.fmuType if inst else None
         self.elements[first] = component
         return component
@@ -517,6 +517,22 @@ class System:
         self.elements[first].mapParameter(source, target)
       case _:
         raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component or a Connector")
+
+  def getUnitDefinitions(self, unitDefinitions: list):
+    """get enumeration definitions defined in fmu"""
+    for key, element in self.elements.items():
+      if isinstance(element, System):
+        element.getUnitDefinitions(unitDefinitions)
+      elif isinstance(element, Component):
+        unitDefinitions.extend(element.unitDefinitions)
+
+  def getEnumerationDefinitions(self, enumerationDefinitions: list):
+    """get enumeration definitions defined in fmu"""
+    for key, element in self.elements.items():
+      if isinstance(element, System):
+        element.getEnumerationDefinitions(enumerationDefinitions)
+      elif isinstance(element, Component):
+        enumerationDefinitions.extend(element.enumerationDefinitions)
 
   def setSolver(self, cref: CRef, name: str):
     first = cref.first()

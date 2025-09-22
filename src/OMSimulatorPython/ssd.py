@@ -9,6 +9,7 @@ from OMSimulator.settings import suppress_path_to_str
 from OMSimulator.system import System
 from OMSimulator.ssv import SSV
 from OMSimulator.unit import Unit
+from OMSimulator.enumeration import Enumeration
 from OMSimulator.instantiated_model import InstantiatedModel
 from OMSimulator import namespace, utils
 from datetime import datetime
@@ -28,6 +29,7 @@ class SSD:
     self.startTime = 0.0
     self.stopTime = 1.0
     self.unitDefinitions = list()
+    self.enumerationDefinitions = list()
 
   @staticmethod
   def importFromFile(filename: Path, resources = None):
@@ -65,6 +67,7 @@ class SSD:
     ssd.system = System.importFromNode(system, ssd, resources)
     utils.parseDefaultExperiment(root, ssd)
     Unit.importFromNode(root, ssd)
+    Enumeration.importFromNode(root, ssd)
     logger.debug(f"SSD '{variant_name}' successfully imported from {filename}")
     return ssd
 
@@ -196,10 +199,17 @@ class SSD:
     if self.system:
       self.system.list(prefix=prefix + " |--")
 
+    self.system.getUnitDefinitions(self.unitDefinitions)
     if self.unitDefinitions:
       print(f"{prefix} UnitDefinitions:")
       for unit in self.unitDefinitions:
         unit.list(prefix=prefix + " |--")
+
+    self.system.getEnumerationDefinitions(self.enumerationDefinitions)
+    if self.enumerationDefinitions:
+      print(f"{prefix} EnumerationDefinitions:")
+      for enumeration in self.enumerationDefinitions:
+        enumeration.list(prefix=prefix + " |--")
 
     print(f"{prefix} DefaultExperiment")
     print(f"{prefix} |-- startTime: {self.startTime}")
@@ -219,6 +229,7 @@ class SSD:
     self.system.export(root)
 
     self._exportUnitDefinitions(root)
+    self._exportEnumerationDefinitions(root)
     self._exportDefaultExperiment(root)
 
     xml_content = ET.tostring(root, encoding="utf-8", xml_declaration=True, pretty_print=True).decode("utf-8")
@@ -236,10 +247,19 @@ class SSD:
 
   def _exportUnitDefinitions(self, node):
     '''Exports unit definitions to the given XML node.'''
+    self.system.getUnitDefinitions(self.unitDefinitions)
     if self.unitDefinitions:
       unit_definitions_node = ET.SubElement(node, namespace.tag("ssd", "Units"))
       for unit in self.unitDefinitions:
         unit.exportToSSD(unit_definitions_node)
+
+  def _exportEnumerationDefinitions(self, node):
+    ''' Export enumeration defintions to the given xml node.'''
+    self.system.getEnumerationDefinitions(self.enumerationDefinitions)
+    if self.enumerationDefinitions:
+      enumeration_definitions_node = ET.SubElement(node, namespace.tag("ssd", "Enumerations"))
+      for enumeration in self.enumerationDefinitions:
+        enumeration.exportToSSD(enumeration_definitions_node)
 
   def _exportDefaultExperiment(self, node):
     '''Exports default experiment settings.'''

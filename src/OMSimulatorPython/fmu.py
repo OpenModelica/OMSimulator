@@ -11,6 +11,7 @@ from OMSimulator.variable import Variable, SignalType
 from OMSimulator import namespace
 from OMSimulator.capi import Capi, Status
 from OMSimulator.cref import CRef
+from OMSimulator.enumeration import Enumeration
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +30,7 @@ class FMU:
     self._variables = []
     self._states = []
     self._unitDefinitions = []
+    self._enumerationDefinitions = []
     self.defaultExperiment = {}
     self.apiCall = []
     self.instanceName = instanceName
@@ -115,6 +117,9 @@ class FMU:
           # Parse default experiment settings
           self._parse_default_experiment(model_description)
 
+          # Parse typeDefinitions
+          self._parse_typeDefinitions(model_description)
+
           # Parse UnitDefinitions
           self._parse_units(model_description)
 
@@ -162,19 +167,26 @@ class FMU:
         unit = type_element.get('unit')
         start = type_element.get('start')
         derivative_index = int(type_element.get('derivative', '-1'))
+        declaredType = type_element.get('declaredType')
 
         # Handle state variables if it's a derivative
         if derivative_index > 0 and variability == 'continuous':
           self._states.append(self._variables[derivative_index - 1])
 
       # Create and store the variable
-      variable = Variable(name, description, value_reference, causality, variability, var_type, unit, start)
+      variable = Variable(name, description, value_reference, causality, variability, var_type, unit, start, declaredType)
 
       # Assign unit definitions if applicable
       if unit:
         for defined_unit in self._unitDefinitions:
           if defined_unit.name == variable.unit:
             variable.unitDefinition.append(defined_unit)
+
+      # assign enumeration definitions if applicable
+      if declaredType:
+        for enumeration in self._enumerationDefinitions:
+          if declaredType == enumeration.name:
+            variable.enumerationDefinition.append(enumeration)
 
       self._variables.append(variable)
 
@@ -184,7 +196,6 @@ class FMU:
 
   def _parse_units(self, model_description):
     '''Extracts unit definitions from modelDescription.xml.'''
-    self._unitDefinitions = []
 
     unit_elements = model_description.xpath('//UnitDefinitions/Unit')
     for unit_elem in unit_elements:
@@ -198,6 +209,19 @@ class FMU:
 
       self._unitDefinitions.append(Unit(name, base_units))
 
+  def _parse_typeDefinitions(self, model_description):
+    '''Extracts only enumeration type definitions from modelDescription.xml.'''
+    for simple_type in model_description.xpath('//TypeDefinitions/SimpleType'):
+      type_name = simple_type.get('name')
+      # Check if the SimpleType has an Enumeration child
+      enum_elem = simple_type.find('./Enumeration')
+      if enum_elem is not None:
+        # Collect enumeration items
+        items = {}
+        for item in enum_elem.xpath('./Item'):
+          items[item.get("name")] = int(item.get("value"))
+        self._enumerationDefinitions.append(Enumeration(type_name, items))
+
   def makeConnectors(self):
     connectors = []
     for var in self.variables:
@@ -205,6 +229,7 @@ class FMU:
         connector = Connector(var.name, var.causality, var.signal_type)
         connector.setUnit(var.unit)
         connector.description = var.description
+        connector.setEnumerationName(var.declaredType)
         connectors.append(connector)
     return connectors
 

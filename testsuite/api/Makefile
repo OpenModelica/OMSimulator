@@ -8,6 +8,7 @@ deleteResources1.py \
 deleteSystem1.py \
 duplicateVariant1.py \
 duplicateVariant2.py \
+enumTest1.py \
 exportSSMTemplate1.py \
 exportSSMTemplate2.py \
 exportSSVTemplate1.py \
