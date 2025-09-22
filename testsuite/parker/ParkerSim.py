@@ -138,6 +138,12 @@ model.variants['D16_aero_stimuli'].list()
 ##  |-- |-- BaseUnit: rad: 1, factor: 57.29746, offset: 0.0
 ##  |-- Unit: -
 ##  |-- |-- BaseUnit: factor: 1, offset: 0.0
+##  |-- Unit: s
+##  |-- |-- BaseUnit: s: 1, factor: 1.0, offset: 0.0
+##  |-- Unit: m
+##  |-- |-- BaseUnit: m: 1, factor: 1e-3, offset: 0.0
+##  |-- Unit: mm
+##  |-- |-- BaseUnit: m: 1, factor: 1e-3
 ##  DefaultExperiment
 ##  |-- startTime: 0.0
 ##  |-- stopTime: 10.0
@@ -266,6 +272,12 @@ model.variants['D16_aero_stimuli'].list()
 ##  |-- |-- BaseUnit: kg: 1, s: -1, factor: 1, offset: 0.0
 ##  |-- Unit: -
 ##  |-- |-- BaseUnit: factor: 1, offset: 0.0
+##  |-- Unit: s
+##  |-- |-- BaseUnit: s: 1, factor: 1.0, offset: 0.0
+##  |-- Unit: kg/m3
+##  |-- |-- BaseUnit: kg: 1, m: -3, factor: 1, offset: 0.0
+##  |-- Unit: mm
+##  |-- |-- BaseUnit: m: 1, factor: 1e-3
 ##  DefaultExperiment
 ##  |-- startTime: 0.0
 ##  |-- stopTime: 20.0
