@@ -106,6 +106,9 @@ instantiated_model.delete()
 ## |-- |-- |-- Solver Settings:
 ## |-- |-- |-- |-- (name=solver1, method=euler, tolerance=1e-06)
 ## |-- |-- |-- |-- (name=solver2, method=cvode, tolerance=0.0001)
+## |-- UnitDefinitions:
+## |-- |-- Unit: 1
+## |-- |-- |-- BaseUnit: 
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0

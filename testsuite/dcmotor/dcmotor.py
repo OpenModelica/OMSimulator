@@ -183,6 +183,22 @@ model.export('dcmotor.ssp')
 ##  |-- |-- BaseUnit: kg: 1, m: 2, s: -2, A: 0, K: 0, mol: 0, cd: 0, rad: 0, factor: 1.0, offset: 0.0
 ##  |-- Unit: A
 ##  |-- |-- BaseUnit: kg: 0, m: 0, s: 0, A: 1, K: 0, mol: 0, cd: 0, rad: 0, factor: 1.0, offset: 0.0
+##  |-- Unit: N.m.s/rad
+##  |-- |-- BaseUnit: kg: 1, m: 2, s: -1, A: 0, K: 0, mol: 0, cd: 0, rad: -1, factor: 1.0, offset: 0.0
+##  |-- Unit: kg.m2
+##  |-- |-- BaseUnit: kg: 1, m: 2, s: 0, A: 0, K: 0, mol: 0, cd: 0, rad: 0, factor: 1.0, offset: 0.0
+##  |-- Unit: N.m/A
+##  |-- |-- BaseUnit: kg: 1, m: 2, s: -2, A: -1, K: 0, mol: 0, cd: 0, rad: 0, factor: 1.0, offset: 0.0
+##  |-- Unit: K
+##  |-- |-- BaseUnit: kg: 0, m: 0, s: 0, A: 0, K: 1, mol: 0, cd: 0, rad: 0, factor: 1.0, offset: 0.0
+##  |-- Unit: Ohm
+##  |-- |-- BaseUnit: kg: 1, m: 2, s: -3, A: -2, K: 0, mol: 0, cd: 0, rad: 0, factor: 1.0, offset: 0.0
+##  |-- Unit: H
+##  |-- |-- BaseUnit: kg: 1, m: 2, s: -2, A: -2, K: 0, mol: 0, cd: 0, rad: 0, factor: 1.0, offset: 0.0
+##  |-- Unit: 1/K
+##  |-- |-- BaseUnit: kg: 0, m: 0, s: 0, A: 0, K: -1, mol: 0, cd: 0, rad: 0, factor: 1.0, offset: 0.0
+##  |-- Unit: s
+##  |-- |-- BaseUnit: kg: 0, m: 0, s: 1, A: 0, K: 0, mol: 0, cd: 0, rad: 0, factor: 1.0, offset: 0.0
 ##  DefaultExperiment
 ##  |-- startTime: 0.0
 ##  |-- stopTime: 1.0

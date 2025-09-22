@@ -180,6 +180,9 @@ instantiated_model.delete()
 ## |-- |-- |-- |-- Gain1.y -> Add1.u1
 ## |-- |-- |-- Solver Settings:
 ## |-- |-- |-- |-- (name=solver2, method=cvode, tolerance=0.0001)
+## |-- UnitDefinitions:
+## |-- |-- Unit: 1
+## |-- |-- |-- BaseUnit: 
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0

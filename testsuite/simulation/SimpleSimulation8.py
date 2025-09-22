@@ -115,6 +115,9 @@ instantiated_model.delete()
 ## |-- |-- |-- |-- |-- |-- |-- |-- (k, Causality.parameter, SignalType.Real, 1, 'Gain value multiplied with input signal')
 ## |-- |-- |-- |-- |-- |-- |-- Inline Parameter Bindings:
 ## |-- |-- |-- |-- |-- |-- |-- |-- (Real k, 500.0, None, 'None')
+## |-- |-- |-- |-- |-- |-- |-- |-- UnitDefinitions:
+## |-- |-- |-- |-- |-- |-- |-- |-- |-- Unit: 1
+## |-- |-- |-- |-- |-- |-- |-- |-- |-- |-- BaseUnit: 
 ## |-- |-- |-- |-- |-- |-- |-- Solver Settings:
 ## |-- |-- |-- |-- |-- |-- |-- |-- name: solver2
 ## |-- |-- |-- |-- |-- Connections:
@@ -135,11 +138,17 @@ instantiated_model.delete()
 ## |-- |-- |-- |-- |-- |-- (k, Causality.parameter, SignalType.Real, 1, 'Gain value multiplied with input signal')
 ## |-- |-- |-- |-- |-- Inline Parameter Bindings:
 ## |-- |-- |-- |-- |-- |-- (Real k, 2.0, None, 'None')
+## |-- |-- |-- |-- |-- |-- UnitDefinitions:
+## |-- |-- |-- |-- |-- |-- |-- Unit: 1
+## |-- |-- |-- |-- |-- |-- |-- |-- BaseUnit: 
 ## |-- |-- |-- Connections:
 ## |-- |-- |-- |-- .input1 -> Gain1.u
 ## |-- |-- |-- |-- Gain1.y -> Add1.u1
 ## |-- |-- |-- Solver Settings:
 ## |-- |-- |-- |-- (name=solver2, method=cvode, tolerance=0.0001)
+## |-- UnitDefinitions:
+## |-- |-- Unit: 1
+## |-- |-- |-- BaseUnit: 
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0

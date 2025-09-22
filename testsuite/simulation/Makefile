@@ -44,7 +44,7 @@ test:
 
 baseline:
 	@echo
-	@echo Updating badelines...
+	@echo Updating baselines...
 	@$(TEST) -b $(TESTFILES)
 
 # Cleans all files that are not listed as dependencies

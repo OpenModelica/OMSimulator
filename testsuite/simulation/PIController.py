@@ -133,6 +133,14 @@ model.export('PIController.ssp')
 ## |-- |-- |-- |-- |-- path: resources/drivetrain.csv
 ## |-- |-- |-- |-- |-- Connectors:
 ## |-- |-- |-- |-- |-- |-- (w, Causality.output, SignalType.Real, None, 'None')
+## |-- UnitDefinitions:
+## |-- |-- Unit: 1
+## |-- |-- |-- BaseUnit: 
+## |-- EnumerationDefinitions:
+## |-- |-- EnumName: Modelica.Blocks.Types.Init
+## |-- |-- |-- EnumItems: NoInit: 1, SteadyState: 2, InitialState: 3, InitialOutput: 4
+## |-- |-- EnumName: Modelica.Blocks.Types.LimiterHomotopy
+## |-- |-- |-- EnumItems: NoHomotopy: 1, Linear: 2, UpperLimit: 3, LowerLimit: 4
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
