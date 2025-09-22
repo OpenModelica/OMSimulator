@@ -519,12 +519,15 @@ class System:
         raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component or a Connector")
 
   def getUnitDefinitions(self, unitDefinitions: list):
-    """get enumeration definitions defined in fmu"""
+    """Get unique unit definitions defined in fmu (by name only)."""
     for key, element in self.elements.items():
       if isinstance(element, System):
         element.getUnitDefinitions(unitDefinitions)
       elif isinstance(element, Component):
-        unitDefinitions.extend(element.unitDefinitions)
+        for unit in element.unitDefinitions:
+          # check if this name is already present
+          if all(u.name != unit.name for u in unitDefinitions):
+            unitDefinitions.append(unit)
 
   def getEnumerationDefinitions(self, enumerationDefinitions: list):
     """get enumeration definitions defined in fmu"""
@@ -532,7 +535,10 @@ class System:
       if isinstance(element, System):
         element.getEnumerationDefinitions(enumerationDefinitions)
       elif isinstance(element, Component):
-        enumerationDefinitions.extend(element.enumerationDefinitions)
+        for enumeration in element.enumerationDefinitions:
+          # check if this name is already present
+          if all(u.name != enumeration.name for u in enumerationDefinitions):
+            enumerationDefinitions.append(enumeration)
 
   def setSolver(self, cref: CRef, name: str):
     first = cref.first()

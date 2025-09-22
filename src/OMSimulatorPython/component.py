@@ -85,17 +85,11 @@ class Component:
         print(f"{prefix} |-- Inline Parameter Mapping:")
         self.parameterMapping.list(prefix=prefix + " |-- |--")
 
-    ## list unit definitions
-    if len(self.unitDefinitions) > 0:
-      print(f"{prefix} |-- UnitDefinitions:")
-      for unit in self.unitDefinitions:
-        unit.list(prefix=prefix + " |-- |--")
-
-    ## list enumeration definitions
-    if len(self.enumerationDefinitions) > 0:
-      print(f"{prefix} |-- EnumerationDefinitions:")
-      for enumeration in self.enumerationDefinitions:
-        enumeration.list(prefix=prefix + " |-- |--")
+      ## list unit definitions
+      if len(self.unitDefinitions) > 0:
+        print(f"{prefix} |-- UnitDefinitions:")
+        for unit in self.unitDefinitions:
+          unit.list(prefix=prefix + " |-- |--")
 
     ## list parameteres in ssv files
     if len(self.parameterResources) > 0:
