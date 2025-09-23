@@ -12,6 +12,7 @@ class ComponentTable:
     self._resourcePath = None
     self.headers = []
     self.connectors = []
+    self.solver = None
     self.parse_csv()
     self.makeConnector()
 
@@ -42,6 +43,8 @@ class ComponentTable:
       if header != "time":
         self.connectors.append(Connector(header, Causality.output, SignalType.Real))
 
+  def setSolver(self, name: str):
+    self.solver = name
 
   def list(self, prefix=""):
     print(f"{prefix} Table: {self.name}")

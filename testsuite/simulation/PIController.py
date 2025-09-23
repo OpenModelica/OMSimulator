@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command: rm -rf PIController.ssp
+## teardown_command: rm -rf PIController.ssp PI_Controller.mat
 ## linux: no
 ## ucrt64: yes
 ## win: yes
@@ -49,14 +49,60 @@ model.addConnection(CRef('default', 'gainTrack', 'y'), CRef('default', 'addI', '
 #add connections fro table
 model.addConnection(CRef('default', 'setpoint', 'speed'),  CRef('default', 'addP', 'u1'))
 model.addConnection(CRef('default', 'setpoint', 'speed'),  CRef('default', 'addI', 'u1'))
-model.addConnection(CRef('default', 'driveTrain', 'w')  ,  CRef('default', 'addP', 'u2'))
-model.addConnection(CRef('default', 'driveTrain', 'w')  ,  CRef('default', 'addI', 'u2'))
+model.addConnection(CRef('default', 'drivetrain', 'w')  ,  CRef('default', 'addP', 'u2'))
+model.addConnection(CRef('default', 'drivetrain', 'w')  ,  CRef('default', 'addI', 'u2'))
 
 model.export('PIController.ssp')
 
 model2 = SSP('PIController.ssp')
 model2.list()
-# instantiated_model = model2.instantiate() ## internally generate the json file and also set the model state like virgin,
+print("", flush=True)
+instantiated_model = model2.instantiate() ## internally generate the json file and also set the model state like virgin,
+instantiated_model.setStartTime(0.0)
+instantiated_model.setStopTime(4.0)
+instantiated_model.setStepSize(1e-3)
+instantiated_model.setResultFile("PI_Controller.mat")
+
+# set parameters
+k = 100.0
+yMax = 12.0
+yMin = -yMax
+wp = 1.0
+Ni = 0.1
+xi_start = 0.0
+instantiated_model.setValue(CRef('default', 'addP', 'k1'), wp)
+instantiated_model.setValue(CRef('default', 'addP', 'k2'), -1.0)
+instantiated_model.setValue(CRef('default', 'addI', 'k2'), -1.0)
+instantiated_model.setValue(CRef('default', 'I', 'y_start'), xi_start)
+instantiated_model.setValue(CRef('default', 'I', 'k'), 10)
+instantiated_model.setValue(CRef('default', 'gainPI', 'k'), k)
+instantiated_model.setValue(CRef('default', 'limiter', 'uMax'), yMax)
+instantiated_model.setValue(CRef('default', 'addSat', 'k2'), -1.0)
+instantiated_model.setValue(CRef('default', 'gainTrack', 'k'), 1.0/(k*Ni))
+# print(instantiated_model.dumpApiCalls())
+
+print(f"info:    Parameter settings")
+print(f"info:      default.addP.k1      : {instantiated_model.getValue(CRef('default', 'addP', 'k1'))}")
+print(f"info:      default.addP.k2      : {instantiated_model.getValue(CRef('default', 'addP', 'k2'))}")
+print(f"info:      default.addI.k2      : {instantiated_model.getValue(CRef('default', 'addI', 'k2'))}")
+print(f"info:      default.I.y_start    : {instantiated_model.getValue(CRef('default', 'I', 'y_start'))}")
+print(f"info:      default.gainPI.k     : {instantiated_model.getValue(CRef('default', 'gainPI', 'k'))}")
+print(f"info:      default.limiter.uMax : {instantiated_model.getValue(CRef('default', 'limiter', 'uMax'))}")
+print(f"info:      default.addSat.k2    : {instantiated_model.getValue(CRef('default', 'addSat', 'k2'))}")
+print(f"info:      default.gainTrack.k  : {instantiated_model.getValue(CRef('default', 'gainTrack', 'k'))}")
+
+instantiated_model.initialize()
+print(f"info:    Initialization")
+print(f"info:      default.limiter.u: {instantiated_model.getValue(CRef('default', 'limiter', 'u'))}")
+print(f"info:      default.limiter.y: {instantiated_model.getValue(CRef('default', 'limiter', 'y'))}")
+
+instantiated_model.simulate()
+print(f"info:    Simulation")
+print(f"info:      default.limiter.u: {instantiated_model.getValue(CRef('default', 'limiter', 'u'))}")
+print(f"info:      default.limiter.y: {instantiated_model.getValue(CRef('default', 'limiter', 'y'))}")
+
+instantiated_model.terminate()
+instantiated_model.delete()
 
 ## Result:
 ## <class 'OMSimulator.ssp.SSP'>
@@ -166,8 +212,8 @@ model2.list()
 ## |-- |-- |-- |-- gainTrack.y -> addI.u3
 ## |-- |-- |-- |-- setpoint.speed -> addP.u1
 ## |-- |-- |-- |-- setpoint.speed -> addI.u1
-## |-- |-- |-- |-- driveTrain.w -> addP.u2
-## |-- |-- |-- |-- driveTrain.w -> addI.u2
+## |-- |-- |-- |-- drivetrain.w -> addP.u2
+## |-- |-- |-- |-- drivetrain.w -> addI.u2
 ## |-- EnumerationDefinitions:
 ## |-- |-- EnumName: Modelica.Blocks.Types.Init
 ## |-- |-- |-- EnumItems: NoInit: 1, SteadyState: 2, InitialState: 3, InitialOutput: 4
@@ -179,4 +225,21 @@ model2.list()
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
+##
+## info:    Result file: PI_Controller.mat (bufferSize=1)
+## info:    Parameter settings
+## info:      default.addP.k1      : 1.0
+## info:      default.addP.k2      : -1.0
+## info:      default.addI.k2      : -1.0
+## info:      default.I.y_start    : 0.0
+## info:      default.gainPI.k     : 100.0
+## info:      default.limiter.uMax : 12.0
+## info:      default.addSat.k2    : -1.0
+## info:      default.gainTrack.k  : 0.1
+## info:    Initialization
+## info:      default.limiter.u: 0.0
+## info:      default.limiter.y: 0.0
+## info:    Simulation
+## info:      default.limiter.u: -10.041439549286164
+## info:      default.limiter.y: -10.041439549286164
 ## endResult

@@ -615,6 +615,12 @@ class System:
             "path": str(Path(tempdir, str(element.fmuPath))) if tempdir is not None else str(element.fmuPath)
         })
         componentSolver[str(element.name)] = element.solver
+      elif isinstance(element, ComponentTable):
+        solver_groups[element.solver].append({
+            "name": [self.name] + ([systemName] if systemName else []) + [str(element.name)],
+            "type": "table",
+            "path": str(Path(tempdir, str(element.filePath))) if tempdir is not None else str(element.filePath)
+        })
       elif isinstance(element, System):
         # recurse into subsystems
         self.processElements(element.elements, element.connections, data, solver_groups, componentSolver, solver_connections, resources, tempdir, systemName=str(element.name))

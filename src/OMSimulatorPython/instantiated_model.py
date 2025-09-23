@@ -1,4 +1,5 @@
 from OMSimulator.capi import Capi, Status
+from OMSimulator.component import Component
 from OMSimulator.cref import CRef
 from OMSimulator.system import System
 from OMSimulator.values import Values
@@ -103,9 +104,10 @@ class InstantiatedModel:
 
   def setStartValuesFromElements(self, elements, systemName):
     for key, element in elements.items():
-      new_system_name = ".".join([systemName, str(element.name)])
-      self.setStartValues(element.value, new_system_name, element.parameterMapping)
-      self.setStartValuesFromSSV(element.parameterResources, new_system_name)
+      if isinstance(element, Component):
+        new_system_name = ".".join([systemName, str(element.name)])
+        self.setStartValues(element.value, new_system_name, element.parameterMapping)
+        self.setStartValuesFromSSV(element.parameterResources, new_system_name)
 
       ## recursive for sub-system
       if isinstance(element, System):
