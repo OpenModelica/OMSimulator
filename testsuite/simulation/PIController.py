@@ -34,6 +34,24 @@ model.addResource('../resources/drivetrain.csv', new_name = 'resources/drivetrai
 model.addComponent(CRef('default', 'setpoint'), 'resources/setpoint.csv')
 model.addComponent(CRef('default', 'drivetrain'), 'resources/drivetrain.csv')
 
+## add connections
+model.addConnection(CRef('default', 'addP', 'y'), CRef('default', 'P', 'u'))
+model.addConnection(CRef('default', 'addI', 'y'), CRef('default', 'I', 'u'))
+model.addConnection(CRef('default', 'P', 'y'),    CRef('default', 'addPI', 'u'))
+model.addConnection(CRef('default', 'I', 'y'), CRef('default', 'addPI', 'u2'))
+model.addConnection(CRef('default', 'addPI', 'y'), CRef('default', 'gainPI', 'u'))
+model.addConnection(CRef('default', 'gainPI', 'y'), CRef('default', 'limiter', 'u'))
+model.addConnection(CRef('default', 'gainPI', 'y'), CRef('default', 'addSat', 'u2'))
+model.addConnection(CRef('default', 'limiter', 'y'), CRef('default', 'addSat', 'u1'))
+model.addConnection(CRef('default', 'addSat', 'y'), CRef('default', 'gainTrack', 'u'))
+model.addConnection(CRef('default', 'gainTrack', 'y'), CRef('default', 'addI', 'u3'))
+
+#add connections fro table
+model.addConnection(CRef('default', 'setpoint', 'speed'),  CRef('default', 'addP', 'u1'))
+model.addConnection(CRef('default', 'setpoint', 'speed'),  CRef('default', 'addI', 'u1'))
+model.addConnection(CRef('default', 'driveTrain', 'w')  ,  CRef('default', 'addP', 'u2'))
+model.addConnection(CRef('default', 'driveTrain', 'w')  ,  CRef('default', 'addI', 'u12'))
+
 model.list()
 model.export('PIController.ssp')
 
@@ -133,14 +151,29 @@ model.export('PIController.ssp')
 ## |-- |-- |-- |-- |-- path: resources/drivetrain.csv
 ## |-- |-- |-- |-- |-- Connectors:
 ## |-- |-- |-- |-- |-- |-- (w, Causality.output, SignalType.Real, None, 'None')
-## |-- UnitDefinitions:
-## |-- |-- Unit: 1
-## |-- |-- |-- BaseUnit: 
+## |-- |-- |-- Connections:
+## |-- |-- |-- |-- addP.y -> P.u
+## |-- |-- |-- |-- addI.y -> I.u
+## |-- |-- |-- |-- P.y -> addPI.u
+## |-- |-- |-- |-- I.y -> addPI.u2
+## |-- |-- |-- |-- addPI.y -> gainPI.u
+## |-- |-- |-- |-- gainPI.y -> limiter.u
+## |-- |-- |-- |-- gainPI.y -> addSat.u2
+## |-- |-- |-- |-- limiter.y -> addSat.u1
+## |-- |-- |-- |-- addSat.y -> gainTrack.u
+## |-- |-- |-- |-- gainTrack.y -> addI.u3
+## |-- |-- |-- |-- setpoint.speed -> addP.u1
+## |-- |-- |-- |-- setpoint.speed -> addI.u1
+## |-- |-- |-- |-- driveTrain.w -> addP.u2
+## |-- |-- |-- |-- driveTrain.w -> addI.u12
 ## |-- EnumerationDefinitions:
 ## |-- |-- EnumName: Modelica.Blocks.Types.Init
 ## |-- |-- |-- EnumItems: NoInit: 1, SteadyState: 2, InitialState: 3, InitialOutput: 4
 ## |-- |-- EnumName: Modelica.Blocks.Types.LimiterHomotopy
 ## |-- |-- |-- EnumItems: NoHomotopy: 1, Linear: 2, UpperLimit: 3, LowerLimit: 4
+## |-- UnitDefinitions:
+## |-- |-- Unit: 1
+## |-- |-- |-- BaseUnit:
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0

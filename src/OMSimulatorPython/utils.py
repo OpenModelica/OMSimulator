@@ -81,7 +81,8 @@ def parseElements(node, resources = None):
         for solver in solvers:
           elements[name].solver = solver.get("name")
     elif (comp_type == "application/table" or comp_type == "text/csv"):
-      print(f"component table : {name}, {resources}")
+      # print(f"component table : {name}, {resources}")
+      pass
 
 
 

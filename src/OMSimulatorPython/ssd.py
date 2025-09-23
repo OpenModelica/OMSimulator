@@ -199,17 +199,18 @@ class SSD:
     if self.system:
       self.system.list(prefix=prefix + " |--")
 
+      self.system.getEnumerationDefinitions(self.enumerationDefinitions)
+      if self.enumerationDefinitions:
+        print(f"{prefix} EnumerationDefinitions:")
+        for enumeration in self.enumerationDefinitions:
+          enumeration.list(prefix=prefix + " |--")
+
       self.system.getUnitDefinitions(self.unitDefinitions)
       if self.unitDefinitions:
         print(f"{prefix} UnitDefinitions:")
         for unit in self.unitDefinitions:
           unit.list(prefix=prefix + " |--")
 
-      self.system.getEnumerationDefinitions(self.enumerationDefinitions)
-      if self.enumerationDefinitions:
-        print(f"{prefix} EnumerationDefinitions:")
-        for enumeration in self.enumerationDefinitions:
-          enumeration.list(prefix=prefix + " |--")
 
     print(f"{prefix} DefaultExperiment")
     print(f"{prefix} |-- startTime: {self.startTime}")
@@ -228,8 +229,8 @@ class SSD:
 
     self.system.export(root)
 
-    self._exportUnitDefinitions(root)
     self._exportEnumerationDefinitions(root)
+    self._exportUnitDefinitions(root)
     self._exportDefaultExperiment(root)
 
     xml_content = ET.tostring(root, encoding="utf-8", xml_declaration=True, pretty_print=True).decode("utf-8")
