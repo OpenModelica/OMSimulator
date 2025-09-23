@@ -30,6 +30,7 @@ def parseElements(node, resources = None):
   """Extract components from <ssd:Elements> section"""
   from OMSimulator.system import System, SystemGeometry
   from OMSimulator.component import Component
+  from OMSimulator.componenttable import ComponentTable
 
   elements = {}
   elements_node = node.find("ssd:Elements", namespaces=namespace.ns)
@@ -81,8 +82,9 @@ def parseElements(node, resources = None):
         for solver in solvers:
           elements[name].solver = solver.get("name")
     elif (comp_type == "application/table" or comp_type == "text/csv"):
-      # print(f"component table : {name}, {resources}")
-      pass
+      elements[name] = resources.get(source)
+      elements[name].name = name
+      elements[name].resourcePath = source
 
 
 

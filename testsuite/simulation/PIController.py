@@ -37,7 +37,7 @@ model.addComponent(CRef('default', 'drivetrain'), 'resources/drivetrain.csv')
 ## add connections
 model.addConnection(CRef('default', 'addP', 'y'), CRef('default', 'P', 'u'))
 model.addConnection(CRef('default', 'addI', 'y'), CRef('default', 'I', 'u'))
-model.addConnection(CRef('default', 'P', 'y'),    CRef('default', 'addPI', 'u'))
+model.addConnection(CRef('default', 'P', 'y'),    CRef('default', 'addPI', 'u1'))
 model.addConnection(CRef('default', 'I', 'y'), CRef('default', 'addPI', 'u2'))
 model.addConnection(CRef('default', 'addPI', 'y'), CRef('default', 'gainPI', 'u'))
 model.addConnection(CRef('default', 'gainPI', 'y'), CRef('default', 'limiter', 'u'))
@@ -50,11 +50,13 @@ model.addConnection(CRef('default', 'gainTrack', 'y'), CRef('default', 'addI', '
 model.addConnection(CRef('default', 'setpoint', 'speed'),  CRef('default', 'addP', 'u1'))
 model.addConnection(CRef('default', 'setpoint', 'speed'),  CRef('default', 'addI', 'u1'))
 model.addConnection(CRef('default', 'driveTrain', 'w')  ,  CRef('default', 'addP', 'u2'))
-model.addConnection(CRef('default', 'driveTrain', 'w')  ,  CRef('default', 'addI', 'u12'))
+model.addConnection(CRef('default', 'driveTrain', 'w')  ,  CRef('default', 'addI', 'u2'))
 
-model.list()
 model.export('PIController.ssp')
 
+model2 = SSP('PIController.ssp')
+model2.list()
+# instantiated_model = model2.instantiate() ## internally generate the json file and also set the model state like virgin,
 
 ## Result:
 ## <class 'OMSimulator.ssp.SSP'>
@@ -68,7 +70,7 @@ model.export('PIController.ssp')
 ## |--   resources/setpoint.csv
 ## |-- Active Variant: default
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Variant "default": None
+## |-- Variant "default": <hidden>
 ## |-- |-- System: default 'None'
 ## |-- |-- |-- Connectors:
 ## |-- |-- |-- Elements:
@@ -154,7 +156,7 @@ model.export('PIController.ssp')
 ## |-- |-- |-- Connections:
 ## |-- |-- |-- |-- addP.y -> P.u
 ## |-- |-- |-- |-- addI.y -> I.u
-## |-- |-- |-- |-- P.y -> addPI.u
+## |-- |-- |-- |-- P.y -> addPI.u1
 ## |-- |-- |-- |-- I.y -> addPI.u2
 ## |-- |-- |-- |-- addPI.y -> gainPI.u
 ## |-- |-- |-- |-- gainPI.y -> limiter.u
@@ -165,7 +167,7 @@ model.export('PIController.ssp')
 ## |-- |-- |-- |-- setpoint.speed -> addP.u1
 ## |-- |-- |-- |-- setpoint.speed -> addI.u1
 ## |-- |-- |-- |-- driveTrain.w -> addP.u2
-## |-- |-- |-- |-- driveTrain.w -> addI.u12
+## |-- |-- |-- |-- driveTrain.w -> addI.u2
 ## |-- EnumerationDefinitions:
 ## |-- |-- EnumName: Modelica.Blocks.Types.Init
 ## |-- |-- |-- EnumItems: NoInit: 1, SteadyState: 2, InitialState: 3, InitialOutput: 4
