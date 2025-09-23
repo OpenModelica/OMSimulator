@@ -64,6 +64,9 @@ instantiated_model.delete()
 ## |-- |-- |-- |-- |-- |-- (k, Causality.parameter, SignalType.Real, 1, 'Gain value multiplied with input signal')
 ## |-- |-- |-- Connections:
 ## |-- |-- |-- |-- Gain1.y -> Add1.u1
+## |-- UnitDefinitions:
+## |-- |-- Unit: 1
+## |-- |-- |-- BaseUnit: 
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0

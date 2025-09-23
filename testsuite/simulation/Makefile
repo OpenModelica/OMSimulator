@@ -5,6 +5,7 @@ exportJson1.py \
 exportJson2.py \
 exportJson4.py \
 fmuSimulation1.py \
+PIController.py \
 tankYPipe.py \
 SimpleSimulation1.py \
 SimpleSimulation2.py \
@@ -43,7 +44,7 @@ test:
 
 baseline:
 	@echo
-	@echo Updating badelines...
+	@echo Updating baselines...
 	@$(TEST) -b $(TESTFILES)
 
 # Cleans all files that are not listed as dependencies

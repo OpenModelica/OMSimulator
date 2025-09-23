@@ -7,12 +7,13 @@ from OMSimulator.elementgeometry import ElementGeometry
 from OMSimulator import namespace
 
 class Component:
-  def __init__(self, name: CRef, fmuPath: Path | str, connectors=None, unitDefinitions=None):
+  def __init__(self, name: CRef, fmuPath: Path | str, connectors=None, unitDefinitions=None, enumerationDefinitions=None):
     from OMSimulator.ssm import SSM
     self.name = CRef(name)
     self.fmuPath = Path(fmuPath)
     self.connectors = connectors or list()
     self.unitDefinitions = unitDefinitions or list()
+    self.enumerationDefinitions = enumerationDefinitions or list()
     self.elementgeometry = None
     self.description = None
     self.value = Values()
@@ -84,11 +85,11 @@ class Component:
         print(f"{prefix} |-- Inline Parameter Mapping:")
         self.parameterMapping.list(prefix=prefix + " |-- |--")
 
-    ## list unit definitions
-    if len(self.unitDefinitions) > 0:
-      print(f"{prefix} |-- UnitDefinitions:")
-      for unit in self.unitDefinitions:
-        unit.list(prefix=prefix + " |-- |--")
+      ## list unit definitions
+      if len(self.unitDefinitions) > 0:
+        print(f"{prefix} |-- UnitDefinitions:")
+        for unit in self.unitDefinitions:
+          unit.list(prefix=prefix + " |-- |--")
 
     ## list parameteres in ssv files
     if len(self.parameterResources) > 0:

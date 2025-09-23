@@ -80,6 +80,29 @@ instantiated_model.delete()
 ## |-- |-- |-- |-- |-- |-- name: solver1
 ## |-- |-- |-- Solver Settings:
 ## |-- |-- |-- |-- (name=solver1, method=cvode, tolerance=0.0001)
+## |-- UnitDefinitions:
+## |-- |-- Unit: s
+## |-- |-- |-- BaseUnit: s: 1
+## |-- |-- Unit: 1/K
+## |-- |-- |-- BaseUnit: K: -1
+## |-- |-- Unit: K
+## |-- |-- |-- BaseUnit: K: 1
+## |-- |-- Unit: H
+## |-- |-- |-- BaseUnit: m: 2, s: -2, A: -2, kg: 1
+## |-- |-- Unit: F
+## |-- |-- |-- BaseUnit: m: -2, s: 4, A: 2, kg: -1
+## |-- |-- Unit: Ohm
+## |-- |-- |-- BaseUnit: m: 2, s: -3, A: -2, kg: 1
+## |-- |-- Unit: W
+## |-- |-- |-- BaseUnit: m: 2, s: -3, kg: 1
+## |-- |-- Unit: s-1.A
+## |-- |-- |-- BaseUnit: s: -1, A: 1
+## |-- |-- Unit: km2.s-4.A-1.g
+## |-- |-- |-- BaseUnit: m: 2, s: -4, A: -1, kg: 1, factor: 1000.0
+## |-- |-- Unit: A
+## |-- |-- |-- BaseUnit: A: 1
+## |-- |-- Unit: V
+## |-- |-- |-- BaseUnit: m: 2, s: -3, A: -1, kg: 1
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0

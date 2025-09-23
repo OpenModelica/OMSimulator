@@ -10,6 +10,7 @@ from OMSimulator.fmu import FMU
 from OMSimulator.settings import suppress_path_to_str
 from OMSimulator.ssv import SSV
 from OMSimulator.ssm import SSM
+from OMSimulator.componenttable import ComponentTable
 
 from OMSimulator import SSD, CRef, namespace
 from lxml import etree as ET
@@ -109,6 +110,8 @@ class SSP:
       self.resources[str(new_name)] = SSV(ssv_path = filePath)
     elif Path(filename).suffix == ".ssm":
       self.resources[str(new_name)] = SSM(ssm_path = filePath)
+    elif Path(filename).suffix == ".csv":
+      self.resources[str(new_name)] = ComponentTable(filePath = filePath)
     ##TODO check for .ssv file and if ssv instances provided
     else:
       self.resources[Path(filename).name] = new_name

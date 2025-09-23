@@ -30,6 +30,7 @@ def parseElements(node, resources = None):
   """Extract components from <ssd:Elements> section"""
   from OMSimulator.system import System, SystemGeometry
   from OMSimulator.component import Component
+  from OMSimulator.componenttable import ComponentTable
 
   elements = {}
   elements_node = node.find("ssd:Elements", namespaces=namespace.ns)
@@ -54,31 +55,38 @@ def parseElements(node, resources = None):
     Connection.importFromNode(system, elements[name]) # parse connections for the sub-system
 
   for component in elements_node.findall("ssd:Component", namespaces=namespace.ns):
-    name = CRef(component.get("name"))
     comp_type = component.get("type")
+    name = CRef(component.get("name"))
     source = component.get("source")
     description = component.get("description")
-    ## check implementation
-    match component.get("implementation", "any"):
-      case "any":
-        implementation = "me_cs"
-      case "ModelExchange":
-        implementation = "me"
-      case "CoSimulation":
-        implementation = "cs"
-      case _:
-        raise ValueError(f"Unknown FMU implementation type: {implementation}")
+    if (comp_type == "application/x-fmu-sharedlibrary"):
+      ## check implementation
+      match component.get("implementation", "any"):
+        case "any":
+          implementation = "me_cs"
+        case "ModelExchange":
+          implementation = "me"
+        case "CoSimulation":
+          implementation = "cs"
+        case _:
+          raise ValueError(f"Unknown FMU implementation type: {implementation}")
 
-    elements[name] = Component(name, source)
-    elements[name].implementation = implementation
-    elements[name].description = description
-    elements[name].connectors = Connector.importFromNode(component)
-    elements[name].elementgeometry = ElementGeometry.importFromNode(component)
-    parseParameterBindings(component, elements[name], resources)
-    solvers = parseAnnotations(component)
-    if solvers:
-      for solver in solvers:
-        elements[name].solver = solver.get("name")
+      elements[name] = Component(name, source)
+      elements[name].implementation = implementation
+      elements[name].description = description
+      elements[name].connectors = Connector.importFromNode(component)
+      elements[name].elementgeometry = ElementGeometry.importFromNode(component)
+      parseParameterBindings(component, elements[name], resources)
+      solvers = parseAnnotations(component)
+      if solvers:
+        for solver in solvers:
+          elements[name].solver = solver.get("name")
+    elif (comp_type == "application/table" or comp_type == "text/csv"):
+      elements[name] = resources.get(source)
+      elements[name].name = name
+      elements[name].resourcePath = source
+
+
 
   return elements
 

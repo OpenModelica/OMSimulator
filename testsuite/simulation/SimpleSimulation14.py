@@ -135,6 +135,9 @@ instantiated_model.delete()
 ## |-- |-- |-- |-- |-- |-- |-- |-- Inline Parameter Mapping:
 ## |-- |-- |-- |-- |-- |-- |-- |-- |-- source: mapped_sub_system_Gain2_k
 ## |-- |-- |-- |-- |-- |-- |-- |-- |-- |-- targets: ['k']
+## |-- |-- |-- |-- |-- |-- |-- |-- UnitDefinitions:
+## |-- |-- |-- |-- |-- |-- |-- |-- |-- Unit: 1
+## |-- |-- |-- |-- |-- |-- |-- |-- |-- |-- BaseUnit: 
 ## |-- |-- |-- |-- |-- |-- |-- Solver Settings:
 ## |-- |-- |-- |-- |-- |-- |-- |-- name: solver2
 ## |-- |-- |-- |-- |-- Connections:
@@ -158,11 +161,17 @@ instantiated_model.delete()
 ## |-- |-- |-- |-- |-- |-- Inline Parameter Mapping:
 ## |-- |-- |-- |-- |-- |-- |-- source: mapped_Gain_k
 ## |-- |-- |-- |-- |-- |-- |-- |-- targets: ['k']
+## |-- |-- |-- |-- |-- |-- UnitDefinitions:
+## |-- |-- |-- |-- |-- |-- |-- Unit: 1
+## |-- |-- |-- |-- |-- |-- |-- |-- BaseUnit: 
 ## |-- |-- |-- Connections:
 ## |-- |-- |-- |-- .input1 -> Gain1.u
 ## |-- |-- |-- |-- Gain1.y -> Add1.u1
 ## |-- |-- |-- Solver Settings:
 ## |-- |-- |-- |-- (name=solver2, method=cvode, tolerance=0.0001)
+## |-- UnitDefinitions:
+## |-- |-- Unit: 1
+## |-- |-- |-- BaseUnit: 
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0

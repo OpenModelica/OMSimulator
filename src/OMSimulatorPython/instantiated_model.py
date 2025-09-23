@@ -1,4 +1,6 @@
 from OMSimulator.capi import Capi, Status
+from OMSimulator.component import Component
+from OMSimulator.componenttable import ComponentTable
 from OMSimulator.cref import CRef
 from OMSimulator.system import System
 from OMSimulator.values import Values
@@ -103,6 +105,9 @@ class InstantiatedModel:
 
   def setStartValuesFromElements(self, elements, systemName):
     for key, element in elements.items():
+      ## do not set start values for tables
+      if isinstance(element, ComponentTable):
+        continue
       new_system_name = ".".join([systemName, str(element.name)])
       self.setStartValues(element.value, new_system_name, element.parameterMapping)
       self.setStartValuesFromSSV(element.parameterResources, new_system_name)

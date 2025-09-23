@@ -5,9 +5,11 @@ from pathlib import Path
 
 from lxml import etree as ET
 from OMSimulator.component import Component
+from OMSimulator.componenttable import ComponentTable
 from OMSimulator.connection import Connection
 from OMSimulator.connector import Connector
 from OMSimulator.elementgeometry import ElementGeometry
+from OMSimulator.fmu import FMU
 from OMSimulator.ssm import SSM
 from OMSimulator.values import Values
 
@@ -197,11 +199,22 @@ class System:
     else:
       if first in self.elements:
         raise ValueError(f"Component '{first}' already exists in {self.name}")
-      connectors = inst.makeConnectors() if inst else list()
-      component = Component(first, resource, connectors)
-      component.fmuType = inst.fmuType if inst else None
-      self.elements[first] = component
-      return component
+      if isinstance(inst, FMU) or (inst is None and resource.endswith(".fmu")):
+        connectors = inst.makeConnectors() if inst else list()
+        unitDefinitions = inst._unitDefinitions if inst else list()
+        enumerationDefinitions = inst._enumerationDefinitions if inst else list()
+        component = Component(first, resource, connectors, unitDefinitions, enumerationDefinitions)
+        component.fmuType = inst.fmuType if inst else None
+        self.elements[first] = component
+        return component
+      elif isinstance(inst, ComponentTable):
+        inst.name = first
+        inst.resourcePath = resource
+        self.elements[first] = inst
+        return inst
+      else:
+        raise TypeError( f"Unknown component instance for '{first}' in '{self.name}'. "
+                 f"Please add the component from the top-level model.")
 
   def addSSVReference(self, cref: CRef, resource1: str, resource2: str | None = None):
     ## top level system
@@ -510,6 +523,28 @@ class System:
       case _:
         raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component or a Connector")
 
+  def getUnitDefinitions(self, unitDefinitions: list):
+    """Get unique unit definitions defined in fmu (by name only)."""
+    for key, element in self.elements.items():
+      if isinstance(element, System):
+        element.getUnitDefinitions(unitDefinitions)
+      elif isinstance(element, Component):
+        for unit in element.unitDefinitions:
+          # check if this name is already present
+          if all(u.name != unit.name for u in unitDefinitions):
+            unitDefinitions.append(unit)
+
+  def getEnumerationDefinitions(self, enumerationDefinitions: list):
+    """get enumeration definitions defined in fmu"""
+    for key, element in self.elements.items():
+      if isinstance(element, System):
+        element.getEnumerationDefinitions(enumerationDefinitions)
+      elif isinstance(element, Component):
+        for enumeration in element.enumerationDefinitions:
+          # check if this name is already present
+          if all(u.name != enumeration.name for u in enumerationDefinitions):
+            enumerationDefinitions.append(enumeration)
+
   def setSolver(self, cref: CRef, name: str):
     first = cref.first()
     if not cref.is_root():
@@ -580,6 +615,12 @@ class System:
             "path": str(Path(tempdir, str(element.fmuPath))) if tempdir is not None else str(element.fmuPath)
         })
         componentSolver[str(element.name)] = element.solver
+      elif isinstance(element, ComponentTable):
+        solver_groups[element.solver].append({
+            "name": [self.name] + ([systemName] if systemName else []) + [str(element.name)],
+            "type": "table",
+            "path": str(Path(tempdir, str(element.filePath))) if tempdir is not None else str(element.filePath)
+        })
       elif isinstance(element, System):
         # recurse into subsystems
         self.processElements(element.elements, element.connections, data, solver_groups, componentSolver, solver_connections, resources, tempdir, systemName=str(element.name))
@@ -639,6 +680,8 @@ class System:
         if isinstance(element, System):
           element.export(element_node)
         elif isinstance(element, Component):
+          element.exportToSSD(element_node)
+        elif isinstance(element, ComponentTable):
           element.exportToSSD(element_node)
         else:
           # Handle other types of elements if needed
