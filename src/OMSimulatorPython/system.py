@@ -199,9 +199,11 @@ class System:
     else:
       if first in self.elements:
         raise ValueError(f"Component '{first}' already exists in {self.name}")
-      if isinstance(inst, FMU):
+      if isinstance(inst, FMU) or (inst is None and resource.endswith(".fmu")):
         connectors = inst.makeConnectors() if inst else list()
-        component = Component(first, resource, connectors, inst._unitDefinitions, inst._enumerationDefinitions)
+        unitDefinitions = inst._unitDefinitions if inst else list()
+        enumerationDefinitions = inst._enumerationDefinitions if inst else list()
+        component = Component(first, resource, connectors, unitDefinitions, enumerationDefinitions)
         component.fmuType = inst.fmuType if inst else None
         self.elements[first] = component
         return component
@@ -210,6 +212,9 @@ class System:
         inst.resourcePath = resource
         self.elements[first] = inst
         return inst
+      else:
+        raise TypeError( f"Unknown component instance for '{first}' in '{self.name}'. "
+                 f"Please add the component from the top-level model.")
 
   def addSSVReference(self, cref: CRef, resource1: str, resource2: str | None = None):
     ## top level system
