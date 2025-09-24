@@ -101,7 +101,7 @@ foreach(ssp_directory ${OM_OMS_TESTSUITE_RESOURCES_SSPS})
   set(output_file_path ${CMAKE_CURRENT_SOURCE_DIR}/${ssp_name}.ssp)
 
   add_custom_command(
-    # set the working directory to fmu directory
+    # set the working directory to ssp directory
     WORKING_DIRECTORY ${ssp_directory}
     # Use the SystemStructure.ssd file as a dependency
     DEPENDS ${ssp_directory}/SystemStructure.ssd
