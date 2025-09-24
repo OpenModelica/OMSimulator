@@ -87,30 +87,21 @@ git clone https://github.com/OpenModelica/OMSimulator.git --recurse-submodules
 
 ### Linux / macOS / Windows (OMDev mingw)
 
-1. **Build Test Dependencies:**
+By default the testsuite is not enabled by the cmake build. To enable the testsuite run the following command
+
+1. **Configure testsuite :**
+   ```bash
+   cmake -S . -B build/ -DOMS_ENABLE_TESTSUITE=ON
+   ```
+
+2. **Build Test Dependencies:**
    ```bash
    cmake --build build/ --target testsuite-depends
    ```
 
-2. **Run Tests:**
+3. **Run Tests:**
    ```bash
    cd testsuite/partest/
    ./runtests.pl -j4
-   ```
-   - Use `-jN` to specify `N` threads.
-
-### Windows (Visual Studio)
-
-Testing requires the OMDev mingw shell:
-
-1. **Build Test Dependencies:**
-   ```bash
-   cmake --build build/ --target testsuite-depends
-   ```
-
-2. **Run Tests:**
-   ```bash
-   cd testsuite/partest/
-   ./runtests.pl -j4 -platform=win
    ```
    - Use `-jN` to specify `N` threads.
