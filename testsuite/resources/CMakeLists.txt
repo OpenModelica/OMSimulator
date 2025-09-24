@@ -23,7 +23,6 @@ set(OM_OMS_TESTSUITE_RESOURCES_FMUS
         ${CMAKE_CURRENT_SOURCE_DIR}/HelloWorld
         ${CMAKE_CURRENT_SOURCE_DIR}/HelloWorldWithInput
         ${CMAKE_CURRENT_SOURCE_DIR}/Int1
-        ${CMAKE_CURRENT_SOURCE_DIR}/invalidModeldescription
         ${CMAKE_CURRENT_SOURCE_DIR}/Lin2DimODE
         ${CMAKE_CURRENT_SOURCE_DIR}/Modelica.Blocks.Continuous.Integrator
         ${CMAKE_CURRENT_SOURCE_DIR}/Modelica.Blocks.Math.Add
@@ -32,7 +31,7 @@ set(OM_OMS_TESTSUITE_RESOURCES_FMUS
         ${CMAKE_CURRENT_SOURCE_DIR}/Modelica.Blocks.Math.Gain
         ${CMAKE_CURRENT_SOURCE_DIR}/Modelica.Blocks.Math.Product
         ${CMAKE_CURRENT_SOURCE_DIR}/Modelica.Blocks.Nonlinear.Limiter
-        ${CMAKE_CURRENT_SOURCE_DIR}/Modelica.Blocks.Sources.Clock
+        ${CMAKE_CURRENT_SOURCE_DIR}/Modelica.Blocks.Sources.ContinuousClock
         ${CMAKE_CURRENT_SOURCE_DIR}/Modelica.Blocks.Sources.Constant
         ${CMAKE_CURRENT_SOURCE_DIR}/Modelica.Blocks.Sources.Sine
         ${CMAKE_CURRENT_SOURCE_DIR}/Modelica.Blocks.Sources.Step
@@ -68,7 +67,7 @@ set(OM_OMS_TESTSUITE_RESOURCES_SSPS
         ${CMAKE_CURRENT_SOURCE_DIR}/import_export_parameters2
         ${CMAKE_CURRENT_SOURCE_DIR}/import_export_parameters3
         ${CMAKE_CURRENT_SOURCE_DIR}/importExportAllResources
-        ${CMAKE_CURRENT_SOURCE_DIR}/invalidSSP
+        ${CMAKE_CURRENT_SOURCE_DIR}/invalidSSV
         ${CMAKE_CURRENT_SOURCE_DIR}/invalidSSM
         ${CMAKE_CURRENT_SOURCE_DIR}/invalidSSD
         ${CMAKE_CURRENT_SOURCE_DIR}/replaceSubmodel4
@@ -81,8 +80,11 @@ foreach(fmu_directory ${OM_OMS_TESTSUITE_RESOURCES_FMUS})
   set(output_file_path ${CMAKE_CURRENT_SOURCE_DIR}/${fmu_name}.fmu)
 
   add_custom_command(
+    # set the working directory to fmu directory
+    WORKING_DIRECTORY ${fmu_directory}
     # Use the modelDescrition.xml file as a dependency
     DEPENDS ${fmu_directory}/modelDescription.xml
+    COMMAND ${CMAKE_COMMAND} -E echo "Creating FMU ${output_file_path}"
     COMMAND cd ${fmu_directory}
     COMMAND zip -r ${output_file_path} *
     COMMAND cd ..
@@ -94,14 +96,16 @@ foreach(fmu_directory ${OM_OMS_TESTSUITE_RESOURCES_FMUS})
 endforeach()
 
 ## Extract SSPs
-foreach(fmu_directory ${OM_OMS_TESTSUITE_RESOURCES_SSPS})
-  get_filename_component(fmu_name ${fmu_directory} NAME)
-  set(output_file_path ${CMAKE_CURRENT_SOURCE_DIR}/${fmu_name}.ssp)
+foreach(ssp_directory ${OM_OMS_TESTSUITE_RESOURCES_SSPS})
+  get_filename_component(ssp_name ${ssp_directory} NAME)
+  set(output_file_path ${CMAKE_CURRENT_SOURCE_DIR}/${ssp_name}.ssp)
 
   add_custom_command(
+    # set the working directory to fmu directory
+    WORKING_DIRECTORY ${ssp_directory}
     # Use the SystemStructure.ssd file as a dependency
-    DEPENDS ${fmu_directory}/SystemStructure.ssd
-    COMMAND cd ${fmu_directory}
+    DEPENDS ${ssp_directory}/SystemStructure.ssd
+    COMMAND cd ${ssp_directory}
     COMMAND zip -r ${output_file_path} *
     COMMAND cd ..
     OUTPUT ${output_file_path}
