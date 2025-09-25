@@ -5,7 +5,7 @@ from pathlib import Path
 
 from lxml import etree as ET
 from OMSimulator.component import Component
-from OMSimulator.componenttable import ComponentTable
+from OMSimulator.componenttable import ComponentTable, CsvReader, MatReader
 from OMSimulator.connection import Connection
 from OMSimulator.connector import Connector
 from OMSimulator.elementgeometry import ElementGeometry
@@ -207,11 +207,10 @@ class System:
         component.fmuType = inst.fmuType if inst else None
         self.elements[first] = component
         return component
-      elif isinstance(inst, ComponentTable):
-        inst.name = first
-        inst.resourcePath = resource
-        self.elements[first] = inst
-        return inst
+      elif isinstance(inst, CsvReader) or isinstance(inst, MatReader):
+        componenttable = ComponentTable(first, resource, inst.connectors)
+        self.elements[first] = componenttable
+        return componenttable
       else:
         raise TypeError( f"Unknown component instance for '{first}' in '{self.name}'. "
                  f"Please add the component from the top-level model.")
