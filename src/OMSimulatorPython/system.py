@@ -5,7 +5,7 @@ from pathlib import Path
 
 from lxml import etree as ET
 from OMSimulator.component import Component
-from OMSimulator.componenttable import ComponentTable, CsvReader, MatReader
+from OMSimulator.componenttable import ComponentTable, CsvReader
 from OMSimulator.connection import Connection
 from OMSimulator.connector import Connector
 from OMSimulator.elementgeometry import ElementGeometry
@@ -207,7 +207,7 @@ class System:
         component.fmuType = inst.fmuType if inst else None
         self.elements[first] = component
         return component
-      elif isinstance(inst, CsvReader) or isinstance(inst, MatReader):
+      elif isinstance(inst, CsvReader):
         componenttable = ComponentTable(first, resource, inst.connectors)
         self.elements[first] = componenttable
         return componenttable

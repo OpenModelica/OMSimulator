@@ -10,7 +10,7 @@ from OMSimulator.fmu import FMU
 from OMSimulator.settings import suppress_path_to_str
 from OMSimulator.ssv import SSV
 from OMSimulator.ssm import SSM
-from OMSimulator.componenttable import CsvReader, MatReader
+from OMSimulator.componenttable import CsvReader
 
 from OMSimulator import SSD, CRef, namespace
 from lxml import etree as ET
