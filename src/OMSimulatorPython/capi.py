@@ -58,6 +58,8 @@ class capi:
     self.obj.oms_getString.restype = ctypes.c_int
     self.obj.oms_getVariableType.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_int)]
     self.obj.oms_getVariableType.restype = ctypes.c_int
+    self.obj.oms_getResultFileSignals.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_char_p)]
+    self.obj.oms_getResultFileSignals.restype = ctypes.c_int
     self.obj.oms_initialize.argtypes = [ctypes.c_char_p]
     self.obj.oms_initialize.restype = ctypes.c_int
     self.obj.oms_instantiate.argtypes = [ctypes.c_char_p]
@@ -148,6 +150,13 @@ class capi:
     value = ctypes.c_bool()
     status = self.obj.oms_getBoolean(cref.encode(), ctypes.byref(value))
     return [value.value, Status(status)]
+
+  def getResultFileSignals(self, cref):
+    value = ctypes.c_char_p()
+    status = self.obj.oms_getResultFileSignals(cref.encode(), ctypes.byref(value))
+    signals = value.value.decode('utf-8') if value.value else None
+    self.obj.oms_freeMemory(value)
+    return [signals, Status(status)]
 
   def getVariableType(self, cref):
     value = ctypes.c_int()

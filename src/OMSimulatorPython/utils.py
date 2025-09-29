@@ -82,10 +82,8 @@ def parseElements(node, resources = None):
         for solver in solvers:
           elements[name].solver = solver.get("name")
     elif (comp_type == "application/table" or comp_type == "text/csv"):
-      elements[name] = resources.get(source)
-      elements[name].name = name
-      elements[name].resourcePath = source
-
+      elements[name] = ComponentTable(name, source)
+      elements[name].connectors = Connector.importFromNode(component)
 
 
   return elements

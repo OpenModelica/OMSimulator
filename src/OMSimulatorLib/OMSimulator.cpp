@@ -152,6 +152,26 @@ int oms_compareSimulationResults(const char* filenameA, const char* filenameB, c
   return rc ? 1 : 0;
 }
 
+oms_status_enu_t oms_getResultFileSignals(const char* filename, const char ** signals)
+{
+  oms::ResultReader* reader = oms::ResultReader::newReader(filename);
+  std::string result;  // build string in-place
+  for (const auto &signal : reader->getAllSignals())
+  {
+    if (!result.empty())
+      result.append(",");  // append comma
+    result.append(signal); // append signal name
+  }
+
+  delete reader;
+
+  *signals = oms::mallocAndCopyString(result);
+  if (!*signals)
+    return oms_status_fatal;
+  return oms_status_ok;
+}
+
+
 oms_status_enu_t oms_delete(const char* cref)
 {
   oms::ComRef tail(cref);
