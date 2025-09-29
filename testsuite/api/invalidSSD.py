@@ -23,7 +23,7 @@ except Exception as e:
 
 ## Result:
 ## INFO:OMSimulator.ssp:Temporary directory created: <hidden>
-## INFO:OMSimulator.ssp:Temporary directory removed: <hidden>
-## Error: Failed to validate SystemStructure.ssd against schemafile SystemStructureDescription.xsd
+## UserWarning: Failed to validate SystemStructure.ssd against schemafile SystemStructureDescription.xsd
 ## ERROR (line 16, column 0): Element '{http://ssp-standard.org/SSP1/SystemStructureDescription}Connector', attribute 'type': The attribute 'type' is not allowed.
+## INFO:OMSimulator.ssp:Temporary directory removed: <hidden>
 ## endResult
