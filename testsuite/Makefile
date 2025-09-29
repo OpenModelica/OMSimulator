@@ -17,6 +17,10 @@ api.log: difftool
 	@$(MAKE) -C api -f Makefile test > $@
 	@grep == api.log
 
+AircraftVehicleDemonstrator.log: difftool
+	@$(MAKE) -C AircraftVehicleDemonstrator -f Makefile test > $@
+	@grep == AircraftVehicleDemonstrator.log
+
 parker.log: difftool
 	@$(MAKE) -C parker -f Makefile test > $@
 	@grep == parker.log
