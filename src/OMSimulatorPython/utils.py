@@ -13,6 +13,11 @@ from collections import defaultdict
 
 logger = logging.getLogger(__name__)
 
+# Custom warning formatter: only show category + message
+def _simple_warning(message, category, filename, lineno, line=None):
+  return f"{category.__name__}: {message}\n"
+warnings.formatwarning = _simple_warning
+
 def _setParameters(parameterValues: dict, obj):
   if len(parameterValues) > 0:
     for key, (value, unit, description) in parameterValues.items():
