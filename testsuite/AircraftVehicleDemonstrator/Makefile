@@ -2,6 +2,7 @@ TEST = ../rtest -v
 
 TESTFILES = \
 embrace1.py \
+embrace2.py \
 
 # Run make failingtest
 FAILINGTESTFILES = \
