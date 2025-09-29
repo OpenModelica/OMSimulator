@@ -625,11 +625,10 @@ class System:
         self.processElements(element.elements, element.connections, data, solver_groups, componentSolver, solver_connections, resources, tempdir, systemName=str(element.name))
 
     for connection in connections:
-      startElement = connection.startElement
-      endElement = connection.endElement
+      startElement = str(connection.startElement)
+      endElement = str(connection.endElement)
       startSolver = componentSolver.get(startElement, None)
       endSolver = componentSolver.get(endElement, None)
-      # print(f"{startElement},{endElement},{startSolver},{endSolver}")
 
       solver = None
       if startSolver == endSolver and startSolver is not None:
@@ -641,9 +640,9 @@ class System:
       ##TODO group components and connection without solver information, right now they are grouped under NONE category
       solver_connections[solver].append({
             "start element": [self.name] + ([systemName] if systemName else []) + ([startElement] if startElement else []),
-            "start connector": connection.startConnector,
+            "start connector": str(connection.startConnector),
             "end element": [self.name] + ([systemName] if systemName else []) + ([endElement] if endElement else []),
-            "end connector": connection.endConnector
+            "end connector": str(connection.endConnector)
         })
 
   def export(self, root):
