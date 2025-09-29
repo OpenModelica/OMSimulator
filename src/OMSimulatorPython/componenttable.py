@@ -6,7 +6,7 @@ from OMSimulator.variable import Causality, SignalType
 from OMSimulator import namespace
 from OMSimulator.capi import Capi
 
-class CsvReader:
+class ResultReader:
   def __init__(self, filePath: str):
     self.filePath = Path(filePath)
     self.headers = []
