@@ -5,9 +5,10 @@
 ## win: no
 ## mac: no
 
-from OMSimulator import SSP, Settings, CRef
+from OMSimulator import SSP, Settings, CRef, Capi
 
 Settings.suppressPath = True
+Capi.setCommandLineOption("--wallTime=true --ignoreInitialUnknowns=false")
 
 model = SSP('../resources/embrace.ssp')
 model.addResource("../resources/embrace/CONOPS.csv", new_name = "resources/CONOPS.csv")

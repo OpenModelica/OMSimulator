@@ -8,6 +8,7 @@
 from OMSimulator import SSP, Settings, CRef
 
 Settings.suppressPath = True
+Capi.setCommandLineOption("--wallTime=true --ignoreInitialUnknowns=false")
 
 model = SSP('../resources/embrace_TwoConf.ssp')
 model.addResource("../resources/embrace_TwoConf/CONOPS.csv", new_name = "resources/CONOPS.csv")
