@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command:
+## teardown_command: rm -rf embrace1_res.mat
 ## linux: yes
 ## ucrt64: no
 ## win: no

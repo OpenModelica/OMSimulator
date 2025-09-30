@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command:
+## teardown_command: rm -rf embrace2_res.mat
 ## linux: yes
 ## ucrt64: no
 ## win: no
@@ -64,15 +64,20 @@ instantiated_model.terminate()
 instantiated_model.delete()
 
 ## Result:
-## UserWarning: Failed to validate RAPID_Systems_2021-03-29_Test_1.ssv against schemafile SystemStructureParameterValues.xsd
-## ERROR (line 505, column 0): Element '{http://ssp-standard.org/SSP1/SystemStructureCommon}BaseUnit', attribute 'rad': '0.017453292519943301' is not a valid value of the atomic type 'xs:int'.
+## UserWarning: Failed to validate ECS_Conf2.ssv against schemafile SystemStructureParameterValues.xsd
+## ERROR (line 2, column 0): Element '{http://ssp-standard.org/SSP1/SystemStructureParameterValues}ParameterSet': Character content other than whitespace is not allowed because the content type is 'element-only'.
+## ERROR (line 1540, column 0): Element '{http://ssp-standard.org/SSP1/SystemStructureCommon}BaseUnit', attribute 'deg': The attribute 'deg' is not allowed.
+## ERROR (line 1541, column 0): Element '{http://ssp-standard.org/SSP1/SystemStructureCommon}DisplayUnit': This element is not expected. Expected is ( {http://ssp-standard.org/SSP1/SystemStructureCommon}Annotations ).
+## UserWarning: Failed to validate ECS_Conf1.ssv against schemafile SystemStructureParameterValues.xsd
+## ERROR (line 2668, column 0): Element '{http://ssp-standard.org/SSP1/SystemStructureCommon}BaseUnit', attribute 'deg': The attribute 'deg' is not allowed.
+## ERROR (line 2669, column 0): Element '{http://ssp-standard.org/SSP1/SystemStructureCommon}DisplayUnit': This element is not expected. Expected is ( {http://ssp-standard.org/SSP1/SystemStructureCommon}Annotations ).
 ## UserWarning: Failed to validate SystemStructure.ssd against schemafile SystemStructureDescription.xsd
 ## ERROR (line 17, column 0): Element '{http://ssp-standard.org/SSP1/SystemStructureCommon}Enumeration': The attribute 'name' is required but missing.
-## info:    Result file: embrace1_res.mat (bufferSize=1)
+## info:    Result file: embrace2_res.mat (bufferSize=1)
 ## info:    Initialize:
 ## info:      embrace.root.ECS_HW.coolinPackAir.looptype:  2
 ## info:      embrace.root.ECS_HW.eCS.MaxCoolPower.k    :  5.0
 ## info:      embrace.root.ECS_HW.pipeC.L               :  1.0
-## info:      embrace.root.ECS_HW.pipeB.L               :  0.976535328081166
-## info:      embrace.root.ECS_HW.pipeA.L               :  0.976535328081166
+## info:      embrace.root.ECS_HW.pipeB.L               :  7.41248272578546
+## info:      embrace.root.ECS_HW.pipeA.L               :  7.39290438403619
 ## endResult
