@@ -1,23 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ssv:ParameterSet xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" version="1.0" name="product_ECS2">
-  <Units>
-    <Unit name="m">
-      <BaseUnit m="1"/>
-    </Unit>
-    <Unit name="deg">
-      <BaseUnit deg="1"/>
-      <DisplayUnit name="rad" factor="0.017453292519943301"/>
-    </Unit>
-    <Unit name="kg/m3">
-      <BaseUnit kg="1" m="-3"/>
-    </Unit>
-    <Unit name="m3">
-      <BaseUnit m="3"/>
-    </Unit>
-    <Unit name="kg">
-      <BaseUnit kg="1"/>
-    </Unit>
-  </Units>
   <ssv:Parameters>
     <ssv:Parameter name="part_accumulator.parameterSet_inputParameters.parameter_width">
       <ssv:Real unit="[m]" value="0.1"/>
@@ -77,7 +59,7 @@
       <ssv:Real unit="[m]" value="0.3"/>
     </ssv:Parameter>
     <ssv:Parameter name="part_PHX.parameterSet_inputParameters.parameter_noOfPlatesSHP">
-      <ssv:Integer unit="Unit Not Applicable" value="40"/>
+      <ssv:Integer value="40"/>
     </ssv:Parameter>
     <ssv:Parameter name="part_PHX.parameterSet_inputParameters.parameter_rotationAngleX">
       <ssv:Real unit="[rad]" value="0"/>
@@ -179,7 +161,7 @@
       <ssv:Real unit="[m]" value="0.04"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_hosePo2HexIAssy.part_hoseAttachmentPo.geometricalSet_instantiatedGeometry.parameterSet_straightHoseAttachment.1.parameter_Ratio">
-      <ssv:Real unit="Unit Not Applicable" value="1"/>
+      <ssv:Real value="1"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_hosePo2HexIAssy.part_hoseAttachmentHexI.geometricalSet_instantiatedGeometry.parameterSet_L-Connector.1.parameter_rotationAngleXLC">
       <ssv:Real unit="[rad]" value="0"/>
@@ -194,13 +176,13 @@
       <ssv:Real unit="[m]" value="0.0655"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_hosePo2HexIAssy.part_hoseAttachmentHexI.geometricalSet_instantiatedGeometry.parameterSet_L-Connector.1.parameter_Ratio">
-      <ssv:Real unit="Unit Not Applicable" value="1"/>
+      <ssv:Real value="1"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_hosePo2HexIAssy.part_hosePoHexI.geometricalSet_instantiatedGeometry.parameterSet_hoseSectionTemplate.2.parameter_Tension1">
-      <ssv:Real unit="Unit Not Applicable" value="-1"/>
+      <ssv:Real value="-1"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_hosePo2HexIAssy.part_hosePoHexI.geometricalSet_instantiatedGeometry.parameterSet_hoseSectionTemplate.2.parameter_Tension2">
-      <ssv:Real unit="Unit Not Applicable" value="1"/>
+      <ssv:Real value="1"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_hosePo2HexIAssy.part_hosePoHexI.geometricalSet_instantiatedGeometry.parameterSet_hoseSectionTemplate.2.parameter_innerDiameter">
       <ssv:Real unit="[m]" value="0.01"/>
@@ -224,13 +206,13 @@
       <ssv:Real unit="[m]" value="0.0655"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_hoseAccOAssy.part_hoseAttachmentAccO.geometricalSet_instantiatedGeometry.parameterSet_L-Connector.1.parameter_Ratio">
-      <ssv:Real unit="Unit Not Applicable" value="1"/>
+      <ssv:Real value="1"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_hoseAccOAssy.part_hoseAccO.geometricalSet_instantiatedGeometry.parameterSet_hoseSectionTemplate.1.parameter_Tension1">
-      <ssv:Real unit="Unit Not Applicable" value="1.2"/>
+      <ssv:Real value="1.2"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_hoseAccOAssy.part_hoseAccO.geometricalSet_instantiatedGeometry.parameterSet_hoseSectionTemplate.1.parameter_Tension2">
-      <ssv:Real unit="Unit Not Applicable" value="1.5"/>
+      <ssv:Real value="1.5"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_hoseAccOAssy.part_hoseAccO.geometricalSet_instantiatedGeometry.parameterSet_hoseSectionTemplate.1.parameter_innerDiameter">
       <ssv:Real unit="[m]" value="0.01"/>
@@ -287,7 +269,7 @@
       <ssv:Real unit="[m]" value="0.093"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_hosePipe3PJAssy.part_attachment3PJ.geometricalSet_instantiatedGeometry.parameterSet_T-Attachment.1.parameter_Ratio">
-      <ssv:Real unit="Unit Not Applicable" value="1"/>
+      <ssv:Real value="1"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_hosePipe3PJAssy.part_hoseAttachmentPI.geometricalSet_instantiatedGeometry.parameterSet_L-Connector.1.parameter_rotationAngleXLC">
       <ssv:Real unit="[rad]" value="1.5707963267949"/>
@@ -302,7 +284,7 @@
       <ssv:Real unit="[m]" value="0.0655"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_hosePipe3PJAssy.part_hoseAttachmentPI.geometricalSet_instantiatedGeometry.parameterSet_L-Connector.1.parameter_Ratio">
-      <ssv:Real unit="Unit Not Applicable" value="1"/>
+      <ssv:Real value="1"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_hosePipe3PJAssy.part_hoseAttachment3PJ1.geometricalSet_instantiatedGeometry.parameterSet_L-Connector.1.parameter_rotationAngleXLC">
       <ssv:Real unit="[rad]" value="1.5707963267949"/>
@@ -317,13 +299,13 @@
       <ssv:Real unit="[m]" value="0.0655"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_hosePipe3PJAssy.part_hoseAttachment3PJ1.geometricalSet_instantiatedGeometry.parameterSet_L-Connector.1.parameter_Ratio">
-      <ssv:Real unit="Unit Not Applicable" value="1"/>
+      <ssv:Real value="1"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_hosePipe3PJAssy.part_hosePI23PJ.geometricalSet_instantiatedGeometry.parameterSet_hoseSectionTemplate.1.parameter_Tension1">
-      <ssv:Real unit="Unit Not Applicable" value="1"/>
+      <ssv:Real value="1"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_hosePipe3PJAssy.part_hosePI23PJ.geometricalSet_instantiatedGeometry.parameterSet_hoseSectionTemplate.1.parameter_Tension2">
-      <ssv:Real unit="Unit Not Applicable" value="1.6"/>
+      <ssv:Real value="1.6"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_hosePipe3PJAssy.part_hosePI23PJ.geometricalSet_instantiatedGeometry.parameterSet_hoseSectionTemplate.1.parameter_innerDiameter">
       <ssv:Real unit="[m]" value="0.01"/>
@@ -335,10 +317,10 @@
       <ssv:Real unit="[m]" value="0.180681163771879"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_hosePipe3PJAssy.part_hoseAccI23PJ.geometricalSet_instantiatedGeometry.parameterSet_hoseSectionTemplate.1.parameter_Tension1">
-      <ssv:Real unit="Unit Not Applicable" value="1.7"/>
+      <ssv:Real value="1.7"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_hosePipe3PJAssy.part_hoseAccI23PJ.geometricalSet_instantiatedGeometry.parameterSet_hoseSectionTemplate.1.parameter_Tension2">
-      <ssv:Real unit="Unit Not Applicable" value="2"/>
+      <ssv:Real value="2"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_hosePipe3PJAssy.part_hoseAccI23PJ.geometricalSet_instantiatedGeometry.parameterSet_hoseSectionTemplate.1.parameter_innerDiameter">
       <ssv:Real unit="[m]" value="0.01"/>
@@ -362,7 +344,7 @@
       <ssv:Real unit="[m]" value="0.04"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_hosePipe3PJAssy.part_hoseAttachment3PJ2.geometricalSet_instantiatedGeometry.parameterSet_straightHoseAttachment.1.parameter_Ratio">
-      <ssv:Real unit="Unit Not Applicable" value="1"/>
+      <ssv:Real value="1"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_hosePipe3PJAssy.part_hoseAttachmentAccI.geometricalSet_instantiatedGeometry.parameterSet_straightHoseAttachment.1.parameter_rotationAngleXSC">
       <ssv:Real unit="[rad]" value="4.71238898038469"/>
@@ -377,7 +359,7 @@
       <ssv:Real unit="[m]" value="0.04"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_hosePipe3PJAssy.part_hoseAttachmentAccI.geometricalSet_instantiatedGeometry.parameterSet_straightHoseAttachment.1.parameter_Ratio">
-      <ssv:Real unit="Unit Not Applicable" value="1"/>
+      <ssv:Real value="1"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_hosePipe3PJAssy.part_hoseAttachment3PJ3.geometricalSet_instantiatedGeometry.parameterSet_straightHoseAttachment.1.parameter_rotationAngleXSC">
       <ssv:Real unit="[rad]" value="3.14159265358979"/>
@@ -392,7 +374,7 @@
       <ssv:Real unit="[m]" value="0.04"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_hosePipe3PJAssy.part_hoseAttachment3PJ3.geometricalSet_instantiatedGeometry.parameterSet_straightHoseAttachment.1.parameter_Ratio">
-      <ssv:Real unit="Unit Not Applicable" value="1"/>
+      <ssv:Real value="1"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_hosePipe3PJAssy.part_hoseAttachment3PJ3O.geometricalSet_instantiatedGeometry.parameterSet_straightHoseAttachment.1.parameter_rotationAngleXSC">
       <ssv:Real unit="[rad]" value="4.71238898038469"/>
@@ -407,13 +389,13 @@
       <ssv:Real unit="[m]" value="0.04"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_hosePipe3PJAssy.part_hoseAttachment3PJ3O.geometricalSet_instantiatedGeometry.parameterSet_straightHoseAttachment.1.parameter_Ratio">
-      <ssv:Real unit="Unit Not Applicable" value="1"/>
+      <ssv:Real value="1"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_hosePipe3PJAssy.part_hose3PJ.geometricalSet_instantiatedGeometry.parameterSet_hoseSectionTemplate.1.parameter_Tension1">
-      <ssv:Real unit="Unit Not Applicable" value="-2"/>
+      <ssv:Real value="-2"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_hosePipe3PJAssy.part_hose3PJ.geometricalSet_instantiatedGeometry.parameterSet_hoseSectionTemplate.1.parameter_Tension2">
-      <ssv:Real unit="Unit Not Applicable" value="-2"/>
+      <ssv:Real value="-2"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_hosePipe3PJAssy.part_hose3PJ.geometricalSet_instantiatedGeometry.parameterSet_hoseSectionTemplate.1.parameter_innerDiameter">
       <ssv:Real unit="[m]" value="0.01"/>
@@ -533,10 +515,10 @@
       <ssv:Real unit="[m]" value="0.035"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_hosePipe3PJAssy.part_hose3PJ.geometricalSet_constructionGeometry.parameter_Tension.1">
-      <ssv:Real unit="Unit Not Applicable" value="1"/>
+      <ssv:Real value="1"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_hosePipe3PJAssy.part_hose3PJ.geometricalSet_constructionGeometry.parameter_Tension.2">
-      <ssv:Real unit="Unit Not Applicable" value="1"/>
+      <ssv:Real value="1"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_hoseHexOAssy.part_hoseAttachmentHexO.geometricalSet_instantiatedGeometry.parameterSet_straightHoseAttachment.1.parameter_rotationAngleXSC">
       <ssv:Real unit="[rad]" value="3.14159265358979"/>
@@ -551,7 +533,7 @@
       <ssv:Real unit="[m]" value="0.04"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_hoseHexOAssy.part_hoseAttachmentHexO.geometricalSet_instantiatedGeometry.parameterSet_straightHoseAttachment.1.parameter_Ratio">
-      <ssv:Real unit="Unit Not Applicable" value="1"/>
+      <ssv:Real value="1"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_hoseHexOAssy.part_hoseAttachmentHexO.geometricalSet_constructionGeometry.parameter_X">
       <ssv:Real unit="[m]" value="0.0275"/>
@@ -575,13 +557,13 @@
       <ssv:Real unit="[m]" value="0.04"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_hoseHexOAssy.part_hoseAttachmentHexHose.geometricalSet_instantiatedGeometry.parameterSet_straightHoseAttachment.1.parameter_Ratio">
-      <ssv:Real unit="Unit Not Applicable" value="1"/>
+      <ssv:Real value="1"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_hoseHexOAssy.part_hoseHexO.geometricalSet_instantiatedGeometry.parameterSet_hoseSectionTemplate.1.parameter_Tension1">
-      <ssv:Real unit="Unit Not Applicable" value="-2"/>
+      <ssv:Real value="-2"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_hoseHexOAssy.part_hoseHexO.geometricalSet_instantiatedGeometry.parameterSet_hoseSectionTemplate.1.parameter_Tension2">
-      <ssv:Real unit="Unit Not Applicable" value="-2"/>
+      <ssv:Real value="-2"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_hoseHexOAssy.part_hoseHexO.geometricalSet_instantiatedGeometry.parameterSet_hoseSectionTemplate.1.parameter_innerDiameter">
       <ssv:Real unit="[m]" value="0.01"/>
@@ -692,10 +674,10 @@
       <ssv:Real unit="[m]" value="0.035"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_hoseHexOAssy.part_hoseHexO.geometricalSet_constructionGeometry.parameter_Tension.1">
-      <ssv:Real unit="Unit Not Applicable" value="1"/>
+      <ssv:Real value="1"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_hoseHexOAssy.part_hoseHexO.geometricalSet_constructionGeometry.parameter_Tension.2">
-      <ssv:Real unit="Unit Not Applicable" value="1"/>
+      <ssv:Real value="1"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_feedLineRadar.part_hoseAttachmentFL1.geometricalSet_instantiatedGeometry.parameterSet_L-Connector.1.parameter_rotationAngleXLC">
       <ssv:Real unit="[rad]" value="1.5707963267949"/>
@@ -710,7 +692,7 @@
       <ssv:Real unit="[m]" value="0.0655"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_feedLineRadar.part_hoseAttachmentFL1.geometricalSet_instantiatedGeometry.parameterSet_L-Connector.1.parameter_Ratio">
-      <ssv:Real unit="Unit Not Applicable" value="1"/>
+      <ssv:Real value="1"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_feedLineRadar.part_hoseAttachmentFL1.geometricalSet_constructionGeometry.parameter_X">
       <ssv:Real unit="[m]" value="4.4425"/>
@@ -761,7 +743,7 @@
       <ssv:Real unit="[m]" value="0.03"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_feedLineRadar.part_pipeAttachmentFL1.geometricalSet_instantiatedGeometry.parameterSet_straightPipeAttachment.2.parameter_Ratio">
-      <ssv:Real unit="Unit Not Applicable" value="1"/>
+      <ssv:Real value="1"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_feedLineRadar.part_pipeAttachmentFL2.geometricalSet_instantiatedGeometry.parameterSet_straightPipeAttachment.2.parameter_innerDiaSCPA">
       <ssv:Real unit="[m]" value="0.01"/>
@@ -785,7 +767,7 @@
       <ssv:Real unit="[m]" value="0.03"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_feedLineRadar.part_pipeAttachmentFL2.geometricalSet_instantiatedGeometry.parameterSet_straightPipeAttachment.2.parameter_Ratio">
-      <ssv:Real unit="Unit Not Applicable" value="1"/>
+      <ssv:Real value="1"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_feedLineRadar.part_pipeFL3.parameterSet_inputParameters.parameter_pipeRadius">
       <ssv:Real unit="[m]" value="0.01"/>
@@ -896,13 +878,13 @@
       <ssv:Real unit="[rad]" value="0.463647609000806"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_feedLineRadar.part_pipeFL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_1.parameter_X_r2d_parameter">
-      <ssv:Real unit="Unit Not Applicable" value="2.51"/>
+      <ssv:Real value="2.51"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_feedLineRadar.part_pipeFL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_1.parameter_Y_parameter">
       <ssv:Real unit="[rad]" value="0.463647609000806"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_feedLineRadar.part_pipeFL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_1.parameter_Z_parameter">
-      <ssv:Real unit="Unit Not Applicable" value="0.05989"/>
+      <ssv:Real value="0.05989"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_feedLineRadar.part_pipeFL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_2.parameter_innerAngle">
       <ssv:Real unit="[rad]" value="2.64462404871075"/>
@@ -911,13 +893,13 @@
       <ssv:Real unit="[rad]" value="0.496968604879054"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_feedLineRadar.part_pipeFL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_2.parameter_X_r2d_parameter">
-      <ssv:Real unit="Unit Not Applicable" value="2.51"/>
+      <ssv:Real value="2.51"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_feedLineRadar.part_pipeFL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_2.parameter_Y_parameter">
       <ssv:Real unit="[rad]" value="0.496968604879054"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_feedLineRadar.part_pipeFL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_2.parameter_Z_parameter">
-      <ssv:Real unit="Unit Not Applicable" value="0.063822"/>
+      <ssv:Real value="0.063822"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_feedLineRadar.part_pipeFL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_3.parameter_innerAngle">
       <ssv:Real unit="[rad]" value="1.53747533091665"/>
@@ -926,13 +908,13 @@
       <ssv:Real unit="[rad]" value="1.60411732267314"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_feedLineRadar.part_pipeFL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_3.parameter_X_r2d_parameter">
-      <ssv:Real unit="Unit Not Applicable" value="2.51"/>
+      <ssv:Real value="2.51"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_feedLineRadar.part_pipeFL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_3.parameter_Y_parameter">
       <ssv:Real unit="[rad]" value="1.60411732267314"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_feedLineRadar.part_pipeFL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_3.parameter_Z_parameter">
-      <ssv:Real unit="Unit Not Applicable" value="0.159425"/>
+      <ssv:Real value="0.159425"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_feedLineRadar.part_pipeFL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_4.parameter_innerAngle">
       <ssv:Real unit="[rad]" value="1.57079632679488"/>
@@ -941,13 +923,13 @@
       <ssv:Real unit="[rad]" value="1.57079632679488"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_feedLineRadar.part_pipeFL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_4.parameter_X_r2d_parameter">
-      <ssv:Real unit="Unit Not Applicable" value="2.51"/>
+      <ssv:Real value="2.51"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_feedLineRadar.part_pipeFL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_4.parameter_Y_parameter">
       <ssv:Real unit="[rad]" value="1.57079632679488"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_feedLineRadar.part_pipeFL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_4.parameter_Z_parameter">
-      <ssv:Real unit="Unit Not Applicable" value="0.15847"/>
+      <ssv:Real value="0.15847"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_feedLineRadar.part_pipeFL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_5.parameter_innerAngle">
       <ssv:Real unit="[rad]" value="1.57079632679488"/>
@@ -956,13 +938,13 @@
       <ssv:Real unit="[rad]" value="1.57079632679488"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_feedLineRadar.part_pipeFL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_5.parameter_X_r2d_parameter">
-      <ssv:Real unit="Unit Not Applicable" value="2.51"/>
+      <ssv:Real value="2.51"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_feedLineRadar.part_pipeFL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_5.parameter_Y_parameter">
       <ssv:Real unit="[rad]" value="1.57079632679488"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_feedLineRadar.part_pipeFL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_5.parameter_Z_parameter">
-      <ssv:Real unit="Unit Not Applicable" value="0.15847"/>
+      <ssv:Real value="0.15847"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_feedLineRadar.part_pipeFL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_6.parameter_innerAngle">
       <ssv:Real unit="[rad]" value="1.57079632679488"/>
@@ -971,13 +953,13 @@
       <ssv:Real unit="[rad]" value="1.57079632679488"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_feedLineRadar.part_pipeFL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_6.parameter_X_r2d_parameter">
-      <ssv:Real unit="Unit Not Applicable" value="2.51"/>
+      <ssv:Real value="2.51"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_feedLineRadar.part_pipeFL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_6.parameter_Y_parameter">
       <ssv:Real unit="[rad]" value="1.57079632679488"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_feedLineRadar.part_pipeFL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_6.parameter_Z_parameter">
-      <ssv:Real unit="Unit Not Applicable" value="0.15847"/>
+      <ssv:Real value="0.15847"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_feedLineRadar.part_pipeFL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_7.parameter_innerAngle">
       <ssv:Real unit="[rad]" value="2.12204638265431"/>
@@ -986,13 +968,13 @@
       <ssv:Real unit="[rad]" value="1.01954627093549"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_feedLineRadar.part_pipeFL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_7.parameter_X_r2d_parameter">
-      <ssv:Real unit="Unit Not Applicable" value="2.51"/>
+      <ssv:Real value="2.51"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_feedLineRadar.part_pipeFL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_7.parameter_Y_parameter">
       <ssv:Real unit="[rad]" value="1.01954627093549"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_feedLineRadar.part_pipeFL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_7.parameter_Z_parameter">
-      <ssv:Real unit="Unit Not Applicable" value="0.113172"/>
+      <ssv:Real value="0.113172"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_feedLineRadar.part_pipeFL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_8.parameter_innerAngle">
       <ssv:Real unit="[rad]" value="2.12186687587336"/>
@@ -1001,22 +983,22 @@
       <ssv:Real unit="[rad]" value="1.01972577771643"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_feedLineRadar.part_pipeFL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_8.parameter_X_r2d_parameter">
-      <ssv:Real unit="Unit Not Applicable" value="2.51"/>
+      <ssv:Real value="2.51"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_feedLineRadar.part_pipeFL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_8.parameter_Y_parameter">
       <ssv:Real unit="[rad]" value="1.01972577771643"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_feedLineRadar.part_pipeFL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_8.parameter_Z_parameter">
-      <ssv:Real unit="Unit Not Applicable" value="0.11319"/>
+      <ssv:Real value="0.11319"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_feedLineRadar.part_pipeFL3.geometricalSet_instantiatedGeometry.parameterSet_pipeLength.parameter_pipeLength">
       <ssv:Real unit="[m]" value="4.61434420887414"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_feedLineRadar.part_pipeFL3.geometricalSet_instantiatedGeometry.parameterSet_pipeLength.parameter_noOfBends">
-      <ssv:Integer unit="Unit Not Applicable" value="8"/>
+      <ssv:Integer value="8"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_feedLineRadar.part_pipeFL3.geometricalSet_instantiatedGeometry.parameterSet_pipeLength.parameter_Z_totalParameter">
-      <ssv:Real unit="Unit Not Applicable" value="0.984909"/>
+      <ssv:Real value="0.984909"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_feedLineRadar.part_pipeFL3.geometricalSet_instantiatedGeometry.parameterSet_insulationHosePipe.1.parameter_insulationLength">
       <ssv:Real unit="[m]" value="0.28"/>
@@ -1130,7 +1112,7 @@
       <ssv:Real unit="[m]" value="0.0655"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_returnLineRadar.part_hoseAttachmentRL.geometricalSet_instantiatedGeometry.parameterSet_L-Connector.1.parameter_Ratio">
-      <ssv:Real unit="Unit Not Applicable" value="1"/>
+      <ssv:Real value="1"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_returnLineRadar.part_hoseAttachmentRL.geometricalSet_constructionGeometry.parameter_X">
       <ssv:Real unit="[m]" value="4.4425"/>
@@ -1181,7 +1163,7 @@
       <ssv:Real unit="[m]" value="0.03"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_returnLineRadar.part_pipeAttachmentRL1.geometricalSet_instantiatedGeometry.parameterSet_straightPipeAttachment.2.parameter_Ratio">
-      <ssv:Real unit="Unit Not Applicable" value="1"/>
+      <ssv:Real value="1"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_returnLineRadar.part_pipeAttachmentRL2.geometricalSet_instantiatedGeometry.parameterSet_straightPipeAttachment.2.parameter_innerDiaSCPA">
       <ssv:Real unit="[m]" value="0.01"/>
@@ -1205,7 +1187,7 @@
       <ssv:Real unit="[m]" value="0.03"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_returnLineRadar.part_pipeAttachmentRL2.geometricalSet_instantiatedGeometry.parameterSet_straightPipeAttachment.2.parameter_Ratio">
-      <ssv:Real unit="Unit Not Applicable" value="1"/>
+      <ssv:Real value="1"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_returnLineRadar.part_pipeRL3.parameterSet_inputParameters.parameter_pipeRadius">
       <ssv:Real unit="[m]" value="0.01"/>
@@ -1316,13 +1298,13 @@
       <ssv:Real unit="[rad]" value="0.463647609000806"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_returnLineRadar.part_pipeRL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_1.parameter_X_r2d_parameter">
-      <ssv:Real unit="Unit Not Applicable" value="2.51"/>
+      <ssv:Real value="2.51"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_returnLineRadar.part_pipeRL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_1.parameter_Y_parameter">
       <ssv:Real unit="[rad]" value="0.463647609000806"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_returnLineRadar.part_pipeRL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_1.parameter_Z_parameter">
-      <ssv:Real unit="Unit Not Applicable" value="0.05989"/>
+      <ssv:Real value="0.05989"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_returnLineRadar.part_pipeRL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_2.parameter_innerAngle">
       <ssv:Real unit="[rad]" value="2.64462404871075"/>
@@ -1331,13 +1313,13 @@
       <ssv:Real unit="[rad]" value="0.496968604879054"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_returnLineRadar.part_pipeRL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_2.parameter_X_r2d_parameter">
-      <ssv:Real unit="Unit Not Applicable" value="2.51"/>
+      <ssv:Real value="2.51"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_returnLineRadar.part_pipeRL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_2.parameter_Y_parameter">
       <ssv:Real unit="[rad]" value="0.496968604879054"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_returnLineRadar.part_pipeRL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_2.parameter_Z_parameter">
-      <ssv:Real unit="Unit Not Applicable" value="0.063822"/>
+      <ssv:Real value="0.063822"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_returnLineRadar.part_pipeRL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_3.parameter_innerAngle">
       <ssv:Real unit="[rad]" value="1.53747533091665"/>
@@ -1346,13 +1328,13 @@
       <ssv:Real unit="[rad]" value="1.60411732267314"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_returnLineRadar.part_pipeRL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_3.parameter_X_r2d_parameter">
-      <ssv:Real unit="Unit Not Applicable" value="2.51"/>
+      <ssv:Real value="2.51"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_returnLineRadar.part_pipeRL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_3.parameter_Y_parameter">
       <ssv:Real unit="[rad]" value="1.60411732267314"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_returnLineRadar.part_pipeRL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_3.parameter_Z_parameter">
-      <ssv:Real unit="Unit Not Applicable" value="0.159425"/>
+      <ssv:Real value="0.159425"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_returnLineRadar.part_pipeRL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_4.parameter_innerAngle">
       <ssv:Real unit="[rad]" value="1.57079632679488"/>
@@ -1361,13 +1343,13 @@
       <ssv:Real unit="[rad]" value="1.57079632679488"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_returnLineRadar.part_pipeRL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_4.parameter_X_r2d_parameter">
-      <ssv:Real unit="Unit Not Applicable" value="2.51"/>
+      <ssv:Real value="2.51"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_returnLineRadar.part_pipeRL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_4.parameter_Y_parameter">
       <ssv:Real unit="[rad]" value="1.57079632679488"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_returnLineRadar.part_pipeRL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_4.parameter_Z_parameter">
-      <ssv:Real unit="Unit Not Applicable" value="0.15847"/>
+      <ssv:Real value="0.15847"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_returnLineRadar.part_pipeRL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_5.parameter_innerAngle">
       <ssv:Real unit="[rad]" value="1.57079632679488"/>
@@ -1376,13 +1358,13 @@
       <ssv:Real unit="[rad]" value="1.57079632679488"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_returnLineRadar.part_pipeRL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_5.parameter_X_r2d_parameter">
-      <ssv:Real unit="Unit Not Applicable" value="2.51"/>
+      <ssv:Real value="2.51"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_returnLineRadar.part_pipeRL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_5.parameter_Y_parameter">
       <ssv:Real unit="[rad]" value="1.57079632679488"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_returnLineRadar.part_pipeRL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_5.parameter_Z_parameter">
-      <ssv:Real unit="Unit Not Applicable" value="0.15847"/>
+      <ssv:Real value="0.15847"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_returnLineRadar.part_pipeRL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_6.parameter_innerAngle">
       <ssv:Real unit="[rad]" value="1.57079632679488"/>
@@ -1391,13 +1373,13 @@
       <ssv:Real unit="[rad]" value="1.57079632679488"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_returnLineRadar.part_pipeRL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_6.parameter_X_r2d_parameter">
-      <ssv:Real unit="Unit Not Applicable" value="2.51"/>
+      <ssv:Real value="2.51"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_returnLineRadar.part_pipeRL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_6.parameter_Y_parameter">
       <ssv:Real unit="[rad]" value="1.57079632679488"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_returnLineRadar.part_pipeRL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_6.parameter_Z_parameter">
-      <ssv:Real unit="Unit Not Applicable" value="0.15847"/>
+      <ssv:Real value="0.15847"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_returnLineRadar.part_pipeRL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_7.parameter_innerAngle">
       <ssv:Real unit="[rad]" value="2.65630689792065"/>
@@ -1406,13 +1388,13 @@
       <ssv:Real unit="[rad]" value="0.485285755669154"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_returnLineRadar.part_pipeRL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_7.parameter_X_r2d_parameter">
-      <ssv:Real unit="Unit Not Applicable" value="2.51"/>
+      <ssv:Real value="2.51"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_returnLineRadar.part_pipeRL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_7.parameter_Y_parameter">
       <ssv:Real unit="[rad]" value="0.485285755669154"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_returnLineRadar.part_pipeRL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_7.parameter_Z_parameter">
-      <ssv:Real unit="Unit Not Applicable" value="0.062125"/>
+      <ssv:Real value="0.062125"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_returnLineRadar.part_pipeRL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_8.parameter_innerAngle">
       <ssv:Real unit="[rad]" value="2.68106720067387"/>
@@ -1421,22 +1403,22 @@
       <ssv:Real unit="[rad]" value="0.460525452915914"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_returnLineRadar.part_pipeRL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_8.parameter_X_r2d_parameter">
-      <ssv:Real unit="Unit Not Applicable" value="2.51"/>
+      <ssv:Real value="2.51"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_returnLineRadar.part_pipeRL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_8.parameter_Y_parameter">
       <ssv:Real unit="[rad]" value="0.460525452915914"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_returnLineRadar.part_pipeRL3.geometricalSet_instantiatedGeometry.parameterSet_pipeBendAngle_8.parameter_Z_parameter">
-      <ssv:Real unit="Unit Not Applicable" value="0.059568"/>
+      <ssv:Real value="0.059568"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_returnLineRadar.part_pipeRL3.geometricalSet_instantiatedGeometry.parameterSet_pipeLength.parameter_pipeLength">
       <ssv:Real unit="[m]" value="4.57083438288096"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_returnLineRadar.part_pipeRL3.geometricalSet_instantiatedGeometry.parameterSet_pipeLength.parameter_noOfBends">
-      <ssv:Integer unit="Unit Not Applicable" value="8"/>
+      <ssv:Integer value="8"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_returnLineRadar.part_pipeRL3.geometricalSet_instantiatedGeometry.parameterSet_pipeLength.parameter_Z_totalParameter">
-      <ssv:Real unit="Unit Not Applicable" value="0.88024"/>
+      <ssv:Real value="0.88024"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_returnLineRadar.part_pipeRL3.geometricalSet_instantiatedGeometry.parameterSet_insulationHosePipe.1.parameter_insulationLength">
       <ssv:Real unit="[m]" value="0.26"/>
@@ -1538,16 +1520,34 @@
       <ssv:Real unit="[m]" value="0.018"/>
     </ssv:Parameter>
     <ssv:Parameter name="part_feedLineRadar.parameterSet_outputParameters.parameter_ZParameterFL">
-      <ssv:Real unit="Unit Not Applicable" value="0.984909"/>
+      <ssv:Real value="0.984909"/>
     </ssv:Parameter>
     <ssv:Parameter name="part_feedLineRadar.parameterSet_outputParameters.parameter_pipeLengthTotalFL">
       <ssv:Real unit="[m]" value="4.61434420887414"/>
     </ssv:Parameter>
     <ssv:Parameter name="part_returnLineRadar.parameterSet_outputParameters.parameter_ZParameterRL">
-      <ssv:Real unit="Unit Not Applicable" value="0.88024"/>
+      <ssv:Real value="0.88024"/>
     </ssv:Parameter>
     <ssv:Parameter name="part_returnLineRadar.parameterSet_outputParameters.parameter_pipeLengthTotalRL">
       <ssv:Real unit="[m]" value="4.57083438288096"/>
     </ssv:Parameter>
-  </ssv:Parameters>
+  </ssv:Parameters>s
+  <ssv:Units>
+    <ssc:Unit name="m">
+      <ssc:BaseUnit m="1"/>
+    </ssc:Unit>
+    <ssc:Unit name="deg">
+      <ssc:BaseUnit deg="1"/>
+      <ssc:DisplayUnit name="rad" factor="0.017453292519943301"/>
+    </ssc:Unit>
+    <ssc:Unit name="kg/m3">
+      <ssc:BaseUnit kg="1" m="-3"/>
+    </ssc:Unit>
+    <ssc:Unit name="m3">
+      <ssc:BaseUnit m="3"/>
+    </ssc:Unit>
+    <ssc:Unit name="kg">
+      <ssc:BaseUnit kg="1"/>
+    </ssc:Unit>
+  </ssv:Units>
 </ssv:ParameterSet>

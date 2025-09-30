@@ -9,7 +9,7 @@ from OMSimulator import SSP, Settings, CRef
 
 Settings.suppressPath = True
 
-model = SSP('../resources/embrace_TwoConf.ssp.ssp')
+model = SSP('../resources/embrace_TwoConf.ssp')
 model.addResource("../resources/embrace_TwoConf/CONOPS.csv", new_name = "resources/CONOPS.csv")
 
 model.removeSSVReference(CRef('root'), 'resources/ECS_Conf2.ssv')
