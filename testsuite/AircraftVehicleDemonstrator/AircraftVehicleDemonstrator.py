@@ -182,15 +182,20 @@ instantiated_model.terminate()
 instantiated_model.delete()
 
 ## Result:
-## UserWarning: Failed to validate RAPID_Systems_2021-03-29_Test_1.ssv against schemafile SystemStructureParameterValues.xsd
-## ERROR (line 505, column 0): Element '{http://ssp-standard.org/SSP1/SystemStructureCommon}BaseUnit', attribute 'rad': '0.017453292519943301' is not a valid value of the atomic type 'xs:int'.
-## UserWarning: Failed to validate SystemStructure.ssd against schemafile SystemStructureDescription.xsd
-## ERROR (line 17, column 0): Element '{http://ssp-standard.org/SSP1/SystemStructureCommon}Enumeration': The attribute 'name' is required but missing.
-## info:    Result file: embrace1_res.mat (bufferSize=1)
-## info:    Initialize:
-## info:      embrace.root.ECS_HW.coolinPackAir.looptype:  2
-## info:      embrace.root.ECS_HW.eCS.MaxCoolPower.k    :  5.0
-## info:      embrace.root.ECS_HW.pipeC.L               :  1.0
-## info:      embrace.root.ECS_HW.pipeB.L               :  0.976535328081166
-## info:      embrace.root.ECS_HW.pipeA.L               :  0.976535328081166
+## warning: [cockpit: resources/0003_cockpit.fmu] The dependencies of the initial unknowns defined in the FMU are ignored because the flag --ignoreInitialUnknowns is active. Instead, all the initial unknowns will depend on all inputs.
+## warning: [consumer_A: resources/0004_consumer_A.fmu] The dependencies of the initial unknowns defined in the FMU are ignored because the flag --ignoreInitialUnknowns is active. Instead, all the initial unknowns will depend on all inputs.
+## warning: [consumer_B: resources/0005_consumer_B.fmu] The dependencies of the initial unknowns defined in the FMU are ignored because the flag --ignoreInitialUnknowns is active. Instead, all the initial unknowns will depend on all inputs.
+## warning: [eCS_Generic_Export: resources/0006_eCS_Generic_Export.fmu] The dependencies of the initial unknowns defined in the FMU are ignored because the flag --ignoreInitialUnknowns is active. Instead, all the initial unknowns will depend on all inputs.
+## warning: [eCS_SW: resources/0007_eCS_SW.fmu] The dependencies of the initial unknowns defined in the FMU are ignored because the flag --ignoreInitialUnknowns is active. Instead, all the initial unknowns will depend on all inputs.
+## warning: [engine: resources/0008_engine.fmu] The dependencies of the initial unknowns defined in the FMU are ignored because the flag --ignoreInitialUnknowns is active. Instead, all the initial unknowns will depend on all inputs.
+## info:    Alg. loop (size 80/1800)
+##            model.root.engine
+##            model.root.eCS_SW
+##            model.root.eCS_Generic_Export
+##            model.root.consumer_B
+##            model.root.consumer_A
+##            model.root.cockpit
+## info:    Result file: AircraftVehicleDemonstrator_res.mat (bufferSize=1)
+## info:    6 warnings
+## info:    0 errors
 ## endResult
