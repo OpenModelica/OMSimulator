@@ -3,6 +3,7 @@ TEST = ../rtest -v
 TESTFILES = \
 embrace1.py \
 embrace2.py \
+AircraftVehicleDemonstrator.py \
 
 # Run make failingtest
 FAILINGTESTFILES = \

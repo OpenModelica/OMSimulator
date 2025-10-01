@@ -44,6 +44,8 @@ class capi:
     self.obj.oms_addSubModel.restype = ctypes.c_int
     self.obj.oms_addSystem.argtypes = [ctypes.c_char_p, ctypes.c_int]
     self.obj.oms_addSystem.restype = ctypes.c_int
+    self.obj.oms_addSignalsToResults.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms_addSignalsToResults.restype = ctypes.c_int
     self.obj.oms_delete.argtypes = [ctypes.c_char_p]
     self.obj.oms_delete.restype = ctypes.c_int
     self.obj.oms_getVersion.argtypes = None
@@ -66,6 +68,8 @@ class capi:
     self.obj.oms_instantiate.restype = ctypes.c_int
     self.obj.oms_newModel.argtypes = [ctypes.c_char_p]
     self.obj.oms_newModel.restype = ctypes.c_int
+    self.obj.oms_removeSignalsFromResults.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms_removeSignalsFromResults.restype = ctypes.c_int
     self.obj.oms_setCommandLineOption.argtypes = [ctypes.c_char_p]
     self.obj.oms_setCommandLineOption.restype = ctypes.c_int
     self.obj.oms_setTempDirectory.argtypes = [ctypes.c_char_p]
@@ -120,6 +124,10 @@ class capi:
     '''Add a system to the current model.
     system_type: 0 for system, 1 for sub-system.'''
     status = self.obj.oms_addSystem(system_name.encode('utf-8'), system_type)
+    return Status(status)
+
+  def addSignalsToResults(self, cref, regex):
+    status = self.obj.oms_addSignalsToResults(cref.encode(), regex.encode())
     return Status(status)
 
   def delete(self, cref):
@@ -265,5 +273,8 @@ class capi:
     status = self.obj.oms_terminate(cref.encode())
     return Status(status)
 
+  def removeSignalsFromResults(self, cref, regex):
+    status = self.obj.oms_removeSignalsFromResults(cref.encode(), regex.encode())
+    return Status(status)
 
 Capi = capi()

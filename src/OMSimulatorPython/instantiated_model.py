@@ -394,6 +394,16 @@ class InstantiatedModel:
     if status != Status.ok:
       raise RuntimeError(f"Failed to set logging interval: {status}")
 
+  def addSignalsToResults(self, regex: str):
+    status = Capi.addSignalsToResults(self.modelName, regex)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set regular expression : {status}")
+
+  def removeSignalsFromResults(self, regex: str):
+    status = Capi.removeSignalsFromResults(self.modelName, regex)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set regular expression : {status}")
+
   def terminate(self):
     status = Capi.terminate(self.modelName)
     if status != Status.ok:
