@@ -1890,7 +1890,15 @@ oms_status_enu_t oms::ComponentFMUME::addSignalsToResults(const char* regex)
       continue;
 
     auto const &var = allVariables[i];
-    if(regex_match(std::string(getFullCref() + var.getCref()), exp))
+
+    // check for exportName, to be used in result file to map the variable to the correct signal in ssp
+    std::string name;
+    if (!exportName.empty())
+      name = std::string(ComRef(exportName) + var.getCref());
+    else
+      name = std::string(getFullCref() + var.getCref());
+
+    if(regex_match(name, exp))
     {
       //logInfo("added \"" + std::string(getFullCref() + var.getCref()) + "\" to results");
       exportVariables[i] = true;
@@ -1909,7 +1917,15 @@ oms_status_enu_t oms::ComponentFMUME::removeSignalsFromResults(const char* regex
       continue;
 
     auto const &var = allVariables[i];
-    if(regex_match(std::string(getFullCref() + var.getCref()), exp))
+
+    // check for exportName, to be used in result file to map the variable to the correct signal in ssp
+    std::string name;
+    if (!exportName.empty())
+      name = std::string(ComRef(exportName) + var.getCref());
+    else
+      name = std::string(getFullCref() + var.getCref());
+
+    if(regex_match(name, exp))
     {
       //logInfo("removed \"" + std::string(getFullCref() + var.getCref()) + "\" from results");
       exportVariables[i] = false;

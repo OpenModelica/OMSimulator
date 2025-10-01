@@ -1,4 +1,5 @@
 import logging
+import warnings
 from lxml import etree as ET
 from pathlib import Path
 
@@ -11,6 +12,11 @@ from OMSimulator import namespace, CRef
 from collections import defaultdict
 
 logger = logging.getLogger(__name__)
+
+# Custom warning formatter: only show category + message
+def _simple_warning(message, category, filename, lineno, line=None):
+  return f"{category.__name__}: {message}\n"
+warnings.formatwarning = _simple_warning
 
 def _setParameters(parameterValues: dict, obj):
   if len(parameterValues) > 0:
@@ -166,7 +172,8 @@ def validateSSP(root, filename : str, schema_file : str):
     message = f"Failed to validate {Path(filename).name} against schemafile {schema_file}"
     for entry in schema.error_log:
       message += "\n%s (line %d, column %d): %s" % (entry.level_name, entry.line, entry.column, entry.message)
-    raise Exception(message)
+    # warn the user instead of raising an exception
+    warnings.warn(message, UserWarning)
 
 def exportAnnotations(node, solvers):
   """Export annotations to the XML node"""

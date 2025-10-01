@@ -1,22 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ssv:ParameterSet xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" version="1.0" name="product_mainAssembly">
-  <Units>
-    <Unit name="m">
-      <BaseUnit m="1"/>
-    </Unit>
-    <Unit name="deg">
-      <BaseUnit rad="0.017453292519943301"/>
-    </Unit>
-    <Unit name="kg/m3">
-      <BaseUnit kg="1" m="3"/>
-    </Unit>
-    <Unit name="m3">
-      <BaseUnit m="3"/>
-    </Unit>
-    <Unit name="kg">
-      <BaseUnit kg="1"/>
-    </Unit>
-  </Units>
+<ssv:ParameterSet xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" version="2.0" name="product_mainAssembly">
   <ssv:Parameters>
     <ssv:Parameter name="product_subAssembly1.part_testPipe1.parameterSet_inputParameters.parameter_pipeRadius">
       <ssv:Real unit="[m]" value="0.005"/>
@@ -28,13 +11,13 @@
       <ssv:Real unit="[m]" value="0.035"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_subAssembly1.part_testPipe1.parameterSet_inputParameters.parameter_testReal">
-      <ssv:Real unit="Unit Not Applicable" value="2.5"/>
+      <ssv:Real  value="2.5"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_subAssembly1.part_testPipe1.parameterSet_inputParameters.parameter_testInteger">
-      <ssv:Integer unit="Unit Not Applicable" value="7"/>
+      <ssv:Integer  value="7"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_subAssembly1.part_testPipe1.parameterSet_inputParameters.parameter_testBoolean">
-      <ssv:Boolean unit="Unit Not Applicable" value="1"/>
+      <ssv:Boolean  value="1"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_subAssembly1.part_testPipe1.parameterSet_outputParameters.parameter_pipeLength">
       <ssv:Real unit="[m]" value="0.976535328081166"/>
@@ -181,7 +164,7 @@
       <ssv:Real unit="[m]" value="0.976535328081166"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_pipeLength.parameter_noOfBends">
-      <ssv:Integer unit="Unit Not Applicable" value="8"/>
+      <ssv:Integer  value="8"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_subAssembly1.part_testPipe2.parameterSet_inputParameters.parameter_pipeRadius">
       <ssv:Real unit="[m]" value="0.005"/>
@@ -337,7 +320,7 @@
       <ssv:Real unit="[m]" value="1.15989904821013"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_pipeLength.parameter_noOfBends">
-      <ssv:Integer unit="Unit Not Applicable" value="8"/>
+      <ssv:Integer  value="8"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_subAssembly1.part_valve1.parameterSet_inputParameters.parameter_pipeRadius">
       <ssv:Real unit="[m]" value="0.01"/>
@@ -358,13 +341,13 @@
       <ssv:Real unit="[m]" value="0.035"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_subAssembly2.part_testPipe.parameterSet_inputParameters.parameter_testReal">
-      <ssv:Real unit="Unit Not Applicable" value="2.5"/>
+      <ssv:Real  value="2.5"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_subAssembly2.part_testPipe.parameterSet_inputParameters.parameter_testInteger">
-      <ssv:Integer unit="Unit Not Applicable" value="7"/>
+      <ssv:Integer  value="7"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_subAssembly2.part_testPipe.parameterSet_inputParameters.parameter_testBoolean">
-      <ssv:Boolean unit="Unit Not Applicable" value="1"/>
+      <ssv:Boolean  value="1"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_subAssembly2.part_testPipe.parameterSet_outputParameters.parameter_pipeLength">
       <ssv:Real unit="[m]" value="1.03292033746682"/>
@@ -511,7 +494,24 @@
       <ssv:Real unit="[m]" value="1.03292033746682"/>
     </ssv:Parameter>
     <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_pipeLength.parameter_noOfBends">
-      <ssv:Integer unit="Unit Not Applicable" value="8"/>
+      <ssv:Integer  value="8"/>
     </ssv:Parameter>
   </ssv:Parameters>
+  <ssv:Units>
+    <ssc:Unit name="m">
+      <ssc:BaseUnit m="1"/>
+    </ssc:Unit>
+    <ssc:Unit name="deg">
+      <ssc:BaseUnit rad="0.017453292519943301"/>
+    </ssc:Unit>
+    <ssc:Unit name="kg/m3">
+      <ssc:BaseUnit kg="1" m="3"/>
+    </ssc:Unit>
+    <ssc:Unit name="m3">
+      <ssc:BaseUnit m="3"/>
+    </ssc:Unit>
+    <ssc:Unit name="kg">
+      <ssc:BaseUnit kg="1"/>
+    </ssc:Unit>
+  </ssv:Units>
 </ssv:ParameterSet>

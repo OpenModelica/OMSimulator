@@ -23,7 +23,7 @@ except Exception as e:
 
 ## Result:
 ## INFO:OMSimulator.ssp:Temporary directory created: <hidden>
-## INFO:OMSimulator.ssp:Temporary directory removed: <hidden>
-## Error: Failed to validate System1.ssv against schemafile SystemStructureParameterValues.xsd
+## UserWarning: Failed to validate System1.ssv against schemafile SystemStructureParameterValues.xsd
 ## ERROR (line 4, column 0): Element '{http://ssp-standard.org/SSP1/SystemStructureParameterValues}Parameter', attribute 'type': The attribute 'type' is not allowed.
+## INFO:OMSimulator.ssp:Temporary directory removed: <hidden>
 ## endResult
