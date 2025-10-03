@@ -1,7 +1,10 @@
 project(pip)
 
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/setup.py" "${CMAKE_CURRENT_BINARY_DIR}/setup.py" @ONLY)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/build_helpers.py" "${CMAKE_CURRENT_BINARY_DIR}/build_helpers.py" @ONLY)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/pyproject.toml" "${CMAKE_CURRENT_BINARY_DIR}/pyproject.toml" @ONLY)
 
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/setup.py" DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/install/)
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/build_helpers.py" DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/install/)
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/pyproject.toml" DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/install/)
+
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/README.md" DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/install/)
 install(FILES "${CMAKE_SOURCE_DIR}/OSMC-License.txt" DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/install/)
