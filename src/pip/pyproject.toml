@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "OMSimulator"
-version = @OMS_VERSION_STRING@  # replace with actual version
+version = "@OMS_VERSION_STRING@"  # configure with actual version
 description = "OMSimulator - the FMI-based co-simulation environment for Python"
 readme = "README.md"
 authors = [
