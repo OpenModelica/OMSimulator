@@ -151,7 +151,29 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::
   fmiVersion_t version = fmi4c_getFmiVersion(component->fmu);
   if (fmiVersion2 != version)
   {
-    logError("Unsupported FMI version: " + version);
+    switch (version)
+    {
+      case fmiVersionUnknown:
+      {
+        logError("Unsupported FMI version: unknown");
+        break;
+      }
+      case fmiVersion1:
+      {
+        logError("Unsupported FMI version: 1");
+        break;
+      }
+      case fmiVersion3:
+      {
+        logError("Unsupported FMI version: 3");
+        break;
+      }
+      default:
+      {
+        logError("Unsupported FMI version");
+        break;
+      }
+    }
     delete component;
     return NULL;
   }
