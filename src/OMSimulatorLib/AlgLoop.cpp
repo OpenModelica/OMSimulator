@@ -53,7 +53,7 @@ inline bool checkFlag(int flag, std::string functionName)
     logError("SUNDIALS_ERROR: " + functionName + " failed with flag = " + std::to_string(flag));
     return false;
   }
-  logDebug("SUNDIALS_INFO: " + functionName + " failed with flag = " + std::to_string(flag));
+  logDebug("SUNDIALS_INFO: " + functionName + " succeeded with flag = " + std::to_string(flag));
   return true;
 }
 
@@ -460,6 +460,10 @@ oms_status_enu_t oms::KinsolSolver::kinsolSolve(System& syst, DirectedGraph& gra
     logWarning("Solution of algebraic loop " + std::to_string(((KINSOL_USER_DATA *)user_data)->algLoopNumber + 1) + " not within precission given by fnormtol: " + to_string(fnormtol));
     logDebug("2-norm of residual of solution: " + to_string(fNormValue));
     return oms_status_warning;
+  }
+  else if (Flags::DumpAlgLoops())
+  {
+    logInfo("2-norm of residual of solution: " + to_string(fNormValue) + " <= " + to_string(fnormtol));
   }
 
   logDebug("Solved system " + std::to_string(kinsolUserData->algLoopNumber) + " successfully");
