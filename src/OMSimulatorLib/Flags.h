@@ -39,6 +39,39 @@
 
 namespace oms
 {
+  template <typename T>
+  class FlagValue
+  {
+  public:
+    bool given;
+    T value;
+
+    FlagValue() = default;
+    FlagValue(const FlagValue&) = default;
+
+    FlagValue& operator=(const FlagValue&) = default;
+
+    FlagValue(const T& defaultValue) : given(false), value(defaultValue)
+    { }
+
+    void operator=(const T& newValue) {
+      given = true;
+      value = newValue;
+    }
+
+    operator const T& () const {
+      return value;
+    }
+
+    bool operator==(const T& v) const {
+      return value == v;
+    }
+
+    bool operator!=(const T& v) const {
+      return value != v;
+    }
+  };
+
   class Flags
   {
   private:
@@ -47,86 +80,92 @@ namespace oms
     void setDefaults();
 
     // stop the compiler generating methods copying the object
-    Flags(Flags const&);            ///< not implemented
-    Flags& operator=(Flags const&); ///< not implemented
+    //Flags(Flags const&);            ///< not implemented
+    Flags& operator=(Flags const&) = default; ///< not implemented
 
     static Flags& GetInstance();
 
   public:
     static oms_status_enu_t SetCommandLineOption(const std::string& cmd);
 
-    static bool AddParametersToCSV() {return GetInstance().addParametersToCSV;}
-    static int CVODEMaxErrTestFails() {return GetInstance().cvodeMaxErrTestFails;}
-    static int CVODEMaxNLSFailures() {return GetInstance().cvodeMaxNLSFails;}
-    static int CVODEMaxNLSIterations() {return GetInstance().cvodeMaxNLSIterations;}
-    static int CVODEMaxSteps() {return GetInstance().cvodeMaxSteps;}
-    static bool DefaultModeIsCS() {return GetInstance().defaultModeIsCS;}
-    static bool DeleteTempFiles() {return GetInstance().deleteTempFiles;}
-    static bool DirectionalDerivatives() {return GetInstance().directionalDerivatives;}
-    static bool DumpAlgLoops() {return GetInstance().dumpAlgLoops;}
-    static bool EmitEvents() {return GetInstance().emitEvents;}
-    static bool IgnoreInitialUnknowns() {return GetInstance().ignoreInitialUnknowns;}
-    static bool InputExtrapolation() {return GetInstance().inputExtrapolation;}
-    static bool ProgressBar() {return GetInstance().progressBar;}
-    static bool RealTime() {return GetInstance().realTime;}
-    static bool SkipCSVHeader() {return GetInstance().skipCSVHeader;}
-    static bool SolverStats() {return GetInstance().solverStats;}
-    static bool StripRoot() {return GetInstance().stripRoot;}
-    static bool SuppressPath() {return GetInstance().suppressPath;}
-    static bool WallTime() {return GetInstance().wallTime;}
-    static bool ZeroNominal() {return GetInstance().zeroNominal;}
-    static double InitialStepSize() {return GetInstance().initialStepSize;}
-    static double MaximumStepSize() {return GetInstance().maximumStepSize;}
-    static double MinimumStepSize() {return GetInstance().minimumStepSize;}
-    static double StartTime() {return GetInstance().startTime;}
-    static double StopTime() {return GetInstance().stopTime;}
-    static double Tolerance() {return GetInstance().tolerance;}
-    static oms_alg_solver_enu_t AlgLoopSolver() {return GetInstance().algLoopSolver;}
-    static oms_solver_enu_t MasterAlgorithm() {return GetInstance().masterAlgorithm;}
-    static oms_solver_enu_t Solver() {return GetInstance().solver;}
-    static std::string ResultFile() {return GetInstance().resultFile;}
-    static unsigned int Intervals() {return GetInstance().intervals;}
-    static unsigned int MaxEventIteration() {return GetInstance().maxEventIteration;}
-    static unsigned int MaxLoopIteration() {return GetInstance().maxLoopIteration;}
-    static unsigned int NumProcs() {return GetInstance().numProcs;}
-    static unsigned int Timeout() {return GetInstance().timeout;}
+    static FlagValue<bool> &AddParametersToCSV() {return GetInstance().flagValues.addParametersToCSV;}
+    static FlagValue<int> &CVODEMaxErrTestFails() {return GetInstance().flagValues.cvodeMaxErrTestFails;}
+    static FlagValue<int> &CVODEMaxNLSFailures() {return GetInstance().flagValues.cvodeMaxNLSFails;}
+    static FlagValue<int> &CVODEMaxNLSIterations() {return GetInstance().flagValues.cvodeMaxNLSIterations;}
+    static FlagValue<int> &CVODEMaxSteps() { return GetInstance().flagValues.cvodeMaxSteps; }
+    static FlagValue<bool> &DefaultModeIsCS() {return GetInstance().flagValues.defaultModeIsCS;}
+    static FlagValue<bool> &DeleteTempFiles() {return GetInstance().flagValues.deleteTempFiles;}
+    static FlagValue<bool> &DirectionalDerivatives() {return GetInstance().flagValues.directionalDerivatives;}
+    static FlagValue<bool> &DumpAlgLoops() {return GetInstance().flagValues.dumpAlgLoops;}
+    static FlagValue<bool> &EmitEvents() {return GetInstance().flagValues.emitEvents;}
+    static FlagValue<bool> &IgnoreInitialUnknowns() {return GetInstance().flagValues.ignoreInitialUnknowns;}
+    static FlagValue<bool> &InputExtrapolation() {return GetInstance().flagValues.inputExtrapolation;}
+    static FlagValue<bool> &ProgressBar() {return GetInstance().flagValues.progressBar;}
+    static FlagValue<bool> &RealTime() {return GetInstance().flagValues.realTime;}
+    static FlagValue<bool> &SkipCSVHeader() {return GetInstance().flagValues.skipCSVHeader;}
+    static FlagValue<bool> &SolverStats() {return GetInstance().flagValues.solverStats;}
+    static FlagValue<bool> &StripRoot() {return GetInstance().flagValues.stripRoot;}
+    static FlagValue<bool> &SuppressPath() {return GetInstance().flagValues.suppressPath;}
+    static FlagValue<bool> &WallTime() {return GetInstance().flagValues.wallTime;}
+    static FlagValue<bool> &ZeroNominal() {return GetInstance().flagValues.zeroNominal;}
+    static FlagValue<double> &InitialStepSize() {return GetInstance().flagValues.initialStepSize;}
+    static FlagValue<double> &MaximumStepSize() {return GetInstance().flagValues.maximumStepSize;}
+    static FlagValue<double> &MinimumStepSize() {return GetInstance().flagValues.minimumStepSize;}
+    static FlagValue<double> &StartTime() {return GetInstance().flagValues.startTime;}
+    static FlagValue<double> &StopTime() {return GetInstance().flagValues.stopTime;}
+    static FlagValue<double> &Tolerance() {return GetInstance().flagValues.tolerance;}
+    static FlagValue<oms_alg_solver_enu_t> &AlgLoopSolver() {return GetInstance().flagValues.algLoopSolver;}
+    static FlagValue<oms_solver_enu_t> &MasterAlgorithm() {return GetInstance().flagValues.masterAlgorithm;}
+    static FlagValue<oms_solver_enu_t> &Solver() {return GetInstance().flagValues.solver;}
+    static FlagValue<std::string> &ResultFile() {return GetInstance().flagValues.resultFile;}
+    static FlagValue<unsigned int> &Intervals() {return GetInstance().flagValues.intervals;}
+    static FlagValue<unsigned int> &MaxEventIteration() {return GetInstance().flagValues.maxEventIteration;}
+    static FlagValue<unsigned int> &MaxLoopIteration() {return GetInstance().flagValues.maxLoopIteration;}
+    static FlagValue<unsigned int> &NumProcs() {return GetInstance().flagValues.numProcs;}
+    static FlagValue<unsigned int> &Timeout() {return GetInstance().flagValues.timeout;}
+
+    struct FlagValues {
+      FlagValues();
+
+      FlagValue<bool> addParametersToCSV;
+      FlagValue<int> cvodeMaxErrTestFails;
+      FlagValue<int> cvodeMaxNLSFails;
+      FlagValue<int> cvodeMaxNLSIterations;
+      FlagValue<int> cvodeMaxSteps;
+      FlagValue<bool> defaultModeIsCS;
+      FlagValue<bool> deleteTempFiles;
+      FlagValue<bool> directionalDerivatives;
+      FlagValue<bool> dumpAlgLoops;
+      FlagValue<bool> emitEvents;
+      FlagValue<bool> ignoreInitialUnknowns;
+      FlagValue<bool> inputExtrapolation;
+      FlagValue<bool> progressBar;
+      FlagValue<bool> realTime;
+      FlagValue<bool> skipCSVHeader;
+      FlagValue<bool> solverStats;
+      FlagValue<bool> stripRoot;
+      FlagValue<bool> suppressPath;
+      FlagValue<bool> wallTime;
+      FlagValue<bool> zeroNominal;
+      FlagValue<double> initialStepSize;
+      FlagValue<double> maximumStepSize;
+      FlagValue<double> minimumStepSize;
+      FlagValue<double> startTime;
+      FlagValue<double> stopTime;
+      FlagValue<double> tolerance;
+      FlagValue<oms_alg_solver_enu_t> algLoopSolver;
+      FlagValue<oms_solver_enu_t> masterAlgorithm;
+      FlagValue<oms_solver_enu_t> solver;
+      FlagValue<std::string> resultFile;
+      FlagValue<unsigned int> intervals;
+      FlagValue<unsigned int> maxEventIteration;
+      FlagValue<unsigned int> maxLoopIteration;
+      FlagValue<unsigned int> numProcs;
+      FlagValue<unsigned int> timeout;
+    };
 
   private:
-    bool addParametersToCSV;
-    int cvodeMaxErrTestFails;
-    int cvodeMaxNLSFails;
-    int cvodeMaxNLSIterations;
-    int cvodeMaxSteps;
-    bool defaultModeIsCS;
-    bool deleteTempFiles;
-    bool directionalDerivatives;
-    bool dumpAlgLoops;
-    bool emitEvents;
-    bool ignoreInitialUnknowns;
-    bool inputExtrapolation;
-    bool progressBar;
-    bool realTime;
-    bool skipCSVHeader;
-    bool solverStats;
-    bool stripRoot;
-    bool suppressPath;
-    bool wallTime;
-    bool zeroNominal;
-    double initialStepSize;
-    double maximumStepSize;
-    double minimumStepSize;
-    double startTime;
-    double stopTime;
-    double tolerance;
-    oms_alg_solver_enu_t algLoopSolver;
-    oms_solver_enu_t masterAlgorithm;
-    oms_solver_enu_t solver;
-    std::string resultFile;
-    unsigned int intervals;
-    unsigned int maxEventIteration;
-    unsigned int maxLoopIteration;
-    unsigned int numProcs;
-    unsigned int timeout;
+    FlagValues flagValues;
 
   private:
     struct Flag
