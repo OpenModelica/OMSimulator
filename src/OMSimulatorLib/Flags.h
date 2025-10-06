@@ -93,6 +93,7 @@ namespace oms
     static FlagValue<int> &CVODEMaxNLSFailures() {return GetInstance().flagValues.cvodeMaxNLSFails;}
     static FlagValue<int> &CVODEMaxNLSIterations() {return GetInstance().flagValues.cvodeMaxNLSIterations;}
     static FlagValue<int> &CVODEMaxSteps() { return GetInstance().flagValues.cvodeMaxSteps; }
+    static FlagValue<int> &CVODEMaxOrder() { return GetInstance().flagValues.cvodeMaxOrder; }
     static FlagValue<bool> &DefaultModeIsCS() {return GetInstance().flagValues.defaultModeIsCS;}
     static FlagValue<bool> &DeleteTempFiles() {return GetInstance().flagValues.deleteTempFiles;}
     static FlagValue<bool> &DirectionalDerivatives() {return GetInstance().flagValues.directionalDerivatives;}
@@ -132,6 +133,7 @@ namespace oms
       FlagValue<int> cvodeMaxNLSFails;
       FlagValue<int> cvodeMaxNLSIterations;
       FlagValue<int> cvodeMaxSteps;
+      FlagValue<int> cvodeMaxOrder;
       FlagValue<bool> defaultModeIsCS;
       FlagValue<bool> deleteTempFiles;
       FlagValue<bool> directionalDerivatives;
@@ -199,6 +201,7 @@ namespace oms
       {"--CVODEMaxNLSFailures", "", "Maximum number of nonlinear convergence failures for CVODE", re_number, Flags::CVODEMaxNLSFailures, false},
       {"--CVODEMaxNLSIterations", "", "Maximum number of nonlinear solver iterations for CVODE", re_number, Flags::CVODEMaxNLSIterations, false},
       {"--CVODEMaxSteps", "", "Maximum number of steps for CVODE", re_number, Flags::CVODEMaxSteps, false},
+      {"--CVODEMaxOrder", "", "Maximum order for CVODE", re_number, Flags::CVODEMaxOrder, false},
       {"--deleteTempFiles", "", "Deletes temp files as soon as they are no longer needed ([true], false)", re_bool, Flags::DeleteTempFiles, false},
       {"--directionalDerivatives", "", "Specifies whether directional derivatives should be used to calculate the Jacobian for alg. loops or if a numerical approximation should be used instead ([true], false)", re_bool, Flags::DirectionalDerivatives, false},
       {"--dumpAlgLoops", "", "Dump information for alg loops (true, [false])", re_bool, Flags::DumpAlgLoops, false},
@@ -241,6 +244,7 @@ namespace oms
     static oms_status_enu_t CVODEMaxNLSFailures(const std::string& value);
     static oms_status_enu_t CVODEMaxNLSIterations(const std::string& value);
     static oms_status_enu_t CVODEMaxSteps(const std::string& value);
+    static oms_status_enu_t CVODEMaxOrder(const std::string& value);
     static oms_status_enu_t DeleteTempFiles(const std::string& value);
     static oms_status_enu_t DirectionalDerivatives(const std::string& value);
     static oms_status_enu_t DumpAlgLoops(const std::string& value);

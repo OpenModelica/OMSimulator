@@ -52,6 +52,7 @@ oms::Flags::FlagValues::FlagValues() :
   cvodeMaxNLSFails(100),
   cvodeMaxNLSIterations(5),
   cvodeMaxSteps(1000),
+  cvodeMaxOrder(2),
   defaultModeIsCS(false),
   deleteTempFiles(true),
   directionalDerivatives(true),
@@ -231,6 +232,12 @@ oms_status_enu_t oms::Flags::CVODEMaxNLSIterations(const std::string& value)
 oms_status_enu_t oms::Flags::CVODEMaxSteps(const std::string& value)
 {
   GetInstance().flagValues.cvodeMaxSteps = atoi(value.c_str());
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Flags::CVODEMaxOrder(const std::string& value)
+{
+  GetInstance().flagValues.cvodeMaxOrder = atoi(value.c_str());
   return oms_status_ok;
 }
 
