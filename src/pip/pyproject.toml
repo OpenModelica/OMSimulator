@@ -1,21 +1,25 @@
 [build-system]
-requires = ["setuptools", "pip"]
+requires = ["setuptools", "pip", "requests", "lxml"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "OMSimulator"
-version = "@OMS_VERSION_STRING@"  # configure with actual version
+version = "@OMS_VERSION_PEP440_STRING@"  # configure with actual version
 description = "OMSimulator - the FMI-based co-simulation environment for Python"
 readme = "README.md"
 authors = [
     { name = "Open Source Modelica Consortium (OSMC)", email = "openmodelicadevelopers@ida.liu.se" }
 ]
+
 license = { file = "OSMC-License.txt" }
+
 requires-python = ">=3.10"
+
 dependencies = [
     "requests",
     "lxml>=5.3.1"
 ]
+
 
 [project.urls]
 Homepage = "http://openmodelica.org/"
@@ -25,4 +29,4 @@ packages = ["OMSimulator"] ## dynamically created
 zip-safe = false
 
 [tool.setuptools.cmdclass]
-build_py = "build_helpers.my_build_py"
+build_py = "build_helpers.OMSInstaller"
