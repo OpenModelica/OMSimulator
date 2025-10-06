@@ -386,7 +386,7 @@ oms_status_enu_t oms::SystemSC::initialize()
 
     // Call CVodeSetLinearSolver to set the dense linear solver */
     flag = CVodeSetLinearSolver(solverData.cvode.mem, solverData.cvode.linSol, solverData.cvode.J);
-    if (flag < 0) logError("SUNDIALS_ERROR: CVDense() failed with flag = " + std::to_string(flag));
+    if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetLinearSolver() failed with flag = " + std::to_string(flag));
 
     logInfo("maximum step size for '" + std::string(getFullCref()) + "': " + std::to_string(maximumStepSize));
     flag = CVodeSetMaxStep(solverData.cvode.mem, maximumStepSize);
