@@ -102,6 +102,9 @@ class InstantiatedModel:
     if status != Status.ok:
       raise RuntimeError(f"Failed to instantiate model: {status}")
     self.fmuInstantitated = True
+    ## set start and stop time from ssp
+    self.setStartTime(float(config["simulation settings"]['start time']))
+    self.setStopTime(float(config["simulation settings"]['stop time']))
 
   def setStartValuesFromElements(self, elements, systemName):
     for key, element in elements.items():

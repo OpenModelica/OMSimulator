@@ -16,7 +16,7 @@ ENDIF ()
 ## currently this sets the path only for windows
 ## TODO fix the paths for linux
 if(OPENMODELICA_NEW_CMAKE_BUILD OR "${OPENMODELICA_MAKEFILE_BUILD}" STREQUAL "true")
-  set(OMSIMULATOR_PYTHON_RELATIVE_DLL_DIR "../../../bin")
+  set(OMSIMULATOR_PYTHON_RELATIVE_DLL_DIR "../../bin")
 else()
   set(OMSIMULATOR_PYTHON_RELATIVE_DLL_DIR "../../bin")
 endif()
