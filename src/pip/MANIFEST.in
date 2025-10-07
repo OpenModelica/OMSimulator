@@ -1,0 +1,3 @@
+include build_helpers.py
+include README.md
+include OSMC-License.txt

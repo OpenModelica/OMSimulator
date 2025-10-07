@@ -555,7 +555,7 @@ class System:
         raise ValueError(f"Component '{first}' not found in {self.name}")
       self.elements[first].setSolver(name)
 
-  def generateJson(self, resources: dict | None = None, tempdir : str | None = None) -> str:
+  def generateJson(self, resources: dict | None = None, tempdir : str | None = None, startTime = None, stopTime = None) -> str:
     """Instantiates the system and its components."""
     data = {
         "simulation units": []
@@ -587,8 +587,8 @@ class System:
     # Add top-level simulation metadata
     data["result file"] = "simulation_result.csv"
     data["simulation settings"] = {
-        "start time": 0,
-        "stop time": 10, ## TODO get the stop time from the solver settings
+        "start time": startTime,
+        "stop time": stopTime,
         "tolerance": 1e-6
     }
 

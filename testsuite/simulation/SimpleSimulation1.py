@@ -11,7 +11,7 @@ Settings.suppressPath = True
 
 model = SSP()
 model.addResource('../resources/Modelica.Electrical.Analog.Examples.CauerLowPassAnalog.fmu', new_name='resources/CauerLowPassAnalog.fmu')
-
+model.activeVariant.stopTime=4.0
 component1 = model.addComponent(CRef('default', 'CauerLowPassAnalog'), 'resources/CauerLowPassAnalog.fmu')
 solver1 = {'name' : 'solver1',  'method': 'cvode', 'tolerance': 1e-4}
 model.newSolver(solver1)
@@ -105,11 +105,11 @@ instantiated_model.delete()
 ## |-- |-- |-- BaseUnit: m: 2, s: -3, A: -1, kg: 1
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
-## |-- |-- stopTime: 1.0
+## |-- |-- stopTime: 4.0
 ##
 ## info:    maximum step size for 'model.root.solver1': 0.001000
 ## info:    Result file: SimpleSimulation1_res.mat (bufferSize=1)
 ## info:    Final Statistics for 'model.root.solver1':
-##          NumSteps = 1001 NumRhsEvals  = 1002 NumLinSolvSetups = 51
-##          NumNonlinSolvIters = 1001 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
+##          NumSteps = 3001 NumRhsEvals  = 3002 NumLinSolvSetups = 151
+##          NumNonlinSolvIters = 3001 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
 ## endResult
