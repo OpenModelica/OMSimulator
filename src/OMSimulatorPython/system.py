@@ -207,7 +207,7 @@ class System:
         component.fmuType = inst.fmuType if inst else None
         self.elements[first] = component
         return component
-      elif isinstance(inst, ResultReader):
+      elif isinstance(inst, ResultReader) or (inst is None and resource.endswith(".csv")):
         componenttable = ComponentTable(first, resource, inst.connectors)
         self.elements[first] = componenttable
         return componenttable
