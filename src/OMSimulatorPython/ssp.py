@@ -89,8 +89,8 @@ class SSP:
 
   def _addResource(self, filename: str, new_name: str | None = None, validate=True, copy=True):
     '''Adds a resource file to the SSP.'''
-
-    new_name = Path(new_name) if new_name else Path('resources') / Path(filename).name
+    ## fix windows path
+    new_name = (Path(new_name) if new_name else Path('resources') / Path(filename).name).as_posix()
 
     if new_name in self.resources:
       raise ValueError(f"Resource '{new_name}' already exists in the SSP.")
