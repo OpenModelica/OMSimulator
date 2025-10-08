@@ -1,6 +1,7 @@
 TEST = ../rtest -v
 
 TESTFILES = \
+DualMassOscillator.py \
 exportJson1.py \
 exportJson2.py \
 exportJson4.py \

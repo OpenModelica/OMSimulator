@@ -60,7 +60,7 @@ print("", flush=True)
 instantiated_model = model2.instantiate() ## internally generate the json file and also set the model state like virgin,
 instantiated_model.setStartTime(0.0)
 instantiated_model.setStopTime(4.0)
-instantiated_model.setStepSize(1e-3)
+instantiated_model.setFixedStepSize(1e-3)
 instantiated_model.setResultFile("PI_Controller.mat")
 
 # set parameters

@@ -92,6 +92,8 @@ class capi:
     self.obj.oms_setStopTime.restype = ctypes.c_int
     self.obj.oms_setTolerance.argtypes = [ctypes.c_char_p, ctypes.c_double]
     self.obj.oms_setTolerance.restype = ctypes.c_int
+    self.obj.oms_setFixedStepSize.argtypes = [ctypes.c_char_p, ctypes.c_double]
+    self.obj.oms_setFixedStepSize.restype = ctypes.c_int
     self.obj.oms_setVariableStepSize.argtypes = [ctypes.c_char_p, ctypes.c_double, ctypes.c_double, ctypes.c_double]
     self.obj.oms_setVariableStepSize.restype = ctypes.c_int
     self.obj.oms_setLogFile.argtypes = [ctypes.c_char_p]
@@ -238,6 +240,11 @@ class capi:
   def setTolerance(self, cref, relativeTolerance) -> Status:
     '''Set the relative and absolute tolerance for the simulation.'''
     status = self.obj.oms_setTolerance(cref.encode(), relativeTolerance)
+    return Status(status)
+
+  def setFixedStepSize(self, cref, stepSize) -> Status:
+    '''Set the variable step size parameters for the simulation.'''
+    status = self.obj.oms_setFixedStepSize(cref.encode(), stepSize)
     return Status(status)
 
   def setVariableStepSize(self, cref, initialStepSize, minStepSize, maxStepSize) -> Status:

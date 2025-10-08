@@ -174,7 +174,7 @@ instantiated_model.addSignalsToResults("default.(engine.pB.*|eCS_Generic_Export.
 ## simulation settings
 instantiated_model.setStopTime(1.0)
 instantiated_model.setTolerance(1e-6)
-instantiated_model.setStepSize(1e-4)
+instantiated_model.setFixedStepSize(1e-4)
 
 instantiated_model.initialize()
 instantiated_model.simulate()
