@@ -24,16 +24,15 @@ model.addConnection(CRef('default', 'system1', 'x1'), CRef('default', 'system2',
 model.addConnection(CRef('default', 'system1', 'v1'), CRef('default', 'system2', 'v1'))
 model.addConnection(CRef('default', 'system1', 'a1'), CRef('default', 'system2', 'a1'))
 
-#model.list()
 model.export('DualMassOscillator.ssp')
 
 model2 = SSP('DualMassOscillator.ssp')
 
 instantiated_model = model2.instantiate() ## internally generate the json file and also set the model state like virgin,
 instantiated_model.setResultFile("DualMassOscillator_res.mat")
-instantiated_model.setStopTime(10.0)
+instantiated_model.setStopTime(10)
 
-instantiated_model.setVariableStepSize(1e-12, 1e-12, 1e-3)
+instantiated_model.setFixedStepSize(1e-4)
 
 ## set value
 instantiated_model.setValue(CRef('default', 'system1', 'x1_start'), 0.0)
@@ -58,6 +57,6 @@ instantiated_model.delete()
 ## info:      default.system1.x1: 0.0
 ## info:      default.system2.x2: 0.5
 ## info:    Simulation
-## info:      default.system1.x1: 0.05488241653128615
-## info:      default.system2.x2: 0.03387446003048107
+## info:      default.system1.x1: 0.051412690223479836
+## info:      default.system2.x2: 0.031858470461315964
 ## endResult
