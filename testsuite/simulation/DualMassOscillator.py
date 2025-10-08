@@ -15,8 +15,8 @@ model.addResource('../resources/DualMassOscillator.System1.fmu', new_name='resou
 model.addResource('../resources/DualMassOscillator.System2.fmu', new_name='resources/system2.fmu')
 
 
-model.addComponent(CRef('default', 'system1'), 'resources/System1.fmu')
-model.addComponent(CRef('default', 'system2'), 'resources/System2.fmu')
+model.addComponent(CRef('default', 'system1'), 'resources/system1.fmu')
+model.addComponent(CRef('default', 'system2'), 'resources/system2.fmu')
 
 ## add connection
 model.addConnection(CRef('default', 'system1', 'F'),  CRef('default', 'system2', 'F'))
