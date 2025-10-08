@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command: rm -rf SimpleSimulation1.ssp SimpleSimulation2_res.mat
+## teardown_command: rm -rf SimpleSimulation2.ssp SimpleSimulation2_res.mat
 ## linux: yes
 ## ucrt64: yes
 ## win: yes
@@ -66,7 +66,7 @@ instantiated_model.delete()
 ## |-- |-- |-- |-- Gain1.y -> Add1.u1
 ## |-- UnitDefinitions:
 ## |-- |-- Unit: 1
-## |-- |-- |-- BaseUnit: 
+## |-- |-- |-- BaseUnit:
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0

@@ -374,11 +374,19 @@ class InstantiatedModel:
     if status != Status.ok:
       raise RuntimeError(f"Failed to set tolerance: {status}")
 
-  def setStepSize(self, stepSize: float):
+  def setFixedStepSize(self, stepSize: float):
     if self.fmuInstantitated is False:
       raise RuntimeError("FMU must be instantiated before setting variable step size")
 
-    status = Capi.setVariableStepSize(self.modelName, 1e-6, 1e-12, stepSize)
+    status = Capi.setFixedStepSize(self.modelName, stepSize)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set fixed step size: {status}")
+
+  def setVariableStepSize(self, initialStepSize: float, minimumStepSize: float, maximumStepSize: float):
+    if self.fmuInstantitated is False:
+      raise RuntimeError("FMU must be instantiated before setting variable step size")
+
+    status = Capi.setVariableStepSize(self.modelName, initialStepSize, minimumStepSize, maximumStepSize)
     if status != Status.ok:
       raise RuntimeError(f"Failed to set variable step size: {status}")
 

@@ -44,7 +44,7 @@ instantiated_model = model.instantiate() ## internally generate the json file an
 ## simulation settings
 instantiated_model.setResultFile("embrace1_res.mat")
 instantiated_model.setStopTime(12.0)
-instantiated_model.setStepSize(1e-3)
+instantiated_model.setFixedStepSize(1e-3)
 instantiated_model.setLoggingInterval(1)
 
 instantiated_model.initialize()
