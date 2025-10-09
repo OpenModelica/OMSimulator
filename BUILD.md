@@ -50,8 +50,8 @@ git clone https://github.com/OpenModelica/OMSimulator.git --recurse-submodules
 #### Windows (OMDev mingw)
 
 1. **Set Up OMDev:**
-   - Clone OMDev: `git clone https://openmodelica.org/git/OMDev.git`
-   - Follow the setup instructions in `OMDev/INSTALL.txt`
+   - Clone OMDev: `https://gitlab.liu.se/OpenModelica/OMDevUCRT.git `
+   - Follow the setup instructions in `OMDev/INSTALL.md`
 
 2. **Configure OMSimulator:**
    ```bash
