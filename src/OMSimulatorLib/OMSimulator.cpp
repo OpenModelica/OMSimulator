@@ -128,13 +128,13 @@ oms_status_enu_t oms_rename(const char* cref_, const char* newCref_)
   return oms::Scope::GetInstance().renameModel(cref, newCref);
 }
 
-int oms_compareSimulationResults(const char* filenameA, const char* filenameB, const char* var, double relTol, double absTol)
+int oms_compareSimulationResults(const char* filenameA, const char* filenameB, const char* varA, const char* varB, double relTol, double absTol)
 {
   oms::ResultReader* readerA = oms::ResultReader::newReader(filenameA);
   oms::ResultReader* readerB = oms::ResultReader::newReader(filenameB);
 
-  oms::ResultReader::Series* seriesA = readerA->getSeries(var);
-  oms::ResultReader::Series* seriesB = readerB->getSeries(var);
+  oms::ResultReader::Series* seriesA = readerA->getSeries(varA);
+  oms::ResultReader::Series* seriesB = readerB->getSeries(varB);
 
   //for (int i=0; i<seriesA->length; ++i)
   //  std::cout << seriesA->time[i] << " - " << seriesA->value[i] << std::endl;

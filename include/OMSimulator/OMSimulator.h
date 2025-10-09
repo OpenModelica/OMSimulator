@@ -72,7 +72,7 @@ OMSAPI oms_status_enu_t OMSCALL oms_addSubModel(const char* cref, const char* fm
 OMSAPI oms_status_enu_t OMSCALL oms_setExportName(const char* cref, const char* exportName); // set export name for a submodel
 OMSAPI oms_status_enu_t OMSCALL oms_addSystem(const char* cref, oms_system_enu_t type);
 OMSAPI oms_status_enu_t OMSCALL oms_addTimeIndicator(const char* signal);
-OMSAPI int OMSCALL oms_compareSimulationResults(const char* filenameA, const char* filenameB, const char* var, double relTol, double absTol);
+OMSAPI int OMSCALL oms_compareSimulationResults(const char* filenameA, const char* filenameB, const char* varA, const char* varB, double relTol, double absTol);
 OMSAPI oms_status_enu_t OMSCALL oms_copySystem(const char* source, const char* target);
 OMSAPI oms_status_enu_t OMSCALL oms_delete(const char* cref);
 OMSAPI oms_status_enu_t OMSCALL oms_deleteConnection(const char* crefA, const char* crefB);
