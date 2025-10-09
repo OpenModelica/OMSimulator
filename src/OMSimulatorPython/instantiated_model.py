@@ -28,20 +28,34 @@ class InstantiatedModel:
     status = Capi.newModel("model")
     if status != Status.ok:
       raise RuntimeError(f"Failed to create new model: {status}")
-    # Add a root system
-    status = Capi.addSystem("model.root", 1)  #oms_system_wc
-    if status != Status.ok:
-      raise RuntimeError(f"Failed to create oms_addSystem: {status}")
-
-    # Begin API generation
     self.apiCall.append(f'oms_newModel("{self.modelName}")')
-    self.apiCall.append(f'oms_addSystem("{self.modelName}.root", "oms_system_wc")')
+
+    # Extract all simulation units
+    sim_units = config.get("simulation units", [])
+    # Count the number of unique solvers for determining system type (WC/SC)
+    solver_units = [unit for unit in sim_units if "solver" in unit]
+    num_solvers = len(solver_units)
+
+    # --- Add systems depending on number of solvers ---
+    if num_solvers == 1:
+      # Only one solver unit → SC system directly under root
+      status = Capi.addSystem(f"{self.modelName}.root", 2)  # 2 = oms_system_sc
+      if status != Status.ok:
+        raise RuntimeError(f"Failed to create root SC system: {status}")
+      self.apiCall.append(f'oms_addSystem("{self.modelName}.root", "oms_system_sc")')
+    else:
+      # Multiple solver units or zero solvers top-level WC system
+      status = Capi.addSystem(f"{self.modelName}.root", 1)  # 1 = oms_system_wc
+      if status != Status.ok:
+        raise RuntimeError(f"Failed to create root WC system: {status}")
+      self.apiCall.append(f'oms_addSystem("{self.modelName}.root", "oms_system_wc")')
 
     # Iterate over simulation units
     for unit in config["simulation units"]:
       ## check if unit has solver as key
       solvername = "None"
-      if "solver" in unit:
+      solver = unit.get("solver")
+      if num_solvers > 1  and solver:
         solvername = unit["solver"]['name']
         solver_path = f"{self.modelName}.root.{solvername}"
         self.apiCall.append(f'oms_addSystem("{solver_path}", "oms_system_sc")')
