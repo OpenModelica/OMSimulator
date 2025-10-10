@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command: rm -rf Dahlquist-cs.mat Dahlquist-me.mat
+## teardown_command: rm -rf Feedthrough-cs.mat Feedthrough-me.mat
 ## linux: yes
 ## ucrt64: yes
 ## win: yes
@@ -49,7 +49,7 @@ model2.newSolver(solver2)
 model2.setSolver(CRef('default', 'Feedthrough'), 'solver2')
 print("",flush=True)
 instantiated_model = model2.instantiate()
-instantiated_model.setResultFile("Feedthrough-cs.mat")
+instantiated_model.setResultFile("Feedthrough-me.mat")
 
 instantiated_model.setValue(CRef('default', 'Feedthrough', 'Boolean_input'), True)
 instantiated_model.setValue(CRef('default', 'Feedthrough', 'Enumeration_input'), 2)
@@ -86,7 +86,7 @@ instantiated_model.delete()
 ## warning: Flag --suppressPath is set multiple times
 ## info:    model doesn't contain any continuous state
 ## info:    maximum step size for 'model.root': 0.001000
-## info:    Result file: Feedthrough-cs.mat (bufferSize=1)
+## info:    Result file: Feedthrough-me.mat (bufferSize=1)
 ## info:    Parameter default.Feedthrough.String_parameter will not be stored in the result file, because the signal type is not supported
 ## info:    Final Statistics for 'model.root':
 ##          NumSteps = 10001 NumRhsEvals  = 10002 NumLinSolvSetups = 501
