@@ -445,7 +445,7 @@ oms_status_enu_t oms::KinsolSolver::kinsolSolve(System& syst, DirectedGraph& gra
 
   /* Check solution */
   flag = nlsKinsolResiduals(initialGuess, fTmp, user_data);
-  fNormValue = N_VWL2Norm(fTmp, fTmp);
+  fNormValue = N_VWL2Norm(fTmp, fScale);
   if ( fNormValue > fnormtol )
   {
     logWarning("Solution of algebraic loop " + std::to_string(((KINSOL_USER_DATA *)user_data)->algLoopNumber) + "not within precission given by fnormtol: " + std::to_string(fnormtol));
