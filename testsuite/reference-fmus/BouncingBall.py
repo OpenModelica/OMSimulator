@@ -7,7 +7,6 @@
 ## win: yes
 ## asan: no
 
-from flask.cli import F
 from OMSimulator import SSP, CRef, Settings, Capi
 Settings.suppressPath = True
 
