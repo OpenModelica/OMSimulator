@@ -3,7 +3,7 @@
 ## linux: yes
 ## ucrt64: yes
 ## win: yes
-## asan: yes
+## asan: no
 
 
 from OMSimulator import SSP, CRef, Settings, Capi

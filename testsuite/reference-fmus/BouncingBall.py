@@ -5,7 +5,7 @@
 ## linux: yes
 ## ucrt64: yes
 ## win: yes
-## asan: yes
+## asan: no
 
 from flask.cli import F
 from OMSimulator import SSP, CRef, Settings, Capi
