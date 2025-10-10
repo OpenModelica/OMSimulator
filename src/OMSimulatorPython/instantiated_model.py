@@ -22,6 +22,7 @@ class SystemType(Enum):
   sc = 2
 
 class InstantiatedModel:
+  _suppress_path_set = False # Class variable to track if suppressPath has been set
   def __init__(self, json_description, system: System, resources: dict):
     config = json.loads(json_description)
     self.modelName = "model" ## create random name, but we cannot commits test as jenkins will gerate new model name
@@ -31,9 +32,13 @@ class InstantiatedModel:
     self.resources = resources
     self.fmuInstantitated = False
 
-    status = Capi.setCommandLineOption("--suppressPath=true")
-    if status != Status.ok:
-      raise RuntimeError(f"Failed to set command line option: {status}")
+    # Only set once
+    if not InstantiatedModel._suppress_path_set:
+      status = Capi.setCommandLineOption("--suppressPath=true")
+      if status != Status.ok:
+        raise RuntimeError(f"Failed to set command line option: {status}")
+      InstantiatedModel._suppress_path_set = True
+    # Set the temporary directory
     status = Capi.setTempDirectory(tempfile.mkdtemp())
     if status != Status.ok:
       raise RuntimeError(f"Failed to set temp directory: {status}")

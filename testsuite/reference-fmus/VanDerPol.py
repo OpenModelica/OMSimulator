@@ -27,15 +27,15 @@ instantiated_model.terminate()
 instantiated_model.delete()
 
 if 1 == Capi.compareSimulationResults("../references/VanDerPol-cs.mat", "VanDerPol-cs.mat", "model.root.VanDerPol.x0", "default.VanDerPol.x0", 1e-4, 1e-4):
-  print("signal x0 is equal")
+  print("signal x0 is equal", flush=True)
 else:
-  print("signal x0 is not equal")
+  print("signal x0 is not equal", flush=True)
 
 
 if 1 == Capi.compareSimulationResults("../references/VanDerPol-cs.mat", "VanDerPol-cs.mat", "model.root.VanDerPol.x1", "default.VanDerPol.x1", 1e-4, 1e-4):
-  print("signal x1 is equal")
+  print("signal x1 is equal", flush=True)
 else:
-  print("signal x1 is not equal")
+  print("signal x1 is not equal", flush=True)
 
 
 model2 = SSP()
@@ -46,7 +46,6 @@ model2.addComponent(CRef('default', 'VanDerPol'), 'resources/VanDerPol.fmu')
 solver2 = {'name' : 'solver2',  'method': 'cvode', 'tolerance': 1e-5}
 model2.newSolver(solver2)
 model2.setSolver(CRef('default', 'VanDerPol'), 'solver2')
-print("",flush=True)
 
 instantiated_model = model2.instantiate()
 instantiated_model.setResultFile("VanDerPol-me.mat")
@@ -61,22 +60,20 @@ instantiated_model.terminate()
 instantiated_model.delete()
 
 if 1 == Capi.compareSimulationResults("../references/VanDerPol-me.mat", "VanDerPol-me.mat", "model.root.VanDerPol.x0", "default.VanDerPol.x0", 1e-4, 1e-4):
-  print("signal x0 is equal")
+  print("signal x0 is equal", flush=True)
 else:
-  print("signal x0 is not equal")
+  print("signal x0 is not equal", flush=True)
 
 if 1 == Capi.compareSimulationResults("../references/VanDerPol-me.mat", "VanDerPol-me.mat", "model.root.VanDerPol.x1", "default.VanDerPol.x1", 1e-4, 1e-4):
-  print("signal x1 is equal")
+  print("signal x1 is equal", flush=True)
 else:
-  print("signal x1 is not equal")
+  print("signal x1 is not equal", flush=True)
 
 
 ## Result:
 ## info:    Result file: VanDerPol-cs.mat (bufferSize=1)
 ## signal x0 is equal
 ## signal x1 is equal
-##
-## warning: Flag --suppressPath is set multiple times
 ## info:    maximum step size for 'model.root': 0.001000
 ## info:    Result file: VanDerPol-me.mat (bufferSize=1)
 ## info:    Final Statistics for 'model.root':
@@ -84,6 +81,4 @@ else:
 ##          NumNonlinSolvIters = 20003 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
 ## signal x0 is equal
 ## signal x1 is equal
-## info:    1 warnings
-## info:    0 errors
 ## endResult
