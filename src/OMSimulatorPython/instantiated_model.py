@@ -82,6 +82,7 @@ class InstantiatedModel:
       if solver:
         method = solver.get("method")
         tolerance = solver.get("tolerance")
+        stepSize = solver.get("stepSize")
 
         if method in ("cvode", "euler"):
           status = Capi.setSolver(solver_path, SolverType[method].value)  # 3=cvode, 2=euler
@@ -95,6 +96,11 @@ class InstantiatedModel:
             raise RuntimeError(f"Failed to set tolerance: {status}")
           self.apiCall.append(f'oms_setTolerance("{solver_path}", {float(tolerance)})')
 
+        if stepSize is not None:
+          status = Capi.setFixedStepSize(solver_path, float(stepSize))
+          if status != Status.ok:
+            raise RuntimeError(f"Failed to set step size: {status}")
+          self.apiCall.append(f'oms_setFixedStepSize("{solver_path}", {float(stepSize)})')
 
       listofsystems = []
       ## add components
