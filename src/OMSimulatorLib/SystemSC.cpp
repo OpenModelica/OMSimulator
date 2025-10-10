@@ -949,7 +949,7 @@ oms_status_enu_t oms::SystemSC::stepUntil(double stopTime)
 oms_status_enu_t oms::SystemSC::updateInputs(DirectedGraph& graph)
 {
   CallClock callClock(clock);
-  oms_status_enu_t status;
+  oms_status_enu_t status, return_status = oms_status_ok;
   int loopNum = 0;
 
   // input := output
@@ -998,10 +998,12 @@ oms_status_enu_t oms::SystemSC::updateInputs(DirectedGraph& graph)
       if (oms_status_ok != status)
       {
         forceLoopsToBeUpdated();
-        return status;
+        if (status > return_status)
+          return_status = status;
       }
       loopNum++;
     }
   }
-  return oms_status_ok;
+
+  return return_status;
 }
