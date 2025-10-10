@@ -31,7 +31,7 @@ else
   print("signal h is not equal")
 end
 
-if 1 == oms_compareSimulationResults("../../../references/BouncingBall-cs.mat", "BouncingBall-cs.mat", "model.root.BouncingBall.v", "model.root.BouncingBall.vs", 1e-4, 1e-4) then
+if 1 == oms_compareSimulationResults("../../../references/BouncingBall-cs.mat", "BouncingBall-cs.mat", "model.root.BouncingBall.v", "model.root.BouncingBall.v", 1e-4, 1e-4) then
   print("signal v is equal")
 else
   print("signal v is not equal")
