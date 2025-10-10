@@ -27,7 +27,7 @@ oms_simulate("model")
 oms_terminate("model")
 oms_delete("model")
 
-if 1 == oms_compareSimulationResults("../../../references/Stair-cs.mat", "Stair-cs.mat", "model.root.Stair.counter", 1e-4, 1e-4) then
+if 1 == oms_compareSimulationResults("../../../references/Stair-cs.mat", "Stair-cs.mat", "model.root.Stair.counter", "model.root.Stair.counter", 1e-4, 1e-4) then
   print("signal counter is equal")
 else
   print("signal counter is not equal")

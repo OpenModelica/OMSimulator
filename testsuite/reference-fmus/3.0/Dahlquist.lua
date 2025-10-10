@@ -25,7 +25,7 @@ oms_simulate("model")
 oms_terminate("model")
 oms_delete("model")
 
-if 1 == oms_compareSimulationResults("../../../references/Dahlquist-cs.mat", "Dahlquist-cs.mat", "model.root.Dahlquist.x", 1e-4, 1e-4) then
+if 1 == oms_compareSimulationResults("../../../references/Dahlquist-cs.mat", "Dahlquist-cs.mat", "model.root.Dahlquist.x", "model.root.Dahlquist.x", 1e-4, 1e-4) then
   print("signal x is equal")
 else
   print("signal x is not equal")

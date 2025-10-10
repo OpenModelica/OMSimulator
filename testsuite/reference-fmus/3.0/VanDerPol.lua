@@ -22,13 +22,13 @@ oms_simulate("model")
 oms_terminate("model")
 oms_delete("model")
 
-if 1 == oms_compareSimulationResults("../../../references/VanDerPol-cs.mat", "VanDerPol-cs.mat", "model.root.VanDerPol.x0", 1e-4, 1e-4) then
+if 1 == oms_compareSimulationResults("../../../references/VanDerPol-cs.mat", "VanDerPol-cs.mat", "model.root.VanDerPol.x0", "model.root.VanDerPol.x0", 1e-4, 1e-4) then
   print("signal x0 is equal")
 else
   print("signal x0 is not equal")
 end
 
-if 1 == oms_compareSimulationResults("../../../references/VanDerPol-cs.mat", "VanDerPol-cs.mat", "model.root.VanDerPol.x1", 1e-4, 1e-4) then
+if 1 == oms_compareSimulationResults("../../../references/VanDerPol-cs.mat", "VanDerPol-cs.mat", "model.root.VanDerPol.x1", "model.root.VanDerPol.x1", 1e-4, 1e-4) then
   print("signal x1 is equal")
 else
   print("signal x1 is not equal")
