@@ -1531,14 +1531,13 @@
     <ssv:Parameter name="part_returnLineRadar.parameterSet_outputParameters.parameter_pipeLengthTotalRL">
       <ssv:Real unit="[m]" value="4.57083438288096"/>
     </ssv:Parameter>
-  </ssv:Parameters>s
+  </ssv:Parameters>
   <ssv:Units>
     <ssc:Unit name="m">
       <ssc:BaseUnit m="1"/>
     </ssc:Unit>
-    <ssc:Unit name="deg">
-      <ssc:BaseUnit deg="1"/>
-      <ssc:DisplayUnit name="rad" factor="0.017453292519943301"/>
+    <ssc:Unit name="rad">
+      <ssc:BaseUnit rad="1"/>
     </ssc:Unit>
     <ssc:Unit name="kg/m3">
       <ssc:BaseUnit kg="1" m="-3"/>

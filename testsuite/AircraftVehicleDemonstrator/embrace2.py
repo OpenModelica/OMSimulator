@@ -65,15 +65,6 @@ instantiated_model.terminate()
 instantiated_model.delete()
 
 ## Result:
-## UserWarning: Failed to validate ECS_Conf1.ssv against schemafile SystemStructureParameterValues.xsd
-## ERROR (line 2668, column 0): Element '{http://ssp-standard.org/SSP1/SystemStructureCommon}BaseUnit', attribute 'deg': The attribute 'deg' is not allowed.
-## ERROR (line 2669, column 0): Element '{http://ssp-standard.org/SSP1/SystemStructureCommon}DisplayUnit': This element is not expected. Expected is ( {http://ssp-standard.org/SSP1/SystemStructureCommon}Annotations ).
-## UserWarning: Failed to validate ECS_Conf2.ssv against schemafile SystemStructureParameterValues.xsd
-## ERROR (line 2, column 0): Element '{http://ssp-standard.org/SSP1/SystemStructureParameterValues}ParameterSet': Character content other than whitespace is not allowed because the content type is 'element-only'.
-## ERROR (line 1540, column 0): Element '{http://ssp-standard.org/SSP1/SystemStructureCommon}BaseUnit', attribute 'deg': The attribute 'deg' is not allowed.
-## ERROR (line 1541, column 0): Element '{http://ssp-standard.org/SSP1/SystemStructureCommon}DisplayUnit': This element is not expected. Expected is ( {http://ssp-standard.org/SSP1/SystemStructureCommon}Annotations ).
-## UserWarning: Failed to validate SystemStructure.ssd against schemafile SystemStructureDescription.xsd
-## ERROR (line 17, column 0): Element '{http://ssp-standard.org/SSP1/SystemStructureCommon}Enumeration': The attribute 'name' is required but missing.
 ## info:    Result file: embrace2_res.mat (bufferSize=1)
 ## info:    Initialize:
 ## info:      embrace.root.ECS_HW.coolinPackAir.looptype:  2
