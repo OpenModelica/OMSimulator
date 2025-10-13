@@ -69,7 +69,7 @@ class InstantiatedModel:
       self.apiCall.append(f'oms_addSystem("{self.modelName}.root", "oms_system_wc")')
 
     # Iterate over simulation units
-    for unit in config["simulation units"]:
+    for unit in sim_units:
       ## check if unit has solver as key
       solvername = "None"
       solver = unit.get("solver")
