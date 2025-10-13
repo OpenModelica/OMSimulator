@@ -46,6 +46,8 @@ class capi:
     self.obj.oms_addSystem.restype = ctypes.c_int
     self.obj.oms_addSignalsToResults.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms_addSignalsToResults.restype = ctypes.c_int
+    self.obj.oms_compareSimulationResults.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_double, ctypes.c_double]
+    self.obj.oms_compareSimulationResults.restype = ctypes.c_int
     self.obj.oms_delete.argtypes = [ctypes.c_char_p]
     self.obj.oms_delete.restype = ctypes.c_int
     self.obj.oms_getVersion.argtypes = None
@@ -84,6 +86,8 @@ class capi:
     self.obj.oms_setReal.restype = ctypes.c_int
     self.obj.oms_setString.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms_setString.restype = ctypes.c_int
+    self.obj.oms_setSolver.argtypes = [ctypes.c_char_p, ctypes.c_int]
+    self.obj.oms_setSolver.restype = ctypes.c_int
     self.obj.oms_setResultFile.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int]
     self.obj.oms_setResultFile.restype = ctypes.c_int
     self.obj.oms_setStartTime.argtypes = [ctypes.c_char_p, ctypes.c_double]
@@ -131,6 +135,10 @@ class capi:
   def addSignalsToResults(self, cref, regex):
     status = self.obj.oms_addSignalsToResults(cref.encode(), regex.encode())
     return Status(status)
+
+  def compareSimulationResults(self, filenameA, filenameB, varA, varB, relTol, absTol):
+    result = self.obj.oms_compareSimulationResults(filenameA.encode(), filenameB.encode(), varA.encode(), varB.encode(), relTol, absTol)
+    return result
 
   def delete(self, cref):
     status = self.obj.oms_delete(cref.encode())
@@ -219,6 +227,10 @@ class capi:
   def setString(self, cref, value):
     '''Set a string value for a model or system.'''
     status = self.obj.oms_setString(cref.encode(), value)
+    return Status(status)
+
+  def setSolver(self, cref, solver):
+    status = self.obj.oms_setSolver(cref.encode(), solver)
     return Status(status)
 
   def setResultFile(self, cref, filename, bufferSize=1) -> Status:

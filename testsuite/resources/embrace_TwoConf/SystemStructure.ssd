@@ -14,7 +14,7 @@
 						<ssd:ConnectorGeometry x="0.000000" y="0.333333" />
 					</ssd:Connector>
 					<ssd:Connector name="Input.Aircraft_State" kind="input">
-						<ssc:Enumeration />
+						<ssc:Enumeration name ="Aircraft_State_Type" />
 						<ssd:ConnectorGeometry x="0.000000" y="0.666667" />
 					</ssd:Connector>
 					<ssd:Connector name="TCoolingPack" kind="output">

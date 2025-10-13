@@ -87,7 +87,7 @@ instantiated_model.delete()
 ## info:    default.sub-system.Gain2.k: 1.0
 ## info:    default.sub-system.Gain2.u: 0.0
 ## info:    default.sub-system.Gain2.y: 0.0
-## info:    maximum step size for 'model.root.solver2': 0.001000
+## info:    maximum step size for 'model.root': 0.001000
 ## info:    Result file: SimpleSimulation7_res.mat (bufferSize=1)
 ## info: After simulation:
 ## info:    default.param1 : 100.0
@@ -99,7 +99,7 @@ instantiated_model.delete()
 ## info:    default.sub-system.Gain2.k: 1.0
 ## info:    default.sub-system.Gain2.u: 200.0
 ## info:    default.sub-system.Gain2.y: 200.0
-## info:    Final Statistics for 'model.root.solver2':
+## info:    Final Statistics for 'model.root':
 ##          NumSteps = 1001 NumRhsEvals  = 1002 NumLinSolvSetups = 51
 ##          NumNonlinSolvIters = 1001 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
 ## endResult

@@ -571,17 +571,24 @@ class System:
 
     ## group the simulation units
     for solver, components in solver_groups.items():
-      #print(f"Processing solver: {solver} with components: {components}")
+      #print(f"Processing solver: {solver} with components: {components} {self.solvers}")
       unit = {
           "components": components,
           "connections": solver_connections.get(solver, [])
       }
+      # Add solver settings if available
       if solver is not None:
-         unit["solver"] = {
+        # Find solver configuration by name
+        solver_config = next((s for s in self.solvers if s["name"] == solver), None)
+        if solver_config:
+          unit["solver"] = {
             "name": solver,
-            "method": "cvode",
-            "tolerance": 1e-6
+            "method": solver_config.get("method"),
+            "tolerance": solver_config.get("tolerance"),
+            "stepSize": solver_config.get("stepSize")
         }
+        else:
+          raise ValueError(f"Solver '{solver}' not found in solver list.")
       data["simulation units"].append(unit)
 
     # Add top-level simulation metadata

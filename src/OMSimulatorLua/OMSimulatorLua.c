@@ -448,20 +448,22 @@ static int OMSimulatorLua_oms_exportDependencyGraphs(lua_State *L)
 //int oms_compareSimulationResults(const char* filenameA, const char* filenameB, const char* var, double relTol, double absTol);
 static int OMSimulatorLua_oms_compareSimulationResults(lua_State *L)
 {
-  if (lua_gettop(L) != 5)
-    return luaL_error(L, "expecting exactly 5 arguments");
+  if (lua_gettop(L) != 6)
+    return luaL_error(L, "expecting exactly 6 arguments");
   luaL_checktype(L, 1, LUA_TSTRING);
   luaL_checktype(L, 2, LUA_TSTRING);
   luaL_checktype(L, 3, LUA_TSTRING);
-  luaL_checktype(L, 4, LUA_TNUMBER);
+  luaL_checktype(L, 4, LUA_TSTRING);
   luaL_checktype(L, 5, LUA_TNUMBER);
+  luaL_checktype(L, 6, LUA_TNUMBER);
 
   const char *filenameA = lua_tostring(L, 1);
   const char *filenameB = lua_tostring(L, 2);
-  const char *var = lua_tostring(L, 3);
-  double relTol = lua_tonumber(L, 4);
-  double absTol = lua_tonumber(L, 5);
-  int rc = oms_compareSimulationResults(filenameA, filenameB, var, relTol, absTol);
+  const char *varA = lua_tostring(L, 3);
+  const char *varB = lua_tostring(L, 4);
+  double relTol = lua_tonumber(L, 5);
+  double absTol = lua_tonumber(L, 6);
+  int rc = oms_compareSimulationResults(filenameA, filenameB, varA, varB, relTol, absTol);
   lua_pushinteger(L, rc);
   return 1;
 }

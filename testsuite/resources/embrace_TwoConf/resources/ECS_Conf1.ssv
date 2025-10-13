@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <ssv:ParameterSet xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" version="1.0" name="product_ECS">
   <ssv:Parameters>
     <ssv:Parameter name="part_accumulator.parameterSet_inputParameters.parameter_width">
@@ -2664,9 +2664,8 @@
     <ssc:Unit name="m">
       <ssc:BaseUnit m="1"/>
     </ssc:Unit>
-    <ssc:Unit name="deg">
-      <ssc:BaseUnit deg="1"/>
-      <ssc:DisplayUnit name="rad" factor="0.017453292519943301"/>
+    <ssc:Unit name="rad">
+      <ssc:BaseUnit rad="1"/>
     </ssc:Unit>
     <ssc:Unit name="kg/m3">
       <ssc:BaseUnit kg="1" m="-3"/>

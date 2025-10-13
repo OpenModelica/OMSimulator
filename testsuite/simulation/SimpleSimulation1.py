@@ -107,9 +107,9 @@ instantiated_model.delete()
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 4.0
 ##
-## info:    maximum step size for 'model.root.solver1': 0.001000
+## info:    maximum step size for 'model.root': 0.001000
 ## info:    Result file: SimpleSimulation1_res.mat (bufferSize=1)
-## info:    Final Statistics for 'model.root.solver1':
+## info:    Final Statistics for 'model.root':
 ##          NumSteps = 3001 NumRhsEvals  = 3002 NumLinSolvSetups = 151
 ##          NumNonlinSolvIters = 3001 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
 ## endResult

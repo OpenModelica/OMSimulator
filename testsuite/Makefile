@@ -32,3 +32,11 @@ dcmotor.log: difftool
 simulation.log: difftool
 	@$(MAKE) -C simulation -f Makefile test > $@
 	@grep == simulation.log
+
+reference-fmus.log: difftool
+	@$(MAKE) -C reference-fmus -f Makefile test > $@
+	@grep == reference-fmus.log
+
+reference-fmus3.log: difftool
+	@$(MAKE) -C reference-fmus/3.0 -f Makefile test > $@
+	@grep == reference-fmus3.log

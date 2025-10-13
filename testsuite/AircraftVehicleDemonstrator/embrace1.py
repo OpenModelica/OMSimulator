@@ -61,10 +61,6 @@ instantiated_model.terminate()
 instantiated_model.delete()
 
 ## Result:
-## UserWarning: Failed to validate RAPID_Systems_2021-03-29_Test_1.ssv against schemafile SystemStructureParameterValues.xsd
-## ERROR (line 505, column 0): Element '{http://ssp-standard.org/SSP1/SystemStructureCommon}BaseUnit', attribute 'rad': '0.017453292519943301' is not a valid value of the atomic type 'xs:int'.
-## UserWarning: Failed to validate SystemStructure.ssd against schemafile SystemStructureDescription.xsd
-## ERROR (line 17, column 0): Element '{http://ssp-standard.org/SSP1/SystemStructureCommon}Enumeration': The attribute 'name' is required but missing.
 ## info:    Result file: embrace1_res.mat (bufferSize=1)
 ## info:    Initialize:
 ## info:      embrace.root.ECS_HW.coolinPackAir.looptype:  2

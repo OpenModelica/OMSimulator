@@ -117,7 +117,7 @@ instantiated_model.delete()
 ## |-- |-- |-- |-- |-- |-- |-- |-- (Real k, 500.0, None, 'None')
 ## |-- |-- |-- |-- |-- |-- |-- |-- UnitDefinitions:
 ## |-- |-- |-- |-- |-- |-- |-- |-- |-- Unit: 1
-## |-- |-- |-- |-- |-- |-- |-- |-- |-- |-- BaseUnit: 
+## |-- |-- |-- |-- |-- |-- |-- |-- |-- |-- BaseUnit:
 ## |-- |-- |-- |-- |-- |-- |-- Solver Settings:
 ## |-- |-- |-- |-- |-- |-- |-- |-- name: solver2
 ## |-- |-- |-- |-- |-- Connections:
@@ -140,7 +140,7 @@ instantiated_model.delete()
 ## |-- |-- |-- |-- |-- |-- (Real k, 2.0, None, 'None')
 ## |-- |-- |-- |-- |-- |-- UnitDefinitions:
 ## |-- |-- |-- |-- |-- |-- |-- Unit: 1
-## |-- |-- |-- |-- |-- |-- |-- |-- BaseUnit: 
+## |-- |-- |-- |-- |-- |-- |-- |-- BaseUnit:
 ## |-- |-- |-- Connections:
 ## |-- |-- |-- |-- .input1 -> Gain1.u
 ## |-- |-- |-- |-- Gain1.y -> Add1.u1
@@ -148,7 +148,7 @@ instantiated_model.delete()
 ## |-- |-- |-- |-- (name=solver2, method=cvode, tolerance=0.0001)
 ## |-- UnitDefinitions:
 ## |-- |-- Unit: 1
-## |-- |-- |-- BaseUnit: 
+## |-- |-- |-- BaseUnit:
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
@@ -163,7 +163,7 @@ instantiated_model.delete()
 ## info:    default.sub-system.Gain2.k: 500.0
 ## info:    default.sub-system.Gain2.u: 0.0
 ## info:    default.sub-system.Gain2.y: 0.0
-## info:    maximum step size for 'model.root.solver2': 0.001000
+## info:    maximum step size for 'model.root': 0.001000
 ## info:    Result file: SimpleSimulation8_res.mat (bufferSize=1)
 ## info: After simulation:
 ## info:    default.param1 : 200.0
@@ -176,7 +176,7 @@ instantiated_model.delete()
 ## info:    default.sub-system.Gain2.k: 500.0
 ## info:    default.sub-system.Gain2.u: 400.0
 ## info:    default.sub-system.Gain2.y: 200000.0
-## info:    Final Statistics for 'model.root.solver2':
+## info:    Final Statistics for 'model.root':
 ##          NumSteps = 1001 NumRhsEvals  = 1002 NumLinSolvSetups = 51
 ##          NumNonlinSolvIters = 1001 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
 ## endResult

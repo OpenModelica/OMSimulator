@@ -120,7 +120,6 @@ instantiated_model.delete()
 ## info:    default.Add1.u1          : 0.0
 ## info:    default.Add1.u2          : 3.0
 ## info:    default.Add1.y           : 3.0
-## info:    maximum step size for 'model.root.solver1': 0.001000
 ## info:    Result file: export_json4_res.mat (bufferSize=1)
 ## info: After simulation:
 ## info:    default.param1           : 2.0
@@ -129,7 +128,4 @@ instantiated_model.delete()
 ## info:    default.Add1.u1          : 2.0
 ## info:    default.Add1.u2          : 3.0
 ## info:    default.Add1.y           : 5.0
-## info:    Final Statistics for 'model.root.solver1':
-##          NumSteps = 1001 NumRhsEvals  = 1002 NumLinSolvSetups = 51
-##          NumNonlinSolvIters = 1001 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
 ## endResult

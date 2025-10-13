@@ -1,3 +1,4 @@
+from re import S
 from OMSimulator.capi import Capi, Status
 from OMSimulator.component import Component
 from OMSimulator.componenttable import ComponentTable
@@ -8,7 +9,20 @@ from OMSimulator.ssm import SSM
 from OMSimulator.variable import Causality, SignalType
 import json
 import tempfile
+from enum import Enum
+
+class SolverType(Enum):
+  '''Enumeration for solver method to map with c api.'''
+  euler = 2
+  cvode = 3
+
+class SystemType(Enum):
+  '''Enumeration for system type to map with c api.'''
+  wc = 1
+  sc = 2
+
 class InstantiatedModel:
+  _suppress_path_set = False # Class variable to track if suppressPath has been set
   def __init__(self, json_description, system: System, resources: dict):
     config = json.loads(json_description)
     self.modelName = "model" ## create random name, but we cannot commits test as jenkins will gerate new model name
@@ -18,9 +32,13 @@ class InstantiatedModel:
     self.resources = resources
     self.fmuInstantitated = False
 
-    status = Capi.setCommandLineOption("--suppressPath=true")
-    if status != Status.ok:
-      raise RuntimeError(f"Failed to set command line option: {status}")
+    # Only set once
+    if not InstantiatedModel._suppress_path_set:
+      status = Capi.setCommandLineOption("--suppressPath=true")
+      if status != Status.ok:
+        raise RuntimeError(f"Failed to set command line option: {status}")
+      InstantiatedModel._suppress_path_set = True
+    # Set the temporary directory
     status = Capi.setTempDirectory(tempfile.mkdtemp())
     if status != Status.ok:
       raise RuntimeError(f"Failed to set temp directory: {status}")
@@ -28,28 +46,66 @@ class InstantiatedModel:
     status = Capi.newModel("model")
     if status != Status.ok:
       raise RuntimeError(f"Failed to create new model: {status}")
-    # Add a root system
-    status = Capi.addSystem("model.root", 1)  #oms_system_wc
-    if status != Status.ok:
-      raise RuntimeError(f"Failed to create oms_addSystem: {status}")
-
-    # Begin API generation
     self.apiCall.append(f'oms_newModel("{self.modelName}")')
-    self.apiCall.append(f'oms_addSystem("{self.modelName}.root", "oms_system_wc")')
+
+    # Extract all simulation units
+    sim_units = config.get("simulation units", [])
+    # Count the number of unique solvers for determining system type (WC/SC)
+    solver_units = [unit for unit in sim_units if "solver" in unit]
+    num_solvers = len(solver_units)
+
+    # --- Add systems depending on number of solvers ---
+    if num_solvers == 1:
+      # Only one solver unit → SC system directly under root
+      status = Capi.addSystem(f"{self.modelName}.root", SystemType.sc.value)  # 2 = oms_system_sc
+      if status != Status.ok:
+        raise RuntimeError(f"Failed to create root SC system: {status}")
+      self.apiCall.append(f'oms_addSystem("{self.modelName}.root", "oms_system_sc")')
+    else:
+      # Multiple solver units or zero solvers top-level WC system
+      status = Capi.addSystem(f"{self.modelName}.root", SystemType.wc.value)  # 1 = oms_system_wc
+      if status != Status.ok:
+        raise RuntimeError(f"Failed to create root WC system: {status}")
+      self.apiCall.append(f'oms_addSystem("{self.modelName}.root", "oms_system_wc")')
 
     # Iterate over simulation units
-    for unit in config["simulation units"]:
+    for unit in sim_units:
       ## check if unit has solver as key
       solvername = "None"
-      if "solver" in unit:
+      solver = unit.get("solver")
+      if num_solvers > 1  and solver:
         solvername = unit["solver"]['name']
         solver_path = f"{self.modelName}.root.{solvername}"
         self.apiCall.append(f'oms_addSystem("{solver_path}", "oms_system_sc")')
-        status = Capi.addSystem(f"model.root.{solvername}", 2)
+        status = Capi.addSystem(f"model.root.{solvername}", SystemType.sc.value)  # 2 = oms_system_sc
         if status != Status.ok:
           raise RuntimeError(f"Failed to add oms_addSystem: {status}")
       else:
         solver_path = f"{self.modelName}.root"
+
+      ## set solver method and tolerance if provided
+      if solver:
+        method = solver.get("method")
+        tolerance = solver.get("tolerance")
+        stepSize = solver.get("stepSize")
+
+        if method in ("cvode", "euler"):
+          status = Capi.setSolver(solver_path, SolverType[method].value)  # 3=cvode, 2=euler
+          if status != Status.ok:
+            raise RuntimeError(f"Failed to set solver: {status}")
+          self.apiCall.append(f'oms_setSolver("{solver_path}", "{method}")')
+
+        if tolerance is not None:
+          status = Capi.setTolerance(solver_path, float(tolerance))
+          if status != Status.ok:
+            raise RuntimeError(f"Failed to set tolerance: {status}")
+          self.apiCall.append(f'oms_setTolerance("{solver_path}", {float(tolerance)})')
+
+        if stepSize is not None:
+          status = Capi.setFixedStepSize(solver_path, float(stepSize))
+          if status != Status.ok:
+            raise RuntimeError(f"Failed to set step size: {status}")
+          self.apiCall.append(f'oms_setFixedStepSize("{solver_path}", {float(stepSize)})')
 
       listofsystems = []
       ## add components
@@ -370,7 +426,7 @@ class InstantiatedModel:
     if self.fmuInstantitated is False:
       raise RuntimeError("FMU must be instantiated before setting tolerance")
 
-    status = Capi.setTolerance(self.modelName, tolerance)
+    status = Capi.setTolerance(f"{self.modelName}.root", tolerance)
     if status != Status.ok:
       raise RuntimeError(f"Failed to set tolerance: {status}")
 
@@ -378,7 +434,7 @@ class InstantiatedModel:
     if self.fmuInstantitated is False:
       raise RuntimeError("FMU must be instantiated before setting variable step size")
 
-    status = Capi.setFixedStepSize(self.modelName, stepSize)
+    status = Capi.setFixedStepSize(f"{self.modelName}.root", stepSize)
     if status != Status.ok:
       raise RuntimeError(f"Failed to set fixed step size: {status}")
 
@@ -386,7 +442,7 @@ class InstantiatedModel:
     if self.fmuInstantitated is False:
       raise RuntimeError("FMU must be instantiated before setting variable step size")
 
-    status = Capi.setVariableStepSize(self.modelName, initialStepSize, minimumStepSize, maximumStepSize)
+    status = Capi.setVariableStepSize(f"{self.modelName}.root", initialStepSize, minimumStepSize, maximumStepSize)
     if status != Status.ok:
       raise RuntimeError(f"Failed to set variable step size: {status}")
 
