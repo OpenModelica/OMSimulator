@@ -1,12 +1,12 @@
 TEST = ../../rtest -v
 
 TESTFILES = \
-BouncingBall.lua \
-VanDerPol.lua \
-Stair.lua \
-Feedthrough.lua \
-Dahlquist.lua \
-Resource.lua \
+BouncingBall.py \
+VanDerPol.py \
+Stair.py \
+Feedthrough.py \
+Dahlquist.py \
+Resource.py \
 
 # Run make failingtest
 FAILINGTESTFILES = \
@@ -14,7 +14,6 @@ FAILINGTESTFILES = \
 # Dependency files that are not .lua or Makefile
 # Add them here or they will be cleaned.
 DEPENDENCIES = \
-*.lua \
 *.py \
 Makefile \
 
@@ -29,7 +28,7 @@ test:
 
 baseline:
 	@echo
-	@echo Updating badelines...
+	@echo Updating baselines...
 	@$(TEST) -b $(TESTFILES)
 
 # Cleans all files that are not listed as dependencies
