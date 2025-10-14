@@ -31,19 +31,23 @@ model.addConnection(CRef("default", "Chassis", "der_z_w"), CRef("default", "Whee
 model.addConnection(CRef("default", "BC", "road"), CRef("default", "Wheel", "z"))
 
 # Instantiate model
-instantiated = model.instantiate()
+instantiated_model = model.instantiate()
 
 # Simulation settings
-instantiated.setResultFile("QuarterCarModel.DisplacementDisplacement_res.mat")
-instantiated.setStopTime(1.0)
-instantiated.setTolerance(1e-4)
-instantiated.setFixedStepSize(1e-3)
+instantiated_model.setResultFile("QuarterCarModel.DisplacementDisplacement_res.mat")
+
+# instantiated_model.setSolver("oms_solver_wc_mav")
+# instantiated_model.setVariableStepSize(1e-2, 1e-2, 1e-2)
+
+instantiated_model.setStopTime(1.0)
+instantiated_model.setTolerance(1e-4)
+instantiated_model.setFixedStepSize(1e-3)
 
 # Run simulation
-instantiated.initialize()
-instantiated.simulate()
-instantiated.terminate()
-instantiated.delete()
+instantiated_model.initialize()
+instantiated_model.simulate()
+instantiated_model.terminate()
+instantiated_model.delete()
 
 
 ## Result:
