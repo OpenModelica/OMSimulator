@@ -1,8 +1,8 @@
 TEST = ../../rtest -v
 
 TESTFILES = \
-connectFmi2AndFmi3.lua \
-FeedthroughConnections.lua \
+connectFmi2AndFmi3.py \
+FeedthroughConnections.py \
 
 # Run make failingtest
 FAILINGTESTFILES = \
@@ -10,7 +10,6 @@ FAILINGTESTFILES = \
 # Dependency files that are not .lua or Makefile
 # Add them here or they will be cleaned.
 DEPENDENCIES = \
-*.lua \
 *.py \
 Makefile \
 
@@ -25,7 +24,7 @@ test:
 
 baseline:
 	@echo
-	@echo Updating badelines...
+	@echo Updating baselines...
 	@$(TEST) -b $(TESTFILES)
 
 # Cleans all files that are not listed as dependencies
