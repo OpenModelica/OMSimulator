@@ -123,9 +123,12 @@ class FMU:
           # Parse UnitDefinitions
           self._parse_units(model_description)
 
-          # Parse variables
-          self._parse_variables(model_description)
-
+          # Dispatch version-specific handling
+          if self._fmiVersion == "2.0":
+            self._parse_variables_fmi2(model_description)
+          elif self._fmiVersion == "3.0":
+            ## TODO: implement FMI 3.0 variable parsing
+            pass
     except ET.XMLSyntaxError as e:
       raise ValueError(f'Error parsing {model_desc_name}: {e}')
 
@@ -144,7 +147,7 @@ class FMU:
       'stepSize': _get('stepSize', 1e-3),
     }
 
-  def _parse_variables(self, model_description):
+  def _parse_variables_fmi2(self, model_description):
     '''Parses variables from the ModelVariables section of modelDescription.xml'''
     scalar_variables = model_description.xpath('//ModelVariables/ScalarVariable')
     for scalar_var in scalar_variables:
