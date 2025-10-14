@@ -11,13 +11,16 @@ set(OM_OMS_TESTSUITE_RESOURCES_FMUS
         ${CMAKE_CURRENT_SOURCE_DIR}/AircraftVehicleDemonstrator.engine
         ${CMAKE_CURRENT_SOURCE_DIR}/B
         ${CMAKE_CURRENT_SOURCE_DIR}/BouncingBall
+        ${CMAKE_CURRENT_SOURCE_DIR}/BouncingBall3
         ${CMAKE_CURRENT_SOURCE_DIR}/Dahlquist
+        ${CMAKE_CURRENT_SOURCE_DIR}/Dahlquist3
         ${CMAKE_CURRENT_SOURCE_DIR}/DualMassOscillator.System1
         ${CMAKE_CURRENT_SOURCE_DIR}/DualMassOscillator.System2
         ${CMAKE_CURRENT_SOURCE_DIR}/Enum1
         ${CMAKE_CURRENT_SOURCE_DIR}/equationPair.equation1
         ${CMAKE_CURRENT_SOURCE_DIR}/equationPair.equation2
         ${CMAKE_CURRENT_SOURCE_DIR}/Feedthrough
+        ${CMAKE_CURRENT_SOURCE_DIR}/Feedthrough3
         ${CMAKE_CURRENT_SOURCE_DIR}/fmi_attributes_19
         ${CMAKE_CURRENT_SOURCE_DIR}/fmidertest
         ${CMAKE_CURRENT_SOURCE_DIR}/HelloWorld
@@ -46,12 +49,15 @@ set(OM_OMS_TESTSUITE_RESOURCES_FMUS
         ${CMAKE_CURRENT_SOURCE_DIR}/replaceA_extended
         ${CMAKE_CURRENT_SOURCE_DIR}/replaceB
         ${CMAKE_CURRENT_SOURCE_DIR}/Resource
+        ${CMAKE_CURRENT_SOURCE_DIR}/Resource3
         ${CMAKE_CURRENT_SOURCE_DIR}/Stair
+        ${CMAKE_CURRENT_SOURCE_DIR}/Stair3
         ${CMAKE_CURRENT_SOURCE_DIR}/str_hello_world
         ${CMAKE_CURRENT_SOURCE_DIR}/tank1
         ${CMAKE_CURRENT_SOURCE_DIR}/tank2
         ${CMAKE_CURRENT_SOURCE_DIR}/tank3
         ${CMAKE_CURRENT_SOURCE_DIR}/VanDerPol
+        ${CMAKE_CURRENT_SOURCE_DIR}/VanDerPol3
         ${CMAKE_CURRENT_SOURCE_DIR}/ypipe
 )
 
