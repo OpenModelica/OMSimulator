@@ -2,7 +2,7 @@
 
 all: difftool resources test
 
-test: api.log parker.log dcmotor.log simulation.log
+test: api.log parker.log AircraftVehicleDemonstrator.log dcmotor.log simulation.log reference-fmus.log reference-fmus3.log
 
 partest: difftool resources
 	cd partest && time ./runtests.pl -nocolour -with-xml
