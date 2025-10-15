@@ -23,9 +23,12 @@ model.addComponent(CRef("default", "Feedthrough2"), "resources/Feedthrough3.fmu"
 model.addConnection(CRef("default", "Feedthrough1", "Float64_continuous_output"), CRef("default", "Feedthrough2", "Float64_continuous_input"))
 model.addConnection(CRef("default", "Feedthrough1", "Int64_output"), CRef("default", "Feedthrough2", "Int64_input"))
 
-model.list()
-print("", flush=True)
+
 model.export("FeedthroughConnections.ssp")
+
+model2 = SSP("FeedthroughConnections.ssp")
+model2.list()
+print("", flush=True)
 
 instantiated_model = model.instantiate()  ## internally generate the json file and also set the model state like virgin,
 instantiated_model.setResultFile("")
