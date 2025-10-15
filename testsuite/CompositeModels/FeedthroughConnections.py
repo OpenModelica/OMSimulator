@@ -58,7 +58,7 @@ instantiated_model.delete()
 ## |--   resources/Feedthrough3.fmu
 ## |-- Active Variant: default
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Variant "default": None
+## |-- Variant "default": <hidden>
 ## |-- |-- System: default 'None'
 ## |-- |-- |-- Connectors:
 ## |-- |-- |-- Elements:
