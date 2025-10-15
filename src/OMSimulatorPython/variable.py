@@ -1,4 +1,5 @@
 from enum import Enum
+from sqlite3 import Binary
 from typing import Union
 
 from OMSimulator.cref import CRef
@@ -21,7 +22,18 @@ class SignalType(Enum):
   Boolean = 2
   String = 3
   Enumeration = 4
-
+  ## fmi3 types
+  Float32   = 5
+  Float64   = 6
+  Int8      = 7
+  UInt8     = 8
+  Int16     = 9
+  UInt16    = 10
+  Int32     = 11
+  UInt32    = 12
+  Int64     = 13
+  UInt64    = 14
+  Binary    = 15
 
 class Variable:
   '''Class for storing variable information'''

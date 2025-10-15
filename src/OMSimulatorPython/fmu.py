@@ -117,18 +117,20 @@ class FMU:
           # Parse default experiment settings
           self._parse_default_experiment(model_description)
 
-          # Parse typeDefinitions
-          self._parse_typeDefinitions(model_description)
-
           # Parse UnitDefinitions
           self._parse_units(model_description)
 
           # Dispatch version-specific handling
           if self._fmiVersion == "2.0":
+            # Parse typeDefinitions
+            self._parse_typeDefinitions_fmi2(model_description)
+            # Parse ModelVariables
             self._parse_variables_fmi2(model_description)
           elif self._fmiVersion == "3.0":
-            ## TODO: implement FMI 3.0 variable parsing
-            pass
+            # Parse typeDefinitions
+            self._parse_typeDefinitions_fmi3(model_description)
+            # Parse ModelVariables
+            self._parse_variables_fmi3(model_description)
     except ET.XMLSyntaxError as e:
       raise ValueError(f'Error parsing {model_desc_name}: {e}')
 
@@ -197,6 +199,59 @@ class FMU:
     if not scalar_variables:
       raise Exception('ModelVariables section not found in modelDescription.xml')
 
+  def _parse_variables_fmi3(self, model_description):
+    '''Parses variables from the ModelVariables section of modelDescription.xml'''
+    model_variables = model_description.xpath('//ModelVariables')
+    ## iterate over all ModelVariables sections (fmi3 may have multiple)
+    for model_var_section in model_variables:
+      for element in model_var_section:
+        # Element tag (e.g., Float64, Int32, Boolean, String, etc.)
+        var_type = element.tag
+        # Extract standard FMI 3.0 attributes
+        name = element.get("name")
+        description = element.get("description")
+        value_reference = element.get("valueReference")
+        causality = element.get("causality", "local")
+        variability = element.get("variability", "continuous")
+        initial = element.get("initial")
+        start = element.get("start")
+        derivative_index = int(element.get('derivative', '-1'))
+        declaredType = element.get('declaredType')
+        unit = element.get("unit")
+
+        # Handle state variables if it's a derivative
+        if derivative_index > 0 and variability == 'continuous':
+          self._states.append(self._variables[derivative_index - 1])
+
+        # Handle nested <Start> element for String/Binary/Enumeration types
+        if start is None:
+          start_elem = element.find("Start")
+          if start_elem is not None:
+            start = start_elem.get("value")
+
+        # print(f"var_name: {name}, var_type: {var_type}, causality: {causality}, variability: {variability}, initial: {initial}, start: {start}")
+
+        # Create and store the variable
+        variable = Variable(name, description, value_reference, causality, variability, var_type, unit, start, declaredType)
+
+        # Assign unit definitions if applicable
+        if unit:
+          for defined_unit in self._unitDefinitions:
+            if defined_unit.name == variable.unit:
+              variable.unitDefinition.append(defined_unit)
+
+        # assign enumeration definitions if applicable
+        if declaredType:
+          for enumeration in self._enumerationDefinitions:
+            if declaredType == enumeration.name:
+              variable.enumerationDefinition.append(enumeration)
+
+        self._variables.append(variable)
+
+    # Raise an error if ModelVariables section is missing
+    if not model_variables:
+      raise Exception('ModelVariables section not found in modelDescription.xml')
+
   def _parse_units(self, model_description):
     '''Extracts unit definitions from modelDescription.xml.'''
 
@@ -212,7 +267,7 @@ class FMU:
 
       self._unitDefinitions.append(Unit(name, base_units))
 
-  def _parse_typeDefinitions(self, model_description):
+  def _parse_typeDefinitions_fmi2(self, model_description):
     '''Extracts only enumeration type definitions from modelDescription.xml.'''
     for simple_type in model_description.xpath('//TypeDefinitions/SimpleType'):
       type_name = simple_type.get('name')
@@ -224,6 +279,16 @@ class FMU:
         for item in enum_elem.xpath('./Item'):
           items[item.get("name")] = int(item.get("value"))
         self._enumerationDefinitions.append(Enumeration(type_name, items))
+
+  def _parse_typeDefinitions_fmi3(self, model_description):
+    '''Extracts only enumeration type definitions from modelDescription.xml.'''
+    for simple_type in model_description.xpath('//TypeDefinitions/EnumerationType'):
+      type_name = simple_type.get('name')
+      # Collect enumeration items
+      items = {}
+      for item in simple_type.xpath('./Item'):
+        items[item.get("name")] = int(item.get("value"))
+      self._enumerationDefinitions.append(Enumeration(type_name, items))
 
   def makeConnectors(self):
     connectors = []
