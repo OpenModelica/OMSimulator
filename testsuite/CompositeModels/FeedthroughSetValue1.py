@@ -6,8 +6,8 @@
 ## mac: yes
 
 
-from numpy import float32
-from OMSimulator import SSP, CRef, Settings
+from numpy import uint64
+from OMSimulator import SSP, CRef, Settings, Float64, Float32, Int8, Int16, Int32, Int64, UInt8, UInt16, UInt32, UInt64
 
 Settings.suppressPath = True
 
@@ -18,40 +18,34 @@ model = SSP()
 model.addResource("../resources/Feedthrough3.fmu", new_name="resources/Feedthrough3.fmu")
 model.addComponent(CRef("default", "Feedthrough1"), "resources/Feedthrough3.fmu")
 
-model.setValue(CRef("default", "Feedthrough1", "Float64_continuous_input"), 3.5)
-model.setValue(CRef("default", "Feedthrough1", "Int64_input"), 7)
-model.setValue(CRef("default", "Feedthrough1", "Float32_continuous_input"), 1.5)
-model.setValue(CRef("default", "Feedthrough1", "Int8_input"), 3)
+model.setValue(CRef("default", "Feedthrough1", "Float64_continuous_input"), Float64(3.5))
+model.setValue(CRef("default", "Feedthrough1", "Int64_input"), Int64(7))
+model.setValue(CRef("default", "Feedthrough1", "Float32_continuous_input"), Float32(1.5))
+model.setValue(CRef("default", "Feedthrough1", "Int8_input"), Int8(3))
 model.setValue(CRef("default", "Feedthrough1", "Boolean_input"), True)
 
-model.setValue(CRef("default", "Feedthrough1", "Float32_discrete_input"), float32(2.5))
+model.setValue(CRef("default", "Feedthrough1", "Float32_discrete_input"), Float32(2.5))
 model.setValue(CRef("default", "Feedthrough1", "Enumeration_input"), 2)
 
-model.setValue(CRef("default", "Feedthrough1", "Int16_input"), 1000)
-model.setValue(CRef("default", "Feedthrough1", "UInt16_input"), 2000)
-model.setValue(CRef("default", "Feedthrough1", "UInt32_input"), 3000)
-model.setValue(CRef("default", "Feedthrough1", "UInt64_input"), 4000)
-
-
-# ## connections
-# model.addConnection(CRef("default", "Feedthrough1", "Float64_continuous_output"), CRef("default", "Feedthrough2", "Float64_continuous_input"))
-# model.addConnection(CRef("default", "Feedthrough1", "Int64_output"), CRef("default", "Feedthrough2", "Int64_input"))
-
+model.setValue(CRef("default", "Feedthrough1", "Int16_input"), Int16(1000))
+model.setValue(CRef("default", "Feedthrough1", "UInt16_input"), UInt16(2000))
+model.setValue(CRef("default", "Feedthrough1", "UInt32_input"), UInt32(3000))
+model.setValue(CRef("default", "Feedthrough1", "UInt64_input"), UInt64(4000))
 
 model.list()
 model.export("FeedthroughsetValue1.ssp")
 
-# model2 = SSP("FeedthroughConnections.ssp")
+# model2 = SSP("FeedthroughsetValue1.ssp")
 # model2.list()
 # print("", flush=True)
 
-# instantiated_model = model.instantiate()  ## internally generate the json file and also set the model state like virgin,
+# instantiated_model = model2.instantiate()  ## internally generate the json file and also set the model state like virgin,
 # instantiated_model.setResultFile("")
 # instantiated_model.setStopTime(10.0)
 # instantiated_model.setTolerance(1e-5)
 
-# instantiated_model.setValue(CRef("default", "Feedthrough1", "Float64_continuous_input"), 3.5)
-# instantiated_model.setValue(CRef("default", "Feedthrough1", "Int64_input"), 7)
+# # instantiated_model.setValue(CRef("default", "Feedthrough1", "Float64_continuous_input"), 3.5)
+# # instantiated_model.setValue(CRef("default", "Feedthrough1", "Int64_input"), 7)
 
 # instantiated_model.initialize()
 # instantiated_model.simulate()
@@ -114,17 +108,17 @@ model.export("FeedthroughsetValue1.ssp")
 ## |-- |-- |-- |-- |-- |-- (Enumeration_input, Causality.input, SignalType.Enumeration, None, 'None')
 ## |-- |-- |-- |-- |-- |-- (Enumeration_output, Causality.output, SignalType.Enumeration, None, 'None')
 ## |-- |-- |-- |-- |-- Inline Parameter Bindings:
-## |-- |-- |-- |-- |-- |-- (Float64_continuous_input, Float64, 3.5, None, 'None')
-## |-- |-- |-- |-- |-- |-- (Int64_input, Int64, 7, None, 'None')
-## |-- |-- |-- |-- |-- |-- (Float32_continuous_input, Float32, 1.5, None, 'None')
-## |-- |-- |-- |-- |-- |-- (Int8_input, Int8, 3, None, 'None')
-## |-- |-- |-- |-- |-- |-- (Boolean_input, Boolean, True, None, 'None')
-## |-- |-- |-- |-- |-- |-- (Float32_discrete_input, Float32, 2.5, None, 'None')
-## |-- |-- |-- |-- |-- |-- (Enumeration_input, Enumeration, 2, None, 'None')
-## |-- |-- |-- |-- |-- |-- (Int16_input, Int16, 1000, None, 'None')
-## |-- |-- |-- |-- |-- |-- (UInt16_input, UInt16, 2000, None, 'None')
-## |-- |-- |-- |-- |-- |-- (UInt32_input, UInt32, 3000, None, 'None')
-## |-- |-- |-- |-- |-- |-- (UInt64_input, UInt64, 4000, None, 'None')
+## |-- |-- |-- |-- |-- |-- (Float64 Float64_continuous_input, 3.5, None, 'None')
+## |-- |-- |-- |-- |-- |-- (Int64 Int64_input, 7, None, 'None')
+## |-- |-- |-- |-- |-- |-- (Float32 Float32_continuous_input, 1.5, None, 'None')
+## |-- |-- |-- |-- |-- |-- (Int8 Int8_input, 3, None, 'None')
+## |-- |-- |-- |-- |-- |-- (Boolean Boolean_input, True, None, 'None')
+## |-- |-- |-- |-- |-- |-- (Float32 Float32_discrete_input, 2.5, None, 'None')
+## |-- |-- |-- |-- |-- |-- (Integer Enumeration_input, 2, None, 'None')
+## |-- |-- |-- |-- |-- |-- (Int16 Int16_input, 1000, None, 'None')
+## |-- |-- |-- |-- |-- |-- (UInt16 UInt16_input, 2000, None, 'None')
+## |-- |-- |-- |-- |-- |-- (UInt32 UInt32_input, 3000, None, 'None')
+## |-- |-- |-- |-- |-- |-- (UInt64 UInt64_input, 4000, None, 'None')
 ## |-- EnumerationDefinitions:
 ## |-- |-- EnumName: Option
 ## |-- |-- |-- EnumItems: Option 1: 1, Option 2: 2

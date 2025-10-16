@@ -35,6 +35,33 @@ class SignalType(Enum):
   UInt64    = 14
   Binary    = 15
 
+class FMI3Type:
+  """Base class for all FMI3 types."""
+  def __init__(self, value):
+    self.value = value
+
+  def __repr__(self):
+    return f"{self.__class__.__name__}({self.value})"
+
+
+# Float types
+class Float64(FMI3Type): pass
+class Float32(FMI3Type): pass
+
+# Integer types
+class Int64(FMI3Type): pass
+class Int32(FMI3Type): pass
+class Int16(FMI3Type): pass
+class Int8(FMI3Type): pass
+
+# Unsigned Integer types
+class UInt64(FMI3Type): pass
+class UInt32(FMI3Type): pass
+class UInt16(FMI3Type): pass
+class UInt8(FMI3Type): pass
+
+class Binary(FMI3Type): pass
+
 class Variable:
   '''Class for storing variable information'''
   def __init__(self, name: Union[str, CRef], description : str, valueReference: Union[str, int], causality, variability, signal_type, unit, start_value, declaredType):
