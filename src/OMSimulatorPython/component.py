@@ -142,7 +142,13 @@ class Component:
       utils.exportAnnotations(component_node, self.solver)
 
   def setValue(self, cref:str, value, unit=None, description = None):
-    self.value.setValue(cref, value, unit, description)
+    for connector in self.connectors:
+      if connector.name == cref:
+        self.value.setValue(cref, value, connector.signal_type, unit, description)
+        break
+    else:
+      # The for-else clause runs only if no 'break' was hit
+      raise ValueError(f"Connector '{cref}' not found in available connectors")
 
   def getValue(self, cref:str):
     return self.value.getValue(cref)
