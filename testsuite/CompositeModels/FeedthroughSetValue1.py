@@ -32,11 +32,11 @@ model.setValue(CRef("default", "Feedthrough1", "UInt16_input"), UInt16(2000))
 model.setValue(CRef("default", "Feedthrough1", "UInt32_input"), UInt32(3000))
 model.setValue(CRef("default", "Feedthrough1", "UInt64_input"), UInt64(4000))
 
-model.list()
+#model.list()
 model.export("FeedthroughsetValue1.ssp")
 
-# model2 = SSP("FeedthroughsetValue1.ssp")
-# model2.list()
+model2 = SSP("FeedthroughsetValue1.ssp")
+model2.list()
 # print("", flush=True)
 
 # instantiated_model = model2.instantiate()  ## internally generate the json file and also set the model state like virgin,
