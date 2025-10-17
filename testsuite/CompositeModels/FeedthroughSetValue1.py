@@ -32,34 +32,35 @@ model.setValue(CRef("default", "Feedthrough1", "UInt16_input"), UInt16(2000))
 model.setValue(CRef("default", "Feedthrough1", "UInt32_input"), UInt32(3000))
 model.setValue(CRef("default", "Feedthrough1", "UInt64_input"), UInt64(4000))
 
-#model.list()
 model.export("FeedthroughsetValue1.ssp")
 
 model2 = SSP("FeedthroughsetValue1.ssp")
 model2.list()
-# print("", flush=True)
+print("", flush=True)
 
-# instantiated_model = model2.instantiate()  ## internally generate the json file and also set the model state like virgin,
-# instantiated_model.setResultFile("")
-# instantiated_model.setStopTime(10.0)
-# instantiated_model.setTolerance(1e-5)
+instantiated_model = model2.instantiate()  ## internally generate the json file and also set the model state like virgin,
+instantiated_model.setResultFile("")
+instantiated_model.setStopTime(10.0)
+instantiated_model.setTolerance(1e-5)
 
-# # instantiated_model.setValue(CRef("default", "Feedthrough1", "Float64_continuous_input"), 3.5)
-# # instantiated_model.setValue(CRef("default", "Feedthrough1", "Int64_input"), 7)
+# print(instantiated_model.dumpApiCalls(), flush=True)
+instantiated_model.initialize()
+instantiated_model.simulate()
 
-# instantiated_model.initialize()
-# instantiated_model.simulate()
-# print(f"info:    Feedthrough1.Float64_continuous_input  : {instantiated_model.getValue(CRef('default', 'Feedthrough1', 'Float64_continuous_input'))}", flush=True)
-# print(f"info:    Feedthrough1.Float64_continuous_output : {instantiated_model.getValue(CRef('default', 'Feedthrough1', 'Float64_continuous_output'))}", flush=True)
-# print(f"info:    Feedthrough2.Float64_continuous_input  : {instantiated_model.getValue(CRef('default', 'Feedthrough2', 'Float64_continuous_input'))}", flush=True)
-# print(f"info:    Feedthrough2.Float64_continuous_output : {instantiated_model.getValue(CRef('default', 'Feedthrough2', 'Float64_continuous_output'))}", flush=True)
-# print(f"info:    Feedthrough1.Int64_input               : {instantiated_model.getValue(CRef('default', 'Feedthrough1', 'Int64_input'))}", flush=True)
-# print(f"info:    Feedthrough1.Int64_output              : {instantiated_model.getValue(CRef('default', 'Feedthrough1', 'Int64_output'))}", flush=True)
-# print(f"info:    Feedthrough2.Int64_input               : {instantiated_model.getValue(CRef('default', 'Feedthrough2', 'Int64_input'))}", flush=True)
-# print(f"info:    Feedthrough2.Int64_output              : {instantiated_model.getValue(CRef('default', 'Feedthrough2', 'Int64_output'))}", flush=True)
+print(f"info:    Feedthrough1.Float64_continuous_input : {instantiated_model.getValue(CRef('default', 'Feedthrough1', 'Float64_continuous_input'))}", flush=True)
+print(f"info:    Feedthrough1.Int64_input              : {instantiated_model.getValue(CRef('default', 'Feedthrough1', 'Int64_input'))}", flush=True)
+print(f"info:    Feedthrough1.Float32_continuous_input : {instantiated_model.getValue(CRef('default', 'Feedthrough1', 'Float32_continuous_input'))}", flush=True)
+print(f"info:    Feedthrough1.Int8_input               : {instantiated_model.getValue(CRef('default', 'Feedthrough1', 'Int8_input'))}", flush=True)
+print(f"info:    Feedthrough1.Boolean_input            : {instantiated_model.getValue(CRef('default', 'Feedthrough1', 'Boolean_input'))}", flush=True)
+print(f"info:    Feedthrough1.Float32_discrete_input   : {instantiated_model.getValue(CRef('default', 'Feedthrough1', 'Float32_discrete_input'))}", flush=True)
+print(f"info:    Feedthrough1.Enumeration_input        : {instantiated_model.getValue(CRef('default', 'Feedthrough1', 'Enumeration_input'))}", flush=True)
+print(f"info:    Feedthrough1.Int16_input              : {instantiated_model.getValue(CRef('default', 'Feedthrough1', 'Int16_input'))}", flush=True)
+print(f"info:    Feedthrough1.UInt16_input             : {instantiated_model.getValue(CRef('default', 'Feedthrough1', 'UInt16_input'))}", flush=True)
+print(f"info:    Feedthrough1.UInt32_input             : {instantiated_model.getValue(CRef('default', 'Feedthrough1', 'UInt32_input'))}", flush=True)
+print(f"info:    Feedthrough1.UInt64_input             : {instantiated_model.getValue(CRef('default', 'Feedthrough1', 'UInt64_input'))}", flush=True)
 
-# instantiated_model.terminate()
-# instantiated_model.delete()
+instantiated_model.terminate()
+instantiated_model.delete()
 
 ## Result:
 ## <class 'OMSimulator.ssp.SSP'>
@@ -67,7 +68,7 @@ model2.list()
 ## |--   resources/Feedthrough3.fmu
 ## |-- Active Variant: default
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Variant "default": None
+## |-- Variant "default": <hidden>
 ## |-- |-- System: default 'None'
 ## |-- |-- |-- Connectors:
 ## |-- |-- |-- Elements:
@@ -125,4 +126,22 @@ model2.list()
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
+##
+## warning: Unknown FMI3 base type for var : Binary_input
+## warning: Unknown FMI3 base type for var : Binary_output
+## Loading FMI version 3...
+## info:    No result file will be created
+## info:    Feedthrough1.Float64_continuous_input : 3.5
+## info:    Feedthrough1.Int64_input              : 7
+## info:    Feedthrough1.Float32_continuous_input : 1.5
+## info:    Feedthrough1.Int8_input               : 3
+## info:    Feedthrough1.Boolean_input            : True
+## info:    Feedthrough1.Float32_discrete_input   : 2.5
+## info:    Feedthrough1.Enumeration_input        : 2
+## info:    Feedthrough1.Int16_input              : 1000
+## info:    Feedthrough1.UInt16_input             : 2000
+## info:    Feedthrough1.UInt32_input             : 3000
+## info:    Feedthrough1.UInt64_input             : 4000
+## info:    2 warnings
+## info:    0 errors
 ## endResult
