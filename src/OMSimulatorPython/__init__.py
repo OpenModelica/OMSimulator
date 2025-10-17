@@ -15,7 +15,7 @@ from OMSimulator.ssp import SSP
 from OMSimulator.ssv import SSV
 from OMSimulator.ssm import SSM
 from OMSimulator.system import System
-from OMSimulator.variable import Causality, SignalType, Variable
+from OMSimulator.variable import Causality, SignalType, Variable, Float32, Float64, Int8, Int16, Int32, Int64, UInt8, UInt16, UInt32, UInt64
 from OMSimulator.instantiated_model import InstantiatedModel
 
 # Define public API
@@ -26,6 +26,16 @@ __all__ = [
     'Connector',
     'CRef',
     'FMU',
+    'Float32',
+    'Float64',
+    'Int8',
+    'Int16',
+    'Int32',
+    'Int64',
+    'UInt8',
+    'UInt16',
+    'UInt32',
+    'UInt64',
     'InstantiatedModel',
     'Settings',
     'SignalType',

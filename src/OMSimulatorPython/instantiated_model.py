@@ -243,18 +243,20 @@ class InstantiatedModel:
     type, status = Capi.getVariableType(value_path)
     if status != Status.ok:
       raise RuntimeError(f"Failed to get variable type for {value_path}: {status}")
+    ## TODO: handle FMi3 data types directly, like Float64, Int32,
+    value_ = value.value if hasattr(value, 'value') else value
 
     match SignalType(type):
       case SignalType.Real:  # oms_signal_type_real
-        self._setReal(value_path, value)
+        self._setReal(value_path, float(value_))
       case SignalType.Integer:  # oms_signal_type_integer
-        self._setInteger(value_path, value)
+        self._setInteger(value_path, int(value_))
       case SignalType.Boolean:  # oms_signal_type_boolean
-        self._setBoolean(value_path, value)
+        self._setBoolean(value_path, bool(value_))
       case SignalType.String:  # oms_signal_type_string
-        self._setString(value_path, value)
+        self._setString(value_path, str(value_))
       case SignalType.Enumeration:  # oms_signal_type_enumeration
-        self._setInteger(value_path, value)  # Treat enumeration as integer
+        self._setInteger(value_path, int(value_))  # Treat enumeration as integer
       case _:
         raise TypeError(f"Unsupported type: {type}")
 
@@ -301,17 +303,19 @@ class InstantiatedModel:
     if status != Status.ok:
       raise RuntimeError(f"Failed to get variable type for {cref}: {status}")
 
+    value_ = value.value if hasattr(value, 'value') else value
+    ## TODO handle FMi3 data types directly, like Float64, Int32,etc..
     match SignalType(type):
       case SignalType.Real:  # oms_signal_type_real
-        return self._setReal(value_path, value)
+        return self._setReal(value_path, float(value_))
       case SignalType.Integer:  # oms_signal_type_integer
-        return self._setInteger(value_path, value)
+        return self._setInteger(value_path, int(value_))
       case SignalType.Boolean:  # oms_signal_type_boolean
-        return self._setBoolean(value_path, value)
+        return self._setBoolean(value_path, bool(value_))
       case SignalType.String:  # oms_signal_type_string
-        return self._setString(value_path, value)
+        return self._setString(value_path, str(value_))
       case SignalType.Enumeration:  # oms_signal_type_enumeration
-        return self._setInteger(value_path, value)  # Treat enumeration as integer
+        return self._setInteger(value_path, int(value_))  # Treat enumeration as integer
       case _:
         raise TypeError(f"Unsupported type: {type}")
 

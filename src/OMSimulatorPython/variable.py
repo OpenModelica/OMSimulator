@@ -1,4 +1,5 @@
 from enum import Enum
+from sqlite3 import Binary
 from typing import Union
 
 from OMSimulator.cref import CRef
@@ -21,7 +22,45 @@ class SignalType(Enum):
   Boolean = 2
   String = 3
   Enumeration = 4
+  ## fmi3 types
+  Float32   = 5
+  Float64   = 6
+  Int8      = 7
+  UInt8     = 8
+  Int16     = 9
+  UInt16    = 10
+  Int32     = 11
+  UInt32    = 12
+  Int64     = 13
+  UInt64    = 14
+  Binary    = 15
 
+class FMI3Type:
+  """Base class for all FMI3 types."""
+  def __init__(self, value):
+    self.value = value
+
+  def __repr__(self):
+    return f"{self.__class__.__name__}({self.value})"
+
+
+# Float types
+class Float64(FMI3Type): pass
+class Float32(FMI3Type): pass
+
+# Integer types
+class Int64(FMI3Type): pass
+class Int32(FMI3Type): pass
+class Int16(FMI3Type): pass
+class Int8(FMI3Type): pass
+
+# Unsigned Integer types
+class UInt64(FMI3Type): pass
+class UInt32(FMI3Type): pass
+class UInt16(FMI3Type): pass
+class UInt8(FMI3Type): pass
+
+class Binary(FMI3Type): pass
 
 class Variable:
   '''Class for storing variable information'''

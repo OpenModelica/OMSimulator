@@ -6,7 +6,7 @@ from pathlib import Path
 from OMSimulator.connection import Connection, ConnectionGeometry
 from OMSimulator.connector import Connector, ConnectorGeometry
 from OMSimulator.unit import Unit
-from OMSimulator.variable import Causality, SignalType
+from OMSimulator.variable import Causality, SignalType, Float64, Float32, Int8, Int16, Int32, Int64, UInt8, UInt16, UInt32, UInt64
 from OMSimulator.elementgeometry import ElementGeometry
 from OMSimulator import namespace, CRef
 from collections import defaultdict
@@ -154,7 +154,18 @@ def parseParameterBindingHelper(parameters):
                       "ssv:Real": float,
                       "ssv:Integer": int,
                       "ssv:Boolean": lambda v: v.lower() == "true",  # Convert "true"/"false" to bool
-                      "ssv:String": str
+                      "ssv:String": str,
+                       ## FMI-3.0 types
+                      "ssv:Float64": Float64,
+                      "ssv:Float32": Float32,
+                      "ssv:Int8": Int8,
+                      "ssv:Int16": Int16,
+                      "ssv:Int32": Int32,
+                      "ssv:Int64": Int64,
+                      "ssv:UInt8": UInt8,
+                      "ssv:UInt16": UInt16,
+                      "ssv:UInt32": UInt32,
+                      "ssv:UInt64": UInt64
                     }
       for value_type, cast_func in value_types.items():
         value_element = param.find(value_type, namespaces=namespace.ns)
