@@ -4,6 +4,7 @@ TESTFILES = \
 connectFmi2AndFmi3.py \
 FeedthroughConnections.py \
 FeedthroughSetValue1.py \
+FeedthroughSetValue2.py \
 
 # Run make failingtest
 FAILINGTESTFILES = \
