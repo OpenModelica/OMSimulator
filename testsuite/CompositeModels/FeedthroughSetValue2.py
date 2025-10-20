@@ -69,9 +69,6 @@ instantiated_model.terminate()
 instantiated_model.delete()
 
 ## Result:
-## UserWarning: Failed to validate feed_through_parameters1.ssv against schemafile SystemStructureParameterValues.xsd
-## ERROR (line 17, column 0): Element '{http://ssp-standard.org/SSP1/SystemStructureParameterValues}Boolean', attribute 'value': 'True' is not a valid value of the atomic type 'xs:boolean'.
-## ERROR (line 17, column 0): Element '{http://ssp-standard.org/SSP1/SystemStructureParameterValues}Boolean', attribute 'value': 'True' is not a valid value of the local list type.
 ## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
 ## |--   resources/Feedthrough3.fmu
