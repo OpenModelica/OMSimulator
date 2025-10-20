@@ -98,7 +98,9 @@ class Connector:
 
       # Find the connector type (Real, Integer, Boolean)
       con = None
-      for connectortype in ["ssc:Real", "ssc:Integer", "ssc:Boolean", "ssc:Enumeration"]:  # Expected connector types
+      ## Expected connector type including fmi3 types
+      types = ["ssc:Real", "ssc:Integer", "ssc:Boolean", "ssc:String", "ssc:Enumeration", "ssc:Float32", "ssc:Float64", "ssc:Int8", "ssc:UInt8", "ssc:Int16", "ssc:UInt16", "ssc:Int32", "ssc:UInt32", "ssc:Int64", "ssc:UInt64", "ssc:Binary"]
+      for connectortype in types:  # Expected connector types
         type_element = connector.find(connectortype, namespaces=namespace.ns)
         if type_element is not None:
           signal_type = connectortype.split(":")[-1]  # Extracts 'Real', 'Integer', or 'Boolean'
