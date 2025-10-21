@@ -65,14 +65,18 @@ namespace oms
 
     oms_status_enu_t updateInputs(DirectedGraph& graph);
 
+    oms_status_enu_t saveInputs(DirectedGraph& graph, std::vector<double> &saved_inputs);
+
+    oms_status_enu_t restoreInputs(DirectedGraph& graph, const std::vector<double>& saved_outputs);
+
     std::string getSolverName() const;
     oms_status_enu_t setSolverMethod(std::string);
 
     oms_status_enu_t setSolver(oms_solver_enu_t solver) {if (solver > oms_solver_sc_min && solver < oms_solver_sc_max) {solverMethod=solver; return oms_status_ok;} return oms_status_error;}
 
   private:
-    oms_status_enu_t doStepEuler();
-    oms_status_enu_t doStepCVODE();
+    oms_status_enu_t doStepEuler(double stopTime);
+    oms_status_enu_t doStepCVODE(double stopTime);
 
   protected:
     SystemSC(const ComRef& cref, Model* parentModel, System* parentSystem);
@@ -94,6 +98,8 @@ namespace oms
     std::vector<double*> states_nominal;
     std::vector<double*> event_indicators;
     std::vector<double*> event_indicators_prev;
+
+    std::vector<double> initial_guess;  // Initial guess for all algebraic loops
 
     struct SolverDataEuler_t
     {
