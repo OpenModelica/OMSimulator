@@ -3066,7 +3066,7 @@ oms_status_enu_t oms::System::addAlgLoop(scc_t SCC, const int algLoopNum, Direct
     loopsNeedUpdate = false;
   }
 
-  algLoops.push_back( AlgLoop(Flags::AlgLoopSolver(), absoluteTolerance, SCC, algLoopNum, supportsDirectionalDerivatives));
+  algLoops.push_back( AlgLoop(Flags::AlgLoopSolver(), absoluteTolerance, relativeTolerance, SCC, algLoopNum, supportsDirectionalDerivatives));
 
   return oms_status_ok;
 }
@@ -3110,9 +3110,9 @@ oms_status_enu_t oms::System::updateAlgebraicLoops(const std::vector<scc_t>& sor
 }
 
 
-oms_status_enu_t oms::System::solveAlgLoop(DirectedGraph& graph, int loopNumber)
+oms_status_enu_t oms::System::solveAlgLoop(DirectedGraph& graph, int loopNumber, double tolerance)
 {
-  return algLoops[loopNumber].solveAlgLoop(*this, graph);
+  return algLoops[loopNumber].solveAlgLoop(*this, graph, tolerance);
 }
 
 oms_status_enu_t oms::System::rename(const oms::ComRef& newCref)

@@ -63,7 +63,7 @@ namespace oms
     oms_status_enu_t doStep();
     oms_status_enu_t stepUntil(double stopTime);
 
-    oms_status_enu_t updateInputs(DirectedGraph& graph);
+    oms_status_enu_t updateInputs(DirectedGraph& graph, double tolerance = 0.0);
 
     std::string getSolverName() const;
     oms_status_enu_t setSolverMethod(std::string);
@@ -71,8 +71,8 @@ namespace oms
     oms_status_enu_t setSolver(oms_solver_enu_t solver) {if (solver > oms_solver_sc_min && solver < oms_solver_sc_max) {solverMethod=solver; return oms_status_ok;} return oms_status_error;}
 
   private:
-    oms_status_enu_t doStepEuler();
-    oms_status_enu_t doStepCVODE();
+    oms_status_enu_t doStepEuler(double stopTime);
+    oms_status_enu_t doStepCVODE(double stopTime);
 
   protected:
     SystemSC(const ComRef& cref, Model* parentModel, System* parentSystem);
@@ -107,6 +107,7 @@ namespace oms
       SUNMatrix J;            /* Matrix used by linear solver */
       N_Vector liny;          /* Vector used by linear solver */
       N_Vector abstol;
+      N_Vector ewt;
     };
 
     union SolverData_t

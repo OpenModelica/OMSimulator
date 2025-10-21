@@ -57,12 +57,13 @@ namespace oms
   {
   public:
     ~KinsolSolver();
-    static KinsolSolver* NewKinsolSolver(const int algLoopNum, const unsigned int size, double absoluteTolerance, const bool useDirectionalDerivative);
-    oms_status_enu_t kinsolSolve(System& syst, DirectedGraph& graph);
+    static KinsolSolver* NewKinsolSolver(const int algLoopNum, const unsigned int size, double absoluteTolerance, double relativeTolerance, const bool useDirectionalDerivative);
+    oms_status_enu_t kinsolSolve(System& syst, DirectedGraph& graph, double tolerance = 0.0);
 
   private:
     /* tolerances */
     double fnormtol;        /* function tolerance */
+    double freltol;         /* relative function tolerance */
 
     /* work arrays */
     N_Vector initialGuess;
@@ -80,6 +81,8 @@ namespace oms
     N_Vector y;             /* Template for cloning vectors needed inside linear solver */
     SUNMatrix J;            /* (Non-)Sparse matrix template for cloning matrices needed within linear solver */
 
+    bool firstSolution;
+
     /* member function */
     static int nlsKinsolJac(N_Vector u, N_Vector fu, SUNMatrix J, void *user_data, N_Vector tmp1, N_Vector tmp2);
     static int nlsKinsolResiduals(N_Vector u, N_Vector fval, void *user_data);
@@ -90,16 +93,16 @@ namespace oms
   class AlgLoop
   {
   public:
-    AlgLoop(oms_alg_solver_enu_t method, double absTol, scc_t SCC, const int systNumber, const bool useDirectionalDerivative);
+    AlgLoop(oms_alg_solver_enu_t method, double absTol, double relTol, scc_t SCC, const int systNumber, const bool useDirectionalDerivative);
 
     scc_t getSCC() {return SCC;}
-    oms_status_enu_t solveAlgLoop(System& syst, DirectedGraph& graph);
+    oms_status_enu_t solveAlgLoop(System& syst, DirectedGraph& graph, double tolerance);
     std::string getAlgSolverName();
     std::string dumpLoopVars(DirectedGraph& graph);
 
   private:
     oms_alg_solver_enu_t algSolverMethod;
-    oms_status_enu_t fixPointIteration(System& syst, DirectedGraph& graph);
+    oms_status_enu_t fixPointIteration(System& syst, DirectedGraph& graph, double tolerance);
 
     KinsolSolver* kinsolData;
 

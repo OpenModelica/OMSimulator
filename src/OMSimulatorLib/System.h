@@ -188,7 +188,7 @@ namespace oms
     AlgLoop* getAlgLoop(const int systemNumber);
     oms_status_enu_t addAlgLoop(scc_t SCC, const int algLoopNum, DirectedGraph& graph, bool supportsDirectionalDerivatives);
     oms_status_enu_t updateAlgebraicLoops(const std::vector< scc_t >& sortedConnections, DirectedGraph& graph);
-    oms_status_enu_t solveAlgLoop(DirectedGraph& graph, int loopNumber);
+    oms_status_enu_t solveAlgLoop(DirectedGraph& graph, int loopNumber, double tolerance = 0.0);
 
     bool useThreadPool();
     ctpl::thread_pool& getThreadPool();

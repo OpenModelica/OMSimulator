@@ -29,6 +29,10 @@
  *
  */
 
+#include <sstream>
+#include <cmath>
+#include <algorithm>
+
 #include "AlgLoop.h"
 
 #include "Component.h"
@@ -36,7 +40,13 @@
 #include "Flags.h"
 #include "System.h"
 
-#include <sstream>
+#ifdef min
+#undef min
+#endif
+
+#ifdef max
+#undef max
+#endif
 
 /**
  * @brief Check flag returned by KINSOL function and log error
@@ -292,7 +302,7 @@ oms::KinsolSolver::~KinsolSolver()
  * @param absoluteTolerance     Tolerance used for solving the loop
  * @return oms::KinsolSolver*   Retruns pointer to KinsolSolver object
  */
-oms::KinsolSolver* oms::KinsolSolver::NewKinsolSolver(const int algLoopNum, const unsigned int size, double absoluteTolerance, const bool useDirectionalDerivative)
+oms::KinsolSolver* oms::KinsolSolver::NewKinsolSolver(const int algLoopNum, const unsigned int size, double absoluteTolerance, double relativeTolerance, const bool useDirectionalDerivative)
 {
   int flag;
   int printLevel;
@@ -301,6 +311,7 @@ oms::KinsolSolver* oms::KinsolSolver::NewKinsolSolver(const int algLoopNum, cons
   logDebug("Create new KinsolSolver object for algebraic loop number " + std::to_string(algLoopNum));
 
   kinsolSolver->size = size;
+  kinsolSolver->firstSolution = true;
 
   /* Allocate memory */
   kinsolSolver->initialGuess = N_VNew_Serial(kinsolSolver->size);
@@ -364,9 +375,11 @@ oms::KinsolSolver* oms::KinsolSolver::NewKinsolSolver(const int algLoopNum, cons
   if (!checkFlag(flag, "KINSetJacFn")) return NULL;
 
   /* Set function-norm stopping tolerance */
-  kinsolSolver->fnormtol = absoluteTolerance;
+  kinsolSolver->fnormtol = 0.01 * absoluteTolerance;
   flag = KINSetFuncNormTol(kinsolSolver->kinsolMemory, kinsolSolver->fnormtol);
   if (!checkFlag(flag, "KINSetFuncNormTol")) return NULL;
+
+  kinsolSolver->freltol = relativeTolerance * 0.01;
 
   /* Set scaled-step stopping tolerance */
   flag = KINSetScaledStepTol(kinsolSolver->kinsolMemory, 0.0);
@@ -400,7 +413,7 @@ oms::KinsolSolver* oms::KinsolSolver::NewKinsolSolver(const int algLoopNum, cons
  *                            `oms_status_warning` if solving was computed, but solution is not within tolerance
  *                            and `oms_status_error` if an error occured.
  */
-oms_status_enu_t oms::KinsolSolver::kinsolSolve(System& syst, DirectedGraph& graph)
+oms_status_enu_t oms::KinsolSolver::kinsolSolve(System& syst, DirectedGraph& graph, double tolerance /*= 0.0*/)
 {
   /* Update user data */
   KINSOL_USER_DATA* kinsolUserData = (KINSOL_USER_DATA*) user_data;
@@ -413,7 +426,7 @@ oms_status_enu_t oms::KinsolSolver::kinsolSolve(System& syst, DirectedGraph& gra
   int flag;
   double fNormValue;
 
-  logDebug("Solving system " + std::to_string(kinsolUserData->algLoopNumber));
+  double tol = tolerance != 0.0 ? tolerance : fnormtol;
 
   if (SCC.connections.size() != size)
   {
@@ -432,8 +445,28 @@ oms_status_enu_t oms::KinsolSolver::kinsolSolve(System& syst, DirectedGraph& gra
     }
   }
 
+  /* Apply relative tolerance to magnitude of initial guess */
+  fNormValue = std::sqrt(N_VDotProd_Serial(initialGuess, initialGuess));
+  tol = std::max(tol, fNormValue * freltol * tolerance / fnormtol);
+
+  /* Check residual for initial guess */
+  nlsKinsolResiduals(initialGuess, fTmp, user_data);
+  fNormValue = std::sqrt(N_VDotProd_Serial(fTmp, fTmp));
+  if (fNormValue > 0.0)
+    tol = std::min(fNormValue, tol); // We already know this is achievable, but let's get in at least one iteration
+  else
+    return oms_status_ok;
+
+  if (!firstSolution) {
+    // Predict a better initial guess
+    SUNLinSolSolve(linSol, J, y, fTmp, tol);
+    N_VLinearSum(1.0, initialGuess, -1.0, y, initialGuess);
+  }
+
   /* u and f scaling */
   // TODO: Add scaling that is not only constant ones
+
+  KINSetFuncNormTol(kinsolMemory, tol);
 
   /* Solve algebraic loop with KINSol() */
   flag = KINSol(kinsolMemory,   /* KINSol memory block */
@@ -444,13 +477,17 @@ oms_status_enu_t oms::KinsolSolver::kinsolSolve(System& syst, DirectedGraph& gra
   if (!checkFlag(flag, "KINSol")) return oms_status_error;
 
   /* Check solution */
-  flag = nlsKinsolResiduals(initialGuess, fTmp, user_data);
-  fNormValue = N_VWL2Norm(fTmp, fTmp);
-  if ( fNormValue > fnormtol )
+  KINGetFuncNorm(kinsolMemory, &fNormValue);
+  if ( fNormValue > tol )
   {
     logWarning("Solution of algebraic loop " + std::to_string(((KINSOL_USER_DATA *)user_data)->algLoopNumber) + "not within precission given by fnormtol: " + std::to_string(fnormtol));
     logDebug("2-norm of residual of solution: " + std::to_string(fNormValue));
     return oms_status_warning;
+  }
+
+  if (flag == KIN_SUCCESS) {
+    firstSolution = false;
+    KINSetNoInitSetup(kinsolMemory, SUNTRUE);
   }
 
   logDebug("Solved system " + std::to_string(kinsolUserData->algLoopNumber) + " successfully");
@@ -467,7 +504,7 @@ oms_status_enu_t oms::KinsolSolver::kinsolSolve(System& syst, DirectedGraph& gra
  * @param scc     Strong Connected Componten, a vector of connected
  * @param number
  */
-oms::AlgLoop::AlgLoop(oms_alg_solver_enu_t method, double absTol, scc_t scc, const int number, const bool useDirectionalDerivative): absoluteTolerance(absTol), SCC(scc), systNumber(number)
+oms::AlgLoop::AlgLoop(oms_alg_solver_enu_t method, double absTol, double relTol, scc_t scc, const int number, const bool useDirectionalDerivative): absoluteTolerance(absTol), SCC(scc), systNumber(number)
 {
   switch (method)
   {
@@ -482,7 +519,7 @@ oms::AlgLoop::AlgLoop(oms_alg_solver_enu_t method, double absTol, scc_t scc, con
 
   if (method == oms_alg_solver_kinsol)
   {
-    kinsolData = KinsolSolver::NewKinsolSolver(systNumber, SCC.connections.size(), absoluteTolerance, useDirectionalDerivative);
+    kinsolData = KinsolSolver::NewKinsolSolver(systNumber, SCC.connections.size(), absoluteTolerance, relTol, useDirectionalDerivative);
     if (kinsolData==NULL)
     {
       logError("NewKinsolSolver() failed. Aborting!");
@@ -501,7 +538,7 @@ oms::AlgLoop::AlgLoop(oms_alg_solver_enu_t method, double absTol, scc_t scc, con
  * @param graph               Reference to directed graph
  * @return oms_status_enu_t   Returns `oms_status_ok` on success
  */
-oms_status_enu_t oms::AlgLoop::solveAlgLoop(System& syst, DirectedGraph& graph)
+oms_status_enu_t oms::AlgLoop::solveAlgLoop(System& syst, DirectedGraph& graph, double tolerance)
 {
   logDebug("Solving algebraic loop formed by connections\n" + dumpLoopVars(graph));
   logDebug("Using solver " + getAlgSolverName());
@@ -509,9 +546,9 @@ oms_status_enu_t oms::AlgLoop::solveAlgLoop(System& syst, DirectedGraph& graph)
   switch (algSolverMethod)
   {
   case oms_alg_solver_fixedpoint:
-    return fixPointIteration(syst, graph);
+    return fixPointIteration(syst, graph, tolerance);
   case oms_alg_solver_kinsol:
-    return kinsolData->kinsolSolve(syst, graph);
+    return kinsolData->kinsolSolve(syst, graph, tolerance);
   default:
     logError("Invalid algebraic solver method!");
     return oms_status_error;
@@ -525,13 +562,16 @@ oms_status_enu_t oms::AlgLoop::solveAlgLoop(System& syst, DirectedGraph& graph)
  * @param graph
  * @return oms_status_enu_t
  */
-oms_status_enu_t oms::AlgLoop::fixPointIteration(System& syst, DirectedGraph& graph)
+oms_status_enu_t oms::AlgLoop::fixPointIteration(System& syst, DirectedGraph& graph, double tolerance)
 {
   const int size = SCC.connections.size();
   const int maxIterations = Flags::MaxLoopIteration();
   int it=0;
   double maxRes;
   double *res = new double[size]();
+
+  if (tolerance == 0.0 || tolerance > absoluteTolerance)
+    tolerance = absoluteTolerance;
 
   do
   {
@@ -641,7 +681,7 @@ oms_status_enu_t oms::AlgLoop::fixPointIteration(System& syst, DirectedGraph& gr
       logInfo(ss.str());
     }
 
-  } while(maxRes > absoluteTolerance && it < maxIterations);
+  } while(maxRes > tolerance && it < maxIterations);
 
   delete[] res;
 
