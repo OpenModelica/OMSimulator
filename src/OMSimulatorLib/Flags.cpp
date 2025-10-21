@@ -45,10 +45,47 @@
 #include <regex>
 #include <sstream>
 
-oms::Flags::Flags()
+oms::Flags::FlagValues::FlagValues() :
+  addParametersToCSV(false),
+  algLoopSolver(oms_alg_solver_kinsol),
+  cvodeMaxErrTestFails(100),
+  cvodeMaxNLSFails(100),
+  cvodeMaxNLSIterations(5),
+  cvodeMaxSteps(1000),
+  defaultModeIsCS(false),
+  deleteTempFiles(true),
+  directionalDerivatives(true),
+  dumpAlgLoops(false),
+  emitEvents(true),
+  ignoreInitialUnknowns(false),
+  initialStepSize(1e-6),
+  inputExtrapolation(false),
+  intervals(100),
+  masterAlgorithm(oms_solver_wc_ma),
+  maxEventIteration(100),
+  maximumStepSize(1e-3),
+  maxLoopIteration(10),
+  minimumStepSize(1e-12),
+  numProcs(1),
+  progressBar(false),
+  realTime(false),
+  resultFile("<default>"),
+  skipCSVHeader(true),
+  solver(oms_solver_sc_cvode),
+  solverStats(false),
+  startTime(0.0),
+  stopTime(1.0),
+  stripRoot(false),
+  suppressPath(true),
+  timeout(0),
+  tolerance(1e-4),
+  wallTime(false),
+  zeroNominal(false)
 {
-  setDefaults();
+}
 
+oms::Flags::Flags() : flagValues()
+{
   for (unsigned int i=0; i<flags.size(); ++i)
   {
     lookup[flags[i].name] = i;
@@ -63,41 +100,7 @@ oms::Flags::~Flags()
 
 void oms::Flags::setDefaults()
 {
-  addParametersToCSV = false;
-  algLoopSolver = oms_alg_solver_kinsol;
-  cvodeMaxErrTestFails = 100;
-  cvodeMaxNLSFails = 100;
-  cvodeMaxNLSIterations = 5;
-  cvodeMaxSteps = 1000;
-  defaultModeIsCS = false;
-  deleteTempFiles = true;
-  directionalDerivatives = true;
-  dumpAlgLoops = false;
-  emitEvents = true;
-  ignoreInitialUnknowns = false;
-  initialStepSize = 1e-6;
-  inputExtrapolation = false;
-  intervals = 100;
-  masterAlgorithm = oms_solver_wc_ma;
-  maxEventIteration = 100;
-  maximumStepSize = 1e-3;
-  maxLoopIteration = 10;
-  minimumStepSize = 1e-12;
-  numProcs = 1;
-  progressBar = false;
-  realTime = false;
-  resultFile = "<default>";
-  skipCSVHeader = true;
-  solver = oms_solver_sc_cvode;
-  solverStats = false;
-  startTime = 0.0;
-  stopTime = 1.0;
-  stripRoot = false;
-  suppressPath = true;
-  timeout = 0;
-  tolerance = 1e-4;
-  wallTime = false;
-  zeroNominal = false;
+  flagValues = FlagValues();
 }
 
 oms::Flags& oms::Flags::GetInstance()
@@ -186,16 +189,16 @@ oms_status_enu_t oms::Flags::SetCommandLineOption(const std::string& cmd)
 
 oms_status_enu_t oms::Flags::AddParametersToCSV(const std::string& value)
 {
-  GetInstance().addParametersToCSV = (value == "true");
+  GetInstance().flagValues.addParametersToCSV = (value == "true");
   return oms_status_ok;
 }
 
 oms_status_enu_t oms::Flags::AlgLoopSolver(const std::string& value)
 {
   if (value == "fixedpoint")
-    GetInstance().algLoopSolver = oms_alg_solver_fixedpoint;
+    GetInstance().flagValues.algLoopSolver = oms_alg_solver_fixedpoint;
   else if (value == "kinsol")
-    GetInstance().algLoopSolver = oms_alg_solver_kinsol;
+    GetInstance().flagValues.algLoopSolver = oms_alg_solver_kinsol;
   else
     return logError("Invalid solver method");
   return oms_status_ok;
@@ -209,49 +212,49 @@ oms_status_enu_t oms::Flags::ClearAllOptions(const std::string& value)
 
 oms_status_enu_t oms::Flags::CVODEMaxErrTestFails(const std::string& value)
 {
-  GetInstance().cvodeMaxErrTestFails = atoi(value.c_str());
+  GetInstance().flagValues.cvodeMaxErrTestFails = atoi(value.c_str());
   return oms_status_ok;
 }
 
 oms_status_enu_t oms::Flags::CVODEMaxNLSFailures(const std::string& value)
 {
-  GetInstance().cvodeMaxNLSFails = atoi(value.c_str());
+  GetInstance().flagValues.cvodeMaxNLSFails = atoi(value.c_str());
   return oms_status_ok;
 }
 
 oms_status_enu_t oms::Flags::CVODEMaxNLSIterations(const std::string& value)
 {
-  GetInstance().cvodeMaxNLSIterations = atoi(value.c_str());
+  GetInstance().flagValues.cvodeMaxNLSIterations = atoi(value.c_str());
   return oms_status_ok;
 }
 
 oms_status_enu_t oms::Flags::CVODEMaxSteps(const std::string& value)
 {
-  GetInstance().cvodeMaxSteps = atoi(value.c_str());
+  GetInstance().flagValues.cvodeMaxSteps = atoi(value.c_str());
   return oms_status_ok;
 }
 
 oms_status_enu_t oms::Flags::DeleteTempFiles(const std::string& value)
 {
-  GetInstance().deleteTempFiles = (value == "true");
+  GetInstance().flagValues.deleteTempFiles = (value == "true");
   return oms_status_ok;
 }
 
 oms_status_enu_t oms::Flags::DirectionalDerivatives(const std::string& value)
 {
-  GetInstance().directionalDerivatives = (value == "true");
+  GetInstance().flagValues.directionalDerivatives = (value == "true");
   return oms_status_ok;
 }
 
 oms_status_enu_t oms::Flags::DumpAlgLoops(const std::string& value)
 {
-  GetInstance().dumpAlgLoops = (value == "true");
+  GetInstance().flagValues.dumpAlgLoops = (value == "true");
   return oms_status_ok;
 }
 
 oms_status_enu_t oms::Flags::EmitEvents(const std::string& value)
 {
-  GetInstance().emitEvents = (value == "true");
+  GetInstance().flagValues.emitEvents = (value == "true");
   return oms_status_ok;
 }
 
@@ -332,19 +335,19 @@ oms_status_enu_t oms::Flags::Help(const std::string& value)
 
 oms_status_enu_t oms::Flags::IgnoreInitialUnknowns(const std::string& value)
 {
-  GetInstance().ignoreInitialUnknowns = (value == "true");
+  GetInstance().flagValues.ignoreInitialUnknowns = (value == "true");
   return oms_status_ok;
 }
 
 oms_status_enu_t oms::Flags::InputExtrapolation(const std::string& value)
 {
-  GetInstance().inputExtrapolation = (value == "true");
+  GetInstance().flagValues.inputExtrapolation = (value == "true");
   return oms_status_ok;
 }
 
 oms_status_enu_t oms::Flags::Intervals(const std::string& value)
 {
-  GetInstance().intervals = atoi(value.c_str());
+  GetInstance().flagValues.intervals = atoi(value.c_str());
   return oms_status_ok;
 }
 
@@ -362,58 +365,58 @@ oms_status_enu_t oms::Flags::LogLevel(const std::string& value)
 
 oms_status_enu_t oms::Flags::MaxEventIteration(const std::string& value)
 {
-  GetInstance().maxEventIteration = atoi(value.c_str());
+  GetInstance().flagValues.maxEventIteration = atoi(value.c_str());
   return oms_status_ok;
 }
 
 oms_status_enu_t oms::Flags::MaxLoopIteration(const std::string& value)
 {
-  GetInstance().maxLoopIteration = atoi(value.c_str());
+  GetInstance().flagValues.maxLoopIteration = atoi(value.c_str());
   return oms_status_ok;
 }
 
 oms_status_enu_t oms::Flags::Mode(const std::string& value)
 {
-  GetInstance().defaultModeIsCS = (value == "cs");
+  GetInstance().flagValues.defaultModeIsCS = (value == "cs");
   return oms_status_ok;
 }
 
 oms_status_enu_t oms::Flags::NumProcs(const std::string& value)
 {
-  GetInstance().numProcs = atoi(value.c_str());
+  GetInstance().flagValues.numProcs = atoi(value.c_str());
   return oms_status_ok;
 }
 
 oms_status_enu_t oms::Flags::ProgressBar(const std::string& value)
 {
-  GetInstance().progressBar = (value == "true");
+  GetInstance().flagValues.progressBar = (value == "true");
   return oms_status_ok;
 }
 
 oms_status_enu_t oms::Flags::RealTime(const std::string& value)
 {
-  GetInstance().realTime = (value == "true");
+  GetInstance().flagValues.realTime = (value == "true");
   return oms_status_ok;
 }
 
 oms_status_enu_t oms::Flags::ResultFile(const std::string& value)
 {
-  GetInstance().resultFile = value;
+  GetInstance().flagValues.resultFile = value;
   return oms_status_ok;
 }
 
 oms_status_enu_t oms::Flags::SkipCSVHeader(const std::string& value)
 {
-  GetInstance().skipCSVHeader = (value == "true");
+  GetInstance().flagValues.skipCSVHeader = (value == "true");
   return oms_status_ok;
 }
 
 oms_status_enu_t oms::Flags::Solver(const std::string& value)
 {
   if (value == "euler")
-    GetInstance().solver = oms_solver_sc_explicit_euler;
+    GetInstance().flagValues.solver = oms_solver_sc_explicit_euler;
   else if (value == "cvode")
-    GetInstance().solver = oms_solver_sc_cvode;
+    GetInstance().flagValues.solver = oms_solver_sc_cvode;
   else
     return logError("Invalid solver method");
 
@@ -422,13 +425,13 @@ oms_status_enu_t oms::Flags::Solver(const std::string& value)
 
 oms_status_enu_t oms::Flags::SolverStats(const std::string& value)
 {
-  GetInstance().solverStats = (value == "true");
+  GetInstance().flagValues.solverStats = (value == "true");
   return oms_status_ok;
 }
 
 oms_status_enu_t oms::Flags::StartTime(const std::string& value)
 {
-  GetInstance().startTime = atof(value.c_str());
+  GetInstance().flagValues.startTime = atof(value.c_str());
   return oms_status_ok;
 }
 
@@ -454,30 +457,30 @@ oms_status_enu_t oms::Flags::StepSize(const std::string& value)
 
   if (options.size() > 1)
   {
-    GetInstance().initialStepSize = atof(options[0].c_str());
-    GetInstance().minimumStepSize = atof(options[1].c_str());
-    GetInstance().maximumStepSize = atof(options[2].c_str());
+    GetInstance().flagValues.initialStepSize = atof(options[0].c_str());
+    GetInstance().flagValues.minimumStepSize = atof(options[1].c_str());
+    GetInstance().flagValues.maximumStepSize = atof(options[2].c_str());
   }
   else
-    GetInstance().maximumStepSize = atof(options[0].c_str());
+    GetInstance().flagValues.maximumStepSize = atof(options[0].c_str());
   return oms_status_ok;
 }
 
 oms_status_enu_t oms::Flags::StopTime(const std::string& value)
 {
-  GetInstance().stopTime = atof(value.c_str());
+  GetInstance().flagValues.stopTime = atof(value.c_str());
   return oms_status_ok;
 }
 
 oms_status_enu_t oms::Flags::StripRoot(const std::string& value)
 {
-  GetInstance().stripRoot = (value == "true");
+  GetInstance().flagValues.stripRoot = (value == "true");
   return oms_status_ok;
 }
 
 oms_status_enu_t oms::Flags::SuppressPath(const std::string& value)
 {
-  GetInstance().suppressPath = (value == "true");
+  GetInstance().flagValues.suppressPath = (value == "true");
   return oms_status_ok;
 }
 
@@ -489,13 +492,13 @@ oms_status_enu_t oms::Flags::TempDir(const std::string& value)
 
 oms_status_enu_t oms::Flags::Timeout(const std::string& value)
 {
-  GetInstance().timeout = atoi(value.c_str());
+  GetInstance().flagValues.timeout = atoi(value.c_str());
   return oms_status_ok;
 }
 
 oms_status_enu_t oms::Flags::Tolerance(const std::string& value)
 {
-  GetInstance().tolerance = atof(value.c_str());
+  GetInstance().flagValues.tolerance = atof(value.c_str());
   return oms_status_ok;
 }
 
@@ -513,12 +516,12 @@ oms_status_enu_t oms::Flags::WorkingDir(const std::string& value)
 
 oms_status_enu_t oms::Flags::WallTime(const std::string& value)
 {
-  GetInstance().wallTime = (value == "true");
+  GetInstance().flagValues.wallTime = (value == "true");
   return oms_status_ok;
 }
 
 oms_status_enu_t oms::Flags::ZeroNominal(const std::string& value)
 {
-  GetInstance().zeroNominal = (value == "true");
+  GetInstance().flagValues.zeroNominal = (value == "true");
   return oms_status_ok;
 }

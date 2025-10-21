@@ -62,6 +62,7 @@
 #include <future>
 #include <string>
 #include <thread>
+#include <iostream>
 
 #if defined(OMS_STATIC)
 extern "C"
@@ -1201,19 +1202,48 @@ oms_status_enu_t SimulateSingleFMU(const filesystem::path& path)
   status = oms_addSubModel(fmuName.c_str(), path.string().c_str());
   if (oms_status_ok != status) return logError("oms_addSubModel failed");
 
-  if (oms::Flags::ResultFile() != "<default>")
-    if(oms_status_ok != oms_setResultFile(modelName.c_str(), oms::Flags::ResultFile().c_str(), 1))
+  if (oms::Flags::ResultFile().given)
+    if(oms_status_ok != oms_setResultFile(modelName.c_str(), oms::Flags::ResultFile().value.c_str(), 1))
       return logError("oms_setResultFile failed");
 
-  status = oms_setStartTime(modelName.c_str(), defaultExperiment.startTime);
+  if (oms::Flags::StartTime().given) 
+    status = oms_setStartTime(modelName.c_str(), oms::Flags::StartTime());
+  else
+    status = oms_setStartTime(modelName.c_str(), defaultExperiment.startTime);
   if(oms_status_ok != status) return logError("oms_setStartTime failed");
-  status = oms_setStopTime(modelName.c_str(), defaultExperiment.stopTime);
+  
+  if (oms::Flags::StopTime().given)
+  	status = oms_setStopTime(modelName.c_str(), oms::Flags::StopTime());
+  else
+  	status = oms_setStopTime(modelName.c_str(), defaultExperiment.stopTime);
   if(oms_status_ok != status) return logError("oms_setStopTime failed");
-  status = oms_setTolerance(modelName.c_str(), defaultExperiment.tolerance, defaultExperiment.tolerance);
+  
+  if (oms::Flags::Tolerance().given)
+    status = oms_setTolerance(modelName.c_str(), oms::Flags::Tolerance(), oms::Flags::Tolerance());
+  else
+    status = oms_setTolerance(modelName.c_str(), defaultExperiment.tolerance, defaultExperiment.tolerance);
   if(oms_status_ok != status) return logError("oms_setTolerance failed");
+  
   // set the maximum stepSize
-  status = oms_setVariableStepSize(modelName.c_str(), oms::Flags::InitialStepSize(), oms::Flags::MinimumStepSize(), defaultExperiment.stepSize);
+  double initialStepSize = oms::Flags::InitialStepSize().given ? oms::Flags::InitialStepSize().value : defaultExperiment.stepSize;
+  double minimumStepSize = oms::Flags::MinimumStepSize().given ? oms::Flags::MinimumStepSize().value : defaultExperiment.stepSize;
+  status = oms_setVariableStepSize(modelName.c_str(), initialStepSize, minimumStepSize, defaultExperiment.stepSize);
   if(oms_status_ok != status) return logError("oms_setVariableStepSize failed");
+
+  if (oms::Flags::Intervals().given)
+  {
+    int intervals = oms::Flags::Intervals();
+    if (intervals > 0) {
+      double startTime, stopTime;
+      oms_getStartTime(modelName.c_str(), &startTime);
+      oms_getStopTime(modelName.c_str(), &stopTime);
+      oms_setLoggingInterval(modelName.c_str(), (stopTime - startTime) / oms::Flags::Intervals());
+    }
+    else
+    {
+      oms_setLoggingInterval(modelName.c_str(), 0.0);
+    }
+  }
 
   if (kind == oms_fmi_kind_me_and_cs)
     status = oms_setSolver(systemName.c_str(), oms::Flags::DefaultModeIsCS() ? oms::Flags::MasterAlgorithm() : oms::Flags::Solver());
@@ -1246,7 +1276,7 @@ oms_status_enu_t oms_RunFile(const char* filename)
   {
     auto future = std::async(std::launch::async, SimulateSingleFMU, path);
 
-    if (oms::Flags::Timeout() == 0 || future.wait_for(std::chrono::seconds(int(oms::Flags::Timeout()))) == std::future_status::ready)
+    if (oms::Flags::Timeout().value == 0 || future.wait_for(std::chrono::seconds(int(oms::Flags::Timeout().value))) == std::future_status::ready)
       status = future.get();
     else
     {
@@ -1262,11 +1292,44 @@ oms_status_enu_t oms_RunFile(const char* filename)
     char* cref;
     oms_importFile(filename, &cref);
 
-    if (oms::Flags::ResultFile() != "<default>")
-      oms_setResultFile(cref, oms::Flags::ResultFile().c_str(), 1);
-    oms_setStartTime(cref, oms::Flags::StartTime());
-    oms_setStopTime(cref, oms::Flags::StopTime());
-    oms_setTolerance(cref, oms::Flags::Tolerance(), oms::Flags::Tolerance());
+    if (oms::Flags::ResultFile().given)
+      oms_setResultFile(cref, oms::Flags::ResultFile().value.c_str(), 1);
+    if (oms::Flags::StartTime().given)
+      oms_setStartTime(cref, oms::Flags::StartTime());
+    if (oms::Flags::StopTime().given)
+      oms_setStopTime(cref, oms::Flags::StopTime());
+    if (oms::Flags::Tolerance().given)
+      oms_setTolerance(cref, oms::Flags::Tolerance(), oms::Flags::Tolerance());
+
+    if (oms::Flags::Intervals().given)
+    {
+      int intervals = oms::Flags::Intervals();
+      if (intervals > 0) {
+        double startTime, stopTime;
+        oms_getStartTime(cref, &startTime);
+        oms_getStopTime(cref, &stopTime);
+        oms_setLoggingInterval(cref, (stopTime - startTime) / oms::Flags::Intervals());
+      }
+      else
+      {
+        oms_setLoggingInterval(cref, 0.0);
+      }
+    }
+
+    if (oms::Flags::InitialStepSize().given || oms::Flags::MinimumStepSize().given || oms::Flags::MaximumStepSize().given)
+    {
+      double initialStepSize, minimumStepSize, maximumStepSize;
+      oms_getVariableStepSize(cref, &initialStepSize, &minimumStepSize, &maximumStepSize);
+      if (oms::Flags::InitialStepSize().given)
+        initialStepSize = oms::Flags::InitialStepSize().value;
+      if (oms::Flags::MinimumStepSize().given)
+        minimumStepSize = oms::Flags::MinimumStepSize().value;
+      if (oms::Flags::MaximumStepSize().given)
+        maximumStepSize = oms::Flags::MaximumStepSize().value;
+
+      std::cerr << "Setting time steps sizes to (" << initialStepSize << ", " << minimumStepSize << ", " << maximumStepSize << ")" << std::endl;
+      oms_setVariableStepSize(cref, initialStepSize, minimumStepSize, maximumStepSize);
+    }
 
     status = do_simulation(std::string(cref), std::chrono::duration<double>(oms::Flags::Timeout())) ? oms_status_error : oms_status_ok;
     oms_terminate(cref);
