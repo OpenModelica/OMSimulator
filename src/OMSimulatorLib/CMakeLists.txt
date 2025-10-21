@@ -27,6 +27,7 @@ set(OMSIMULATORLIB_SOURCES
       Component.cpp
       ComponentFMU3CS.cpp
       ComponentFMUCS.cpp
+      ComponentFMU3ME.cpp
       ComponentFMUME.cpp
       ComponentTable.cpp
       ComRef.cpp
