@@ -95,7 +95,7 @@ oms::Component* oms::ComponentFMU3ME::NewComponent(const oms::ComRef& cref, oms:
   else
     modelDescriptionPath = parentSystem->getModel().getTempDirectory() / filesystem::path(fmuPath);
 
-  component->values.parseModelDescription(modelDescriptionPath, guid_);
+  component->values.parseModelDescriptionFmi3(modelDescriptionPath, guid_);
 
   /*
    * check if instance of an fmu already exist by using guid of the fmu
@@ -186,15 +186,12 @@ oms::Component* oms::ComponentFMU3ME::NewComponent(const oms::ComRef& cref, oms:
   // update FMU info
   component->fmuInfo.update(oms_component_fmu3, component->fmu);
   component->omsfmi3logger = oms::fmi3logger;
-
-  fmi3_getNumberOfEventIndicators(component->fmu, &component->nEventIndicators);
-
   // create a list of all variables using fmi4c variable structure
   component->allVariables.reserve(fmi3_getNumberOfVariables(component->fmu));
   component->exportVariables.reserve(fmi3_getNumberOfVariables(component->fmu));
   for (unsigned int i = 0; i < fmi3_getNumberOfVariables(component->fmu); ++i)
   {
-    oms::Variable v(component->fmu, i, oms_component_fmu);
+    oms::Variable v(component->fmu, i, oms_component_fmu3);
     if (v.getIndex() != i)
     {
       logError("Index mismatch " + std::to_string(v.getIndex()) + " != " + std::to_string(i) + ".\nPlease report the problem to the dev team: https://github.com/OpenModelica/OMSimulator/issues/new?assignees=&labels=&template=bug_report.md");
@@ -617,7 +614,6 @@ oms_status_enu_t oms::ComponentFMU3ME::instantiate()
     logInfo("fmi3Instantiate() failed");
     exit(1);
   }
-  logInfo("instantiation successfull");
 
   // set start values from local resources
   if (values.hasResources())
@@ -858,6 +854,9 @@ oms_status_enu_t oms::ComponentFMU3ME::initialize()
   // exitInitialization
   fmistatus = fmi3_exitInitializationMode(fmu);
   if (fmi3OK != fmistatus) return logError_FMUCall("fmi3_exitInitializationMode", this);
+
+  fmistatus = fmi3_getNumberOfEventIndicators(fmu, &nEventIndicators);
+  if (fmi3OK != fmistatus) return logError_FMUCall("fmi3_getNumberOfEventIndicators", this);
 
   // fmi3_exitInitialization_mode leaves FMU in event mode
   if (oms_status_ok != doEventIteration())
