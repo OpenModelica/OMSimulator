@@ -959,6 +959,10 @@ oms_status_enu_t oms::SystemSC::stepUntil(double stopTime)
     if (status != oms_status_ok)
       logWarning("Bad return code at time " + std::to_string(time));
 
+    // Check whether stopping time has changed due to a request from an FMU
+    if (getModel().getStopTime() < endTime)
+      endTime = getModel().getStopTime();
+
     if (isTopLevelSystem() && Flags::ProgressBar() && time > lastTime + maximumStepSize)
     {
       Log::ProgressBar(startTime, stopTime, time);
