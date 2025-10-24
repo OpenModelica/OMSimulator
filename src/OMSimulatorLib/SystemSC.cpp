@@ -615,10 +615,10 @@ oms_status_enu_t oms::SystemSC::doStepEuler(double stopTime)
 
     // TODO: Check callEventUpdate values!
 
-    // a. Evaluate derivatives for each FMU
+    // a. Evaluate states at time 'event_time' for each FMU
     // set time
     for (const auto& component : getComponents())
-      component.second->setTime(time);
+      component.second->setTime(event_time);
       
     const fmi2Real step_size = event_time - time;  // Substep size, do one step from current time to the event
     logDebug("step_size: " + std::to_string(step_size) + " | " + std::to_string(time) + " -> " + std::to_string(event_time));
@@ -666,16 +666,21 @@ oms_status_enu_t oms::SystemSC::doStepEuler(double stopTime)
         time = event_time;
         step_size_adjustment = maximumStepSize;
 
+        // FMUs are already at time 'event_time'
+        // for (const auto& component : getComponents())
+        //   component.second->setTime(time);
+
+        // emit the left limit of the event (if it hasn't already been emitted)
+        // We already did an input update earlier
+        // updateInputs(simulationGraph); //pass the continuousTimeMode dependency graph which involves only connections of type Real
+        if (isTopLevelSystem())
+          getModel().emit(time, false);
+          
         for (size_t i = 0; i < fmus.size(); ++i)
         {
           fmistatus = fmi2_completedIntegratorStep(fmus[i]->getFMU(), fmi2True, &callEventUpdate[i], &terminateSimulation[i]);
           if (fmi2OK != fmistatus) return logError_FMUCall("fmi2_completedIntegratorStep", fmus[i]);
         }
-
-        // emit the left limit of the event (if it hasn't already been emitted)
-        updateInputs(simulationGraph); //pass the continuousTimeMode dependency graph which involves only connections of type Real
-        if (isTopLevelSystem())
-          getModel().emit(time, false);
 
         logDebug("integrate normally to the end time if no events are ahead");
       }
@@ -697,6 +702,10 @@ oms_status_enu_t oms::SystemSC::doStepEuler(double stopTime)
         step_size_adjustment = maximumStepSize;
         event_time = end_time;
 
+        // FMUs are already at time 'event_time'
+        // for (const auto& component : getComponents())
+        //   component.second->setTime(time);
+
         // emit the left limit of the event (if it hasn't already been emitted)
         if (isTopLevelSystem())
           getModel().emit(time, false);
@@ -711,9 +720,6 @@ oms_status_enu_t oms::SystemSC::doStepEuler(double stopTime)
           if (fmi2OK != fmistatus) logError_FMUCall("fmi2_enterEventMode", fmus[i]);
 
           fmus[i]->doEventIteration();
-
-          fmistatus = fmi2_enterContinuousTimeMode(fmus[i]->getFMU());
-          if (fmi2OK != fmistatus) logError_FMUCall("fmi2_enterContinuousTimeMode", fmus[i]);
         }
         
         updateInputs(eventGraph);
@@ -721,6 +727,13 @@ oms_status_enu_t oms::SystemSC::doStepEuler(double stopTime)
         // emit the right limit of the event
         if (isTopLevelSystem())
           getModel().emit(time, true);
+        
+        // Go back to continuous time mode
+        for (size_t i = 0; i < fmus.size(); ++i)
+        {
+          fmistatus = fmi2_enterContinuousTimeMode(fmus[i]->getFMU());
+          if (fmi2OK != fmistatus) logError_FMUCall("fmi2_enterContinuousTimeMode", fmus[i]);
+        }
         
         for (size_t i = 0; i < fmus.size(); ++i)
         {
