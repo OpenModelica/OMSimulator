@@ -65,7 +65,7 @@ int oms::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data)
     if (oms_status_ok != status) return status;
   }
 
-  system->updateInputs(system->eventGraph);
+  system->updateInputs(system->simulationGraph);
 
   // get state derivatives
   for (size_t j=0, k=0; j < system->fmus.size(); ++j)
@@ -107,7 +107,7 @@ int oms::cvode_roots(realtype t, N_Vector y, realtype *gout, void *user_data)
     if (oms_status_ok != status) return status;
   }
 
-  system->updateInputs(system->eventGraph);
+  system->updateInputs(system->simulationGraph);
 
   for (size_t i = 0, j=0; i < system->fmus.size(); ++i)
   {
@@ -634,7 +634,7 @@ oms_status_enu_t oms::SystemSC::doStepEuler(double stopTime)
       if (oms_status_ok != status) return status;
     }
 
-    updateInputs(eventGraph);
+    updateInputs(simulationGraph);
 
     // b. Event Detection
     event_detected = event_time == tnext;
@@ -722,6 +722,7 @@ oms_status_enu_t oms::SystemSC::doStepEuler(double stopTime)
           fmus[i]->doEventIteration();
         }
         
+        // Update all inputs, including non-continuous ones
         updateInputs(eventGraph);
         
         // emit the right limit of the event
@@ -873,7 +874,7 @@ oms_status_enu_t oms::SystemSC::doStepCVODE(double stopTime)
       if (oms_status_ok != status) return status;
     }
 
-    updateInputs(eventGraph);
+    updateInputs(simulationGraph);
     if (isTopLevelSystem())
       getModel().emit(time, false);
 
