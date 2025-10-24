@@ -64,9 +64,9 @@ int oms::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data)
     if (oms_status_ok != status) return status;
   }
 
-  system->restoreInputs(system->eventGraph, system->initial_guess);
+  system->restoreInputs(system->simulationGraph, system->initial_guess);
 
-  system->updateInputs(system->eventGraph);
+  system->updateInputs(system->simulationGraph);
 
   // get state derivatives
   for (size_t j=0, k=0; j < system->fmus.size(); ++j)
@@ -108,9 +108,9 @@ int oms::cvode_roots(realtype t, N_Vector y, realtype *gout, void *user_data)
     if (oms_status_ok != status) return status;
   }
 
-  system->restoreInputs(system->eventGraph, system->initial_guess);
+  system->restoreInputs(system->simulationGraph, system->initial_guess);
 
-  system->updateInputs(system->eventGraph);
+  system->updateInputs(system->simulationGraph);
 
   for (size_t i = 0, j=0; i < system->fmus.size(); ++i)
   {
@@ -608,15 +608,13 @@ oms_status_enu_t oms::SystemSC::doStepEuler(double stopTime)
     }
   }
 
+  saveInputs(simulationGraph, initial_guess);
+
   // Step 3: Main integration loop
   while (time < end_time && !terminated)
   {
     if(tnext < event_time)
       event_time = tnext;
-
-    std::vector<double> savedInputs;
-    saveInputs(simulationGraph, savedInputs);
-    saveInputs(eventGraph, initial_guess);
 
     step_size_adjustment *= 0.5; // reduce the step size in each iteration
 
@@ -639,7 +637,7 @@ oms_status_enu_t oms::SystemSC::doStepEuler(double stopTime)
       if (oms_status_ok != status) return status;
     }
 
-    updateInputs(eventGraph);
+    updateInputs(simulationGraph);
 
     // b. Event Detection
     event_detected = event_time == tnext;
@@ -688,6 +686,9 @@ oms_status_enu_t oms::SystemSC::doStepEuler(double stopTime)
           if (fmi2OK != fmistatus) return logError_FMUCall("fmi2_completedIntegratorStep", fmus[i]);
         }
 
+        // Save new initial guesses for algebraic loops
+        saveInputs(simulationGraph, initial_guess);
+
         logDebug("integrate normally to the end time if no events are ahead");
       }
       else
@@ -728,7 +729,7 @@ oms_status_enu_t oms::SystemSC::doStepEuler(double stopTime)
           fmus[i]->doEventIteration();
         }
         
-        restoreInputs(eventGraph, initial_guess);
+        // Update all inputs, including non-continuous ones
         updateInputs(eventGraph);
         
         // emit the right limit of the event
@@ -741,6 +742,9 @@ oms_status_enu_t oms::SystemSC::doStepEuler(double stopTime)
           fmistatus = fmi2_enterContinuousTimeMode(fmus[i]->getFMU());
           if (fmi2OK != fmistatus) logError_FMUCall("fmi2_enterContinuousTimeMode", fmus[i]);
         }
+        
+        // Save new initial guesses for algebraic loops
+        saveInputs(simulationGraph, initial_guess);
         
         for (size_t i = 0; i < fmus.size(); ++i)
         {
@@ -778,6 +782,9 @@ oms_status_enu_t oms::SystemSC::doStepEuler(double stopTime)
       {
         // Ok, event must be little earlier
         event_time -= step_size_adjustment;
+
+        // Put algebraic loop inputs back to the values at the last finished time step
+        restoreInputs(simulationGraph, initial_guess);
       }
     }
   }
@@ -827,7 +834,7 @@ oms_status_enu_t oms::SystemSC::doStepCVODE(double stopTime)
   //{
     logDebug("CVode: " + std::to_string(time) + " -> " + std::to_string(end_time));
 
-    saveInputs(eventGraph, initial_guess);
+    saveInputs(simulationGraph, initial_guess);
 
     for (size_t j=0, k=0; j < fmus.size(); ++j)
       for (size_t i=0; i < nStates[j]; ++i, ++k)
@@ -891,8 +898,8 @@ oms_status_enu_t oms::SystemSC::doStepCVODE(double stopTime)
       if (oms_status_ok != status) return status;
     }
 
-    restoreInputs(eventGraph, initial_guess);
-    updateInputs(eventGraph);
+    restoreInputs(simulationGraph, initial_guess);
+    updateInputs(simulationGraph);
     if (isTopLevelSystem())
       getModel().emit(time, false);
     
@@ -906,8 +913,6 @@ oms_status_enu_t oms::SystemSC::doStepCVODE(double stopTime)
     {
       logDebug("event found!!! " + std::to_string(time));
 
-      saveInputs(eventGraph, initial_guess);
-
       // Enter event mode and handle discrete state updates for each FMU
       for (size_t i = 0; i < fmus.size(); ++i)
       {
@@ -915,7 +920,12 @@ oms_status_enu_t oms::SystemSC::doStepCVODE(double stopTime)
         if (fmi2OK != fmistatus) logError_FMUCall("fmi2_enterEventMode", fmus[i]);
 
         fmus[i]->doEventIteration();
+      }
 
+      updateInputs(eventGraph);
+
+      for (size_t i = 0; i < fmus.size(); ++i)
+      {
         fmistatus = fmi2_enterContinuousTimeMode(fmus[i]->getFMU());
         if (fmi2OK != fmistatus) logError_FMUCall("fmi2_enterContinuousTimeMode", fmus[i]);
       }
@@ -939,9 +949,6 @@ oms_status_enu_t oms::SystemSC::doStepCVODE(double stopTime)
       tnext = std::min(tnext, end_time);
 
       logDebug("tnext: " + std::to_string(tnext));
-
-      restoreInputs(eventGraph, initial_guess);
-      updateInputs(eventGraph);
 
       // emit the right limit of the event
       if (isTopLevelSystem())
