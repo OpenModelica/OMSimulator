@@ -680,6 +680,13 @@ oms_status_enu_t oms::SystemSC::doStepEuler(double stopTime)
         {
           fmistatus = fmi2_completedIntegratorStep(fmus[i]->getFMU(), fmi2True, &callEventUpdate[i], &terminateSimulation[i]);
           if (fmi2OK != fmistatus) return logError_FMUCall("fmi2_completedIntegratorStep", fmus[i]);
+
+          if(terminateSimulation[i])
+          {
+            logInfo("Simulation terminated by FMU " + std::string(fmus[i]->getFullCref()) + " at time " + std::to_string(time));
+            getModel().setStopTime(time);
+            terminated = true;
+          }
         }
 
         logDebug("integrate normally to the end time if no events are ahead");
@@ -715,6 +722,13 @@ oms_status_enu_t oms::SystemSC::doStepEuler(double stopTime)
         {
           fmistatus = fmi2_completedIntegratorStep(fmus[i]->getFMU(), fmi2True, &callEventUpdate[i], &terminateSimulation[i]);
           if (fmi2OK != fmistatus) return logError_FMUCall("fmi2_completedIntegratorStep", fmus[i]);
+
+          if(terminateSimulation[i])
+          {
+            logInfo("Simulation terminated by FMU " + std::string(fmus[i]->getFullCref()) + " at time " + std::to_string(time));
+            getModel().setStopTime(time);
+            terminated = true;
+          }
 
           fmistatus = fmi2_enterEventMode(fmus[i]->getFMU());
           if (fmi2OK != fmistatus) logError_FMUCall("fmi2_enterEventMode", fmus[i]);
@@ -884,6 +898,12 @@ oms_status_enu_t oms::SystemSC::doStepCVODE(double stopTime)
       fmistatus = fmi2_completedIntegratorStep(fmus[i]->getFMU(), fmi2True, &callEventUpdate[i], &terminateSimulation[i]);
       if (fmi2OK != fmistatus) return logError_FMUCall("fmi2_completedIntegratorStep", fmus[i]);
 
+      if (terminateSimulation[i])
+      {
+        logInfo("Simulation terminated by FMU " + std::string(fmus[i]->getFullCref()) + " at time " + std::to_string(time));
+        getModel().setStopTime(time);
+      }
+
       immediateEvent = immediateEvent || callEventUpdate[i];
     }
 
@@ -923,7 +943,6 @@ oms_status_enu_t oms::SystemSC::doStepCVODE(double stopTime)
         {
           logInfo("Simulation terminated by FMU " + std::string(fmus[i]->getFullCref()) + " at time " + std::to_string(time));
           getModel().setStopTime(time);
-          time = end_time;
         }
       }
 
