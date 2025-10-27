@@ -962,22 +962,33 @@ oms_status_enu_t oms::SystemSC::doStepCVODE(double stopTime)
         if (0 == nStates[i])
           continue;
 
+        std::vector<double> prev_values;
+        prev_values.reserve(nStates[i]);
+
+        // Check whether state values have changed due to the event
+        prev_values.assign(states[i], states[i] + nStates[i]);
+
         status = fmus[i]->getContinuousStates(states[i]);
         if (oms_status_ok != status) return status;
 
-        // Check whether dervative values have changed due to the event
-        std::vector<double> prevDer;
-        prevDer.reserve(nStates[i]);
-        prevDer.assign(states_der[i], states_der[i] + nStates[i]);
+        for (int k = 0; k < nStates[i]; k++) {
+          double diff = states[i][k] - prev_values[k];
+          if (fabs(diff) > absoluteTolerance && fabs(diff) > relativeTolerance * fabs(prev_values[k]))
+            resetSolver = true;
+        }
+
+        // Check whether derivative values have changed due to the event
+        prev_values.assign(states_der[i], states_der[i] + nStates[i]);
 
         status = fmus[i]->getDerivatives(states_der[i]);
         if (oms_status_ok != status) return status;
 
         for (int k = 0; k < nStates[i]; k++) {
-          double diff = states_der[i][k] - prevDer[k];
-          if (fabs(diff) > absoluteTolerance && fabs(diff) > relativeTolerance * fabs(prevDer[k]))
+          double diff = states_der[i][k] - prev_values[k];
+          if (fabs(diff) > absoluteTolerance && fabs(diff) > relativeTolerance * fabs(prev_values[k]))
             resetSolver = true;
         }
+
       }
 
       for (size_t j=0, k=0; j < fmus.size(); ++j)
