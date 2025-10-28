@@ -66,16 +66,16 @@ bool oms::CSVWriter::createFile(const std::string& filename, double startTime, d
     fputs("\"sep=,\"\n", pFile);
 
   // first signal is always 'time'
-  fputs("time", pFile);
+  fputs("\"time\"", pFile);
 
   // write signal names to csv file
   for (int i = 0; i < signals.size(); ++i)
-    fprintf(pFile, ",%s", signals[i].name.c_str());
+    fprintf(pFile, ",\"%s\"", signals[i].name.c_str());
 
   // write parameter headers to csv file
   if (Flags::AddParametersToCSV())
     for (int i = 0; i < parameters.size(); ++i)
-      fprintf(pFile, ",%s", parameters[i].signal.name.c_str());
+      fprintf(pFile, ",\"%s\"", parameters[i].signal.name.c_str());
 
   fputs("\n", pFile);
   return true;
