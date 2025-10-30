@@ -802,13 +802,21 @@ oms_status_enu_t oms::SystemSC::doStepCVODE(double stopTime)
       for (size_t i=0; i < nStates[j]; ++i, ++k)
         NV_Ith_S(solverData.cvode.y, k) = states[j][i];
 
+    // This will force the solver to take a step only to tnext
+    // The 'tout' argument for CVode will integrate beyond it and return an interpolant
+    CVodeSetStopTime(solverData.cvode.mem, tnext);
+
     // Advance integrator (to end of step or next root)
     double cvode_time = time;
-    int task = tnext > time + maximumStepSize ? CV_ONE_STEP : CV_NORMAL;
-    flag = CVode(solverData.cvode.mem, tnext, solverData.cvode.y, &cvode_time, task);
+    flag = CVode(solverData.cvode.mem, tnext, solverData.cvode.y, &cvode_time, CV_ONE_STEP);
     if (flag < 0)
       return logError("SUNDIALS_ERROR: CVode() failed with flag = " + std::to_string(flag));
- 
+
+    // CVode will return an interpolant for roots. In that case it should always be reset at the root.
+    // Otherwise it will make use of rhs calculations made before the event.
+    // This will cause it to ignore any changes in the rhs from current time to cv_mem->cv_tn.
+    bool is_interpolated = flag == CV_ROOT_RETURN;
+
     // Sanity check, should not be triggered.
     // To avoid resorting to this, CV_NORMAL is used above when tnext is too close.
     if (cvode_time > tnext)
