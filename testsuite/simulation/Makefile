@@ -50,6 +50,7 @@ importPartialSnapshot.lua \
 importStartValues.lua \
 importStartValues1.lua \
 importSuppressUnitConversion.lua \
+integratorTest.lua \
 listVariants1.lua \
 multipleConnections.lua \
 multipleInstance.lua \
