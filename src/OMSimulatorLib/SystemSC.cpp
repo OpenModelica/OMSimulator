@@ -964,7 +964,8 @@ oms_status_enu_t oms::SystemSC::doStepCVODE(double stopTime)
       if (isTopLevelSystem())
         getModel().emit(time, true);
 
-      bool resetSolver = false;
+      // The solver always needs a reset, if results are interpolated from values beyond the current time.
+      bool resetSolver = is_interpolated;
       for (size_t i = 0; i < fmus.size(); ++i)
       {
         if (0 == nStates[i])
@@ -979,11 +980,8 @@ oms_status_enu_t oms::SystemSC::doStepCVODE(double stopTime)
         status = fmus[i]->getContinuousStates(states[i]);
         if (oms_status_ok != status) return status;
 
-        for (int k = 0; k < nStates[i]; k++) {
-          double diff = states[i][k] - prev_values[k];
-          if (fabs(diff) > absoluteTolerance && fabs(diff) > relativeTolerance * fabs(prev_values[k]))
-            resetSolver = true;
-        }
+        for (int k = 0; k < nStates[i]; k++)
+          resetSolver = resetSolver || states[i][k] != prev_values[k];
 
         // Check whether derivative values have changed due to the event
         prev_values.assign(states_der[i], states_der[i] + nStates[i]);
@@ -991,12 +989,8 @@ oms_status_enu_t oms::SystemSC::doStepCVODE(double stopTime)
         status = fmus[i]->getDerivatives(states_der[i]);
         if (oms_status_ok != status) return status;
 
-        for (int k = 0; k < nStates[i]; k++) {
-          double diff = states_der[i][k] - prev_values[k];
-          if (fabs(diff) > absoluteTolerance && fabs(diff) > relativeTolerance * fabs(prev_values[k]))
-            resetSolver = true;
-        }
-
+        for (int k = 0; k < nStates[i]; k++)
+          resetSolver = resetSolver || states_der[i][k] != prev_values[k];
       }
 
       for (size_t j=0, k=0; j < fmus.size(); ++j)
