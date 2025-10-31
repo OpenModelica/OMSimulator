@@ -1481,6 +1481,20 @@ oms_status_enu_t oms::Values::importStartValuesHelper(const pugi::xml_node& para
           setBoolean(cref, value);
         }
       }
+      else if(itparameters->child(oms::ssp::Version1_0::ssv::string_type))
+      {
+        const char *value = itparameters->child(oms::ssp::Version1_0::ssv::string_type).attribute("value").as_string();
+        if (!mappedcrefs.empty())
+        {
+          for (const auto &mappedcref : mappedcrefs)
+            setString(mappedcref, value);
+        }
+        else
+        {
+          // no mapping entry found, apply the default cref found in ssv file
+          setString(cref, value);
+        }
+      }
       else
       {
         logError("Failed to import " + std::string(oms::ssp::Version1_0::ssv::parameter) + ":Unknown ParameterBinding-type");

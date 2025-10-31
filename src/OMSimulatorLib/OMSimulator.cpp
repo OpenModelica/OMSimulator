@@ -1291,6 +1291,11 @@ oms_status_enu_t oms_RunFile(const char* filename)
   {
     char* cref;
     oms_importFile(filename, &cref);
+    if (!cref)
+    {
+      logError("Importing file \"" + std::string(filename) + "\" failed");
+      return oms_status_error;
+    }
 
     if (oms::Flags::ResultFile().given)
       oms_setResultFile(cref, oms::Flags::ResultFile().value.c_str(), 1);

@@ -677,6 +677,12 @@ oms_status_enu_t oms::ComponentFMUCS::setResourcesHelper1(Values values)
     if (oms_status_ok != setReal(cref, v.second))
       return logError("Failed to set start value for " + std::string(v.first));
   }
+  for (const auto &v : values.stringStartValues)
+  {
+    oms::ComRef cref = getValidCref(v.first);
+    if (oms_status_ok != setString(cref, v.second))
+      return logError("Failed to set start value for " + std::string(v.first));
+  }
 
   return oms_status_ok;
 }
@@ -722,6 +728,19 @@ oms_status_enu_t oms::ComponentFMUCS::setResourcesHelper2(Values values)
           if (head == getCref())
           {
             if (oms_status_ok != setReal(tail, v.second))
+              return logError("Failed to set start value for " + std::string(v.first));
+          }
+        }
+      }
+      for (const auto &v : res.second.stringStartValues)
+      {
+        if (res.second.linkResources) // set values only if resources are linked in ssd
+        {
+          oms::ComRef tail(v.first);
+          oms::ComRef head = tail.pop_front();
+          if (head == getCref())
+          {
+            if (oms_status_ok != setString(tail, v.second))
               return logError("Failed to set start value for " + std::string(v.first));
           }
         }
