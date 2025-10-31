@@ -395,7 +395,7 @@ oms_status_enu_t oms::SystemSC::initialize()
     // further settings from cpp runtime
     flag = CVodeSetInitStep(solverData.cvode.mem, initialStepSize);                      // INITIAL STEPSIZE
     if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetInitStep() failed with flag = " + std::to_string(flag));
-    flag = CVodeSetMaxOrd(solverData.cvode.mem, 5);                                      // MAXIMUM ORDER
+    flag = CVodeSetMaxOrd(solverData.cvode.mem, Flags::CVODEMaxOrder());                 // MAXIMUM ORDER
     if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetMaxOrd() failed with flag = " + std::to_string(flag));
     flag = CVodeSetMaxConvFails(solverData.cvode.mem, Flags::CVODEMaxNLSFailures());     // MAXIMUM NUMBER OF NONLINEAR CONVERGENCE FAILURES
     if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetMaxConvFails() failed with flag = " + std::to_string(flag));
