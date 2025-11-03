@@ -43,6 +43,7 @@
 #include <pugixml.hpp>
 
 #include <ctpl_stl.h>
+#include <tuple>
 
 namespace oms
 {
@@ -123,6 +124,7 @@ namespace oms
     oms_status_enu_t addSignalsToResults(const char* regex);
     oms_status_enu_t removeSignalsFromResults(const char* regex);
     std::string escapeSpecialCharacters(const std::string& regex);
+    oms_status_enu_t addAlias(const ComRef& alias, const ComRef& rhs, oms_signal_type_enu_t type);
 
     bool validState(int validStates) const {return (modelState & validStates);}
 
@@ -177,6 +179,8 @@ namespace oms
     std::string variantName = "SystemStructure.ssd";  ///< default name
 
     std::vector<std::string> externalResources;  ///< list of external ssv or ssm resources from filesystem
+
+  std::map<ComRef, std::tuple<ComRef, oms_signal_type_enu_t, int>> aliases;                 ///< list of aliases: (rhs, type, result_file_id)
 
     bool isolatedFMU = false;
 
