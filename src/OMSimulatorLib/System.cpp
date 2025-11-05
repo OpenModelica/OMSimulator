@@ -1223,6 +1223,17 @@ oms_status_enu_t oms::System::addConnection(const oms::ComRef& crefA, const oms:
     connections.back() = new oms::Connection(crefB, crefA, suppressUnitConversion);
     connections.push_back(NULL);
   }
+  else if (oms::Connection::isValidExportConnectorName(*conA, *conB))
+  {
+    connections.back() = new oms::Connection(crefA, crefB, suppressUnitConversion);
+    connections.push_back(NULL);
+  }
+  // flipped causality check
+  else if (oms::Connection::isValidExportConnectorName(*conB, *conA))
+  {
+    connections.back() = new oms::Connection(crefB, crefA, suppressUnitConversion);
+    connections.push_back(NULL);
+  }
   else
     return logError("Causality mismatch in connection: " + std::string(crefA) + " -> " + std::string(crefB));
 
@@ -1653,7 +1664,8 @@ oms_status_enu_t oms::System::updateDependencyGraphs()
     Connector* varB = getConnector(connection->getSignalB());
     if (varA && varB)
     {
-      bool validConnection = oms::Connection::isValid(connection->getSignalA(), connection->getSignalB(), *varA, *varB);
+      bool validConnection = oms::Connection::isValid(connection->getSignalA(), connection->getSignalB(), *varA, *varB) ||
+                             oms::Connection::isValidExportConnectorName(*varA, *varB);
       if (validConnection)
       {
         initializationGraph.addEdge(Connector(varA->getCausality(), varA->getType(), connection->getSignalA(), this->getFullCref()), Connector(varB->getCausality(), varB->getType(), connection->getSignalB(), this->getFullCref()));
@@ -1684,7 +1696,8 @@ oms_status_enu_t oms::System::updateDependencyGraphs()
     Connector *varB = getConnector(connection->getSignalB());
     if (varA && varB)
     {
-      bool validConnection = oms::Connection::isValid(connection->getSignalA(), connection->getSignalB(), *varA, *varB);
+      bool validConnection = oms::Connection::isValid(connection->getSignalA(), connection->getSignalB(), *varA, *varB) ||
+                             oms::Connection::isValidExportConnectorName(*varA, *varB);
       if (validConnection)
       {
         initializationGraph.setUnits(varA, varB, connection->getSuppressUnitConversion());

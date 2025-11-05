@@ -23,6 +23,7 @@ SimpleSimulation11.py \
 SimpleSimulation12.py \
 SimpleSimulation13.py \
 SimpleSimulation14.py \
+SimpleSimulation15.py \
 stepUntil.py \
 
 # Run make failingtest
