@@ -41,7 +41,7 @@ instantiated_model = model.instantiate()
 #print(instantiated_model.dumpApiCalls())
 
 instantiated_model.setResultFile("SimpleSimulation15_res.mat")
-# instantiated_model.setValue(CRef('default', 'sub-system', 'u'), 400.0)
+instantiated_model.setValue(CRef('default', 'sub-system', 'u'), 400.0)
 
 instantiated_model.initialize()
 instantiated_model.simulate()
@@ -105,8 +105,8 @@ instantiated_model.delete()
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
-## info:    default.sub-system.u: 0.0
-## info:    default.sub-system.Add2.u1: 0.0
-## info:    default.sub-system.Add2.u2: 0.0
-## info:    default.sub-system.Add2.y : 0.0
+## info:    default.sub-system.u: 400.0
+## info:    default.sub-system.Add2.u1: 400.0
+## info:    default.sub-system.Add2.u2: 400.0
+## info:    default.sub-system.Add2.y : 800.0
 ## endResult

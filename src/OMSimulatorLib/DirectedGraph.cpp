@@ -264,7 +264,7 @@ void oms::DirectedGraph::calculateSortedConnections()
       Connector conA = nodes[edges.connections[components[i][j]].first];
       Connector conB = nodes[edges.connections[components[i][j]].second];
 
-      if (oms::Connection::isValid(conA.getName(), conB.getName(), conA, conB) || oms::Connection::isValidExportConnectorName(conA, conB))
+      if (oms::Connection::isValid(conA.getName(), conB.getName(), conA, conB))
       {
         scc.connections.push_back(std::pair<int, int>(edges.connections[components[i][j]]));
         scc.component_names.insert(conA.getOwner());
