@@ -38,7 +38,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <iostream>
+
 oms::Connection::Connection(const oms::ComRef& conA, const oms::ComRef& conB, bool suppressUnitConversion, oms_connection_type_enu_t type)
 {
   std::string str;
