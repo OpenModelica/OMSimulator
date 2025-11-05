@@ -820,19 +820,43 @@ oms_status_enu_t oms::SystemSC::doStepCVODE(double stopTime)
       for (size_t i=0; i < nStates[j]; ++i, ++k)
         NV_Ith_S(solverData.cvode.y, k) = states[j][i];
 
-    double cvode_time = tnext;
-    CVodeGetCurrentTime(solverData.cvode.mem, &cvode_time);
-    if (cvode_time < tnext) {
-      flag = CVode(solverData.cvode.mem, tnext, solverData.cvode.y, &cvode_time, CV_ONE_STEP);
-      if (flag < 0)
-        return logError("SUNDIALS_ERROR: CVode() failed with flag = " + std::to_string(flag));
-    }
+    // This will force the solver to take a step only to tnext
+    // The 'tout' argument for CVode will integrate beyond it and return an interpolant
+    CVodeSetStopTime(solverData.cvode.mem, tnext);
 
-    if (cvode_time > tnext) {
-      // interpolate result to tnext (this shouldn't take any further steps)
-      flag = CVode(solverData.cvode.mem, tnext, solverData.cvode.y, &cvode_time, CV_NORMAL);
-      if (flag < 0)
-        return logError("SUNDIALS_ERROR: CVode() failed with flag = " + std::to_string(flag));
+    // Advance integrator (to end of step or next root)
+    double cvode_time = time;
+    flag = CVode(solverData.cvode.mem, tnext, solverData.cvode.y, &cvode_time, CV_ONE_STEP);
+    if (flag < 0)
+      return logError("SUNDIALS_ERROR: CVode() failed with flag = " + std::to_string(flag));
+
+    // CVode will return an interpolant for roots. In that case it should always be reset at the root.
+    // Otherwise it will make use of rhs calculations made before the event.
+    // This will cause it to ignore any changes in the rhs from current time to cv_mem->cv_tn.
+    bool is_interpolated = flag == CV_ROOT_RETURN;
+
+    // Sanity check, should not be triggered.
+    // To avoid resorting to this, CV_NORMAL is used above when tnext is too close.
+    if (cvode_time > tnext)
+    {
+      logWarning("SystemSC::doStepCVODE: Stopping time overstepped by CVODE");
+
+      // This fails to do the necessary interpolation when the previous call has stopped at a root.
+      // flag = CVode(solverData.cvode.mem, tnext, solverData.cvode.y, &cvode_time, CV_NORMAL);
+      // if (flag < 0)
+      //   return logError("SUNDIALS_ERROR: CVode() failed with flag = " + std::to_string(flag));
+
+      // Issue with the approach below:
+      // - Internal time of CVODE stays at previously returned value.
+      // - This may cause it to skip a root.
+
+      // Interpolate states to value at tnext
+      int retval = CVodeGetDky(solverData.cvode.mem, tnext, 0, solverData.cvode.y);
+      if (retval != CV_SUCCESS)
+        return logError("SUNDIALS_ERROR: CVodeGetDky() failed with flag = " + std::to_string(retval));
+
+      flag = CV_TSTOP_RETURN;
+      cvode_time = tnext;
     }
 
     time = cvode_time;
@@ -962,6 +986,10 @@ oms_status_enu_t oms::SystemSC::stepUntil(double stopTime)
 
     if (status != oms_status_ok)
       logWarning("Bad return code at time " + std::to_string(time));
+
+    // Check whether stopping time has changed due to a request from an FMU
+    if (getModel().getStopTime() < endTime)
+      endTime = getModel().getStopTime();
 
     if (isTopLevelSystem() && Flags::ProgressBar() && time > lastTime + maximumStepSize)
     {
