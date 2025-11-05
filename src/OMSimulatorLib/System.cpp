@@ -1664,7 +1664,8 @@ oms_status_enu_t oms::System::updateDependencyGraphs()
     Connector* varB = getConnector(connection->getSignalB());
     if (varA && varB)
     {
-      bool validConnection = oms::Connection::isValid(connection->getSignalA(), connection->getSignalB(), *varA, *varB);
+      bool validConnection = oms::Connection::isValid(connection->getSignalA(), connection->getSignalB(), *varA, *varB) ||
+                             oms::Connection::isValidExportConnectorName(*varA, *varB);
       if (validConnection)
       {
         initializationGraph.addEdge(Connector(varA->getCausality(), varA->getType(), connection->getSignalA(), this->getFullCref()), Connector(varB->getCausality(), varB->getType(), connection->getSignalB(), this->getFullCref()));
