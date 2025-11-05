@@ -75,6 +75,8 @@ namespace oms
     * \brief Checks a connection based on SSP-1.0 connection table
     */
     static bool isValid(const ComRef& crefA, const ComRef& crefB, const Connector& conA, const Connector& conB);
+    static bool isValidExportConnectorName(const Connector& conA, const Connector& conB);
+
     static bool isValidUnits(const ComRef& crefA, const ComRef& crefB, const Connector& conA, const Connector& conB);
     static void getSIUnits(const Connector& connector, std::map<std::string, std::string>& baseUnits);
     oms_status_enu_t rename(const oms::ComRef& cref, const oms::ComRef& newCref);

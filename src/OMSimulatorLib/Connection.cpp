@@ -38,7 +38,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
-
+#include <iostream>
 oms::Connection::Connection(const oms::ComRef& conA, const oms::ComRef& conB, bool suppressUnitConversion, oms_connection_type_enu_t type)
 {
   std::string str;
@@ -190,6 +190,44 @@ bool oms::Connection::isValid(const ComRef& crefA, const ComRef& crefB, const Co
 
   // Check connector B
   if (crefB.isValidIdent()) // this is a system
+  {
+    // Connector B of a systems must be output or calculated parameter
+    connectorB = conB.isOutput() || conB.isCalculatedParameter();
+  }
+  else // this is an element
+  {
+    // Connector A of an element must be input, parameter, or inout
+    // TODO: check for inout, neither FMI-1.0 nor FMI-2.0 do support inout
+    connectorB = conB.isParameter() || conB.isInput();
+  }
+
+  // both connectors must be valid in order to make the connection valid
+  return connectorA && connectorB;
+}
+
+/*! Checks the validity of connections based on export connector names it is possible that connections
+    are valid even though the causality check based on SSP-1.0 fails. This is the case when connecting
+    system connectors to element connectors based on export names and how the decomposition of the top
+    level system is done.
+*/
+bool oms::Connection::isValidExportConnectorName(const Connector& conA, const Connector& conB)
+{
+  bool connectorA, connectorB;
+  // Check connector A
+  if (ComRef(conA.getExportName()).isValidIdent()) // this is a system
+  {
+    // Connector A of a systems must be input or parameter
+    connectorA = conA.isInput() || conA.isParameter();
+  }
+  else // this is an element
+  {
+    // Connector A of an element must be output, calculated parameter, or inout
+    // TODO: check for inout, neither FMI-1.0 nor FMI-2.0 do support inout
+    connectorA = conA.isOutput() || conA.isCalculatedParameter();
+  }
+
+  // Check connector B
+  if (ComRef(conB.getExportName()).isValidIdent()) // this is a system
   {
     // Connector B of a systems must be output or calculated parameter
     connectorB = conB.isOutput() || conB.isCalculatedParameter();

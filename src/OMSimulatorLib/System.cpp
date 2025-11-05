@@ -47,7 +47,7 @@
 #include "miniunz.h"
 
 #include <regex>
-
+#include <iostream>
 oms::System::System(const oms::ComRef& cref, oms_system_enu_t type, oms::Model* parentModel, oms::System* parentSystem, oms_solver_enu_t solverMethod)
   : element(oms_element_system, cref), cref(cref), type(type), parentModel(parentModel), parentSystem(parentSystem), solverMethod(solverMethod)
 {
@@ -1220,6 +1220,17 @@ oms_status_enu_t oms::System::addConnection(const oms::ComRef& crefA, const oms:
       if (connection && connection->containsSignalB(crefA))
         return logError("Connector " + std::string(crefA) + " is already connected to " + std::string(connection->getSignalA()));
     }
+    connections.back() = new oms::Connection(crefB, crefA, suppressUnitConversion);
+    connections.push_back(NULL);
+  }
+  else if (oms::Connection::isValidExportConnectorName(*conA, *conB))
+  {
+    connections.back() = new oms::Connection(crefA, crefB, suppressUnitConversion);
+    connections.push_back(NULL);
+  }
+  // flipped causality check
+  else if (oms::Connection::isValidExportConnectorName(*conB, *conA))
+  {
     connections.back() = new oms::Connection(crefB, crefA, suppressUnitConversion);
     connections.push_back(NULL);
   }
