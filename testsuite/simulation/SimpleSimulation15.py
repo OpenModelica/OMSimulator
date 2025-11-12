@@ -30,7 +30,9 @@ subsystem.addConnection("", "y", "Add2", "y")
 
 
 model.addConnection(CRef("default", "Add1", "y"), CRef("default", "sub-system", "u"))
-model.addConnection(CRef("default", "sub-system", "y"), CRef("default", "Add3", "u1"))
+## flip connection to test
+model.addConnection(CRef("default", "Add3", "u1"), CRef("default", "sub-system", "y"))
+
 model.addConnection(CRef("default", "sub-system", "y"), CRef("default", "Add3", "u2"))
 
 ## check failing connection and fix it

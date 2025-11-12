@@ -434,15 +434,44 @@ class System:
       # Add the connections to top level system
       self.addConnection(start_element, start_connector, end_element, end_connector)
 
+  def checkConnection(self, startElement : str, startConnector : str, endElement : str, endConnector : str):
+    """Check if a connection is valid in the system."""
+    for conn in self.connections:
+      if (conn.startElement == startElement and conn.startConnector == startConnector and
+          conn.endElement == endElement and conn.endConnector == endConnector):
+        raise ValueError(f"Connection from '{startElement}.{startConnector}' to '{endElement}.{endConnector}' already exists")
+
+  def _findConnector(self, element_name, connector_name):
+    """Returns (owner_string, causality) or (None, None) if not found."""
+    connectors = (
+        self.connectors  # System level
+        if not element_name else
+        self.elements[CRef(element_name)].connectors  # Element level
+    )
+    for con in connectors:
+      if str(con.name) == str(connector_name):
+        owner_str = "System" if not element_name else "Element"
+        return (owner_str, con.causality)
+
+    return None, None
+
   def addConnection(self, startElement : str, startConnector : str, endElement : str, endConnector : str):
-    #TODO: Fix this check for Connection class
-    #if (startElement, startConnector, endElement, endConnector) in self.connections:
-    #  raise ValueError(f"Connection '{startElement}.{startConnector}' to '{endElement}.{endConnector}' already exists")
+    """Adds a connection to the system."""
+    # Resolve source connector owner and causality
+    (source_owner, source_kind) = self._findConnector(startElement, startConnector)
+    # Resolve destination connector owner and causality
+    (dest_owner, dest_kind) = self._findConnector(endElement, endConnector)
 
-    #if (endElement, endConnector, startElement, startConnector) in self.connections:
-    #  raise ValueError(f"Connection '{startElement}.{startConnector}' to '{endElement}.{endConnector}' already exists")
+    if Connection.is_validConnection(source_owner, source_kind, dest_owner, dest_kind):
+      self.checkConnection(startElement, startConnector, endElement, endConnector)
+      self.connections.append(Connection(startElement, startConnector, endElement, endConnector))
+    # flipped connection
+    elif Connection.is_validConnection(dest_owner, dest_kind, source_owner, source_kind):
+      self.checkConnection(endElement, endConnector, startElement, startConnector)
+      self.connections.append(Connection(endElement, endConnector, startElement, startConnector))
+    else:
+      raise ValueError(f"info: Invalid connection from '{startElement}.{startConnector}'->'{endElement}.{endConnector}' as causality are violated with '{source_owner}.{source_kind.name}' -> '{dest_owner}.{dest_kind.name}'")
 
-    self.connections.append(Connection(startElement, startConnector, endElement, endConnector))
 
   def _connectorExists(self, cref: CRef, delete = False) -> bool:
     """Check if a connector exists in the system."""
