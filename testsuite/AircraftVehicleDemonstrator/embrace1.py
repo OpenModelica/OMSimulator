@@ -32,7 +32,7 @@ model.addConnection(CRef('root', 'ECS_HW', 'Alt'), CRef('root', 'BC', 'Alt'))
 model.addConnection(CRef('root', 'ECS_HW', 'Mach'), CRef('root', 'BC', 'Mach'))
 
 #BC -> ECS_SW
-model.addConnection(CRef('root', 'BC', 'Aircraft_state'), CRef('root', 'AdaptionUnit.Aircraft_State'))
+model.addConnection(CRef('root', 'BC', 'Aircraft_state'), CRef('root', 'AdaptionUnit', 'Aircraft_State'))
 
 #BC -> Atmos
 model.addConnection(CRef('root', 'Atmos', 'Alt'), CRef('root', 'BC', 'Alt'))

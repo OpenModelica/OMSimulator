@@ -453,7 +453,7 @@ class System:
         owner_str = "System" if not element_name else "Element"
         return (owner_str, con.causality)
 
-    return None, None
+    raise ValueError(f"Connector '{connector_name}' not found in element '{element_name or self.name}'")
 
   def addConnection(self, startElement : str, startConnector : str, endElement : str, endConnector : str):
     """Adds a connection to the system."""
