@@ -30,7 +30,8 @@ model.setSolver(CRef('default', 'Add1'), 'solver1')
 model.setSolver(CRef('default', 'sub-system', 'Add2'), 'solver1')
 
 model.addConnection(CRef('default', 'param1'), CRef('default', 'Add1', 'u1'))
-model.addConnection(CRef('default', 'Add1', 'y'), CRef('default', 'sub-system', 'output'))
+## Element.output -> System.output
+model.addConnection(CRef('default', 'sub-system', 'Add2', 'y'), CRef('default', 'sub-system', 'output'))
 model.addConnection(CRef('default', 'sub-system', 'Add2', 'u1'), CRef('default', 'sub-system', 'input'))
 
 model.export('exportJson4.ssp')
@@ -42,6 +43,7 @@ instantiated_model = model2.instantiate() ## internally generate the json file a
 # print(instantiated_model.dumpApiCalls(), flush=True)
 instantiated_model.setResultFile("export_json4_res.mat")
 instantiated_model.setValue(CRef('default', 'param1'), 2.0)
+instantiated_model.setValue(CRef('default', 'sub-system', 'input'), 5.0)
 instantiated_model.setValue(CRef('default', 'Add1', 'u2'), 3.0)
 
 print(f"info: After instantiation:")
@@ -94,7 +96,8 @@ instantiated_model.delete()
 ## |-- |-- |-- |-- |-- |-- |-- Solver Settings:
 ## |-- |-- |-- |-- |-- |-- |-- |-- name: solver1
 ## |-- |-- |-- |-- |-- Connections:
-## |-- |-- |-- |-- |-- |-- Add2.u1 -> .input
+## |-- |-- |-- |-- |-- |-- Add2.y -> .output
+## |-- |-- |-- |-- |-- |-- .input -> Add2.u1
 ## |-- |-- |-- |-- FMU: Add1 'None'
 ## |-- |-- |-- |-- |-- path: resources/Add.fmu
 ## |-- |-- |-- |-- |-- Connectors:
@@ -107,7 +110,6 @@ instantiated_model.delete()
 ## |-- |-- |-- |-- |-- |-- name: solver1
 ## |-- |-- |-- Connections:
 ## |-- |-- |-- |-- .param1 -> Add1.u1
-## |-- |-- |-- |-- Add1.y -> sub-system.output
 ## |-- |-- |-- Solver Settings:
 ## |-- |-- |-- |-- (name=solver1, method=euler, tolerance=1e-06)
 ## |-- DefaultExperiment
@@ -115,7 +117,7 @@ instantiated_model.delete()
 ## |-- |-- stopTime: 1.0
 ## info: After instantiation:
 ## info:    default.param1           : 2.0
-## info:    default.sub-system.input : 0.0
+## info:    default.sub-system.input : 5.0
 ## info:    default.sub-system.output: 0.0
 ## info:    default.Add1.u1          : 0.0
 ## info:    default.Add1.u2          : 3.0
@@ -123,7 +125,7 @@ instantiated_model.delete()
 ## info:    Result file: export_json4_res.mat (bufferSize=1)
 ## info: After simulation:
 ## info:    default.param1           : 2.0
-## info:    default.sub-system.input : 0.0
+## info:    default.sub-system.input : 5.0
 ## info:    default.sub-system.output: 5.0
 ## info:    default.Add1.u1          : 2.0
 ## info:    default.Add1.u2          : 3.0

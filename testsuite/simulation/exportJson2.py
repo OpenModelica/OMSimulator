@@ -155,7 +155,7 @@ model.list()
 ##  |-- |-- |-- SuT.I -> .I
 ##  |-- |-- |-- stimuli_model.M_load -> SuT.M_load
 ##  |-- |-- |-- stimuli_model.U -> SuT.U
-##  |-- |-- |-- .M_load -> stimuli_model.M_load
+##  |-- |-- |-- stimuli_model.M_load -> .M_load
 ##  |-- |-- |-- |-- ConnectionGeometry: (pointsX: [131.0, 131.0], pointsY: [-245.534819, -105.0])
 ##  |-- |-- SystemGeometry:
 ##  |-- |-- |-- (x1:-359.5, y1:-383.0, x2:710.0, y2:198.0)

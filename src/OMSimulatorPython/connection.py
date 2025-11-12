@@ -1,6 +1,7 @@
 from lxml import etree as ET
 
 from OMSimulator import namespace
+from OMSimulator.variable import Causality
 
 class ConnectionGeometry:
   def __init__(self, pointsX: list , pointsY: list):
@@ -63,3 +64,22 @@ class Connection:
         if pointsX and pointsY:
           connectionGeometry = ConnectionGeometry([float(x) for x in pointsX.split()], [float(y) for y in pointsY.split()])
           root.connections[-1].connectionGeometry = connectionGeometry
+
+  @staticmethod
+  def is_validConnection(source_owner: str, source_kind: Causality, dest_owner: str, dest_kind: Causality) -> bool:
+    """Return True if the connection is allowed according to SSP 2.0 table."""
+
+    # Allowed causality by owner type
+    allowed_source_by_owner = {
+      "System":  {Causality.input, Causality.parameter},
+      "Element": {Causality.output, Causality.calculatedParameter},
+    }
+
+    allowed_dest_by_owner = {
+      "System":  {Causality.output, Causality.calculatedParameter},
+      "Element": {Causality.input, Causality.parameter},
+    }
+
+    result = (source_kind in allowed_source_by_owner.get(source_owner, set()) and dest_kind in allowed_dest_by_owner.get(dest_owner, set()))
+
+    return result
