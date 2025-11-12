@@ -89,7 +89,7 @@ model2.list()
 ## |-- |-- |-- |-- |-- |-- |-- Solver Settings:
 ## |-- |-- |-- |-- |-- |-- |-- |-- name: solver1
 ## |-- |-- |-- |-- |-- Connections:
-## |-- |-- |-- |-- |-- |-- Add2.u1 -> .input
+## |-- |-- |-- |-- |-- |-- .input -> Add2.u1
 ## |-- |-- |-- |-- FMU: Add1 'None'
 ## |-- |-- |-- |-- |-- path: resources/Add.fmu
 ## |-- |-- |-- |-- |-- Connectors:
