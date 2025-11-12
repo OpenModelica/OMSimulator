@@ -69,12 +69,6 @@ instantiated_model.delete()
 
 ## Result:
 ## info:    model doesn't contain any continuous state
-## info: Adding connection from '.param1' to 'Add1.u1'
-## info: Adding connection from 'Add2.y' to '.output'
-## info: Adding connection from 'Add2.u1' to '.input'
-## info: Adding connection from 'Add2.y' to '.output'
-## info: Adding connection from '.input' to 'Add2.u1'
-## info: Adding connection from '.param1' to 'Add1.u1'
 ## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
 ## |--   resources/Add.fmu
