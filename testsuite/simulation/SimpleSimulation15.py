@@ -24,15 +24,18 @@ model.addComponent(CRef("default", "sub-system", "Add2"), "resources/Add.fmu")
 subsystem.addConnector(Connector(CRef("u"), Causality.input, SignalType.Real))
 subsystem.addConnector(Connector(CRef("y"), Causality.output, SignalType.Real))
 
+## System.input -> Element.input
 subsystem.addConnection("", "u", "Add2", "u1")
+## System.input -> Element.input
 subsystem.addConnection("", "u", "Add2", "u2")
+## Element.output -> System.output
 subsystem.addConnection("", "y", "Add2", "y")
 
-
+## Element.output -> Element.input
 model.addConnection(CRef("default", "Add1", "y"), CRef("default", "sub-system", "u"))
-## flip connection to test
+## flip connection to test Element.output -> Element.input
 model.addConnection(CRef("default", "Add3", "u1"), CRef("default", "sub-system", "y"))
-
+## Element.output -> Element.input
 model.addConnection(CRef("default", "sub-system", "y"), CRef("default", "Add3", "u2"))
 
 ## check failing connection and fix it
@@ -99,7 +102,7 @@ instantiated_model.delete()
 ## |-- |-- |-- |-- |-- Connections:
 ## |-- |-- |-- |-- |-- |-- .u -> Add2.u1
 ## |-- |-- |-- |-- |-- |-- .u -> Add2.u2
-## |-- |-- |-- |-- |-- |-- .y -> Add2.y
+## |-- |-- |-- |-- |-- |-- Add2.y -> .y
 ## |-- |-- |-- Connections:
 ## |-- |-- |-- |-- Add1.y -> sub-system.u
 ## |-- |-- |-- |-- sub-system.y -> Add3.u1

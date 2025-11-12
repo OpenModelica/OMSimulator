@@ -434,7 +434,7 @@ class System:
       # Add the connections to top level system
       self.addConnection(start_element, start_connector, end_element, end_connector)
 
-  def checkConnection(self, startElement : str, startConnector : str, endElement : str, endConnector : str):
+  def isConnectorAlreadyConnected(self, startElement : str, startConnector : str, endElement : str, endConnector : str):
     """Check if a connection is valid in the system."""
     for conn in self.connections:
       if (conn.startElement == startElement and conn.startConnector == startConnector and
@@ -463,11 +463,11 @@ class System:
     (dest_owner, dest_kind) = self._findConnector(endElement, endConnector)
 
     if Connection.is_validConnection(source_owner, source_kind, dest_owner, dest_kind):
-      self.checkConnection(startElement, startConnector, endElement, endConnector)
+      self.isConnectorAlreadyConnected(startElement, startConnector, endElement, endConnector)
       self.connections.append(Connection(startElement, startConnector, endElement, endConnector))
     # flipped connection
     elif Connection.is_validConnection(dest_owner, dest_kind, source_owner, source_kind):
-      self.checkConnection(endElement, endConnector, startElement, startConnector)
+      self.isConnectorAlreadyConnected(endElement, endConnector, startElement, startConnector)
       self.connections.append(Connection(endElement, endConnector, startElement, startConnector))
     else:
       raise ValueError(f"info: Invalid connection from '{startElement}.{startConnector}'->'{endElement}.{endConnector}' as causality are violated with '{source_owner}.{source_kind.name}' -> '{dest_owner}.{dest_kind.name}'")

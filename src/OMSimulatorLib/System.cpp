@@ -1200,42 +1200,9 @@ oms_status_enu_t oms::System::addConnection(const oms::ComRef& crefA, const oms:
   {
     return logError("Unit mismatch in connection: " + std::string(crefA) + " -> " + std::string(crefB));
   }
-
-  // check if the connections are valid, according to the SSP-1.0 allowed connection table
-  if (oms::Connection::isValid(crefA, crefB, *conA, *conB))
-  {
-    connections.back() = new oms::Connection(crefA, crefB, suppressUnitConversion);
-    connections.push_back(NULL);
-  }
-  // flipped causality check
-  else if (oms::Connection::isValid(crefB, crefA, *conB, *conA))
-  {
-    // ! Flipped connection checks !
-    // Do not allow multiple connections to same 'input' connector
-    // (signal A!). The 'input' connector (signal A!) can actually be
-    // an output connector, e.g. if connecting a component to a system
-    // connector.
-    for (auto &connection : connections)
-    {
-      if (connection && connection->containsSignalB(crefA))
-        return logError("Connector " + std::string(crefA) + " is already connected to " + std::string(connection->getSignalA()));
-    }
-    connections.back() = new oms::Connection(crefB, crefA, suppressUnitConversion);
-    connections.push_back(NULL);
-  }
-  else if (oms::Connection::isValidExportConnectorName(*conA, *conB))
-  {
-    connections.back() = new oms::Connection(crefA, crefB, suppressUnitConversion);
-    connections.push_back(NULL);
-  }
-  // flipped causality check
-  else if (oms::Connection::isValidExportConnectorName(*conB, *conA))
-  {
-    connections.back() = new oms::Connection(crefB, crefA, suppressUnitConversion);
-    connections.push_back(NULL);
-  }
-  else
-    return logError("Causality mismatch in connection: " + std::string(crefA) + " -> " + std::string(crefB));
+  // connection are checked in the python side, directly add the connection
+  connections.back() = new oms::Connection(crefA, crefB, suppressUnitConversion);
+  connections.push_back(NULL);
 
   return oms_status_ok;
 }
