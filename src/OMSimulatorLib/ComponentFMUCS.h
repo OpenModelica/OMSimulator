@@ -107,7 +107,7 @@ namespace oms
 
     oms_status_enu_t getRealOutputDerivative(const ComRef& cref, SignalDerivative& der);
     oms_status_enu_t setRealInputDerivative(const ComRef& cref, const SignalDerivative& der);
-    oms_status_enu_t setExportName(const std::string & exportName) { this->exportName = exportName; return oms_status_ok;};
+    oms_status_enu_t setExportName(const std::string & exportName);
     std::string getExportName() const { return this->exportName; }
     oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultFile);
     oms_status_enu_t updateSignals(ResultWriter& resultWriter);
