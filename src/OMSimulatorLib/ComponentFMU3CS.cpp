@@ -611,6 +611,19 @@ oms_status_enu_t oms::ComponentFMU3CS::initializeDependencyGraph_outputs()
   return oms_status_ok;
 }
 
+oms_status_enu_t oms::ComponentFMU3CS::setExportName(const std::string& exportName)
+{
+  this->exportName = exportName;
+  for (auto &connector : connectors)
+  {
+    if (connector)
+    {
+      connector->setExportName(exportName);
+    }
+  }
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms::ComponentFMU3CS::instantiate()
 {
   // TODO investigate fmi3IntermediateUpdateCallback = NULL
