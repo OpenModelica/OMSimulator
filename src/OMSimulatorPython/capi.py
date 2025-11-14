@@ -30,6 +30,9 @@ class capi:
       else:
         # attempt to fix #8163 on Linux
         omslib = os.path.join(dirname, "..", "@OMSIMULATORLIB_STRING@")
+        old = os.environ.get("LD_LIBRARY_PATH", "")
+        new = omslib + (":" + old if old else "")
+        os.environ["LD_LIBRARY_PATH"] = new
 
     self.obj=ctypes.CDLL(omslib)
 
