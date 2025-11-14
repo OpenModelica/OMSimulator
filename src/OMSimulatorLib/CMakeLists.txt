@@ -152,3 +152,13 @@ endif()
 
 install(TARGETS OMSimulatorLib)
 install(TARGETS OMSimulatorLib_static)
+
+install(TARGETS OMSimulatorLib
+   DESTINATION bin)
+
+install(TARGETS OMSimulatorLib
+    RUNTIME_DEPENDENCIES
+      DIRECTORIES ${CMAKE_CURRENT_BINARY_DIR}
+      PRE_EXCLUDE_REGEXES "api-ms-" "ext-ms-"
+      POST_EXCLUDE_REGEXES ".*system32/.*\\.dll"
+   DESTINATION ${INSTALL_RPATH})
