@@ -625,6 +625,27 @@ oms_status_enu_t oms_getConnections(const char *cref, oms_connection_t ***connec
   return oms_status_ok;
 }
 
+oms_status_enu_t oms_addAlias(const char* cref, const char* rhs_)
+{
+  oms::ComRef tail(cref);
+  oms::ComRef modelCref = tail.pop_front();
+  oms::ComRef aliasCref = tail.pop_front();
+  oms::Model* model = oms::Scope::GetInstance().getModel(modelCref);
+  if (!model) {
+    return logError_ModelNotInScope(modelCref);
+  }
+
+  if (!rhs_)
+    return logError("Invalid argument: rhs=NULL");
+
+  oms::ComRef rhs(rhs_);
+  oms_signal_type_enu_t type;
+  if (oms_status_ok != oms_getVariableType(rhs_, &type))
+    return logError("The rhs \"" + std::string(rhs_) + "\" does not exist.");
+
+  return model->addAlias(aliasCref, rhs, type);
+}
+
 oms_status_enu_t oms_addBus(const char *cref)
 {
   oms::ComRef tail(cref);
