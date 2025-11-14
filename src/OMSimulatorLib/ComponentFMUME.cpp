@@ -394,6 +394,19 @@ oms_status_enu_t oms::ComponentFMUME::exportToSSD(pugi::xml_node& node, Snapshot
   return oms_status_ok;
 }
 
+oms_status_enu_t oms::ComponentFMUME::setExportName(const std::string& exportName)
+{
+  this->exportName = exportName;
+  for (auto &connector : connectors)
+  {
+    if (connector)
+    {
+      connector->setExportName(exportName);
+    }
+  }
+  return oms_status_ok;
+}
+
 void oms::ComponentFMUME::getFilteredUnitDefinitionsToSSD(std::map<std::string, std::map<std::string, std::string>>& unitDefinitions)
 {
   // get units from connectors

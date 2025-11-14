@@ -46,11 +46,11 @@ instantiated_model = model.instantiate()
 #print(instantiated_model.dumpApiCalls())
 
 instantiated_model.setResultFile("SimpleSimulation15_res.mat")
-instantiated_model.setValue(CRef('default', 'sub-system', 'u'), 400.0)
+instantiated_model.setValue(CRef('default', 'Add1', 'u1'), 400.0)
 
 instantiated_model.initialize()
 instantiated_model.simulate()
-print(f"info:    default.sub-system.u: {instantiated_model.getValue(CRef('default', 'sub-system', 'u'))}", flush=True)
+print(f"info:    default.sub-system.u      : {instantiated_model.getValue(CRef('default', 'sub-system', 'u'))}", flush=True)
 print(f"info:    default.sub-system.Add2.u1: {instantiated_model.getValue(CRef('default', 'sub-system', 'Add2', 'u1'))}", flush=True)
 print(f"info:    default.sub-system.Add2.u2: {instantiated_model.getValue(CRef('default', 'sub-system', 'Add2', 'u2'))}", flush=True)
 print(f"info:    default.sub-system.Add2.y : {instantiated_model.getValue(CRef('default', 'sub-system', 'Add2', 'y'))}", flush=True)
@@ -110,7 +110,7 @@ instantiated_model.delete()
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
-## info:    default.sub-system.u: 400.0
+## info:    default.sub-system.u      : 400.0
 ## info:    default.sub-system.Add2.u1: 400.0
 ## info:    default.sub-system.Add2.u2: 400.0
 ## info:    default.sub-system.Add2.y : 800.0

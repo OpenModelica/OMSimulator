@@ -123,7 +123,7 @@ namespace oms
     oms_status_enu_t newResources(const std::string& ssvFilename, const std::string& ssmFilename, bool externalResources);
     oms_status_enu_t setResourcesHelper1(Values value);
     oms_status_enu_t setResourcesHelper2(Values value);
-    oms_status_enu_t setExportName(const std::string & exportName) { this->exportName = exportName; return oms_status_ok;};
+    oms_status_enu_t setExportName(const std::string & exportName);
     std::string getExportName() const { return this->exportName; }
     oms_status_enu_t deleteReferencesInSSD(const std::string& filename);
     oms_status_enu_t deleteResourcesInSSP(const std::string& filename);

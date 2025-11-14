@@ -261,11 +261,13 @@ void oms::DirectedGraph::calculateSortedConnections()
     scc_t scc;
     for (int j = 0; j < components[i].size(); ++j)
     {
-      Connector conA = nodes[edges.connections[components[i][j]].first];
-      Connector conB = nodes[edges.connections[components[i][j]].second];
-
-      if (oms::Connection::isValid(conA.getName(), conB.getName(), conA, conB))
+      Connector& conA = nodes[edges.connections[components[i][j]].first];
+      Connector& conB = nodes[edges.connections[components[i][j]].second];
+      if (oms::Connection::isValid(conA.getName(), conB.getName(), conA, conB) ||
+          oms::Connection::isValidExportConnectorName(conA, conB))
       {
+        // std::cout << "\n valid connection from " << conA.getName().c_str() << " ==> " << conB.getName().c_str();
+        // std::cout << "\n*******" << std::endl;
         scc.connections.push_back(std::pair<int, int>(edges.connections[components[i][j]]));
         scc.component_names.insert(conA.getOwner());
         scc.component_names.insert(conB.getOwner());
@@ -355,16 +357,19 @@ void oms::DirectedGraph::setUnits(Connector* conA, Connector* conB, bool suppres
 
   for (auto &it : nodes)
   {
-    // std::cout << "\n after edge:" << it.getName().c_str() << "==>" << crefA.c_str() << "==>" << crefB.c_str();
     if (it.getName() == crefA)
     {
       for (const auto &con : conA->connectorUnits)
         it.connectorUnits[con.first] = con.second;
+      // set the export name for the connector
+      it.setExportName(conA->getExportName());
     }
     if (it.getName() == crefB)
     {
       for (const auto &con : conB->connectorUnits)
         it.connectorUnits[con.first] = con.second;
+      // set the export name for the connector
+      it.setExportName(conB->getExportName());
     }
   }
 }
