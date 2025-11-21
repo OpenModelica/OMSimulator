@@ -31,7 +31,7 @@ pipeline {
         stage('linux64') {
           agent {
             dockerfile {
-              additionalBuildArgs '--pull --no-cache'
+              additionalBuildArgs '--pull'
               dir '.CI/cache'
               /* The cache Dockerfile makes /cache/runtest, etc world writable
                * This is necessary because we run the docker image as a user and need to
