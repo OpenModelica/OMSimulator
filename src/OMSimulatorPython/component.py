@@ -10,7 +10,7 @@ class Component:
   def __init__(self, name: CRef, fmuPath: Path | str, connectors=None, unitDefinitions=None, enumerationDefinitions=None):
     from OMSimulator.ssm import SSM
     self.name = CRef(name)
-    self.fmuPath = Path(fmuPath)
+    self.fmuPath = Path(fmuPath).as_posix()
     self.connectors = connectors or list()
     self.unitDefinitions = unitDefinitions or list()
     self.enumerationDefinitions = enumerationDefinitions or list()
