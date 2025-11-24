@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command: rm deleteConnector1.ssp
+## teardown_command: rm -rf deleteConnector1.ssp
 ## linux: yes
 ## ucrt64: yes
 ## win: yes

@@ -35,7 +35,6 @@
 #include "Logging.h"
 #include "ssd/Tags.h"
 #include "Util.h"
-#include "XercesValidator.h"
 
 #include <iostream>
 #include <map>
@@ -865,14 +864,6 @@ oms_status_enu_t oms::Values::importFromSnapshot(const pugi::xml_node& node, con
     std::string ssvFile = parameterBindingNode.attribute("source").as_string();
     if (!ssvFile.empty()) // parameter binding provided with .ssv file
     {
-      // validate ssv files against SSP schem, only if the file exists, because it is possible we use importSnapShot API
-      // to go back to old states and in this case we should not validate those ssv files in memory until it is exported to a ssp
-      if (filesystem::exists(ssvFile))
-      {
-        XercesValidator xercesValidator;
-        xercesValidator.validateSSP("", ssvFile);
-      }
-
       //resourceFiles.push_back(ssvFile);
       pugi::xml_node parameterSet = snapshot.getResourceNode(ssvFile);
       if (!parameterSet)
@@ -889,12 +880,6 @@ oms_status_enu_t oms::Values::importFromSnapshot(const pugi::xml_node& node, con
         std::string ssmFileSource = ssd_parameterMapping.attribute("source").as_string();
         if (!ssmFileSource.empty())
         {
-          // validate ssm file only if it exists
-          if (filesystem::exists(ssmFileSource))
-          {
-            XercesValidator xercesValidator;
-            xercesValidator.validateSSP("", ssmFileSource);
-          }
           pugi::xml_node ssm_parameterMapping = snapshot.getResourceNode(ssmFileSource);
           if (!ssm_parameterMapping)
             return logError("loading <oms:file> \"" + ssmFileSource + "\" from <oms:snapshot> failed");
@@ -1706,10 +1691,6 @@ oms_status_enu_t oms::Values::parseModelDescriptionFmi3(const filesystem::path& 
 {
 
   const char* modelDescription = ::miniunz_onefile_to_memory(root.generic_string().c_str(), "modelDescription.xml");
-
-  // TODO validate modeldescription.xml against schema fmi3ModelDescription.xsd
-  // XercesValidator xercesValidator;
-  // xercesValidator.validateFMU(modelDescription, root.generic_string());
 
   Snapshot snapshot;
   oms_status_enu_t status = snapshot.importResourceMemory("modelDescription.xml", modelDescription);
