@@ -60,9 +60,7 @@ set(OMSIMULATORLIB_SOURCES
       SystemSC.cpp
       SystemWC.cpp
       Values.cpp
-      Variable.cpp
-      whereami.c
-      XercesValidator.cpp)
+      Variable.cpp)
 
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/Version.cpp.in" "${CMAKE_CURRENT_BINARY_DIR}/Version.cpp" @ONLY)
 list(APPEND OMSIMULATORLIB_SOURCES "${CMAKE_CURRENT_BINARY_DIR}/Version.cpp")
@@ -84,7 +82,6 @@ target_link_libraries(OMSimulatorLib
                           oms::3rd::lua
                           oms::3rd::pugixml::header
                           oms::3rd::json::header
-                          oms::3rd::xerces
                           oms::3rd::ctpl::header)
 
 target_link_libraries(OMSimulatorLib PUBLIC ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
@@ -116,7 +113,6 @@ target_link_libraries(OMSimulatorLib_static
                           oms::3rd::lua
                           oms::3rd::pugixml::header
                           oms::3rd::json::header
-                          oms::3rd::xerces
                           oms::3rd::ctpl::header)
 
 target_link_libraries(OMSimulatorLib_static PUBLIC ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
@@ -126,27 +122,27 @@ if(MINGW)
 endif()
 
 ## copy dependent DLL's for mingw artifacts
-if(ICU_FOUND)
-  message(STATUS "ICU_LIBRARIES_FOUND: ${ICU_LIBRARIES}")
-  if (MINGW)
-    list(GET ICU_LIBRARIES 0 ICU_PATH)
-    get_filename_component(DLL_DIR "${ICU_PATH}/../../bin" ABSOLUTE)
-    message(STATUS "DLL_DIR: ${DLL_DIR}")
-    # collect all DLLs matching the pattern
-    file(GLOB DLL_LIST
-              "${DLL_DIR}/libicuuc*.dll"
-              "${DLL_DIR}/libicudt*.dll"
-              "${DLL_DIR}/libstdc++*.dll"
-              "${DLL_DIR}/libwinpthread*.dll"
-              "${DLL_DIR}/libgcc_*.dll")
-    # Check if the DLL_LIST is not empty before installing
-    if (DLL_LIST)
-      # Install the files from the list to the 'bin' directory
-      install(FILES ${DLL_LIST} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
-      message(STATUS "Copied files from: ${DLL_LIST} to ${CMAKE_INSTALL_PREFIX}/bin")
-    else()
-      message(WARNING "No DLLs found matching the pattern")
-    endif()
+if (MINGW)
+  # Extract compiler path (g++ path)
+  get_filename_component(COMPILER_DIR "${CMAKE_CXX_COMPILER}" DIRECTORY)
+
+  # MinGW DLLs are usually in the same directory
+  set(MINGW_BIN_DIR "${COMPILER_DIR}")
+
+  message(STATUS "Detected MinGW bin directory: ${MINGW_BIN_DIR}")
+
+  file(GLOB DLL_LIST
+        "${MINGW_BIN_DIR}/libstdc++*.dll"
+        "${MINGW_BIN_DIR}/libwinpthread*.dll"
+        "${MINGW_BIN_DIR}/libgcc_*.dll"
+  )
+  # Check if the DLL_LIST is not empty before installing
+  if (DLL_LIST)
+    # Install the files from the list to the 'bin' directory
+    install(FILES ${DLL_LIST} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+    message(STATUS "Copied files from: ${DLL_LIST} to ${CMAKE_INSTALL_PREFIX}/bin")
+  else()
+    message(WARNING "No DLLs found matching the pattern")
   endif()
 endif()
 
