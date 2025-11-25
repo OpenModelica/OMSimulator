@@ -72,6 +72,9 @@ pipeline {
               alwaysPull true
             }
           }
+          environment {
+            HOME = "/tmp/"
+          }
           steps {
             buildOMS()
             sh '(cd install/ && tar czf "../OMSimulator-linux-amd64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.tar.gz" *)'
