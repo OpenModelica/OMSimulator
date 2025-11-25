@@ -64,6 +64,24 @@ pipeline {
             stash name: 'docs', includes: "install/share/doc/**"
           }
         }
+        stage('linux64-focal') {
+          agent {
+            docker {
+              image 'docker.openmodelica.org/build-deps:v1.22.2'
+              label 'linux'
+              alwaysPull true
+            }
+          }
+          environment {
+            HOME = "/tmp/"
+          }
+          steps {
+            buildOMS()
+            sh '(cd install/ && tar czf "../OMSimulator-linux-focal-amd64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.tar.gz" *)'
+
+            archiveArtifacts artifacts: 'OMSimulator-linux-focal-amd64-*.tar.gz', fingerprint: true
+          }
+        }
         stage('linux64-asan') {
           stages {
             stage('build-asan') {

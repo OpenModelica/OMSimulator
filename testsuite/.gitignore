@@ -1,2 +1,4 @@
 # generated files
 /*.log
+*.fail_log
+*.test_log
