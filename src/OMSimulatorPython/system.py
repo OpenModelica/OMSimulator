@@ -491,14 +491,14 @@ class System:
     ## check if element is a top level system connectors
     ## or allow non existing connectors to support parameter mapping throgh SSM inline or ssm file by checking if cref
     if self._connectorExists(cref) or cref.is_root():
-      return
+      return (None, None)
 
     if element is None:
       raise ValueError(f"Element '{element_name}' not found in System '{self.name}'")
 
     match element:
       case Component():
-        return element.fmuPath
+        return (element.fmuPath, element)
       case System():
         return element._getComponentResourcePath(cref.pop_first())
       case _:

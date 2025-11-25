@@ -254,11 +254,15 @@ class SSP:
       raise ValueError("No active variant set in the SSP.")
 
     ## look up in the resource and get the component path
-    resource = self._getComponentResourcePath(cref)
-
+    (resource, component) = self._getComponentResourcePath(cref)
     # Check if the resource exists and validate the variable
-    fmu_inst = self.resources.get(resource)
-    if fmu_inst and not fmu_inst.varExist(cref.last()):
+    fmu_inst = self.resources.get(str(resource))
+
+    # Skip FMU variable validation if the component has a mapping entry
+    if component and component.hasMappingEntry(cref.last()):
+      pass
+    else:
+      if fmu_inst and not fmu_inst.varExist(cref.last()):
         raise KeyError(f"Variable '{cref.last()}' does not exist in the variables list of component '{resource}'")
 
     self.activeVariant.setValue(cref, value, unit, description)
@@ -268,11 +272,15 @@ class SSP:
       raise ValueError("No active variant set in the SSP.")
 
     ## look up in the resource and get the component path
-    resource = self._getComponentResourcePath(cref)
-
+    (resource, component) = self._getComponentResourcePath(cref)
     # Check if the resource exists and validate the variable
-    fmu_inst = self.resources.get(resource)
-    if fmu_inst and not fmu_inst.varExist(cref.last()):
+    fmu_inst = self.resources.get(str(resource))
+
+    # Skip FMU variable validation if the component has a mapping entry
+    if component and component.hasMappingEntry(cref.last()):
+      pass
+    else:
+      if fmu_inst and not fmu_inst.varExist(cref.last()):
         raise KeyError(f"Variable '{cref.last()}' does not exist in the variables list of component '{resource}'")
 
     self.activeVariant.getValue(cref)

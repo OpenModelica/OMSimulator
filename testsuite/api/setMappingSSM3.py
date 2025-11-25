@@ -22,9 +22,6 @@ model.activeVariant.system.addConnector(Connector('param3', Causality.parameter,
 model.activeVariant.system.addConnector(Connector('input1', Causality.input, SignalType.Real))
 model.activeVariant.system.addConnector(Connector('input2', Causality.input, SignalType.Real))
 
-model.setValue(CRef('default','connector_param'), 2.0)
-model.setValue(CRef('default','connector_input'), 3.0)
-
 # map top level parameters
 model.mapParameter(CRef('default'), 'connector_param', 'param1')
 model.mapParameter(CRef('default'), 'connector_param', 'param2')
@@ -32,23 +29,29 @@ model.mapParameter(CRef('default'), 'connector_param', 'param3')
 model.mapParameter(CRef('default'), 'connector_input', 'input1')
 model.mapParameter(CRef('default'), 'connector_input', 'input2')
 
+model.setValue(CRef('default','connector_param'), 2.0)
+model.setValue(CRef('default','connector_input'), 3.0)
+
 model.addSystem(CRef('default', 'sub-system'))
 ## add top level sub-system connector
 model.activeVariant.system.elements[CRef('sub-system')].addConnector(Connector('param2', Causality.parameter, SignalType.Real))
 model.activeVariant.system.elements[CRef('sub-system')].addConnector(Connector('input2', Causality.input, SignalType.Real))
 
-model.setValue(CRef('default', 'sub-system', 'connector_param'), 20.0)
-model.setValue(CRef('default', 'sub-system', 'connector_input'), 30.0)
 ## map sub-system parameters
 model.mapParameter(CRef('default', 'sub-system'), 'connector_param', 'param2')
 model.mapParameter(CRef('default', 'sub-system'), 'connector_input', 'input2')
 
+model.setValue(CRef('default', 'sub-system', 'connector_param'), 20.0)
+model.setValue(CRef('default', 'sub-system', 'connector_input'), 30.0)
+
 model.addResource('../resources/Modelica.Blocks.Math.Add.fmu', new_name='resources/Add.fmu')
 component1 = model.addComponent(CRef('default', 'Add1'), 'resources/Add.fmu')
-model.setValue(CRef("default", "Add1", "connector_param"), 40.0)
+
 ## map component parameters
 model.mapParameter(CRef('default', 'Add1'), 'connector_param', 'k1')
 model.mapParameter(CRef('default', 'Add1'), 'connector_param', 'k2')
+
+model.setValue(CRef("default", "Add1", "connector_param"), 40.0)
 
 model.export('setMappingSSM3.ssp')
 

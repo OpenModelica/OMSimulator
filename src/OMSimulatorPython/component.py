@@ -10,7 +10,7 @@ class Component:
   def __init__(self, name: CRef, fmuPath: Path | str, connectors=None, unitDefinitions=None, enumerationDefinitions=None):
     from OMSimulator.ssm import SSM
     self.name = CRef(name)
-    self.fmuPath = Path(fmuPath)
+    self.fmuPath = Path(fmuPath).as_posix()
     self.connectors = connectors or list()
     self.unitDefinitions = unitDefinitions or list()
     self.enumerationDefinitions = enumerationDefinitions or list()
@@ -39,6 +39,9 @@ class Component:
 
   def mapParameter(self, source: str, target: str):
     self.parameterMapping.mapParameter(source, target)
+
+  def hasMappingEntry(self, source: str) -> bool:
+    return str(source) in self.parameterMapping.mappingEntry
 
   def swapSSVReference(self, resource1: str, resource2: str):
     self.removeSSVReference(resource1)
