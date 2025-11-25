@@ -40,6 +40,9 @@ class Component:
   def mapParameter(self, source: str, target: str):
     self.parameterMapping.mapParameter(source, target)
 
+  def hasMappingEntry(self, source: str) -> bool:
+    return str(source) in self.parameterMapping.mappingEntry
+
   def swapSSVReference(self, resource1: str, resource2: str):
     self.removeSSVReference(resource1)
     self.addSSVReference(resource2)

@@ -35,19 +35,18 @@ model.newSolver(solver2)
 model.setSolver(CRef('default', 'sub-system', 'Gain2'), 'solver2')
 
 
-model.setValue(CRef('default','mapped_param1'), 200.0)
-model.setValue(CRef('default','mapped_input1'), 300.0)
-model.setValue(CRef('default','Gain1','mapped_Gain_k'), 2.0)
-model.setValue(CRef('default','sub-system','mapped_sub_system_input'), 400.0)
-model.setValue(CRef('default','sub-system','Gain2','mapped_sub_system_Gain2_k'), 500.0)
-
-
 # map parameters at heirarchy level
 model.mapParameter(CRef('default'), 'mapped_param1', 'param1')
 model.mapParameter(CRef('default'), 'mapped_input1', 'input1')
 model.mapParameter(CRef('default', 'Gain1'), 'mapped_Gain_k', 'k')
 model.mapParameter(CRef('default', 'sub-system'), 'mapped_sub_system_input', 'input')
 model.mapParameter(CRef('default', 'sub-system', 'Gain2'), 'mapped_sub_system_Gain2_k', 'k')
+
+model.setValue(CRef('default','mapped_param1'), 200.0)
+model.setValue(CRef('default','mapped_input1'), 300.0)
+model.setValue(CRef('default','Gain1','mapped_Gain_k'), 2.0)
+model.setValue(CRef('default','sub-system','mapped_sub_system_input'), 400.0)
+model.setValue(CRef('default','sub-system','Gain2','mapped_sub_system_Gain2_k'), 500.0)
 
 ## System.Input to Element.Input
 model.addConnection(CRef('default', 'input1'), CRef('default', 'Gain1', 'u'))
