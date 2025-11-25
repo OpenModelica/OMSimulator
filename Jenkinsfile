@@ -77,10 +77,9 @@ pipeline {
           }
           steps {
             buildOMS()
-            sh '(cd install/ && tar czf "../OMSimulator-linux-amd64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.tar.gz" *)'
+            sh '(cd install/ && tar czf "../OMSimulator-linux-focal-amd64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.tar.gz" *)'
 
-            archiveArtifacts artifacts: 'OMSimulator-linux-amd64-*.tar.gz', fingerprint: true
-            stash name: 'amd64-focal-zip', includes: "OMSimulator-linux-amd64-*.tar.gz"
+            archiveArtifacts artifacts: 'OMSimulator-linux-focal-amd64-*.tar.gz', fingerprint: true
           }
         }
         stage('linux64-asan') {
