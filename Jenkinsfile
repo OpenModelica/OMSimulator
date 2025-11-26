@@ -80,6 +80,7 @@ pipeline {
             sh '(cd install/ && tar czf "../OMSimulator-linux-focal-amd64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.tar.gz" *)'
 
             archiveArtifacts artifacts: 'OMSimulator-linux-focal-amd64-*.tar.gz', fingerprint: true
+            stash name: 'focal-amd64-zip', includes: "OMSimulator-linux-focal-amd64-*.tar.gz"
           }
         }
         stage('linux64-asan') {
@@ -445,6 +446,7 @@ EXIT /b 1
           }
           steps {
             unstash name: 'amd64-zip'         // includes: "OMSimulator-linux-amd64-*.tar.gz"
+            unstash name: 'focal-amd64-zip'         // includes: "OMSimulator-linux-focal-amd64-*.tar.gz"
             unstash name: 'mingw-ucrt64-zip'  // includes: "OMSimulator-mingw-ucrt64-*.zip"
             unstash name: 'win64-zip'         // includes: "OMSimulator-win64-*.zip"
             // unstash name: 'osx-zip'           // includes: "OMSimulator-osx-*.zip"
@@ -459,6 +461,9 @@ EXIT /b 1
                     sshTransfer(
                       remoteDirectory: "${DEPLOYMENT_PREFIX}linux-amd64/",
                       sourceFiles: 'OMSimulator-linux-amd64-*.tar.gz'),
+                    sshTransfer(
+                      remoteDirectory: "${DEPLOYMENT_PREFIX}linux-focal-amd64/",
+                      sourceFiles: 'OMSimulator-linux-focal-amd64-*.tar.gz'),
                     sshTransfer(
                       remoteDirectory: "${DEPLOYMENT_PREFIX}win-mingw-ucrt64/",
                       sourceFiles: 'OMSimulator-mingw-ucrt64-*.zip'),
