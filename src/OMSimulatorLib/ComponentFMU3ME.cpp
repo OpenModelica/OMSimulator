@@ -38,12 +38,14 @@
 #include "ssd/Tags.h"
 #include "System.h"
 #include "SystemSC.h"
+#include "SystemSC3.h"
 #include "Scope.h"
 
 #include <fmi4c.h>
 #include <regex>
 #include <unordered_set>
 #include <cmath>
+#include <iostream>
 
 oms::ComponentFMU3ME::ComponentFMU3ME(const ComRef& cref, System* parentSystem, const std::string& fmuPath)
   : oms::Component(cref, oms_component_fmu3, parentSystem, fmuPath), fmuInfo(fmuPath)
@@ -655,7 +657,7 @@ oms_status_enu_t oms::ComponentFMU3ME::instantiate()
   const double& startTime = getModel().getStartTime();
 
   double relativeTolerance = 0.0;
-  dynamic_cast<SystemSC*>(getParentSystem())->getTolerance(&relativeTolerance);
+  dynamic_cast<SystemSC3*>(getParentSystem())->getTolerance(&relativeTolerance);
 
   fmi3Status status_ = fmi3_enterInitializationMode(fmu, fmi3False, relativeTolerance, startTime, fmi3False, getModel().getStopTime());
 
@@ -888,7 +890,7 @@ oms_status_enu_t oms::ComponentFMU3ME::reset()
   // enterInitialization
   const double& startTime = getModel().getStartTime();
   double relativeTolerance = 0.0;
-  dynamic_cast<SystemSC*>(getParentSystem())->getTolerance(&relativeTolerance);
+  dynamic_cast<SystemSC3*>(getParentSystem())->getTolerance(&relativeTolerance);
 
   fmi3Status status_ = fmi3_enterInitializationMode(fmu, fmi3False, relativeTolerance, startTime, fmi3True, getModel().getStopTime());
   if (fmi3OK != fmistatus) return logError_FMUCall("fmi3_enterInitializationMode", this);
@@ -2039,10 +2041,10 @@ oms_status_enu_t oms::ComponentFMU3ME::getNominalsOfContinuousStates(double* nom
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::ComponentFMU3ME::getEventindicators(double* eventindicators)
+oms_status_enu_t oms::ComponentFMU3ME::getEventindicators(double* eventindicators, size_t nEventIndicators_)
 {
   CallClock callClock(clock);
-  fmi3Status fmistatus = fmi3_getEventIndicators(fmu, eventindicators, nEventIndicators);
+  fmi3Status fmistatus = fmi3_getEventIndicators(fmu, eventindicators, nEventIndicators_);
   if (fmi3OK != fmistatus)
     return logError_FMUCall("fmi3_getEventIndicators", this);
   return oms_status_ok;

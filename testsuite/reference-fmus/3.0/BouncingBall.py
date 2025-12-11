@@ -42,22 +42,32 @@ model2 = SSP()
 model2.addResource('../../resources/BouncingBall3.fmu', new_name='resources/BouncingBall3.fmu')
 model2.addComponent(CRef('default', 'BouncingBall'), 'resources/BouncingBall3.fmu')
 
-solver2 = {'name' : 'solver2',  'method': 'cvode', 'tolerance': 1e-5}
+solver2 = {'name' : 'solver2',  'method': 'euler', 'tolerance': 1e-5}
 model2.newSolver(solver2)
 model2.setSolver(CRef('default', 'BouncingBall'), 'solver2')
 
 model2.list()
 instantiated_model = model2.instantiate()
+print(instantiated_model.dumpApiCalls())
 instantiated_model.setResultFile("BouncingBall-me.mat")
 
 instantiated_model.setStopTime(3.0)
-instantiated_model.setTolerance(1e-5)
-
+instantiated_model.setTolerance(1e-4)
+print("Initialization started.")
 instantiated_model.initialize()
+print("Initialization done.")
 instantiated_model.simulate()
+print("simulation done.")
 
 instantiated_model.terminate()
+print("termination done.")
 instantiated_model.delete()
+
+if 1 == Capi.compareSimulationResults("../../references/BouncingBall-me.mat", "BouncingBall-me.mat", "model.root.BouncingBall.h", "default.BouncingBall.h",1e-5, 1e-5):
+  print("signal h is equal")
+else:
+  print("signal h is not equal")
+
 
 
 

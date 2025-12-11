@@ -43,6 +43,7 @@
 #include "OMSString.h"
 #include "ssd/Tags.h"
 #include "SystemSC.h"
+#include "SystemSC3.h"
 #include "SystemWC.h"
 #include "Variable.h"
 #include "miniunz.h"
@@ -132,6 +133,13 @@ oms::System* oms::System::NewSystem(const oms::ComRef& cref, oms_system_enu_t ty
       return nullptr;
     }
     return SystemSC::NewSystem(cref, parentModel, parentSystem);
+  case oms_system_sc3:
+    if (parentSystem && oms_system_wc != parentSystem->getType())
+    {
+      logError("A SC system must be the root system or a subsystem of a WC system.");
+      return nullptr;
+    }
+    return SystemSC3::NewSystem(cref, parentModel, parentSystem);
   default:
       logError_InternalError;
   return nullptr;
