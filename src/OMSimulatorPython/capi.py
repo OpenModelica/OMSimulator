@@ -226,7 +226,7 @@ class capi:
 
   def setString(self, cref, value):
     '''Set a string value for a model or system.'''
-    status = self.obj.oms_setString(cref.encode(), value)
+    status = self.obj.oms_setString(cref.encode(), value.encode())
     return Status(status)
 
   def setSolver(self, cref, solver):
