@@ -129,7 +129,6 @@ oms::SystemSC3::~SystemSC3()
 
 oms::System* oms::SystemSC3::NewSystem(const oms::ComRef& cref, oms::Model* parentModel, oms::System* parentSystem)
 {
-  std::cout << "Creating SystemSC3: " << cref.c_str() << std::endl;
   if (!cref.isValidIdent())
   {
     logError_InvalidIdent(cref);
