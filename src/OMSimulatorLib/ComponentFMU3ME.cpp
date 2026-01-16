@@ -188,7 +188,7 @@ oms::Component* oms::ComponentFMU3ME::NewComponent(const oms::ComRef& cref, oms:
   // update FMU info
   component->fmuInfo.update(oms_component_fmu3, component->fmu);
   component->omsfmi3logger = oms::fmi3logger;
-  component->nEventIndicators = fmi3_getNumberOfModelStructureEventIndicators(component->fmu);
+  //component->nEventIndicators = fmi3_getNumberOfModelStructureEventIndicators(component->fmu);
 
   // create a list of all variables using fmi4c variable structure
   component->allVariables.reserve(fmi3_getNumberOfVariables(component->fmu));
@@ -859,10 +859,9 @@ oms_status_enu_t oms::ComponentFMU3ME::initialize()
   fmistatus = fmi3_exitInitializationMode(fmu);
   if (fmi3OK != fmistatus) return logError_FMUCall("fmi3_exitInitializationMode", this);
 
-  // fmistatus = fmi3_getNumberOfEventIndicators(fmu, &nEventIndicators);
-  // if (fmi3OK != fmistatus) return logError_FMUCall("fmi3_getNumberOfEventIndicators", this);
-  // std::cout << "Number of event indicators after intitialize : " << nEventIndicators << std::endl;
-
+  // get number of event indicators after initialize
+  fmistatus = fmi3_getNumberOfEventIndicators(fmu, &nEventIndicators);
+  if (fmi3OK != fmistatus) return logError_FMUCall("fmi3_getNumberOfEventIndicators", this);
 
   // fmi3_exitInitialization_mode leaves FMU in event mode
   if (oms_status_ok != doEventIteration())
