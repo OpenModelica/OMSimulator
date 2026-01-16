@@ -188,6 +188,8 @@ oms::Component* oms::ComponentFMU3ME::NewComponent(const oms::ComRef& cref, oms:
   // update FMU info
   component->fmuInfo.update(oms_component_fmu3, component->fmu);
   component->omsfmi3logger = oms::fmi3logger;
+  component->nEventIndicators = fmi3_getNumberOfModelStructureEventIndicators(component->fmu);
+
   // create a list of all variables using fmi4c variable structure
   component->allVariables.reserve(fmi3_getNumberOfVariables(component->fmu));
   component->exportVariables.reserve(fmi3_getNumberOfVariables(component->fmu));
@@ -857,8 +859,10 @@ oms_status_enu_t oms::ComponentFMU3ME::initialize()
   fmistatus = fmi3_exitInitializationMode(fmu);
   if (fmi3OK != fmistatus) return logError_FMUCall("fmi3_exitInitializationMode", this);
 
-  fmistatus = fmi3_getNumberOfEventIndicators(fmu, &nEventIndicators);
-  if (fmi3OK != fmistatus) return logError_FMUCall("fmi3_getNumberOfEventIndicators", this);
+  // fmistatus = fmi3_getNumberOfEventIndicators(fmu, &nEventIndicators);
+  // if (fmi3OK != fmistatus) return logError_FMUCall("fmi3_getNumberOfEventIndicators", this);
+  // std::cout << "Number of event indicators after intitialize : " << nEventIndicators << std::endl;
+
 
   // fmi3_exitInitialization_mode leaves FMU in event mode
   if (oms_status_ok != doEventIteration())
@@ -991,7 +995,7 @@ oms_status_enu_t oms::ComponentFMU3ME::getBoolean(const ComRef& cref, bool& valu
   if (!fmu || j < 0)
     return logError_UnknownSignal(getFullCref() + cref);
 
-  fmi3ValueReference vr = allVariables[j].getValueReference();
+  fmi3ValueReference vr = allVariables[j].getValueReferenceFMI3();
   return getBoolean(vr, value);
 }
 
@@ -1158,7 +1162,7 @@ oms_status_enu_t oms::ComponentFMU3ME::getInteger(const ComRef& cref, int& value
   if (!fmu || j < 0)
     return logError_UnknownSignal(getFullCref() + cref);
 
-  fmi3ValueReference vr = allVariables[j].getValueReference();
+  fmi3ValueReference vr = allVariables[j].getValueReferenceFMI3();
   return getInteger(vr, value, allVariables[j].getNumericType());
 }
 
@@ -1282,7 +1286,7 @@ oms_status_enu_t oms::ComponentFMU3ME::getReal(const ComRef& cref, double& value
   if (!fmu || j < 0)
     return logError_UnknownSignal(getFullCref() + cref);
 
-  fmi3ValueReference vr = allVariables[j].getValueReference();
+  fmi3ValueReference vr = allVariables[j].getValueReferenceFMI3();
   return getReal(vr, value, allVariables[j].getNumericType());
 }
 
@@ -1374,7 +1378,7 @@ oms_status_enu_t oms::ComponentFMU3ME::getString(const ComRef& cref, std::string
   if (!fmu || j < 0)
     return logError_UnknownSignal(getFullCref() + cref);
 
-  fmi3ValueReference vr = allVariables[j].getValueReference();
+  fmi3ValueReference vr = allVariables[j].getValueReferenceFMI3();
   return getString(vr, value);
 }
 
@@ -1462,13 +1466,13 @@ oms_status_enu_t oms::ComponentFMU3ME::getDirectionalDerivative(const ComRef& un
 
 oms_status_enu_t oms::ComponentFMU3ME::getDirectionalDerivativeHeper(const int unknownIndex, const int knownIndex, const std::vector<int> &dependencyList, double &value)
 {
-  fmi3ValueReference vr_unknown = allVariables[unknownIndex].getValueReference();
+  fmi3ValueReference vr_unknown = allVariables[unknownIndex].getValueReferenceFMI3();
   fmi3ValueReference *vr_known = (fmi3ValueReference *)calloc(dependencyList.size(), sizeof(fmi3ValueReference *));
   fmi3Float64 *dvknown = (fmi3Float64 *)calloc(dependencyList.size(), sizeof(fmi3Float64 *));
 
   for (int i = 0; i < dependencyList.size(); i++)
   {
-    vr_known[i] = allVariables[dependencyList[i] - 1].getValueReference();
+    vr_known[i] = allVariables[dependencyList[i] - 1].getValueReferenceFMI3();
 
     // The knownIndex is < 0 if not specified. In this case, we
     // calculate the sum of the row, which means we set all seed
@@ -1535,7 +1539,7 @@ oms_status_enu_t oms::ComponentFMU3ME::setBoolean(const ComRef& cref, bool value
   }
   else
   {
-    fmi3ValueReference vr = allVariables[j].getValueReference();
+    fmi3ValueReference vr = allVariables[j].getValueReferenceFMI3();
     if (fmi3OK != fmi3_setBoolean(fmu, &vr, 1, &value, 1))
       return oms_status_error;
   }
@@ -1846,7 +1850,7 @@ oms_status_enu_t oms::ComponentFMU3ME::setString(const ComRef& cref, const std::
   }
   else
   {
-    fmi3ValueReference vr = allVariables[j].getValueReference();
+    fmi3ValueReference vr = allVariables[j].getValueReferenceFMI3();
     fmi3String value_ = value.c_str();
     if (fmi3OK != fmi3_setString(fmu, &vr, 1, &value_, 1))
       return oms_status_error;
@@ -1980,7 +1984,7 @@ oms_status_enu_t oms::ComponentFMU3ME::updateSignals(ResultWriter& resultWriter)
   {
     unsigned int ID = it.first;
     Variable& var = allVariables[it.second];
-    fmi3ValueReference vr = var.getValueReference();
+    fmi3ValueReference vr = var.getValueReferenceFMI3();
     SignalValue_t value;
     if (var.isTypeReal())
     {
@@ -2044,7 +2048,7 @@ oms_status_enu_t oms::ComponentFMU3ME::getNominalsOfContinuousStates(double* nom
 oms_status_enu_t oms::ComponentFMU3ME::getEventindicators(double* eventindicators, size_t nEventIndicators_)
 {
   CallClock callClock(clock);
-  fmi3Status fmistatus = fmi3_getEventIndicators(fmu, eventindicators, nEventIndicators_);
+  fmi3Status fmistatus = fmi3_getEventIndicators(fmu, eventindicators, nEventIndicators);
   if (fmi3OK != fmistatus)
     return logError_FMUCall("fmi3_getEventIndicators", this);
   return oms_status_ok;

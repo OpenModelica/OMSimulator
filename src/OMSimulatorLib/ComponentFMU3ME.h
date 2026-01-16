@@ -127,6 +127,13 @@ namespace oms
     oms_status_enu_t deleteReferencesInSSD(const std::string& filename);
     oms_status_enu_t deleteResourcesInSSP(const std::string& filename);
 
+    fmi3Boolean newDiscreteStatesNeeded;
+    fmi3Boolean terminateSimulation;
+    fmi3Boolean nominalsOfContinuousStatesChanged;
+    fmi3Boolean valuesOfContinuousStatesChanged;
+    fmi3Boolean nextEventTimeDefined;
+    fmi3Float64 nextEventTime;
+
   protected:
     ComponentFMU3ME(const ComRef& cref, System* parentSystem, const std::string& fmuPath);
 
@@ -144,12 +151,12 @@ namespace oms
 
     size_t nEventIndicators;
 
-    fmi3Boolean newDiscreteStatesNeeded;
-    fmi3Boolean terminateSimulation;
-    fmi3Boolean nominalsOfContinuousStatesChanged;
-    fmi3Boolean valuesOfContinuousStatesChanged;
-    fmi3Boolean nextEventTimeDefined;
-    fmi3Float64 nextEventTime;
+    // fmi3Boolean newDiscreteStatesNeeded;
+    // fmi3Boolean terminateSimulation;
+    // fmi3Boolean nominalsOfContinuousStatesChanged;
+    // fmi3Boolean valuesOfContinuousStatesChanged;
+    // fmi3Boolean nextEventTimeDefined;
+    // fmi3Float64 nextEventTime;
     FMUInfo fmuInfo;
 
     std::vector<Variable> allVariables;

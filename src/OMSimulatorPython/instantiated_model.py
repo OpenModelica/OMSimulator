@@ -58,7 +58,7 @@ class InstantiatedModel:
     # --- Add systems depending on number of solvers ---
     if num_solvers == 1:
       # Only one solver unit → SC system directly under root
-      status = Capi.addSystem(f"{self.modelName}.root", SystemType.sc.value)  # 2 = oms_system_sc
+      status = Capi.addSystem(f"{self.modelName}.root", SystemType.sc3.value)  # 2 = oms_system_sc
       if status != Status.ok:
         raise RuntimeError(f"Failed to create root SC system: {status}")
       self.apiCall.append(f'oms_addSystem("{self.modelName}.root", "oms_system_sc")')
