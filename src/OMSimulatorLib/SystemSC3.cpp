@@ -1007,14 +1007,12 @@ oms_status_enu_t oms::SystemSC3::doStepCVODE()
   oms_status_enu_t status;
   int flag;
 
-  std::cout << "Cvode1" << std::endl;
   const fmi3Float64 end_time = std::min(time + maximumStepSize, getModel().getStopTime());
 
   // find next time event
   fmi3Float64 tnext = end_time+1.0;
   for (size_t i = 0; i < fmus.size(); ++i)
   {
-    std::cout << "Cvode2" << std::endl;
     if (fmus[i]->getNextEventTimeDefined() && (tnext > fmus[i]->getNextEventTime()))
       tnext = fmus[i]->getNextEventTime();
 
@@ -1025,7 +1023,7 @@ oms_status_enu_t oms::SystemSC3::doStepCVODE()
       time = end_time;
     }
   }
-  std::cout << "Cvode3 : " << std::to_string(tnext) << std::endl;
+
   logDebug("tnext: " + std::to_string(tnext));
 
   while (time < end_time)
@@ -1095,10 +1093,10 @@ oms_status_enu_t oms::SystemSC3::doStepCVODE()
       tnext = end_time+1.0;
       for (size_t i = 0; i < fmus.size(); ++i)
       {
-        if (fmus[i]->getEventInfo()->nextEventTimeDefined && (tnext > fmus[i]->getEventInfo()->nextEventTime))
-          tnext = fmus[i]->getEventInfo()->nextEventTime;
+        if (fmus[i]->getNextEventTimeDefined() && (tnext > fmus[i]->getNextEventTime()))
+          tnext = fmus[i]->getNextEventTime();
 
-        if(fmus[i]->getEventInfo()->terminateSimulation)
+        if(fmus[i]->getTerminateSimulation())
         {
           logInfo("Simulation terminated by FMU " + std::string(fmus[i]->getFullCref()) + " at time " + std::to_string(time));
           getModel().setStopTime(time);
