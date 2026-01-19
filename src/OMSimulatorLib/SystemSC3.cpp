@@ -488,8 +488,8 @@ oms_status_enu_t oms::SystemSC3::initialize()
       states_nominal.push_back((double*)calloc(nStates.back(), sizeof(double)));
       event_indicators.push_back((double*)calloc(nEventIndicators.back(), sizeof(double)));
       event_indicators_prev.push_back((double*)calloc(nEventIndicators.back(), sizeof(double)));
+      count++;
     }
-    count++;
   }
 
   if (n_states == 0)
