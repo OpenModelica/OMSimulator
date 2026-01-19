@@ -810,10 +810,10 @@ oms_status_enu_t oms::SystemSC3::doStepEuler()
   bool terminated = false;
   for (size_t i = 0; i < fmus.size(); ++i)
   {
-    if (fmus[i]->nextEventTimeDefined && (tnext > fmus[i]->nextEventTime) && (time < fmus[i]->nextEventTime))
-      tnext = fmus[i]->nextEventTime;
+    if (fmus[i]->getNextEventTimeDefined() && (tnext > fmus[i]->getNextEventTime()) && (time < fmus[i]->getNextEventTime()))
+      tnext = fmus[i]->getNextEventTime();
 
-    if(fmus[i]->terminateSimulation)
+    if(fmus[i]->getTerminateSimulation())
     {
       logInfo("Simulation terminated by FMU " + std::string(fmus[i]->getFullCref()) + " at time " + std::to_string(time));
       getModel().setStopTime(time);
@@ -945,10 +945,10 @@ oms_status_enu_t oms::SystemSC3::doStepEuler()
         tnext = end_time + 1.234;
         for (size_t i = 0; i < fmus.size(); ++i)
         {
-          if (fmus[i]->nextEventTimeDefined && (tnext > fmus[i]->nextEventTime) && (time < fmus[i]->nextEventTime))
-            tnext = fmus[i]->nextEventTime;
+          if (fmus[i]->getNextEventTimeDefined() && (tnext > fmus[i]->getNextEventTime()) && (time < fmus[i]->getNextEventTime()))
+            tnext = fmus[i]->getNextEventTime();
 
-            if(fmus[i]->terminateSimulation)
+          if(fmus[i]->getTerminateSimulation())
           {
             logInfo("Simulation terminated by FMU " + std::string(fmus[i]->getFullCref()) + " at time " + std::to_string(time));
             getModel().setStopTime(time);
@@ -1015,10 +1015,10 @@ oms_status_enu_t oms::SystemSC3::doStepCVODE()
   for (size_t i = 0; i < fmus.size(); ++i)
   {
     std::cout << "Cvode2" << std::endl;
-    if (fmus[i]->nextEventTimeDefined && (tnext > fmus[i]->nextEventTime))
-      tnext = fmus[i]->nextEventTime;
+    if (fmus[i]->getNextEventTimeDefined() && (tnext > fmus[i]->getNextEventTime()))
+      tnext = fmus[i]->getNextEventTime();
 
-    if(fmus[i]->terminateSimulation)
+    if(fmus[i]->getTerminateSimulation())
     {
       logInfo("Simulation terminated by FMU " + std::string(fmus[i]->getFullCref()) + " at time " + std::to_string(time));
       getModel().setStopTime(time);
