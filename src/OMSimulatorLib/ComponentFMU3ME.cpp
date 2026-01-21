@@ -2044,7 +2044,7 @@ oms_status_enu_t oms::ComponentFMU3ME::getNominalsOfContinuousStates(double* nom
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::ComponentFMU3ME::getEventindicators(double* eventindicators, size_t nEventIndicators_)
+oms_status_enu_t oms::ComponentFMU3ME::getEventindicators(double* eventindicators)
 {
   CallClock callClock(clock);
   fmi3Status fmistatus = fmi3_getEventIndicators(fmu, eventindicators, nEventIndicators);

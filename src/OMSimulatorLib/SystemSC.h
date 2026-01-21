@@ -44,6 +44,7 @@ namespace oms
 {
   class Model;
   class ComponentFMUME;
+  class Component;
   int cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data);
   int cvode_rhs_algebraic(realtype t, N_Vector y, N_Vector ydot, void* user_data);
   int cvode_roots(realtype t, N_Vector y, realtype *gout, void* user_data);
@@ -83,7 +84,8 @@ namespace oms
     SystemSC& operator=(SystemSC const& copy); ///< not implemented
 
   private:
-    std::vector<ComponentFMUME*> fmus;
+    //std::vector<ComponentFMUME*> fmus;
+    std::vector<Component*> fmus;
 
     std::vector<fmi2Boolean> callEventUpdate;
     std::vector<fmi2Boolean> terminateSimulation;

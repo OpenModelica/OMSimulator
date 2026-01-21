@@ -530,7 +530,7 @@ oms_status_enu_t oms::SystemSC3::initialize()
     n_event_indicators += nEventIndicators[i];
     if (fmus[i]->getNumberOfEventIndicators() > 0)
     {
-      status = fmus[i]->getEventindicators(event_indicators[i], 1);
+      status = fmus[i]->getEventindicators(event_indicators[i]);
       if (oms_status_ok != status) return status;
     }
   }
@@ -938,7 +938,7 @@ oms_status_enu_t oms::SystemSC3::doStepEuler()
             if (oms_status_ok != status) return status;
           }
 
-          status = fmus[i]->getEventindicators(event_indicators_prev[i], nEventIndicators[i]);
+          status = fmus[i]->getEventindicators(event_indicators_prev[i]);
           if (oms_status_ok != status) return status;
         }
         // find next time event

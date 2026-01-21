@@ -44,6 +44,7 @@ namespace oms
 {
   class Model;
   class ComponentFMU3ME;
+  class Component;
   int cvode_rhs3(realtype t, N_Vector y, N_Vector ydot, void* user_data);
   int cvode_rhs_algebraic3(realtype t, N_Vector y, N_Vector ydot, void* user_data);
   int cvode_roots3(realtype t, N_Vector y, realtype *gout, void* user_data);
@@ -83,7 +84,9 @@ namespace oms
     SystemSC3& operator=(SystemSC3 const& copy); ///< not implemented
 
   private:
-    std::vector<ComponentFMU3ME*> fmus;
+    //std::vector<ComponentFMU3ME*> fmus;
+    std::vector<Component*> fmus;
+
     FILE *outputFile = NULL;
 
     // std::vector<fmi3Boolean> callEventUpdate;
