@@ -236,8 +236,10 @@ oms_status_enu_t oms::SystemSC::instantiate()
     {
       fmus.push_back(dynamic_cast<ComponentFMUME*>(component.second));
 
-      callEventUpdate.push_back(fmi2False);
-      terminateSimulation.push_back(fmi2False);
+      //callEventUpdate.push_back(false);
+      //terminateSimulation.push_back(false);
+      // callEventUpdate_bool.push_back(false);
+      // terminateSimulation_bool.push_back(false);
       nStates.push_back(fmus.back()->getNumberOfContinuousStates());
       n_states += nStates.back();
       nEventIndicators.push_back(fmus.back()->getNumberOfEventIndicators());
@@ -471,8 +473,8 @@ oms_status_enu_t oms::SystemSC::terminate()
   }
 
   fmus.clear();
-  callEventUpdate.clear();
-  terminateSimulation.clear();
+  delete[] callEventUpdate;
+  delete[] terminateSimulation;
   nStates.clear();
   nEventIndicators.clear();
   states.clear();
@@ -583,8 +585,8 @@ oms_status_enu_t oms::SystemSC::doStepEuler()
       status = fmus[i]->getDerivatives(states_der_backup[i]);
       if (oms_status_ok != status) return status;
     }
-    fmistatus = fmi2_getEventIndicators(fmus[i]->getFMU(), event_indicators_prev[i], nEventIndicators[i]);
-    if (fmi2OK != fmistatus) logError_FMUCall("fmi2_getEventIndicators", fmus[i]);
+    status = fmus[i]->getEventindicators(event_indicators_prev[i], nEventIndicators[i]);
+    if (oms_status_ok != status) return status;
   }
 
   fmi2Real step_size_adjustment = maximumStepSize;
@@ -634,8 +636,8 @@ oms_status_enu_t oms::SystemSC::doStepEuler()
     logDebug("Event detected: " + std::to_string(event_detected));
     for (size_t i = 0; i < fmus.size() && !event_detected; ++i)
     {
-      fmistatus = fmi2_getEventIndicators(fmus[i]->getFMU(), event_indicators[i], nEventIndicators[i]);
-      if (fmi2OK != fmistatus) logError_FMUCall("fmi2_getEventIndicators", fmus[i]);
+      status = fmus[i]->getEventindicators(event_indicators[i], nEventIndicators[i]);
+      if (oms_status_ok != status) return status;
 
       for (size_t k=0; k < nEventIndicators[i]; k++)
       {
@@ -665,8 +667,8 @@ oms_status_enu_t oms::SystemSC::doStepEuler()
 
         for (size_t i = 0; i < fmus.size(); ++i)
         {
-          fmistatus = fmi2_completedIntegratorStep(fmus[i]->getFMU(), fmi2True, &callEventUpdate[i], &terminateSimulation[i]);
-          if (fmi2OK != fmistatus) return logError_FMUCall("fmi2_completedIntegratorStep", fmus[i]);
+          status = fmus[i]->completedIntegratorStep(true, callEventUpdate[i], terminateSimulation[i]);
+          if (oms_status_ok != status) return status;
         }
 
         // emit the left limit of the event (if it hasn't already been emitted)
@@ -705,8 +707,8 @@ oms_status_enu_t oms::SystemSC::doStepEuler()
         // Enter event mode and handle discrete state updates for each FMU
         for (size_t i = 0; i < fmus.size(); ++i)
         {
-          fmistatus = fmi2_completedIntegratorStep(fmus[i]->getFMU(), fmi2True, &callEventUpdate[i], &terminateSimulation[i]);
-          if (fmi2OK != fmistatus) return logError_FMUCall("fmi2_completedIntegratorStep", fmus[i]);
+          status = fmus[i]->completedIntegratorStep(true, callEventUpdate[i], terminateSimulation[i]);
+          if (oms_status_ok != status) return status;
 
           fmistatus = fmi2_enterEventMode(fmus[i]->getFMU());
           if (fmi2OK != fmistatus) logError_FMUCall("fmi2_enterEventMode", fmus[i]);
@@ -821,8 +823,8 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
 
       for (size_t i = 0; i < fmus.size(); ++i)
       {
-        fmistatus = fmi2_completedIntegratorStep(fmus[i]->getFMU(), fmi2True, &callEventUpdate[i], &terminateSimulation[i]);
-        if (fmi2OK != fmistatus) return logError_FMUCall("fmi2_completedIntegratorStep", fmus[i]);
+        status = fmus[i]->completedIntegratorStep(true, callEventUpdate[i], terminateSimulation[i]);
+        if (oms_status_ok != status) return status;
       }
 
       // emit the left limit of the event (if it hasn't already been emitted)
@@ -905,8 +907,8 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
 
       for (size_t i = 0; i < fmus.size(); ++i)
       {
-        fmistatus = fmi2_completedIntegratorStep(fmus[i]->getFMU(), fmi2True, &callEventUpdate[i], &terminateSimulation[i]);
-        if (fmi2OK != fmistatus) return logError_FMUCall("fmi2_completedIntegratorStep", fmus[i]);
+        status = fmus[i]->completedIntegratorStep(true, callEventUpdate[i], terminateSimulation[i]);
+        if (oms_status_ok != status) return status;
 
         if (0 == nStates[i])
           continue;

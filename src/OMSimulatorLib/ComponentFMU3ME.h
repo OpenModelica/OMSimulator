@@ -112,6 +112,8 @@ namespace oms
     oms_status_enu_t getDerivatives(double* derivatives);
     oms_status_enu_t getNominalsOfContinuousStates(double* nominals);
     oms_status_enu_t getEventindicators(double* eventindicators);
+    oms_status_enu_t getEventindicators(double* eventindicators, size_t size);
+    oms_status_enu_t completedIntegratorStep(bool noSetFMUStatePriorToCurrentPoint, bool& enterEventMode, bool& terminateSimulation);
 
     fmiHandle* getFMU() {return fmu;}
 

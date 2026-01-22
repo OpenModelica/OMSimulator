@@ -1916,6 +1916,36 @@ oms_status_enu_t oms::ComponentFMUME::getEventindicators(double* eventindicators
   return oms_status_ok;
 }
 
+oms_status_enu_t oms::ComponentFMUME::getEventindicators(double* eventindicators, size_t size)
+{
+  CallClock callClock(clock);
+  fmi2Status fmistatus = fmi2_getEventIndicators(fmu, eventindicators, size);
+  if (fmi2OK != fmistatus)
+    return logError_FMUCall("fmi2_getEventIndicators", this);
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::ComponentFMUME::completedIntegratorStep(bool noSetFMUStatePriorToCurrentPoint, bool& enterEventMode, bool& terminateSimulation)
+{
+  CallClock callClock(clock);
+
+  fmi2Boolean fmiEnterEventMode = fmi2False;
+  fmi2Boolean fmiTerminateSimulation = fmi2False;
+
+  fmi2Status status = fmi2_completedIntegratorStep(fmu,
+                                                   noSetFMUStatePriorToCurrentPoint ? fmi2True : fmi2False,
+                                                   &fmiEnterEventMode,
+                                                   &fmiTerminateSimulation);
+
+  if (status != fmi2OK)
+    return logError_FMUCall("fmi2_completedIntegratorStep", this);
+
+  enterEventMode     = (fmiEnterEventMode == fmi2True);
+  terminateSimulation = (fmiTerminateSimulation == fmi2True);
+
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms::ComponentFMUME::addSignalsToResults(const char* regex)
 {
   std::regex exp(regex);
