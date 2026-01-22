@@ -236,10 +236,6 @@ oms_status_enu_t oms::SystemSC::instantiate()
     {
       fmus.push_back(dynamic_cast<ComponentFMUME*>(component.second));
 
-      //callEventUpdate.push_back(false);
-      //terminateSimulation.push_back(false);
-      // callEventUpdate_bool.push_back(false);
-      // terminateSimulation_bool.push_back(false);
       nStates.push_back(fmus.back()->getNumberOfContinuousStates());
       n_states += nStates.back();
       nEventIndicators.push_back(fmus.back()->getNumberOfEventIndicators());
