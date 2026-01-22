@@ -121,6 +121,8 @@ namespace oms
     virtual fmi2EventInfo* getEventInfo() {return nullptr;}
     virtual oms_status_enu_t doEventIteration() {return logError_NotImplemented;}
     virtual oms_status_enu_t completedIntegratorStep(bool noSetFMUStatePriorToCurrentPoint, bool& enterEventMode, bool& terminateSimulation) {return logError_NotImplemented;}
+    virtual oms_status_enu_t enterEventMode() {return logError_NotImplemented;}
+    virtual oms_status_enu_t enterContinuousTimeMode() {return logError_NotImplemented;}
 
     virtual fmi3Boolean getNewDiscreteStatesNeeded() {return logError_NotImplemented; }
     virtual fmi3Boolean getTerminateSimulation() {return logError_NotImplemented; }

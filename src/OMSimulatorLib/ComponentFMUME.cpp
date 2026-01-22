@@ -1946,6 +1946,24 @@ oms_status_enu_t oms::ComponentFMUME::completedIntegratorStep(bool noSetFMUState
   return oms_status_ok;
 }
 
+oms_status_enu_t oms::ComponentFMUME::enterEventMode()
+{
+  CallClock callClock(clock);
+  fmi2Status status = fmi2_enterEventMode(fmu);
+  if (status != fmi2OK)
+    return logError_FMUCall("fmi2_enterEventMode", this);
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::ComponentFMUME::enterContinuousTimeMode()
+{
+  CallClock callClock(clock);
+  fmi2Status status = fmi2_enterContinuousTimeMode(fmu);
+  if (status != fmi2OK)
+    return logError_FMUCall("fmi2_enterContinuousTimeMode", this);
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms::ComponentFMUME::addSignalsToResults(const char* regex)
 {
   std::regex exp(regex);

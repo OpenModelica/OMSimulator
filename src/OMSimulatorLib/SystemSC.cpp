@@ -107,8 +107,8 @@ int oms::cvode_roots(realtype t, N_Vector y, realtype *gout, void *user_data)
       if (oms_status_ok != status) return status;
     }
 
-    fmistatus = fmi2_getEventIndicators(system->fmus[i]->getFMU(), system->event_indicators[i], system->nEventIndicators[i]);
-    if (fmi2OK != fmistatus) logError_FMUCall("fmi2_getEventIndicators", system->fmus[i]);
+    status  = system->fmus[i]->getEventindicators(system->event_indicators[i], system->nEventIndicators[i]);
+    if (oms_status_ok != status) return status;
 
     for (size_t k=0; k < system->nEventIndicators[i]; k++, j_gout++)
       gout[j_gout] = system->event_indicators[i][k];
@@ -706,13 +706,13 @@ oms_status_enu_t oms::SystemSC::doStepEuler()
           status = fmus[i]->completedIntegratorStep(true, callEventUpdate[i], terminateSimulation[i]);
           if (oms_status_ok != status) return status;
 
-          fmistatus = fmi2_enterEventMode(fmus[i]->getFMU());
-          if (fmi2OK != fmistatus) logError_FMUCall("fmi2_enterEventMode", fmus[i]);
+          status = fmus[i]->enterEventMode();
+          if (oms_status_ok != status) return status;
 
           fmus[i]->doEventIteration();
 
-          fmistatus = fmi2_enterContinuousTimeMode(fmus[i]->getFMU());
-          if (fmi2OK != fmistatus) logError_FMUCall("fmi2_enterContinuousTimeMode", fmus[i]);
+          status = fmus[i]->enterContinuousTimeMode();
+          if (oms_status_ok != status) return status;
 
           if (nStates[i] > 0)
           {
@@ -830,8 +830,8 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
       // Enter event mode and handle discrete state updates for each FMU
       for (size_t i = 0; i < fmus.size(); ++i)
       {
-        fmistatus = fmi2_enterEventMode(fmus[i]->getFMU());
-        if (fmi2OK != fmistatus) logError_FMUCall("fmi2_enterEventMode", fmus[i]);
+        status = fmus[i]->enterEventMode();
+        if (oms_status_ok != status) return status;
 
         fmus[i]->doEventIteration();
       }
@@ -840,8 +840,8 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
 
       for (size_t i = 0; i < fmus.size(); ++i)
       {
-        fmistatus = fmi2_enterContinuousTimeMode(fmus[i]->getFMU());
-        if (fmi2OK != fmistatus) logError_FMUCall("fmi2_enterContinuousTimeMode", fmus[i]);
+        status = fmus[i]->enterContinuousTimeMode();
+        if (oms_status_ok != status) return status;
       }
 
       for (size_t i = 0; i < fmus.size(); ++i)

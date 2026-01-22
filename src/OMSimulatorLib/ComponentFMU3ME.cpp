@@ -2073,7 +2073,23 @@ oms_status_enu_t oms::ComponentFMU3ME::completedIntegratorStep(bool noSetFMUStat
   return oms_status_ok;
 }
 
+oms_status_enu_t oms::ComponentFMU3ME::enterEventMode()
+{
+  CallClock callClock(clock);
+  fmi3Status status = fmi3_enterEventMode(fmu);
+  if (status != fmi3OK)
+    return logError_FMUCall("fmi3_enterEventMode", this);
+  return oms_status_ok;
+}
 
+oms_status_enu_t oms::ComponentFMU3ME::enterContinuousTimeMode()
+{
+  CallClock callClock(clock);
+  fmi3Status status = fmi3_enterContinuousTimeMode(fmu);
+  if (status != fmi3OK)
+    return logError_FMUCall("fmi3_enterContinuousTimeMode", this);
+  return oms_status_ok;
+}
 
 oms_status_enu_t oms::ComponentFMU3ME::getEventindicators(double* eventindicators, size_t size)
 {

@@ -114,6 +114,8 @@ namespace oms
     oms_status_enu_t getEventindicators(double* eventindicators);
     oms_status_enu_t getEventindicators(double* eventindicators, size_t size);
     oms_status_enu_t completedIntegratorStep(bool noSetFMUStatePriorToCurrentPoint, bool& enterEventMode, bool& terminateSimulation);
+    oms_status_enu_t enterEventMode();
+    oms_status_enu_t enterContinuousTimeMode();
 
     fmiHandle* getFMU() {return fmu;}
 
