@@ -91,7 +91,6 @@ int oms::cvode_roots(realtype t, N_Vector y, realtype *gout, void *user_data)
   logDebug("cvode_roots at time " + std::to_string(t));
   SystemSC* system = (SystemSC*)user_data;
   oms_status_enu_t status;
-  fmi2Status fmistatus;
 
   for (size_t i=0, j_y=0, j_gout=0; i < system->fmus.size(); ++i)
   {
@@ -546,7 +545,6 @@ oms_status_enu_t oms::SystemSC::doStep()
 
 oms_status_enu_t oms::SystemSC::doStepEuler()
 {
-  fmi2Status fmistatus;
   oms_status_enu_t status;
 
   // Step 1: Initialize state variables and time
