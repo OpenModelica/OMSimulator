@@ -225,30 +225,9 @@ oms_status_enu_t oms::SystemSC::instantiate()
     if (oms_status_ok != subsystem.second->instantiate())
       return oms_status_error;
 
-  size_t n_states = 0;
   for (const auto& component : getComponents())
-  {
     if (oms_status_ok != component.second->instantiate())
       return oms_status_error;
-
-    if (component.second->getType() == oms_component_fmu)
-    {
-      fmus.push_back(dynamic_cast<ComponentFMUME*>(component.second));
-
-      nStates.push_back(fmus.back()->getNumberOfContinuousStates());
-      n_states += nStates.back();
-      nEventIndicators.push_back(fmus.back()->getNumberOfEventIndicators());
-
-      states.push_back((double*)calloc(nStates.back(), sizeof(double)));
-      states_der.push_back((double*)calloc(nStates.back(), sizeof(double)));
-      states_nominal.push_back((double*)calloc(nStates.back(), sizeof(double)));
-      event_indicators.push_back((double*)calloc(nEventIndicators.back(), sizeof(double)));
-      event_indicators_prev.push_back((double*)calloc(nEventIndicators.back(), sizeof(double)));
-    }
-  }
-
-  if (n_states == 0)
-    logInfo("model doesn't contain any continuous state");
 
   if (oms_solver_sc_explicit_euler == solverMethod)
     ;
@@ -275,9 +254,29 @@ oms_status_enu_t oms::SystemSC::initialize()
     if (oms_status_ok != subsystem.second->initialize())
       return oms_status_error;
 
+  size_t n_states = 0;
   for (const auto& component : getComponents())
+  {
     if (oms_status_ok != component.second->initialize())
       return oms_status_error;
+    if (component.second->getType() == oms_component_fmu)
+    {
+      fmus.push_back(dynamic_cast<ComponentFMUME*>(component.second));
+
+      nStates.push_back(fmus.back()->getNumberOfContinuousStates());
+      n_states += nStates.back();
+      nEventIndicators.push_back(fmus.back()->getNumberOfEventIndicators());
+
+      states.push_back((double*)calloc(nStates.back(), sizeof(double)));
+      states_der.push_back((double*)calloc(nStates.back(), sizeof(double)));
+      states_nominal.push_back((double*)calloc(nStates.back(), sizeof(double)));
+      event_indicators.push_back((double*)calloc(nEventIndicators.back(), sizeof(double)));
+      event_indicators_prev.push_back((double*)calloc(nEventIndicators.back(), sizeof(double)));
+    }
+  }
+
+  if (n_states == 0)
+    logInfo("model doesn't contain any continuous state");
 
   oms_status_enu_t status;
   size_t n_event_indicators = 0;
