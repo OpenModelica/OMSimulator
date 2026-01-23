@@ -132,6 +132,13 @@ namespace oms
     oms_status_enu_t deleteReferencesInSSD(const std::string& filename);
     oms_status_enu_t deleteResourcesInSSP(const std::string& filename);
 
+    bool getNewDiscreteStatesNeeded() {return eventInfo.newDiscreteStatesNeeded == fmi2True; }
+    bool getTerminateSimulation() {return eventInfo.terminateSimulation == fmi2True; }
+    bool getNominalsOfContinuousStatesChanged() {return eventInfo.nominalsOfContinuousStatesChanged == fmi2True; }
+    bool getValuesOfContinuousStatesChanged() {return eventInfo.valuesOfContinuousStatesChanged == fmi2True; }
+    bool getNextEventTimeDefined() {return eventInfo.nextEventTimeDefined == fmi2True; }
+    double getNextEventTime() { return eventInfo.nextEventTime; }
+
   protected:
     ComponentFMUME(const ComRef& cref, System* parentSystem, const std::string& fmuPath);
 

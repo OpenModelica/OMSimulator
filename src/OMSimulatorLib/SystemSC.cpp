@@ -33,6 +33,7 @@
 
 #include "Component.h"
 #include "ComponentFMUME.h"
+#include "ComponentFMU3ME.h"
 #include "ComponentTable.h"
 #include "Flags.h"
 #include "Model.h"
@@ -259,9 +260,24 @@ oms_status_enu_t oms::SystemSC::initialize()
   {
     if (oms_status_ok != component.second->initialize())
       return oms_status_error;
+
     if (component.second->getType() == oms_component_fmu)
     {
       fmus.push_back(dynamic_cast<ComponentFMUME*>(component.second));
+
+      nStates.push_back(fmus.back()->getNumberOfContinuousStates());
+      n_states += nStates.back();
+      nEventIndicators.push_back(fmus.back()->getNumberOfEventIndicators());
+
+      states.push_back((double*)calloc(nStates.back(), sizeof(double)));
+      states_der.push_back((double*)calloc(nStates.back(), sizeof(double)));
+      states_nominal.push_back((double*)calloc(nStates.back(), sizeof(double)));
+      event_indicators.push_back((double*)calloc(nEventIndicators.back(), sizeof(double)));
+      event_indicators_prev.push_back((double*)calloc(nEventIndicators.back(), sizeof(double)));
+    }
+    if (component.second->getType() == oms_component_fmu3)
+    {
+      fmus.push_back(dynamic_cast<ComponentFMU3ME*>(component.second));
 
       nStates.push_back(fmus.back()->getNumberOfContinuousStates());
       n_states += nStates.back();
@@ -590,10 +606,10 @@ oms_status_enu_t oms::SystemSC::doStepEuler()
   bool terminated = false;
   for (size_t i = 0; i < fmus.size(); ++i)
   {
-    if (fmus[i]->getEventInfo()->nextEventTimeDefined && (tnext > fmus[i]->getEventInfo()->nextEventTime) && (time < fmus[i]->getEventInfo()->nextEventTime))
-      tnext = fmus[i]->getEventInfo()->nextEventTime;
+    if (fmus[i]->getNextEventTimeDefined() && (tnext > fmus[i]->getNextEventTime()) && (time < fmus[i]->getNextEventTime()))
+      tnext = fmus[i]->getNextEventTime();
 
-    if(fmus[i]->getEventInfo()->terminateSimulation)
+    if(fmus[i]->getTerminateSimulation())
     {
       logInfo("Simulation terminated by FMU " + std::string(fmus[i]->getFullCref()) + " at time " + std::to_string(time));
       getModel().setStopTime(time);
@@ -727,10 +743,10 @@ oms_status_enu_t oms::SystemSC::doStepEuler()
         tnext = end_time + 1.234;
         for (size_t i = 0; i < fmus.size(); ++i)
         {
-          if (fmus[i]->getEventInfo()->nextEventTimeDefined && (tnext > fmus[i]->getEventInfo()->nextEventTime) && (time < fmus[i]->getEventInfo()->nextEventTime))
-            tnext = fmus[i]->getEventInfo()->nextEventTime;
+          if (fmus[i]->getNextEventTimeDefined() && (tnext > fmus[i]->getNextEventTime()) && (time < fmus[i]->getNextEventTime()))
+            tnext = fmus[i]->getNextEventTime();
 
-          if(fmus[i]->getEventInfo()->terminateSimulation)
+          if(fmus[i]->getTerminateSimulation())
           {
             logInfo("Simulation terminated by FMU " + std::string(fmus[i]->getFullCref()) + " at time " + std::to_string(time));
             getModel().setStopTime(time);
@@ -775,10 +791,10 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
   fmi2Real tnext = end_time+1.0;
   for (size_t i = 0; i < fmus.size(); ++i)
   {
-    if (fmus[i]->getEventInfo()->nextEventTimeDefined && (tnext > fmus[i]->getEventInfo()->nextEventTime))
-      tnext = fmus[i]->getEventInfo()->nextEventTime;
+    if (fmus[i]->getNextEventTimeDefined() && (tnext > fmus[i]->getNextEventTime()))
+      tnext = fmus[i]->getNextEventTime();
 
-    if(fmus[i]->getEventInfo()->terminateSimulation)
+    if(fmus[i]->getTerminateSimulation())
     {
       logInfo("Simulation terminated by FMU " + std::string(fmus[i]->getFullCref()) + " at time " + std::to_string(time));
       getModel().setStopTime(time);
@@ -854,10 +870,10 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
       tnext = end_time+1.0;
       for (size_t i = 0; i < fmus.size(); ++i)
       {
-        if (fmus[i]->getEventInfo()->nextEventTimeDefined && (tnext > fmus[i]->getEventInfo()->nextEventTime))
-          tnext = fmus[i]->getEventInfo()->nextEventTime;
+        if (fmus[i]->getNextEventTimeDefined() && (tnext > fmus[i]->getNextEventTime()))
+          tnext = fmus[i]->getNextEventTime();
 
-        if(fmus[i]->getEventInfo()->terminateSimulation)
+        if(fmus[i]->getTerminateSimulation())
         {
           logInfo("Simulation terminated by FMU " + std::string(fmus[i]->getFullCref()) + " at time " + std::to_string(time));
           getModel().setStopTime(time);

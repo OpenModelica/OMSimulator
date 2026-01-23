@@ -124,12 +124,12 @@ namespace oms
     virtual oms_status_enu_t enterEventMode() {return logError_NotImplemented;}
     virtual oms_status_enu_t enterContinuousTimeMode() {return logError_NotImplemented;}
 
-    virtual fmi3Boolean getNewDiscreteStatesNeeded() {return logError_NotImplemented; }
-    virtual fmi3Boolean getTerminateSimulation() {return logError_NotImplemented; }
-    virtual fmi3Boolean getNominalsOfContinuousStatesChanged() {return logError_NotImplemented; }
-    virtual fmi3Boolean getValuesOfContinuousStatesChanged() {return logError_NotImplemented; }
-    virtual fmi3Boolean getNextEventTimeDefined() {return logError_NotImplemented; }
-    virtual fmi3Float64 getNextEventTime() { return logError_NotImplemented; }
+    virtual bool getNewDiscreteStatesNeeded() {return logError_NotImplemented; }
+    virtual bool getTerminateSimulation() {return logError_NotImplemented; }
+    virtual bool getNominalsOfContinuousStatesChanged() {return logError_NotImplemented; }
+    virtual bool getValuesOfContinuousStatesChanged() {return logError_NotImplemented; }
+    virtual bool getNextEventTimeDefined() {return logError_NotImplemented; }
+    virtual double getNextEventTime() { return logError_NotImplemented; }
 
     const ComRef& getCref() const { return cref; }
     ComRef getFullCref() const;
