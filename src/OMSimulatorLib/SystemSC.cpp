@@ -806,6 +806,9 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
 
     for (size_t i = 0, j=0; i < fmus.size(); ++i)
     {
+      if (0 == nStates[i])
+        continue;
+
       for (size_t k = 0; k < nStates[i]; k++, j++)
         states[i][k] = NV_Ith_S(solverData.cvode.y, j);
 

@@ -859,6 +859,10 @@ oms_status_enu_t oms::ComponentFMU3ME::initialize()
   fmistatus = fmi3_exitInitializationMode(fmu);
   if (fmi3OK != fmistatus) return logError_FMUCall("fmi3_exitInitializationMode", this);
 
+  // get number of continuous state after initialize
+  fmistatus = fmi3_getNumberOfContinuousStates(fmu, &nContinuousStates);
+  if (fmi3OK != fmistatus) return logError_FMUCall("fmi3_getNumberOfContinuousStates", this);
+  
   // get number of event indicators after initialize
   fmistatus = fmi3_getNumberOfEventIndicators(fmu, &nEventIndicators);
   if (fmi3OK != fmistatus) return logError_FMUCall("fmi3_getNumberOfEventIndicators", this);

@@ -105,7 +105,7 @@ namespace oms
 
     oms_status_enu_t doEventIteration();
 
-    size_t getNumberOfContinuousStates() const {return derivatives.size();}
+    size_t getNumberOfContinuousStates() const {return nContinuousStates;}
     size_t getNumberOfEventIndicators() const {return nEventIndicators;}
     oms_status_enu_t getContinuousStates(double* states);
     oms_status_enu_t setContinuousStates(double* states);
@@ -154,6 +154,7 @@ namespace oms
     fmiHandle *fmu = NULL;
 
     size_t nEventIndicators;
+    size_t nContinuousStates;
 
     fmi3Boolean newDiscreteStatesNeeded;
     fmi3Boolean terminateSimulation;
