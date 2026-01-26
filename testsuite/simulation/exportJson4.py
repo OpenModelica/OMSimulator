@@ -68,7 +68,6 @@ instantiated_model.terminate()
 instantiated_model.delete()
 
 ## Result:
-## info:    model doesn't contain any continuous state
 ## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
 ## |--   resources/Add.fmu
@@ -122,6 +121,7 @@ instantiated_model.delete()
 ## info:    default.Add1.u1          : 0.0
 ## info:    default.Add1.u2          : 3.0
 ## info:    default.Add1.y           : 3.0
+## info:    model doesn't contain any continuous state
 ## info:    Result file: export_json4_res.mat (bufferSize=1)
 ## info: After simulation:
 ## info:    default.param1           : 2.0

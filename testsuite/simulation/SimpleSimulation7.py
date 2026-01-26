@@ -76,7 +76,6 @@ instantiated_model.terminate()
 instantiated_model.delete()
 
 ## Result:
-## info:    model doesn't contain any continuous state
 ## info: After instantiation:
 ## info:    default.param1 : 100.0
 ## info:    default.Gain1.k: 2.0
@@ -87,6 +86,7 @@ instantiated_model.delete()
 ## info:    default.sub-system.Gain2.k: 1.0
 ## info:    default.sub-system.Gain2.u: 0.0
 ## info:    default.sub-system.Gain2.y: 0.0
+## info:    model doesn't contain any continuous state
 ## info:    maximum step size for 'model.root': 0.001000
 ## info:    Result file: SimpleSimulation7_res.mat (bufferSize=1)
 ## info: After simulation:
