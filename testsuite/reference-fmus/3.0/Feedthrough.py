@@ -133,19 +133,22 @@ instantiated_model.delete()
 ## info:    model doesn't contain any continuous state
 ## info:    maximum step size for 'model.root': 0.001000
 ## info:    No result file will be created
-## error:   [setContinuousStates] fmi3_setContinuousStates failed for FMU "model.root.Feedthrough"
-## warning: Bad return code at time 0.001000
-## Traceback (most recent call last):
-##   File "C:/OPENMODELICAGIT/OpenModelica/OMSimulator/testsuite/reference-fmus/3.0/Feedthrough.py", line 91, in <module>
-##     instantiated_model.simulate()
-##   File "C:/OPENMODELICAGIT/OpenModelica/OMSimulator/install/lib/OMSimulator/instantiated_model.py", line 405, in simulate
-##     raise RuntimeError(f"Failed to simulate model: {status}")
-## RuntimeError: Failed to simulate model: Status.error
+## info:    Feedthrough.Float32_continuous_input: 3.0999999046325684
+## info:    Feedthrough.Float64_continuous_input: 3.3
+## info:    Feedthrough.Int8_input: 4
+## info:    Feedthrough.Int16_input: 5
+## info:    Feedthrough.Int32_input: 6
+## info:    Feedthrough.Int64_input: 7
+## info:    Feedthrough.UInt8_input: 8
+## info:    Feedthrough.UInt16_input: 9
+## info:    Feedthrough.UInt32_input: 10
+## info:    Feedthrough.UInt64_input: 11
+## info:    Feedthrough.Boolean_input: True
+## info:    Feedthrough.Enumeration_input: 2
+## info:    Feedthrough.String_parameter: Set me!
 ## info:    Final Statistics for 'model.root':
-##          NumSteps = 2 NumRhsEvals  = 3 NumLinSolvSetups = 2
-##          NumNonlinSolvIters = 2 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
-## warning: temp directory "C:\OMDev\tools\msys\tmp\tmpp8qwmy1m\model-3xirzw2d" couldn't be removed
-##          filesystem error: cannot remove all: Access is denied [C:\OMDev\tools\msys\tmp\tmpp8qwmy1m\model-3xirzw2d] [C:\OMDev\tools\msys\tmp\tmpp8qwmy1m\model-3xirzw2d\temp\0002_Feedthrough\binaries\x86_64-windows\Feedthrough.dll]
-## info:    6 warnings
-## info:    1 errors
+##          NumSteps = 10001 NumRhsEvals  = 10002 NumLinSolvSetups = 501
+##          NumNonlinSolvIters = 10001 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
+## info:    4 warnings
+## info:    0 errors
 ## endResult
