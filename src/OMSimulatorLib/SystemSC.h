@@ -86,8 +86,8 @@ namespace oms
   private:
     std::vector<Component*> fmus; // use Component Base class to support FMI 2 ME and FMI 3 ME
 
-    bool* callEventUpdate = new bool[fmus.size()](); //iniitialize with false
-    bool* terminateSimulation = new bool[fmus.size()](); //iniitialize with false
+    bool* callEventUpdate = new bool[fmus.size()](); //initialize with false
+    bool* terminateSimulation = new bool[fmus.size()](); //initialize with false
 
     std::vector<size_t> nStates;
     std::vector<size_t> nEventIndicators;

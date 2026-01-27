@@ -94,14 +94,14 @@ typedef enum {
 typedef enum {
   oms_system_none,
   oms_system_wc,       ///< Weakly Coupled System
-  oms_system_sc,        ///< Strongly Coupled System
-  oms_system_sc3       ///< Strongly Coupled System with FMU3 support
+  oms_system_sc,       ///< Strongly Coupled System for FMU2 and FMU3
+  oms_system_sc3       ///< Strongly Coupled System for only FMU3
 } oms_system_enu_t;
 
 typedef enum {
   oms_component_none,
   oms_component_fmu,      ///< FMU
-  oms_component_fmu3,      ///< FMU3
+  oms_component_fmu3,     ///< FMU3
   oms_component_table,    ///< lookup table
   oms_component_external  ///< external model
 } oms_component_enu_t;

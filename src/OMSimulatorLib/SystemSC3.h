@@ -84,8 +84,8 @@ namespace oms
 
   private:
     std::vector<ComponentFMU3ME*> fmus;
-    fmi3Boolean* callEventUpdate = new fmi3Boolean[fmus.size()];
-    fmi3Boolean* terminateSimulation = new fmi3Boolean[fmus.size()];
+    fmi3Boolean* callEventUpdate = new fmi3Boolean[fmus.size()]();
+    fmi3Boolean* terminateSimulation = new fmi3Boolean[fmus.size()]();
 
     std::vector<size_t> nStates;
     std::vector<size_t> nEventIndicators;

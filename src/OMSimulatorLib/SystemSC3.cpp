@@ -259,7 +259,6 @@ oms_status_enu_t oms::SystemSC3::initialize()
       return oms_status_error;
 
   size_t n_states = 0;
-  int count = 0;
   for (const auto& component : getComponents())
   {
     if (oms_status_ok != component.second->initialize())
@@ -267,8 +266,6 @@ oms_status_enu_t oms::SystemSC3::initialize()
 
     if (component.second->getType() == oms_component_fmu3)
     {
-      callEventUpdate[count] = fmi3False;
-      terminateSimulation[count] = fmi3False;
       fmus.push_back(dynamic_cast<ComponentFMU3ME*>(component.second));
       nStates.push_back(fmus.back()->getNumberOfContinuousStates());
       n_states += nStates.back();
@@ -278,7 +275,6 @@ oms_status_enu_t oms::SystemSC3::initialize()
       states_nominal.push_back((double*)calloc(nStates.back(), sizeof(double)));
       event_indicators.push_back((double*)calloc(nEventIndicators.back(), sizeof(double)));
       event_indicators_prev.push_back((double*)calloc(nEventIndicators.back(), sizeof(double)));
-      count++;
     }
   }
 
@@ -474,8 +470,6 @@ oms_status_enu_t oms::SystemSC3::terminate()
   }
 
   fmus.clear();
-  // callEventUpdate.clear();
-  // terminateSimulation.clear();
   delete[] callEventUpdate;
   delete[] terminateSimulation;
   nStates.clear();
@@ -632,9 +626,8 @@ oms_status_enu_t oms::SystemSC3::doStepEuler()
       for (size_t k = 0; k < nStates[i]; ++k)
         states[i][k] = states_backup[i][k] + step_size * states_der_backup[i][k];
 
-      status = fmus[i]->setContinuousStates(states[i]);
-      //status = fmi3_setContinuousStates(fmus[i]->getFMU(), states[i], nStates[i]);
-      if (oms_status_ok != status) return status;
+      fmistatus = fmi3_setContinuousStates(fmus[i]->getFMU(), states[i], nStates[i]);
+      if (fmi3OK != fmistatus) return logError_FMUCall("fmi3_setContinuousStates", fmus[i]);
     }
 
     // b. Event Detection
