@@ -191,216 +191,6 @@ oms_status_enu_t oms::SystemSC3::exportToSSD_SimulationInformation(pugi::xml_nod
   return oms_status_ok;
 }
 
-
-oms_status_enu_t oms::SystemSC3::testFMI3ME(fmiHandle *fmu)
-{
-    double startTime = 0.0;
-    double stepSize  = 0.001;
-    double stopTime  = 4.0;
-    double tolerance = 1e-6;
-
-    fmi3Status status;
-
-    /*------------------------------------------------------------
-     * Setup & Initialization
-     *------------------------------------------------------------*/
-    // status = fmi3_setupExperiment(
-    //     fmu,
-    //     fmi3True,
-    //     tolerance,
-    //     startTime,
-    //     fmi3True,
-    //     stopTime
-    // );
-    // if (status != fmi3OK) return oms_status_error;
-
-    // status = fmi3_enterInitializationMode(fmu);
-    // if (status != fmi3OK) return oms_status_error;
-
-    status = fmi3_exitInitializationMode(fmu);
-    if (status != fmi3OK) return oms_status_error;
-
-    printf("FMU successfully initialized.\n");
-
-    /*------------------------------------------------------------
-     * Query sizes
-     *------------------------------------------------------------*/
-    size_t nStates_;
-    size_t nEventIndicators_;
-
-    fmi3_getNumberOfContinuousStates(fmu, &nStates_);
-    fmi3_getNumberOfEventIndicators(fmu, &nEventIndicators_);
-    std::cout << "\n Number of States fmi4c : " << nStates_ << std::endl;
-    std::cout << "\n Number of Event Indicators fmi4c : " << nEventIndicators_ << std::endl;
-    fmi3Float64 *states_              = (fmi3Float64*) malloc(nStates_ * sizeof(fmi3Float64));
-    fmi3Float64 *derivatives_         = (fmi3Float64*) malloc(nStates_ * sizeof(fmi3Float64));
-    fmi3Float64 *eventIndicators_     = (fmi3Float64*) malloc(nEventIndicators_ * sizeof(fmi3Float64));
-    fmi3Float64 *eventIndicatorsPrev_ = (fmi3Float64*) malloc(nEventIndicators_ * sizeof(fmi3Float64));
-
-    fmi3Int32  *rootsFound = (fmi3Int32*) malloc(nEventIndicators_ * sizeof(fmi3Int32));
-
-    for (size_t i = 0; i < nEventIndicators_; ++i) {
-        eventIndicatorsPrev_[i] = 0.0;
-        rootsFound[i] = 0;
-    }
-
-    /*------------------------------------------------------------
-     * Enter Continuous-Time Mode
-     *------------------------------------------------------------*/
-    fmi3_enterContinuousTimeMode(fmu);
-
-    fmi3_getContinuousStates(fmu, states_, nStates_);
-    fmi3_getEventIndicators(fmu, eventIndicatorsPrev_, nEventIndicators_);
-
-    FILE *outputFile = NULL;
-    //Prepare output file
-    const char* outputCsvPath = "fmi3me_output.csv";
-    if(outputCsvPath != NULL) {
-        outputFile = fopen(outputCsvPath, "w");
-        if(outputFile != NULL) {
-            fprintf(outputFile,"time");
-            for(int i=0; i<1; ++i) {
-                fprintf(outputFile,",%s",fmi3_getVariableName(fmi3_getVariableByValueReference(fmu, 1)));
-                fprintf(outputFile,",%s",fmi3_getVariableName(fmi3_getVariableByValueReference(fmu, 5)));
-                fprintf(outputFile,",%s",fmi3_getVariableName(fmi3_getVariableByValueReference(fmu, 6)));
-
-            }
-            fprintf(outputFile,"\n");
-        }
-    }
-
-    printf("  Simulating from %f to %f with a step size of %f...\n",startTime, stopTime, stepSize);
-
-    /*------------------------------------------------------------
-     * Simulation loop
-     *------------------------------------------------------------*/
-    fmi3Float64 time = startTime;
-    fmi3Boolean terminateSimulation = fmi3False;
-    fmi3Boolean stepEvent, stateEvent;
-
-    while (time <= stopTime && !terminateSimulation)
-    {
-        /* 1. Set time FIRST */
-        fmi3_setTime(fmu, time);
-
-        /* 2. Get derivatives */
-        fmi3_getContinuousStateDerivatives(fmu, derivatives_, nStates_);
-
-        /* 3. Explicit Euler */
-        for (size_t i = 0; i < nStates_; ++i)
-            states_[i] += stepSize * derivatives_[i];
-
-        fmi3_setContinuousStates(fmu, states_, nStates_);
-
-        /* 4. Tell FMU step completed */
-        fmi3_completedIntegratorStep(
-            fmu,
-            fmi3True,
-            &stepEvent,
-            &terminateSimulation
-        );
-
-        /* 5. Event indicators */
-        fmi3_getEventIndicators(fmu, eventIndicators_, nEventIndicators_);
-
-        stateEvent = fmi3False;
-        for (size_t i = 0; i < nEventIndicators_; ++i)
-        {
-            if ((eventIndicatorsPrev_[i] < 0 && eventIndicators_[i] >= 0) ||
-                (eventIndicatorsPrev_[i] > 0 && eventIndicators_[i] <= 0))
-            {
-                rootsFound[i] = 1;
-                stateEvent = fmi3True;
-            }
-            else
-            {
-                rootsFound[i] = 0;
-            }
-
-            eventIndicatorsPrev_[i] = eventIndicators_[i];
-        }
-
-        /*--------------------------------------------------------
-         * 6. EVENT HANDLING (THIS WAS MISSING)
-         *--------------------------------------------------------*/
-        if (stateEvent || stepEvent)
-        {
-            fmi3Boolean discreteStatesNeedUpdate = fmi3True;
-            fmi3Boolean nominalsChanged;
-            fmi3Boolean valuesChanged;
-            fmi3Boolean nextEventTimeDefined;
-            fmi3Float64 nextEventTime;
-
-            fmi3_enterEventMode(fmu);
-
-            while (discreteStatesNeedUpdate)
-            {
-                fmi3_updateDiscreteStates(
-                    fmu,
-                    &discreteStatesNeedUpdate,
-                    &terminateSimulation,
-                    &nominalsChanged,
-                    &valuesChanged,
-                    &nextEventTimeDefined,
-                    &nextEventTime
-                );
-            }
-
-            fmi3_enterContinuousTimeMode(fmu);
-
-            /* CRITICAL: get updated states after bounce */
-            fmi3_getContinuousStates(fmu, states_, nStates_);
-            fmi3_getEventIndicators(fmu, eventIndicatorsPrev_, nEventIndicators_);
-        }
-
-         /*--------------------------------------------------------
-         * WRITE OUTPUT (after events!)
-         *--------------------------------------------------------*/
-        // Print all output variables to CSV file
-        double value;
-        if (outputFile != NULL)
-        {
-          fprintf(outputFile, "%f", time);
-          fmi3ValueReference vr1 = 1;
-          fmi3ValueReference vr2 = 5;
-          fmi3ValueReference vr3 = 6;
-
-          for (int i = 0; i < 1; ++i)
-          {
-            fmi3_getFloat64(fmu, &vr1, 1, &value, 1);
-            fprintf(outputFile, ",%f", value);
-            fmi3_getFloat64(fmu, &vr2, 1, &value, 1);
-            fprintf(outputFile, ",%f", value);
-            fmi3_getFloat64(fmu, &vr3, 1, &value, 1);
-            // std::cout << "info: time=" << time << ", var" << i << "=" << value << std::endl;
-            fprintf(outputFile, ",%f", value);
-          }
-          fprintf(outputFile, "\n");
-        }
-
-        time += stepSize;
-    }
-
-    if (outputFile != NULL) {
-        fclose(outputFile);
-    }
-
-    /*------------------------------------------------------------
-     * Cleanup
-     *------------------------------------------------------------*/
-    //fmi3_terminate(fmu);
-
-    free(states_);
-    free(derivatives_);
-    free(eventIndicators_);
-    free(eventIndicatorsPrev_);
-    free(rootsFound);
-
-    printf("Simulation finished.\n");
-    return oms_status_ok;
-}
-
-
 oms_status_enu_t oms::SystemSC3::importFromSSD_SimulationInformation(const pugi::xml_node& node, const std::string& sspVersion)
 {
   std::string solverName = "";
@@ -967,26 +757,6 @@ oms_status_enu_t oms::SystemSC3::doStepEuler()
         event_time -= step_size_adjustment;
       }
     }
-    // Print all output variables to CSV file
-    double value;
-    if (outputFile != NULL)
-    {
-      fprintf(outputFile, "%f", time);
-      fmi3ValueReference vr1 = 1;
-      fmi3ValueReference vr2 = 5;
-      fmi3ValueReference vr3 = 6;
-      for (int i = 0; i < 1; ++i)
-      {
-        fmi3_getFloat64(fmus[0]->getFMU(), &vr1, 1, &value, 1);
-        fprintf(outputFile, ",%f", value);
-        fmi3_getFloat64(fmus[0]->getFMU(), &vr2, 1, &value, 1);
-        fprintf(outputFile, ",%f", value);
-        fmi3_getFloat64(fmus[0]->getFMU(), &vr3, 1, &value, 1);
-        // std::cout << "info: time=" << time << ", var" << i << "=" << value << std::endl;
-        fprintf(outputFile, ",%f", value);
-      }
-      fprintf(outputFile, "\n");
-    }
   }
 
   for (size_t i=0; i < fmus.size(); ++i)
@@ -1172,24 +942,6 @@ oms_status_enu_t oms::SystemSC3::stepUntil(double stopTime)
   if (Flags::ProgressBar())
     logInfo("step SC system [" + std::to_string(startTime) + "; " + std::to_string(stopTime) + "] with step size [" + std::to_string(initialStepSize) + "; " + std::to_string(minimumStepSize) + "; " + std::to_string(maximumStepSize) + "]");
 
-  //outputFile = NULL;
-  // Prepare output file
-  const char *outputCsvPath = "omsimulatortest.csv";
-  if (outputCsvPath != NULL)
-  {
-    outputFile = fopen(outputCsvPath, "w");
-    if (outputFile != NULL)
-    {
-      fprintf(outputFile, "time");
-      for (int i = 0; i < 1; ++i)
-      {
-        fprintf(outputFile, ",%s", fmi3_getVariableName(fmi3_getVariableByValueReference(fmus[0]->getFMU(), 1)));
-        fprintf(outputFile, ",%s", fmi3_getVariableName(fmi3_getVariableByValueReference(fmus[0]->getFMU(), 5)));
-        fprintf(outputFile, ",%s", fmi3_getVariableName(fmi3_getVariableByValueReference(fmus[0]->getFMU(), 6)));
-      }
-      fprintf(outputFile, "\n");
-    }
-  }
   // main simulation loop
   oms_status_enu_t status = oms_status_ok;
   while (time < std::min(stopTime, getModel().getStopTime()) && oms_status_ok == status)
@@ -1201,9 +953,6 @@ oms_status_enu_t oms::SystemSC3::stepUntil(double stopTime)
     if (isTopLevelSystem() && Flags::ProgressBar())
       Log::ProgressBar(startTime, stopTime, time);
   }
-
-  if (outputFile != NULL)
-    fclose(outputFile);
 
   if (isTopLevelSystem() && Flags::ProgressBar())
     Log::TerminateBar();

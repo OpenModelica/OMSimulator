@@ -71,7 +71,6 @@ namespace oms
     oms_status_enu_t setSolverMethod(std::string);
 
     oms_status_enu_t setSolver(oms_solver_enu_t solver) {if (solver > oms_solver_sc_min && solver < oms_solver_sc_max) {solverMethod=solver; return oms_status_ok;} return oms_status_error;}
-    oms_status_enu_t testFMI3ME(fmiHandle *fmu);
   private:
     oms_status_enu_t doStepEuler();
     oms_status_enu_t doStepCVODE();
@@ -84,13 +83,7 @@ namespace oms
     SystemSC3& operator=(SystemSC3 const& copy); ///< not implemented
 
   private:
-    //std::vector<ComponentFMU3ME*> fmus;
-    std::vector<Component*> fmus;
-
-    FILE *outputFile = NULL;
-
-    // std::vector<fmi3Boolean> callEventUpdate;
-    // std::vector<fmi3Boolean> terminateSimulation;
+    std::vector<ComponentFMU3ME*> fmus;
     fmi3Boolean* callEventUpdate = new fmi3Boolean[fmus.size()];
     fmi3Boolean* terminateSimulation = new fmi3Boolean[fmus.size()];
 
