@@ -20,6 +20,7 @@ class SystemType(Enum):
   '''Enumeration for system type to map with c api.'''
   wc = 1
   sc = 2
+  sc3 = 3
 
 class InstantiatedModel:
   _suppress_path_set = False # Class variable to track if suppressPath has been set

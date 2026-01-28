@@ -29,8 +29,8 @@
  *
  */
 
-#ifndef _OMS_SYSTEM_SC_H_
-#define _OMS_SYSTEM_SC_H_
+#ifndef _OMS_SYSTEM_SC3_H_
+#define _OMS_SYSTEM_SC3_H_
 
 #include "ComRef.h"
 #include "System.h"
@@ -43,16 +43,16 @@
 namespace oms
 {
   class Model;
-  class ComponentFMUME;
+  class ComponentFMU3ME;
   class Component;
-  int cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data);
-  int cvode_rhs_algebraic(realtype t, N_Vector y, N_Vector ydot, void* user_data);
-  int cvode_roots(realtype t, N_Vector y, realtype *gout, void* user_data);
+  int cvode_rhs3(realtype t, N_Vector y, N_Vector ydot, void* user_data);
+  int cvode_rhs_algebraic3(realtype t, N_Vector y, N_Vector ydot, void* user_data);
+  int cvode_roots3(realtype t, N_Vector y, realtype *gout, void* user_data);
 
-  class SystemSC : public System
+  class SystemSC3 : public System
   {
   public:
-    ~SystemSC();
+    ~SystemSC3();
 
     static System* NewSystem(const oms::ComRef& cref, Model* parentModel, System* parentSystem);
     oms_status_enu_t exportToSSD_SimulationInformation(pugi::xml_node& node) const;
@@ -71,23 +71,21 @@ namespace oms
     oms_status_enu_t setSolverMethod(std::string);
 
     oms_status_enu_t setSolver(oms_solver_enu_t solver) {if (solver > oms_solver_sc_min && solver < oms_solver_sc_max) {solverMethod=solver; return oms_status_ok;} return oms_status_error;}
-
   private:
     oms_status_enu_t doStepEuler();
     oms_status_enu_t doStepCVODE();
 
   protected:
-    SystemSC(const ComRef& cref, Model* parentModel, System* parentSystem);
+    SystemSC3(const ComRef& cref, Model* parentModel, System* parentSystem);
 
     // stop the compiler generating methods copying the object
-    SystemSC(SystemSC const& copy);            ///< not implemented
-    SystemSC& operator=(SystemSC const& copy); ///< not implemented
+    SystemSC3(SystemSC3 const& copy);            ///< not implemented
+    SystemSC3& operator=(SystemSC3 const& copy); ///< not implemented
 
   private:
-    std::vector<Component*> fmus; // use Component Base class to support FMI 2 ME and FMI 3 ME
-
-    bool* callEventUpdate = new bool[fmus.size()](); //initialize with false
-    bool* terminateSimulation = new bool[fmus.size()](); //initialize with false
+    std::vector<ComponentFMU3ME*> fmus;
+    fmi3Boolean* callEventUpdate = new fmi3Boolean[fmus.size()]();
+    fmi3Boolean* terminateSimulation = new fmi3Boolean[fmus.size()]();
 
     std::vector<size_t> nStates;
     std::vector<size_t> nEventIndicators;
@@ -120,9 +118,9 @@ namespace oms
       SolverDataCVODE_t cvode;
     } solverData;
 
-    friend int oms::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data);
-    friend int oms::cvode_rhs_algebraic(realtype t, N_Vector y, N_Vector ydot, void* user_data);
-    friend int oms::cvode_roots(realtype t, N_Vector y, realtype *gout, void* user_data);
+    friend int oms::cvode_rhs3(realtype t, N_Vector y, N_Vector ydot, void* user_data);
+    friend int oms::cvode_rhs_algebraic3(realtype t, N_Vector y, N_Vector ydot, void* user_data);
+    friend int oms::cvode_roots3(realtype t, N_Vector y, realtype *gout, void* user_data);
   };
 }
 

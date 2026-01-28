@@ -29,10 +29,9 @@
  *
  */
 
-#include "SystemSC.h"
+#include "SystemSC3.h"
 
 #include "Component.h"
-#include "ComponentFMUME.h"
 #include "ComponentFMU3ME.h"
 #include "ComponentTable.h"
 #include "Flags.h"
@@ -42,12 +41,13 @@
 #include <algorithm>
 #include <cstring>
 #include <sstream>
+#include <iostream>
 
-int oms::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data)
+int oms::cvode_rhs3(realtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
-  SystemSC* system = (SystemSC*)user_data;
+  SystemSC3* system = (SystemSC3*)user_data;
   oms_status_enu_t status;
-  fmi2Status fmistatus;
+  fmi3Status fmistatus;
 
   // update states in FMUs
   for (size_t i=0, j_y=0, j_ydot=0; i < system->fmus.size(); ++i)
@@ -75,9 +75,9 @@ int oms::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data)
   return 0;
 }
 
-int oms::cvode_rhs_algebraic(realtype t, N_Vector y, N_Vector ydot, void* user_data)
+int oms::cvode_rhs_algebraic3(realtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
-  SystemSC* system = (SystemSC*)user_data;
+  SystemSC3* system = (SystemSC3*)user_data;
 
   for (size_t i=0; i < system->fmus.size(); ++i)
     system->fmus[i]->setTime(t);
@@ -87,11 +87,12 @@ int oms::cvode_rhs_algebraic(realtype t, N_Vector y, N_Vector ydot, void* user_d
   return 0;
 }
 
-int oms::cvode_roots(realtype t, N_Vector y, realtype *gout, void *user_data)
+int oms::cvode_roots3(realtype t, N_Vector y, realtype *gout, void *user_data)
 {
   logDebug("cvode_roots at time " + std::to_string(t));
-  SystemSC* system = (SystemSC*)user_data;
+  SystemSC3* system = (SystemSC3*)user_data;
   oms_status_enu_t status;
+  fmi3Status fmistatus;
 
   for (size_t i=0, j_y=0, j_gout=0; i < system->fmus.size(); ++i)
   {
@@ -107,8 +108,8 @@ int oms::cvode_roots(realtype t, N_Vector y, realtype *gout, void *user_data)
       if (oms_status_ok != status) return status;
     }
 
-    status  = system->fmus[i]->getEventindicators(system->event_indicators[i], system->nEventIndicators[i]);
-    if (oms_status_ok != status) return status;
+    fmistatus = fmi3_getEventIndicators(system->fmus[i]->getFMU(), system->event_indicators[i], 1);
+    if (fmi3OK != fmistatus) logError_FMUCall("fmi3_getEventIndicators", system->fmus[i]);
 
     for (size_t k=0; k < system->nEventIndicators[i]; k++, j_gout++)
       gout[j_gout] = system->event_indicators[i][k];
@@ -117,16 +118,16 @@ int oms::cvode_roots(realtype t, N_Vector y, realtype *gout, void *user_data)
   return 0;
 }
 
-oms::SystemSC::SystemSC(const ComRef& cref, Model* parentModel, System* parentSystem)
+oms::SystemSC3::SystemSC3(const ComRef& cref, Model* parentModel, System* parentSystem)
   : oms::System(cref, oms_system_sc, parentModel, parentSystem, oms_solver_sc_cvode)
 {
 }
 
-oms::SystemSC::~SystemSC()
+oms::SystemSC3::~SystemSC3()
 {
 }
 
-oms::System* oms::SystemSC::NewSystem(const oms::ComRef& cref, oms::Model* parentModel, oms::System* parentSystem)
+oms::System* oms::SystemSC3::NewSystem(const oms::ComRef& cref, oms::Model* parentModel, oms::System* parentSystem)
 {
   if (!cref.isValidIdent())
   {
@@ -140,11 +141,11 @@ oms::System* oms::SystemSC::NewSystem(const oms::ComRef& cref, oms::Model* paren
     return NULL;
   }
 
-  System* system = new SystemSC(cref, parentModel, parentSystem);
+  System* system = new SystemSC3(cref, parentModel, parentSystem);
   return system;
 }
 
-std::string oms::SystemSC::getSolverName() const
+std::string oms::SystemSC3::getSolverName() const
 {
   switch (solverMethod)
   {
@@ -157,7 +158,7 @@ std::string oms::SystemSC::getSolverName() const
   }
 }
 
-oms_status_enu_t oms::SystemSC::setSolverMethod(std::string solver)
+oms_status_enu_t oms::SystemSC3::setSolverMethod(std::string solver)
 {
   if (std::string("euler") == solver)
     solverMethod = oms_solver_sc_explicit_euler;
@@ -169,7 +170,7 @@ oms_status_enu_t oms::SystemSC::setSolverMethod(std::string solver)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::SystemSC::exportToSSD_SimulationInformation(pugi::xml_node& node) const
+oms_status_enu_t oms::SystemSC3::exportToSSD_SimulationInformation(pugi::xml_node& node) const
 {
   std::ostringstream ssAbsoluteTolerance, ssRelativeTolerance, ssMinimumStepSize, ssMaximumStepSize, ssInitialStepSize;
   ssRelativeTolerance << relativeTolerance;
@@ -190,7 +191,7 @@ oms_status_enu_t oms::SystemSC::exportToSSD_SimulationInformation(pugi::xml_node
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::SystemSC::importFromSSD_SimulationInformation(const pugi::xml_node& node, const std::string& sspVersion)
+oms_status_enu_t oms::SystemSC3::importFromSSD_SimulationInformation(const pugi::xml_node& node, const std::string& sspVersion)
 {
   std::string solverName = "";
   const char* VariableStepSolver = "";
@@ -217,7 +218,7 @@ oms_status_enu_t oms::SystemSC::importFromSSD_SimulationInformation(const pugi::
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::SystemSC::instantiate()
+oms_status_enu_t oms::SystemSC3::instantiate()
 {
   time = getModel().getStartTime();
 
@@ -240,8 +241,10 @@ oms_status_enu_t oms::SystemSC::instantiate()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::SystemSC::initialize()
+oms_status_enu_t oms::SystemSC3::initialize()
 {
+  // testFMI3ME(fmus[0]->getFMU());
+  // exit(0);
   clock.reset();
   CallClock callClock(clock);
 
@@ -261,27 +264,19 @@ oms_status_enu_t oms::SystemSC::initialize()
     if (oms_status_ok != component.second->initialize())
       return oms_status_error;
 
-    Component * fmu = nullptr;
-    if (component.second->getType() == oms_component_fmu)
-      fmu = dynamic_cast<ComponentFMUME*>(component.second);
-    else if (component.second->getType() == oms_component_fmu3)
-      fmu = dynamic_cast<ComponentFMU3ME*>(component.second);
-
-    if (!fmu)
-      continue; // skip non-FMU components or failed casts
-
-    fmus.push_back(fmu);
-
-    nStates.push_back(fmus.back()->getNumberOfContinuousStates());
-    n_states += nStates.back();
-    nEventIndicators.push_back(fmus.back()->getNumberOfEventIndicators());
-
-    states.push_back((double*)calloc(nStates.back(), sizeof(double)));
-    states_der.push_back((double*)calloc(nStates.back(), sizeof(double)));
-    states_nominal.push_back((double*)calloc(nStates.back(), sizeof(double)));
-    event_indicators.push_back((double*)calloc(nEventIndicators.back(), sizeof(double)));
-    event_indicators_prev.push_back((double*)calloc(nEventIndicators.back(), sizeof(double)));
-   }
+    if (component.second->getType() == oms_component_fmu3)
+    {
+      fmus.push_back(dynamic_cast<ComponentFMU3ME*>(component.second));
+      nStates.push_back(fmus.back()->getNumberOfContinuousStates());
+      n_states += nStates.back();
+      nEventIndicators.push_back(fmus.back()->getNumberOfEventIndicators());
+      states.push_back((double*)calloc(nStates.back(), sizeof(double)));
+      states_der.push_back((double*)calloc(nStates.back(), sizeof(double)));
+      states_nominal.push_back((double*)calloc(nStates.back(), sizeof(double)));
+      event_indicators.push_back((double*)calloc(nEventIndicators.back(), sizeof(double)));
+      event_indicators_prev.push_back((double*)calloc(nEventIndicators.back(), sizeof(double)));
+    }
+  }
 
   if (n_states == 0)
     logInfo("model doesn't contain any continuous state");
@@ -369,10 +364,10 @@ oms_status_enu_t oms::SystemSC::initialize()
     // Call CVodeInit to initialize the integrator memory and specify the
     // user's right hand side function in y'=cvode_rhs(t,y), the inital time T0, and
     // the initial dependent variable vector y.
-    flag = CVodeInit(solverData.cvode.mem, algebraic ? cvode_rhs_algebraic : cvode_rhs, time, solverData.cvode.y);
+    flag = CVodeInit(solverData.cvode.mem, algebraic ? cvode_rhs_algebraic3 : cvode_rhs3, time, solverData.cvode.y);
     if (flag < 0) logError("SUNDIALS_ERROR: CVodeInit() failed with flag = " + std::to_string(flag));
 
-    flag = CVodeRootInit(solverData.cvode.mem, n_event_indicators, cvode_roots);
+    flag = CVodeRootInit(solverData.cvode.mem, n_event_indicators, cvode_roots3);
     if (flag != CV_SUCCESS) logError("SUNDIALS_ERROR: CVodeRootInit() failed with flag = " + std::to_string(flag));
 
     // Call CVodeSVtolerances to specify the scalar relative tolerance
@@ -423,7 +418,7 @@ oms_status_enu_t oms::SystemSC::initialize()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::SystemSC::terminate()
+oms_status_enu_t oms::SystemSC3::terminate()
 {
   for (const auto& subsystem : getSubSystems())
     if (oms_status_ok != subsystem.second->terminate())
@@ -488,7 +483,7 @@ oms_status_enu_t oms::SystemSC::terminate()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::SystemSC::reset()
+oms_status_enu_t oms::SystemSC3::reset()
 {
   for (const auto& subsystem : getSubSystems())
     if (oms_status_ok != subsystem.second->reset())
@@ -535,7 +530,7 @@ oms_status_enu_t oms::SystemSC::reset()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::SystemSC::doStep()
+oms_status_enu_t oms::SystemSC3::doStep()
 {
   switch(solverMethod)
   {
@@ -550,13 +545,14 @@ oms_status_enu_t oms::SystemSC::doStep()
   }
 }
 
-oms_status_enu_t oms::SystemSC::doStepEuler()
+oms_status_enu_t oms::SystemSC3::doStepEuler()
 {
+  fmi3Status fmistatus;
   oms_status_enu_t status;
 
   // Step 1: Initialize state variables and time
-  const fmi2Real end_time = std::min(time + maximumStepSize, getModel().getStopTime());
-  const fmi2Real event_time_tolerance = 1e-4;
+  const fmi3Float64 end_time = std::min(time + maximumStepSize, getModel().getStopTime());
+  const fmi3Float64 event_time_tolerance = 1e-4;
 
   logDebug("doStepEuler: " + std::to_string(time) + " -> " + std::to_string(end_time));
 
@@ -586,15 +582,15 @@ oms_status_enu_t oms::SystemSC::doStepEuler()
       status = fmus[i]->getDerivatives(states_der_backup[i]);
       if (oms_status_ok != status) return status;
     }
-    status = fmus[i]->getEventindicators(event_indicators_prev[i], nEventIndicators[i]);
-    if (oms_status_ok != status) return status;
+    fmistatus = fmi3_getEventIndicators(fmus[i]->getFMU(), event_indicators_prev[i], nEventIndicators[i]);
+    if (fmi3OK != fmistatus) logError_FMUCall("fmi3_getEventIndicators", fmus[i]);
   }
 
-  fmi2Real step_size_adjustment = maximumStepSize;
-  fmi2Real event_time = end_time;
+  fmi3Float64 step_size_adjustment = maximumStepSize;
+  fmi3Float64 event_time = end_time;
   bool event_detected = false;
 
-  fmi2Real tnext = end_time + 1.0;
+  fmi3Float64 tnext = end_time + 1.0;
   bool terminated = false;
   for (size_t i = 0; i < fmus.size(); ++i)
   {
@@ -607,6 +603,7 @@ oms_status_enu_t oms::SystemSC::doStepEuler()
       getModel().setStopTime(time);
       terminated = true;
     }
+
   }
 
   // Step 3: Main integration loop
@@ -618,8 +615,9 @@ oms_status_enu_t oms::SystemSC::doStepEuler()
     step_size_adjustment *= 0.5; // reduce the step size in each iteration
 
     // a. Evaluate derivatives for each FMU
-    const fmi2Real step_size = event_time - time;  // Substep size, do one step from current time to the event
+    const fmi3Float64 step_size = event_time - time;  // Substep size, do one step from current time to the event
     logDebug("step_size: " + std::to_string(step_size) + " | " + std::to_string(time) + " -> " + std::to_string(event_time));
+
     for (size_t i = 0; i < fmus.size(); ++i)
     {
       if (0 == nStates[i])
@@ -628,8 +626,8 @@ oms_status_enu_t oms::SystemSC::doStepEuler()
       for (size_t k = 0; k < nStates[i]; ++k)
         states[i][k] = states_backup[i][k] + step_size * states_der_backup[i][k];
 
-      status = fmus[i]->setContinuousStates(states[i]);
-      if (oms_status_ok != status) return status;
+      fmistatus = fmi3_setContinuousStates(fmus[i]->getFMU(), states[i], nStates[i]);
+      if (fmi3OK != fmistatus) return logError_FMUCall("fmi3_setContinuousStates", fmus[i]);
     }
 
     // b. Event Detection
@@ -637,8 +635,8 @@ oms_status_enu_t oms::SystemSC::doStepEuler()
     logDebug("Event detected: " + std::to_string(event_detected));
     for (size_t i = 0; i < fmus.size() && !event_detected; ++i)
     {
-      status = fmus[i]->getEventindicators(event_indicators[i], nEventIndicators[i]);
-      if (oms_status_ok != status) return status;
+      fmistatus = fmi3_getEventIndicators(fmus[i]->getFMU(), event_indicators[i], nEventIndicators[i]);
+      if (fmi3OK != fmistatus) logError_FMUCall("fmi3_getEventIndicators", fmus[i]);
 
       for (size_t k=0; k < nEventIndicators[i]; k++)
       {
@@ -668,8 +666,8 @@ oms_status_enu_t oms::SystemSC::doStepEuler()
 
         for (size_t i = 0; i < fmus.size(); ++i)
         {
-          status = fmus[i]->completedIntegratorStep(true, callEventUpdate[i], terminateSimulation[i]);
-          if (oms_status_ok != status) return status;
+          fmistatus = fmi3_completedIntegratorStep(fmus[i]->getFMU(), fmi3True, &callEventUpdate[i], &terminateSimulation[i]);
+          if (fmi3OK != fmistatus) return logError_FMUCall("fmi3_completedIntegratorStep", fmus[i]);
         }
 
         // emit the left limit of the event (if it hasn't already been emitted)
@@ -708,17 +706,13 @@ oms_status_enu_t oms::SystemSC::doStepEuler()
         // Enter event mode and handle discrete state updates for each FMU
         for (size_t i = 0; i < fmus.size(); ++i)
         {
-          status = fmus[i]->completedIntegratorStep(true, callEventUpdate[i], terminateSimulation[i]);
-          if (oms_status_ok != status) return status;
-
-          status = fmus[i]->enterEventMode();
-          if (oms_status_ok != status) return status;
-
+          fmistatus = fmi3_completedIntegratorStep(fmus[i]->getFMU(), fmi3True, &callEventUpdate[i], &terminateSimulation[i]);
+          if (fmi3OK != fmistatus) return logError_FMUCall("fmi3_completedIntegratorStep", fmus[i]);
+          fmistatus = fmi3_enterEventMode(fmus[i]->getFMU());
+          if (fmi3OK != fmistatus) logError_FMUCall("fmi3_enterEventMode", fmus[i]);
           fmus[i]->doEventIteration();
-
-          status = fmus[i]->enterContinuousTimeMode();
-          if (oms_status_ok != status) return status;
-
+          fmistatus = fmi3_enterContinuousTimeMode(fmus[i]->getFMU());
+          if (fmi3OK != fmistatus) logError_FMUCall("fmi3_enterContinuousTimeMode", fmus[i]);
           if (nStates[i] > 0)
           {
             status = fmus[i]->getContinuousStates(states_backup[i]);
@@ -730,7 +724,6 @@ oms_status_enu_t oms::SystemSC::doStepEuler()
           status = fmus[i]->getEventindicators(event_indicators_prev[i]);
           if (oms_status_ok != status) return status;
         }
-
         // find next time event
         tnext = end_time + 1.234;
         for (size_t i = 0; i < fmus.size(); ++i)
@@ -771,16 +764,16 @@ oms_status_enu_t oms::SystemSC::doStepEuler()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::SystemSC::doStepCVODE()
+oms_status_enu_t oms::SystemSC3::doStepCVODE()
 {
-  fmi2Status fmistatus;
+  fmi3Status fmistatus;
   oms_status_enu_t status;
   int flag;
 
-  const fmi2Real end_time = std::min(time + maximumStepSize, getModel().getStopTime());
+  const fmi3Float64 end_time = std::min(time + maximumStepSize, getModel().getStopTime());
 
   // find next time event
-  fmi2Real tnext = end_time+1.0;
+  fmi3Float64 tnext = end_time+1.0;
   for (size_t i = 0; i < fmus.size(); ++i)
   {
     if (fmus[i]->getNextEventTimeDefined() && (tnext > fmus[i]->getNextEventTime()))
@@ -793,6 +786,7 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
       time = end_time;
     }
   }
+
   logDebug("tnext: " + std::to_string(tnext));
 
   while (time < end_time)
@@ -827,8 +821,8 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
 
       for (size_t i = 0; i < fmus.size(); ++i)
       {
-        status = fmus[i]->completedIntegratorStep(true, callEventUpdate[i], terminateSimulation[i]);
-        if (oms_status_ok != status) return status;
+        fmistatus = fmi3_completedIntegratorStep(fmus[i]->getFMU(), fmi3True, &callEventUpdate[i], &terminateSimulation[i]);
+        if (fmi3OK != fmistatus) return logError_FMUCall("fmi3_completedIntegratorStep", fmus[i]);
       }
 
       // emit the left limit of the event (if it hasn't already been emitted)
@@ -838,8 +832,8 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
       // Enter event mode and handle discrete state updates for each FMU
       for (size_t i = 0; i < fmus.size(); ++i)
       {
-        status = fmus[i]->enterEventMode();
-        if (oms_status_ok != status) return status;
+        fmistatus = fmi3_enterEventMode(fmus[i]->getFMU());
+        if (fmi3OK != fmistatus) logError_FMUCall("fmi3_enterEventMode", fmus[i]);
 
         fmus[i]->doEventIteration();
       }
@@ -848,8 +842,8 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
 
       for (size_t i = 0; i < fmus.size(); ++i)
       {
-        status = fmus[i]->enterContinuousTimeMode();
-        if (oms_status_ok != status) return status;
+        fmistatus = fmi3_enterContinuousTimeMode(fmus[i]->getFMU());
+        if (fmi3OK != fmistatus) logError_FMUCall("fmi3_enterContinuousTimeMode", fmus[i]);
       }
 
       for (size_t i = 0; i < fmus.size(); ++i)
@@ -911,8 +905,8 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
 
       for (size_t i = 0; i < fmus.size(); ++i)
       {
-        status = fmus[i]->completedIntegratorStep(true, callEventUpdate[i], terminateSimulation[i]);
-        if (oms_status_ok != status) return status;
+        fmistatus = fmi3_completedIntegratorStep(fmus[i]->getFMU(), fmi3True, &callEventUpdate[i], &terminateSimulation[i]);
+        if (fmi3OK != fmistatus) return logError_FMUCall("fmi3_completedIntegratorStep", fmus[i]);
 
         if (0 == nStates[i])
           continue;
@@ -933,7 +927,7 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
 
 }
 
-oms_status_enu_t oms::SystemSC::stepUntil(double stopTime)
+oms_status_enu_t oms::SystemSC3::stepUntil(double stopTime)
 {
   CallClock callClock(clock);
   const double startTime=time;
@@ -959,7 +953,7 @@ oms_status_enu_t oms::SystemSC::stepUntil(double stopTime)
   return status;
 }
 
-oms_status_enu_t oms::SystemSC::updateInputs(DirectedGraph& graph)
+oms_status_enu_t oms::SystemSC3::updateInputs(DirectedGraph& graph)
 {
   CallClock callClock(clock);
   oms_status_enu_t status;

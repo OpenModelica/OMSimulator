@@ -107,6 +107,29 @@ namespace oms
     virtual oms_status_enu_t addResources(std::string& filename) { return logError_NotImplemented; }
     virtual oms_status_enu_t deleteReferencesInSSD(const std::string& filename) {return logError_NotImplemented;}
     virtual oms_status_enu_t deleteResourcesInSSP(const std::string& filename) {return logError_NotImplemented;}
+    // common virtual functions for ME for fmi2 and fmi3
+    virtual size_t getNumberOfContinuousStates() const {return logError_NotImplemented;}
+    virtual size_t getNumberOfEventIndicators() const {return logError_NotImplemented;}
+    virtual oms_status_enu_t getContinuousStates(double* states)  {return logError_NotImplemented;}
+    virtual oms_status_enu_t setContinuousStates(double* states)  {return logError_NotImplemented;}
+    virtual oms_status_enu_t getDerivatives(double* derivatives)  {return logError_NotImplemented;}
+    virtual oms_status_enu_t getNominalsOfContinuousStates(double* nominals)  {return logError_NotImplemented;}
+    virtual oms_status_enu_t getEventindicators(double* eventindicators) {return logError_NotImplemented;}
+    virtual oms_status_enu_t getEventindicators(double* eventindicators, size_t size) {return logError_NotImplemented;}
+
+    virtual fmiHandle* getFMU() {return nullptr;  }
+    virtual fmi2EventInfo* getEventInfo() {return nullptr;}
+    virtual oms_status_enu_t doEventIteration() {return logError_NotImplemented;}
+    virtual oms_status_enu_t completedIntegratorStep(bool noSetFMUStatePriorToCurrentPoint, bool& enterEventMode, bool& terminateSimulation) {return logError_NotImplemented;}
+    virtual oms_status_enu_t enterEventMode() {return logError_NotImplemented;}
+    virtual oms_status_enu_t enterContinuousTimeMode() {return logError_NotImplemented;}
+
+    virtual bool getNewDiscreteStatesNeeded() {return logError_NotImplemented; }
+    virtual bool getTerminateSimulation() {return logError_NotImplemented; }
+    virtual bool getNominalsOfContinuousStatesChanged() {return logError_NotImplemented; }
+    virtual bool getValuesOfContinuousStatesChanged() {return logError_NotImplemented; }
+    virtual bool getNextEventTimeDefined() {return logError_NotImplemented; }
+    virtual double getNextEventTime() { return logError_NotImplemented; }
 
     const ComRef& getCref() const { return cref; }
     ComRef getFullCref() const;

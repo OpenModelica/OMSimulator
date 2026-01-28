@@ -85,7 +85,6 @@ instantiated_model.terminate()
 instantiated_model.delete()
 
 ## Result:
-## info:    model doesn't contain any continuous state
 ## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
 ## |--   resources/Add.fmu
@@ -163,6 +162,7 @@ instantiated_model.delete()
 ## info:    default.sub-system.Gain2.k: 500.0
 ## info:    default.sub-system.Gain2.u: 0.0
 ## info:    default.sub-system.Gain2.y: 0.0
+## info:    model doesn't contain any continuous state
 ## info:    maximum step size for 'model.root': 0.001000
 ## info:    Result file: SimpleSimulation8_res.mat (bufferSize=1)
 ## info: After simulation:

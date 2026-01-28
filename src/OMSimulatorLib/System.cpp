@@ -35,6 +35,7 @@
 #include "ComponentFMUCS.h"
 #include "ComponentFMU3CS.h"
 #include "ComponentFMUME.h"
+#include "ComponentFMU3ME.h"
 #include "ComponentTable.h"
 #include "Flags.h"
 #include "Model.h"
@@ -42,6 +43,7 @@
 #include "OMSString.h"
 #include "ssd/Tags.h"
 #include "SystemSC.h"
+#include "SystemSC3.h"
 #include "SystemWC.h"
 #include "Variable.h"
 #include "miniunz.h"
@@ -131,6 +133,13 @@ oms::System* oms::System::NewSystem(const oms::ComRef& cref, oms_system_enu_t ty
       return nullptr;
     }
     return SystemSC::NewSystem(cref, parentModel, parentSystem);
+  case oms_system_sc3:
+    if (parentSystem && oms_system_wc != parentSystem->getType())
+    {
+      logError("A SC system must be the root system or a subsystem of a WC system.");
+      return nullptr;
+    }
+    return SystemSC3::NewSystem(cref, parentModel, parentSystem);
   default:
       logError_InternalError;
   return nullptr;
@@ -307,8 +316,10 @@ oms_status_enu_t oms::System::addSubModel(const oms::ComRef& cref, const std::st
       component = ComponentFMUCS::NewComponent(cref, this, path_.string());
     else if (extension == ".fmu" && oms_system_wc == type && fmiVersion == "3.0")
       component = ComponentFMU3CS::NewComponent(cref, this, path_.string());
-    else if (extension == ".fmu" && oms_system_sc == type)
+    else if (extension == ".fmu" && oms_system_sc == type && fmiVersion == "2.0")
       component = ComponentFMUME::NewComponent(cref, this, path_.string());
+    else if (extension == ".fmu" && oms_system_sc == type && fmiVersion == "3.0")
+      component = ComponentFMU3ME::NewComponent(cref, this, path_.string());
     else if (extension == ".csv" || extension == ".mat")
       component = ComponentTable::NewComponent(cref, this, path_.string());
     else

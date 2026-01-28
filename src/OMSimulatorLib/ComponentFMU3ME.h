@@ -29,8 +29,8 @@
  *
  */
 
-#ifndef _OMS_COMPONENT_FMU_ME_H_
-#define _OMS_COMPONENT_FMU_ME_H_
+#ifndef _OMS_COMPONENT_FMU_3_ME_H_
+#define _OMS_COMPONENT_FMU_3_ME_H_
 
 #include "Component.h"
 #include "ComRef.h"
@@ -49,10 +49,10 @@
 
 namespace oms
 {
-  class ComponentFMUME : public Component
+  class ComponentFMU3ME : public Component
   {
   public:
-    ~ComponentFMUME();
+    ~ComponentFMU3ME();
 
     static Component* NewComponent(const oms::ComRef& cref, System* parentSystem, const std::string& fmuPath, std::string replaceComponent = "");
     static Component* NewComponent(const pugi::xml_node& node, System* parentSystem,  const std::string& sspVersion, const Snapshot& snapshot, std::string variantName);
@@ -80,9 +80,9 @@ namespace oms
     oms_status_enu_t getBoolean(const ComRef& cref, bool& value);
     oms_status_enu_t getBoolean(const fmi2ValueReference& vr, bool& value);
     oms_status_enu_t getInteger(const ComRef& cref, int& value);
-    oms_status_enu_t getInteger(const fmi2ValueReference& vr, int& value);
+    oms_status_enu_t getInteger(const fmi2ValueReference& vr, int& value, oms_signal_numeric_type_enu_t numericType);
     oms_status_enu_t getReal(const ComRef& cref, double& value);
-    oms_status_enu_t getReal(const fmi2ValueReference& vr, double& value);
+    oms_status_enu_t getReal(const fmi2ValueReference& vr, double& value, oms_signal_numeric_type_enu_t numericType);
     oms_status_enu_t getString(const ComRef& cref, std::string& value);
     oms_status_enu_t getString(const fmi2ValueReference& vr, std::string& value);
     oms_status_enu_t setBoolean(const ComRef& cref, bool value);
@@ -105,7 +105,7 @@ namespace oms
 
     oms_status_enu_t doEventIteration();
 
-    size_t getNumberOfContinuousStates() const {return derivatives.size();}
+    size_t getNumberOfContinuousStates() const {return nContinuousStates;}
     size_t getNumberOfEventIndicators() const {return nEventIndicators;}
     oms_status_enu_t getContinuousStates(double* states);
     oms_status_enu_t setContinuousStates(double* states);
@@ -118,7 +118,6 @@ namespace oms
     oms_status_enu_t enterContinuousTimeMode();
 
     fmiHandle* getFMU() {return fmu;}
-    fmi2EventInfo* getEventInfo() {return &eventInfo;}
 
     bool getCanGetAndSetState() {return getFMUInfo()->getCanGetAndSetFMUstate();}
 
@@ -127,36 +126,42 @@ namespace oms
     oms_status_enu_t newResources(const std::string& ssvFilename, const std::string& ssmFilename, bool externalResources);
     oms_status_enu_t setResourcesHelper1(Values value);
     oms_status_enu_t setResourcesHelper2(Values value);
-    oms_status_enu_t setExportName(const std::string & exportName);
+    oms_status_enu_t setExportName(const std::string & exportName) { this->exportName = exportName; return oms_status_ok;};
     std::string getExportName() const { return this->exportName; }
     oms_status_enu_t deleteReferencesInSSD(const std::string& filename);
     oms_status_enu_t deleteResourcesInSSP(const std::string& filename);
 
-    bool getNewDiscreteStatesNeeded() {return eventInfo.newDiscreteStatesNeeded == fmi2True; }
-    bool getTerminateSimulation() {return eventInfo.terminateSimulation == fmi2True; }
-    bool getNominalsOfContinuousStatesChanged() {return eventInfo.nominalsOfContinuousStatesChanged == fmi2True; }
-    bool getValuesOfContinuousStatesChanged() {return eventInfo.valuesOfContinuousStatesChanged == fmi2True; }
-    bool getNextEventTimeDefined() {return eventInfo.nextEventTimeDefined == fmi2True; }
-    double getNextEventTime() { return eventInfo.nextEventTime; }
+    bool getNewDiscreteStatesNeeded() {return newDiscreteStatesNeeded == fmi3True; }
+    bool getTerminateSimulation() {return terminateSimulation == fmi3True; }
+    bool getNominalsOfContinuousStatesChanged() {return nominalsOfContinuousStatesChanged == fmi3True; }
+    bool getValuesOfContinuousStatesChanged() {return valuesOfContinuousStatesChanged == fmi3True; }
+    bool getNextEventTimeDefined() {return nextEventTimeDefined == fmi3True; }
+    double getNextEventTime() { return nextEventTime; }
 
   protected:
-    ComponentFMUME(const ComRef& cref, System* parentSystem, const std::string& fmuPath);
+    ComponentFMU3ME(const ComRef& cref, System* parentSystem, const std::string& fmuPath);
 
     // stop the compiler generating methods copying the object
-    ComponentFMUME(ComponentFMUME const& copy);            ///< not implemented
-    ComponentFMUME& operator=(ComponentFMUME const& copy); ///< not implemented
+    ComponentFMU3ME(ComponentFMU3ME const& copy);            ///< not implemented
+    ComponentFMU3ME& operator=(ComponentFMU3ME const& copy); ///< not implemented
 
     oms_status_enu_t renameValues(const ComRef& oldCref, const ComRef& newCref);
 
     void dumpInitialUnknowns();
 
   private:
-    fmi2CallbackLogger omsfmi2logger;
+    fmi3LogMessageCallback omsfmi3logger;
     fmiHandle *fmu = NULL;
 
-    fmi2EventInfo eventInfo;
     size_t nEventIndicators;
+    size_t nContinuousStates;
 
+    fmi3Boolean newDiscreteStatesNeeded;
+    fmi3Boolean terminateSimulation;
+    fmi3Boolean nominalsOfContinuousStatesChanged;
+    fmi3Boolean valuesOfContinuousStatesChanged;
+    fmi3Boolean nextEventTimeDefined;
+    fmi3Float64 nextEventTime;
     FMUInfo fmuInfo;
 
     std::vector<Variable> allVariables;

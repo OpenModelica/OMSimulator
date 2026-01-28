@@ -27,6 +27,7 @@ set(OMSIMULATORLIB_SOURCES
       Component.cpp
       ComponentFMU3CS.cpp
       ComponentFMUCS.cpp
+      ComponentFMU3ME.cpp
       ComponentFMUME.cpp
       ComponentTable.cpp
       ComRef.cpp
@@ -58,6 +59,7 @@ set(OMSIMULATORLIB_SOURCES
       ssd/Tags.cpp
       System.cpp
       SystemSC.cpp
+      SystemSC3.cpp
       SystemWC.cpp
       Values.cpp
       Variable.cpp)
