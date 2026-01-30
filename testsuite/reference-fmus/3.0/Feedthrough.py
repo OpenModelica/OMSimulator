@@ -33,7 +33,7 @@ instantiated_model.setValue(CRef('default', 'Feedthrough', 'Boolean_input'), Tru
 instantiated_model.setValue(CRef('default', 'Feedthrough', 'Enumeration_input'), 2)
 
 ## need to implement fmi3causality table in fmi4c library if inital attribute is not present
-## instantiated_model.setValue(CRef('default', 'Feedthrough', 'String_parameter'), "Set me!")
+instantiated_model.setValue(CRef('default', 'Feedthrough', 'String_parameter'), "Set me test!")
 
 instantiated_model.initialize()
 instantiated_model.simulate()
@@ -84,8 +84,7 @@ instantiated_model.setValue(CRef('default', 'Feedthrough', 'UInt64_input'), 11)
 instantiated_model.setValue(CRef('default', 'Feedthrough', 'Boolean_input'), True)
 instantiated_model.setValue(CRef('default', 'Feedthrough', 'Enumeration_input'), 2)
 
-## need to implement fmi3causality table in fmi4c library if inital attribute is not present
-## instantiated_model.setValue(CRef('default', 'Feedthrough', 'String_parameter'), "Set me!")
+instantiated_model.setValue(CRef('default', 'Feedthrough', 'String_parameter'), "Set me test!")
 
 instantiated_model.initialize()
 instantiated_model.simulate()
@@ -126,7 +125,7 @@ instantiated_model.delete()
 ## info:    Feedthrough.UInt64_input: 11
 ## info:    Feedthrough.Boolean_input: True
 ## info:    Feedthrough.Enumeration_input: 2
-## info:    Feedthrough.String_parameter: Set me!
+## info:    Feedthrough.String_parameter: Set me test!
 ## warning: Unknown FMI3 base type for var : Binary_input
 ## warning: Unknown FMI3 base type for var : Binary_output
 ## Loading FMI version 3...
@@ -145,7 +144,7 @@ instantiated_model.delete()
 ## info:    Feedthrough.UInt64_input: 11
 ## info:    Feedthrough.Boolean_input: True
 ## info:    Feedthrough.Enumeration_input: 2
-## info:    Feedthrough.String_parameter: Set me!
+## info:    Feedthrough.String_parameter: Set me test!
 ## info:    Final Statistics for 'model.root':
 ##          NumSteps = 10001 NumRhsEvals  = 10002 NumLinSolvSetups = 501
 ##          NumNonlinSolvIters = 10001 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
