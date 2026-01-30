@@ -633,6 +633,8 @@ class System:
     return json_string
 
   def processElements(self, elements_dict: dict, connections: list, data: dict, solver_groups : defaultdict, componentSolver : dict, solver_connections : defaultdict, resources :dict, tempdir : str, systemName = None):
+    print("Resources: ")
+    print(resources)
     """Processes the elements and connections in the system."""
     for key, element in elements_dict.items():
       if isinstance(element, Component):

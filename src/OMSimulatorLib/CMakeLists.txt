@@ -25,6 +25,7 @@ set(OMSIMULATORLIB_SOURCES
       Clock.cpp
       Clocks.cpp
       Component.cpp
+      ComponentDCP.cpp
       ComponentFMU3CS.cpp
       ComponentFMUCS.cpp
       ComponentFMU3ME.cpp
@@ -85,6 +86,15 @@ target_link_libraries(OMSimulatorLib
                           oms::3rd::pugixml::header
                           oms::3rd::json::header
                           oms::3rd::ctpl::header)
+                          oms::3rd::xerces
+                          oms::3rd::ctpl::header
+                          oms::3rd::libzip
+                          oms::3rd::dcplib::core
+                          oms::3rd::dcplib::master
+                          oms::3rd::dcplib::slave
+                          oms::3rd::dcplib::ethernet
+                          oms::3rd::dcplib::zip
+                          oms::3rd::dcplib::xml)
 
 target_link_libraries(OMSimulatorLib PUBLIC ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
 
@@ -116,6 +126,15 @@ target_link_libraries(OMSimulatorLib_static
                           oms::3rd::pugixml::header
                           oms::3rd::json::header
                           oms::3rd::ctpl::header)
+                          oms::3rd::xerces
+                          oms::3rd::ctpl::header
+                          oms::3rd::libzip
+                          oms::3rd::dcplib::core
+                          oms::3rd::dcplib::master
+                          oms::3rd::dcplib::slave
+                          oms::3rd::dcplib::ethernet
+                          oms::3rd::dcplib::zip
+                          oms::3rd::dcplib::xml)
 
 target_link_libraries(OMSimulatorLib_static PUBLIC ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
 

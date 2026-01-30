@@ -68,6 +68,7 @@ class Variable:
     self.name = CRef(name)
     self.description = description
     self.valueReference = int(valueReference)
+    print("Variable causality: "+causality)
     self.causality = causality if isinstance(causality, Causality) else Causality[causality]
     self.variability = variability
     self.signal_type = signal_type if isinstance(signal_type, SignalType) else SignalType[signal_type]
