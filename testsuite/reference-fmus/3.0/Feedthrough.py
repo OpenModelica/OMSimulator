@@ -125,7 +125,7 @@ instantiated_model.delete()
 ## info:    Feedthrough.UInt64_input: 11
 ## info:    Feedthrough.Boolean_input: True
 ## info:    Feedthrough.Enumeration_input: 2
-## info:    Feedthrough.String_parameter: Set me!
+## info:    Feedthrough.String_parameter: Set me test!
 ## warning: Unknown FMI3 base type for var : Binary_input
 ## warning: Unknown FMI3 base type for var : Binary_output
 ## Loading FMI version 3...
@@ -144,7 +144,7 @@ instantiated_model.delete()
 ## info:    Feedthrough.UInt64_input: 11
 ## info:    Feedthrough.Boolean_input: True
 ## info:    Feedthrough.Enumeration_input: 2
-## info:    Feedthrough.String_parameter: Set me!
+## info:    Feedthrough.String_parameter: Set me test!
 ## info:    Final Statistics for 'model.root':
 ##          NumSteps = 10001 NumRhsEvals  = 10002 NumLinSolvSetups = 501
 ##          NumNonlinSolvIters = 10001 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
