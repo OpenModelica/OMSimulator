@@ -33,7 +33,7 @@ instantiated_model.setValue(CRef('default', 'Feedthrough', 'Boolean_input'), Tru
 instantiated_model.setValue(CRef('default', 'Feedthrough', 'Enumeration_input'), 2)
 
 ## need to implement fmi3causality table in fmi4c library if inital attribute is not present
-## instantiated_model.setValue(CRef('default', 'Feedthrough', 'String_parameter'), "Set me!")
+instantiated_model.setValue(CRef('default', 'Feedthrough', 'String_parameter'), "Set me test!")
 
 instantiated_model.initialize()
 instantiated_model.simulate()
@@ -84,8 +84,7 @@ instantiated_model.setValue(CRef('default', 'Feedthrough', 'UInt64_input'), 11)
 instantiated_model.setValue(CRef('default', 'Feedthrough', 'Boolean_input'), True)
 instantiated_model.setValue(CRef('default', 'Feedthrough', 'Enumeration_input'), 2)
 
-## need to implement fmi3causality table in fmi4c library if inital attribute is not present
-## instantiated_model.setValue(CRef('default', 'Feedthrough', 'String_parameter'), "Set me!")
+instantiated_model.setValue(CRef('default', 'Feedthrough', 'String_parameter'), "Set me test!")
 
 instantiated_model.initialize()
 instantiated_model.simulate()
