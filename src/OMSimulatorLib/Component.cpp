@@ -38,6 +38,7 @@
 #include "TLMBusConnector.h"
 
 #include <stdarg.h>
+#include <sstream>
 
 void oms::fmi2logger(fmi2ComponentEnvironment env, fmi2String instanceName, fmi2Status status, fmi2String category, fmi2String message, ...)
 {
@@ -53,22 +54,32 @@ void oms::fmi2logger(fmi2ComponentEnvironment env, fmi2String instanceName, fmi2
   va_start(argp, message);
   len = vsnprintf(msg, 1000, message, argp);
 
+  std::ostringstream s;
+  s << instanceName;
+  if (category != nullptr)
+    s << " (" << category << "): ";
+  else
+    s << ": ";
+  s << msg;
+
+  std::string output(s.str());
+
   switch (status)
   {
   case fmi2OK:
   case fmi2Pending:
-    logDebug(std::string(instanceName) + " (" + category + "): " + msg);
+    logDebug(output);
     break;
   case fmi2Warning:
-    logWarning(std::string(instanceName) + " (" + category + "): " + msg);
+    logWarning(output);
     break;
   case fmi2Discard:
   case fmi2Error:
   case fmi2Fatal:
-    logError(std::string(instanceName) + " (" + category + "): " + msg);
+    logError(output);
     break;
   default:
-    logWarning("fmiStatus = unknown; " + std::string(instanceName) + " (" + category + "): " + msg);
+    logWarning("fmiStatus = unknown; " + output);
   }
 }
 

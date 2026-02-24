@@ -37,6 +37,7 @@ model.delete()
 ## info:    Alg. loop (size 2/4)
 ##            equationPair.root.equation2
 ##            equationPair.root.equation1
+## info:    Solving system 1 to within tolerance 0.0001
 ## info:    iteration 1
 ##          inputs:
 ##            equation2.x2: 8.4
@@ -107,6 +108,7 @@ model.delete()
 ##          residuals:
 ##            res[0]: -4.44595e-05
 ##            res[1]: 0
+## info:    2-norm of residual of solution: 4.44595e-05 <= 0.0001
 ## info:    No result file will be created
 ## x1: 4.5572 (res:  0.00e+00)
 ## x1: 0.0928 (res: -4.45e-05)
