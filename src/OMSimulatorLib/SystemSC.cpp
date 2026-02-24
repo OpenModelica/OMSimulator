@@ -386,7 +386,7 @@ oms_status_enu_t oms::SystemSC::initialize()
 
     // Call CVodeSetLinearSolver to set the dense linear solver */
     flag = CVodeSetLinearSolver(solverData.cvode.mem, solverData.cvode.linSol, solverData.cvode.J);
-    if (flag < 0) logError("SUNDIALS_ERROR: CVDense() failed with flag = " + std::to_string(flag));
+    if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetLinearSolver() failed with flag = " + std::to_string(flag));
 
     logInfo("maximum step size for '" + std::string(getFullCref()) + "': " + std::to_string(maximumStepSize));
     flag = CVodeSetMaxStep(solverData.cvode.mem, maximumStepSize);
@@ -1003,7 +1003,7 @@ oms_status_enu_t oms::SystemSC::stepUntil(double stopTime)
 oms_status_enu_t oms::SystemSC::updateInputs(DirectedGraph& graph)
 {
   CallClock callClock(clock);
-  oms_status_enu_t status;
+  oms_status_enu_t status, return_status = oms_status_ok;
   int loopNum = 0;
 
   // input := output
@@ -1052,10 +1052,12 @@ oms_status_enu_t oms::SystemSC::updateInputs(DirectedGraph& graph)
       if (oms_status_ok != status)
       {
         forceLoopsToBeUpdated();
-        return status;
+        if (status > return_status)
+          return_status = status;
       }
       loopNum++;
     }
   }
-  return oms_status_ok;
+
+  return return_status;
 }
