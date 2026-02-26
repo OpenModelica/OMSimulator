@@ -297,7 +297,10 @@ class FMU:
         connector = Connector(var.name, var.causality, var.signal_type)
         connector.setUnit(var.unit)
         connector.description = var.description
-        connector.setEnumerationName(var.declaredType)
+        if var.declaredType:
+          for enum in var.enumerationDefinition:
+            if enum.name == var.declaredType:
+              connector.setEnumerationName(var.declaredType)
         connectors.append(connector)
     return connectors
 
