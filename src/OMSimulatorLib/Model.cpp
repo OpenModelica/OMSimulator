@@ -1392,6 +1392,47 @@ oms_status_enu_t oms::Model::registerSignalsForResultFile()
   if (system)
     if (oms_status_ok != system->registerSignalsForResultFile(*resultFile))
       return oms_status_error;
+
+  for (auto &it : aliases)
+  {
+    const ComRef& alias = it.first;
+    ComRef rhs;
+    oms_signal_type_enu_t varType = oms_signal_type_real;
+    int result_file_id = -1;
+    std::tie(rhs, varType, result_file_id) = it.second;
+
+    std::string description = std::string("Alias target: ") + std::string(rhs);
+    oms::SignalType_t sigType;
+    switch (std::get<1>(it.second))
+    {
+      case oms_signal_type_real:
+        sigType = oms::SignalType_t::SignalType_REAL;
+        break;
+      case oms_signal_type_integer:
+        sigType = oms::SignalType_t::SignalType_INT;
+        break;
+      case oms_signal_type_boolean:
+        sigType = oms::SignalType_t::SignalType_BOOL;
+        break;
+      default:
+        return logError("Unsupported signal type for alias \"" + std::string(alias) + "\" in model \"" + std::string(getCref()) + "\"");
+    }
+
+    result_file_id = resultFile->addSignal(alias, description, sigType);
+    it.second = std::make_tuple(rhs, varType, result_file_id);
+  }
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Model::addAlias(const ComRef& alias, const ComRef& rhs, oms_signal_type_enu_t type)
+{
+  // check that alias does not already exist
+  if (aliases.find(alias) != aliases.end())
+    return logError("Alias \"" + std::string(alias) + "\" already exists in model \"" + std::string(getCref()) + "\"");
+
+  // insert tuple (rhs, type, result_file_id) with result_file_id = -1 (not yet registered)
+  aliases[alias] = std::make_tuple(rhs, type, -1);
   return oms_status_ok;
 }
 
@@ -1414,6 +1455,46 @@ oms_status_enu_t oms::Model::emit(double time, bool force, bool* emitted)
   if (system)
     if (oms_status_ok != system->updateSignals(*resultFile))
       return oms_status_error;
+
+  // emit alias variables
+  for (const auto &it : aliases)
+  {
+    const ComRef& alias = it.first;
+    ComRef rhs;
+    oms_signal_type_enu_t varType;
+    int result_file_id = -1;
+    std::tie(rhs, varType, result_file_id) = it.second;
+
+    if (result_file_id < 0)
+      continue; // not registered in result file
+
+    SignalValue_t value;
+    oms_status_enu_t status = oms_status_ok;
+    if (varType == oms_signal_type_real)
+    {
+      double v;
+      status = system->getReal(rhs, v);
+      if (status == oms_status_ok)
+        value.realValue = v;
+    }
+    else if (varType == oms_signal_type_integer || varType == oms_signal_type_enum)
+    {
+      int v;
+      status = system->getInteger(rhs, v);
+      if (status == oms_status_ok)
+        value.intValue = v;
+    }
+    else if (varType == oms_signal_type_boolean)
+    {
+      bool v;
+      status = system->getBoolean(rhs, v);
+      if (status == oms_status_ok)
+        value.boolValue = v;
+    }
+
+    if (status == oms_status_ok)
+      resultFile->updateSignal(static_cast<unsigned int>(result_file_id), value);
+  }
 
   resultFile->emit(time);
   lastEmit = time;

@@ -59,6 +59,7 @@ extern "C"
 #endif
 
 OMSAPI oms_status_enu_t OMSCALL oms_activateVariant(const char* crefA, const char* crefB);
+OMSAPI oms_status_enu_t OMSCALL oms_addAlias(const char* cref, const char* rhs);
 OMSAPI oms_status_enu_t OMSCALL oms_addBus(const char* cref);
 OMSAPI oms_status_enu_t OMSCALL oms_addConnection(const char* crefA, const char* crefB, bool suppressUnitConversion);
 OMSAPI oms_status_enu_t OMSCALL oms_addConnector(const char* cref, oms_causality_enu_t causality, oms_signal_type_enu_t type);
