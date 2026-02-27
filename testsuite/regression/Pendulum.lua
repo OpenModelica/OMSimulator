@@ -1,6 +1,6 @@
 -- status: correct
--- teardown_command: rm -rf simulation-lua/ simulation_init.dot simulation_event.dot simulation_sim.dot simulation_res.mat
--- linux: yes
+-- teardown_command: rm -rf Pendulum-lua/ pendulum_res.mat
+-- linux: no
 -- ucrt64: yes
 -- win: no
 -- mac: no
@@ -20,6 +20,7 @@ minimumStepSize = 0.01
 maximumStepSize = 0.01
 
 oms_setVariableStepSize("model", initialStepSize, minimumStepSize, maximumStepSize);
+oms_setResultFile("model", "pendulum_res.mat")
 
 oms_instantiate("model")
 
