@@ -19,6 +19,10 @@ instantiated_model = model.instantiate() ## internally generate the json file an
 instantiated_model.setResultFile("LinearTransformation_res.mat")
 instantiated_model.initialize()
 instantiated_model.simulate()
+print(f"info: After simulation:")
+print(f"info:    default.Gain1.y: {instantiated_model.getValue(CRef('default', 'Gain1', 'y'))}", flush=True)
+print(f"info:    default.Add1.u1: {instantiated_model.getValue(CRef('default', 'Add1', 'u1'))}", flush=True)
+
 instantiated_model.terminate()
 instantiated_model.delete()
 
@@ -49,6 +53,7 @@ instantiated_model.delete()
 ## |-- |-- |-- |-- |-- |-- (k, Causality.parameter, SignalType.Real, 1, 'Gain value multiplied with input signal')
 ## |-- |-- |-- Connections:
 ## |-- |-- |-- |-- Gain1.y -> Add1.u1
+## |-- |-- |-- |-- |-- LinearTransformation: (factor: 2.0, offset: 3.0)
 ## |-- UnitDefinitions:
 ## |-- |-- Unit: 1
 ## |-- |-- |-- BaseUnit:
@@ -56,5 +61,8 @@ instantiated_model.delete()
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
 ##
-## info:    Result file: SimpleSimulation2_res.mat (bufferSize=1)
+## info:    Result file: LinearTransformation_res.mat (bufferSize=1)
+## info: After simulation:
+## info:    default.Gain1.y: 0.0
+## info:    default.Add1.u1: 3.0
 ## endResult
