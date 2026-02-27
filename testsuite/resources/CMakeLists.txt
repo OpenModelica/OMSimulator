@@ -80,6 +80,7 @@ set(OM_OMS_TESTSUITE_RESOURCES_SSPS
         ${CMAKE_CURRENT_SOURCE_DIR}/dcmotor
         ${CMAKE_CURRENT_SOURCE_DIR}/replaceSubmodel4
         ${CMAKE_CURRENT_SOURCE_DIR}/replaceSubmodel5
+        ${CMAKE_CURRENT_SOURCE_DIR}/LinearTransformation
 )
 
 ## Extract FMUs
