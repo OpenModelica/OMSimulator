@@ -41,6 +41,10 @@ reference-fmus.log: difftool
 	@$(MAKE) -C reference-fmus -f Makefile test > $@
 	@grep == reference-fmus.log
 
+regression.log: difftool
+	@$(MAKE) -C regression -f Makefile test > $@
+	@grep == regression.log
+
 validate.log: difftool
 	@$(MAKE) -C validate -f Makefile test > $@
 	@grep == validate.log
