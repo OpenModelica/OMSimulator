@@ -1,0 +1,961 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription
+  fmiVersion="2.0"
+  modelName="Modelica.Clocked.Examples.CascadeControlledDrive.AbsoluteClocks"
+  guid="{eddac240-5f29-4e8b-8478-0674c0db0b34}"
+  description="Drive with clocked cascade controller where all partitions are defined with exact (integer) clock that need to be compatible to each other"
+  version=""
+  generationTool="OpenModelica Compiler OpenModelica v1.27.0-dev-165-g0c524016a1 (64-bit)"
+  generationDateAndTime="2026-03-02T12:20:15Z"
+  variableNamingConvention="structured"
+  numberOfEventIndicators="5">
+  <ModelExchange
+    modelIdentifier="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks"
+    needsExecutionTool="false"
+    completedIntegratorStepNotNeeded="false"
+    canBeInstantiatedOnlyOncePerProcess="false"
+    canNotUseMemoryManagementFunctions="false"
+    canGetAndSetFMUstate="false"
+    canSerializeFMUstate="false"
+    providesDirectionalDerivative="false">
+    <SourceFiles>
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks.c" />
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks_01exo.c" />
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks_02nls.c" />
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks_03lsy.c" />
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks_04set.c" />
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks_05evt.c" />
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks_06inz.c" />
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks_07dly.c" />
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks_08bnd.c" />
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks_09alg.c" />
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks_10asr.c" />
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks_11mix.c" />
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks_12jac.c" />
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks_13opt.c" />
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks_14lnz.c" />
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks_15syn.c" />
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks_16dae.c" />
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks_17inl.c" />
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks_18spd.c" />
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks_FMU.c" />
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks_functions.c" />
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks_init_fmu.c" />
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks_records.c" />
+      <File name="fmi-export/fmu2_model_interface.c" />
+      <File name="fmi-export/fmu_read_flags.c" />
+      <File name="gc/memory_pool.c" />
+      <File name="gc/omc_gc.c" />
+      <File name="math-support/pivot.c" />
+      <File name="meta/meta_modelica_catch.c" />
+      <File name="simulation/arrayIndex.c" />
+      <File name="simulation/eval_dep.c" />
+      <File name="simulation/jacobian_util.c" />
+      <File name="simulation/omc_simulation_util.c" />
+      <File name="simulation/options.c" />
+      <File name="simulation/simulation_info_json.c" />
+      <File name="simulation/simulation_omc_assert.c" />
+      <File name="simulation/solver/delay.c" />
+      <File name="simulation/solver/discrete_changes.c" />
+      <File name="simulation/solver/initialization/initialization.c" />
+      <File name="simulation/solver/model_help.c" />
+      <File name="simulation/solver/omc_math.c" />
+      <File name="simulation/solver/spatialDistribution.c" />
+      <File name="simulation/solver/stateset.c" />
+      <File name="simulation/solver/synchronous.c" />
+      <File name="util/base_array.c" />
+      <File name="util/boolean_array.c" />
+      <File name="util/context.c" />
+      <File name="util/division.c" />
+      <File name="util/doubleEndedList.c" />
+      <File name="util/generic_array.c" />
+      <File name="util/index_spec.c" />
+      <File name="util/integer_array.c" />
+      <File name="util/list.c" />
+      <File name="util/modelica_string.c" />
+      <File name="util/modelica_string_lit.c" />
+      <File name="util/ModelicaUtilities.c" />
+      <File name="util/omc_error.c" />
+      <File name="util/omc_file.c" />
+      <File name="util/omc_init.c" />
+      <File name="util/omc_mmap.c" />
+      <File name="util/omc_msvc.c" />
+      <File name="util/omc_numbers.c" />
+      <File name="util/parallel_helper.c" />
+      <File name="util/rational.c" />
+      <File name="util/real_array.c" />
+      <File name="util/ringbuffer.c" />
+      <File name="util/simulation_options.c" />
+      <File name="util/string_array.c" />
+      <File name="util/utility.c" />
+      <File name="util/varinfo.c" />
+      <File name="external_solvers/dgemm.c" />
+      <File name="external_solvers/dgemv.c" />
+      <File name="external_solvers/dger.c" />
+      <File name="external_solvers/dgesv.c" />
+      <File name="external_solvers/dgetf2.c" />
+      <File name="external_solvers/dgetrf.c" />
+      <File name="external_solvers/dgetri.c" />
+      <File name="external_solvers/dgetrs.c" />
+      <File name="external_solvers/dlamch.c" />
+      <File name="external_solvers/dlaswp.c" />
+      <File name="external_solvers/dscal.c" />
+      <File name="external_solvers/dswap.c" />
+      <File name="external_solvers/dtrmm.c" />
+      <File name="external_solvers/dtrmv.c" />
+      <File name="external_solvers/dtrsm.c" />
+      <File name="external_solvers/dtrti2.c" />
+      <File name="external_solvers/dtrtri.c" />
+      <File name="external_solvers/exit_.c" />
+      <File name="external_solvers/F77_aloc.c" />
+      <File name="external_solvers/i_nint.c" />
+      <File name="external_solvers/idamax.c" />
+      <File name="external_solvers/ieeeck.c" />
+      <File name="external_solvers/ilaenv.c" />
+      <File name="external_solvers/iparmq.c" />
+      <File name="external_solvers/lsame.c" />
+      <File name="external_solvers/pow_di.c" />
+      <File name="external_solvers/s_cat.c" />
+      <File name="external_solvers/s_cmp.c" />
+      <File name="external_solvers/s_copy.c" />
+      <File name="external_solvers/xerbla.c" />
+      <File name="external_solvers/dogleg_.c" />
+      <File name="external_solvers/dpmpar_.c" />
+      <File name="external_solvers/enorm_.c" />
+      <File name="external_solvers/hybrj_.c" />
+      <File name="external_solvers/qform_.c" />
+      <File name="external_solvers/qrfac_.c" />
+      <File name="external_solvers/r1mpyq_.c" />
+      <File name="external_solvers/r1updt_.c" />
+      <File name="ModelicaExternalC/ModelicaIO.c" />
+      <File name="ModelicaExternalC/ModelicaMatIO.c" />
+      <File name="ModelicaExternalC/ModelicaStandardTables.c" />
+      <File name="ModelicaExternalC/ModelicaStandardTablesDummyUsertab.c" />
+      <File name="ModelicaExternalC/snprintf.c" />
+    </SourceFiles>
+  </ModelExchange>
+  <CoSimulation
+    modelIdentifier="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks"
+    needsExecutionTool="false"
+    canHandleVariableCommunicationStepSize="true"
+    canInterpolateInputs="true"
+    maxOutputDerivativeOrder="1"
+    canRunAsynchronuously = "false"
+    canBeInstantiatedOnlyOncePerProcess="false"
+    canNotUseMemoryManagementFunctions="false"
+    canGetAndSetFMUstate="false"
+    canSerializeFMUstate="false"
+    providesDirectionalDerivative="false">
+    <SourceFiles>
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks.c" />
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks_01exo.c" />
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks_02nls.c" />
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks_03lsy.c" />
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks_04set.c" />
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks_05evt.c" />
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks_06inz.c" />
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks_07dly.c" />
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks_08bnd.c" />
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks_09alg.c" />
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks_10asr.c" />
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks_11mix.c" />
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks_12jac.c" />
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks_13opt.c" />
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks_14lnz.c" />
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks_15syn.c" />
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks_16dae.c" />
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks_17inl.c" />
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks_18spd.c" />
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks_FMU.c" />
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks_functions.c" />
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks_init_fmu.c" />
+      <File name="Modelica_Clocked_Examples_CascadeControlledDrive_AbsoluteClocks_records.c" />
+      <File name="fmi-export/fmu2_model_interface.c" />
+      <File name="fmi-export/fmu_read_flags.c" />
+      <File name="gc/memory_pool.c" />
+      <File name="gc/omc_gc.c" />
+      <File name="math-support/pivot.c" />
+      <File name="meta/meta_modelica_catch.c" />
+      <File name="simulation/arrayIndex.c" />
+      <File name="simulation/eval_dep.c" />
+      <File name="simulation/jacobian_util.c" />
+      <File name="simulation/omc_simulation_util.c" />
+      <File name="simulation/options.c" />
+      <File name="simulation/simulation_info_json.c" />
+      <File name="simulation/simulation_omc_assert.c" />
+      <File name="simulation/solver/delay.c" />
+      <File name="simulation/solver/discrete_changes.c" />
+      <File name="simulation/solver/initialization/initialization.c" />
+      <File name="simulation/solver/model_help.c" />
+      <File name="simulation/solver/omc_math.c" />
+      <File name="simulation/solver/spatialDistribution.c" />
+      <File name="simulation/solver/stateset.c" />
+      <File name="simulation/solver/synchronous.c" />
+      <File name="util/base_array.c" />
+      <File name="util/boolean_array.c" />
+      <File name="util/context.c" />
+      <File name="util/division.c" />
+      <File name="util/doubleEndedList.c" />
+      <File name="util/generic_array.c" />
+      <File name="util/index_spec.c" />
+      <File name="util/integer_array.c" />
+      <File name="util/list.c" />
+      <File name="util/modelica_string.c" />
+      <File name="util/modelica_string_lit.c" />
+      <File name="util/ModelicaUtilities.c" />
+      <File name="util/omc_error.c" />
+      <File name="util/omc_file.c" />
+      <File name="util/omc_init.c" />
+      <File name="util/omc_mmap.c" />
+      <File name="util/omc_msvc.c" />
+      <File name="util/omc_numbers.c" />
+      <File name="util/parallel_helper.c" />
+      <File name="util/rational.c" />
+      <File name="util/real_array.c" />
+      <File name="util/ringbuffer.c" />
+      <File name="util/simulation_options.c" />
+      <File name="util/string_array.c" />
+      <File name="util/utility.c" />
+      <File name="util/varinfo.c" />
+      <File name="external_solvers/dgemm.c" />
+      <File name="external_solvers/dgemv.c" />
+      <File name="external_solvers/dger.c" />
+      <File name="external_solvers/dgesv.c" />
+      <File name="external_solvers/dgetf2.c" />
+      <File name="external_solvers/dgetrf.c" />
+      <File name="external_solvers/dgetri.c" />
+      <File name="external_solvers/dgetrs.c" />
+      <File name="external_solvers/dlamch.c" />
+      <File name="external_solvers/dlaswp.c" />
+      <File name="external_solvers/dscal.c" />
+      <File name="external_solvers/dswap.c" />
+      <File name="external_solvers/dtrmm.c" />
+      <File name="external_solvers/dtrmv.c" />
+      <File name="external_solvers/dtrsm.c" />
+      <File name="external_solvers/dtrti2.c" />
+      <File name="external_solvers/dtrtri.c" />
+      <File name="external_solvers/exit_.c" />
+      <File name="external_solvers/F77_aloc.c" />
+      <File name="external_solvers/i_nint.c" />
+      <File name="external_solvers/idamax.c" />
+      <File name="external_solvers/ieeeck.c" />
+      <File name="external_solvers/ilaenv.c" />
+      <File name="external_solvers/iparmq.c" />
+      <File name="external_solvers/lsame.c" />
+      <File name="external_solvers/pow_di.c" />
+      <File name="external_solvers/s_cat.c" />
+      <File name="external_solvers/s_cmp.c" />
+      <File name="external_solvers/s_copy.c" />
+      <File name="external_solvers/xerbla.c" />
+      <File name="external_solvers/dogleg_.c" />
+      <File name="external_solvers/dpmpar_.c" />
+      <File name="external_solvers/enorm_.c" />
+      <File name="external_solvers/hybrj_.c" />
+      <File name="external_solvers/qform_.c" />
+      <File name="external_solvers/qrfac_.c" />
+      <File name="external_solvers/r1mpyq_.c" />
+      <File name="external_solvers/r1updt_.c" />
+      <File name="ModelicaExternalC/ModelicaIO.c" />
+      <File name="ModelicaExternalC/ModelicaMatIO.c" />
+      <File name="ModelicaExternalC/ModelicaStandardTables.c" />
+      <File name="ModelicaExternalC/ModelicaStandardTablesDummyUsertab.c" />
+      <File name="ModelicaExternalC/snprintf.c" />
+    </SourceFiles>
+  </CoSimulation>
+  <UnitDefinitions>
+    <Unit name="kg.m2">
+      <BaseUnit m="2" kg="1" />
+    </Unit>
+    <Unit name="1">
+      <BaseUnit />
+    </Unit>
+    <Unit name="rad/s2">
+      <BaseUnit s="-2" />
+    </Unit>
+    <Unit name="s">
+      <BaseUnit s="1" />
+    </Unit>
+    <Unit name="N.m">
+      <BaseUnit m="2" s="-2" kg="1" />
+    </Unit>
+    <Unit name="Hz">
+      <BaseUnit s="-1" />
+    </Unit>
+    <Unit name="s-2">
+      <BaseUnit s="-2" />
+    </Unit>
+    <Unit name="rad">
+      <BaseUnit />
+    </Unit>
+    <Unit name="rad/s">
+      <BaseUnit s="-1" />
+    </Unit>
+  </UnitDefinitions>
+  <TypeDefinitions>
+    <SimpleType name="Modelica.Clocked.Types.Resolution">
+      <Enumeration>
+        <Item name="y" value="1"/>
+        <Item name="d" value="2"/>
+        <Item name="h" value="3"/>
+        <Item name="m" value="4"/>
+        <Item name="s" value="5"/>
+        <Item name="ms" value="6"/>
+        <Item name="us" value="7"/>
+        <Item name="ns" value="8"/>
+      </Enumeration>
+    </SimpleType>
+    <SimpleType name="StateSelect">
+      <Enumeration>
+        <Item name="never" value="1"/>
+        <Item name="avoid" value="2"/>
+        <Item name="default" value="3"/>
+        <Item name="prefer" value="4"/>
+        <Item name="always" value="5"/>
+      </Enumeration>
+    </SimpleType>
+  </TypeDefinitions>
+  <LogCategories>
+    <Category name="logEvents" />
+    <Category name="logSingularLinearSystems" />
+    <Category name="logNonlinearSystems" />
+    <Category name="logDynamicStateSelection" />
+    <Category name="logStatusWarning" />
+    <Category name="logStatusDiscard" />
+    <Category name="logStatusError" />
+    <Category name="logStatusFatal" />
+    <Category name="logStatusPending" />
+    <Category name="logAll" />
+    <Category name="logFmi2Call" />
+  </LogCategories>
+  <DefaultExperiment startTime="0.0" stopTime="1.0" tolerance="1e-6" stepSize="0.002"/>
+  <ModelVariables>
+  <!-- Index of variable = "1" -->
+  <ScalarVariable
+    name="load.w"
+    valueReference="0"
+    description="Absolute angular velocity of component (= der(phi))"
+    initial="exact">
+    <Real start="0.0" unit="rad/s"/>
+  </ScalarVariable>
+  <!-- Index of variable = "2" -->
+  <ScalarVariable
+    name="speed.flange.phi"
+    valueReference="1"
+    description="Absolute rotation angle of flange"
+    initial="exact">
+    <Real start="0.0" unit="rad"/>
+  </ScalarVariable>
+  <!-- Index of variable = "3" -->
+  <ScalarVariable
+    name="der(load.w)"
+    valueReference="2"
+    description="der(Absolute angular velocity of component (= der(phi)))"
+    >
+    <Real derivative="1" unit="s-2"/>
+  </ScalarVariable>
+  <!-- Index of variable = "4" -->
+  <ScalarVariable
+    name="der(speed.flange.phi)"
+    valueReference="3"
+    description="der(Absolute rotation angle of flange)"
+    >
+    <Real derivative="2" unit="Hz"/>
+  </ScalarVariable>
+  <!-- Index of variable = "5" -->
+  <ScalarVariable
+    name="previous(PI.x)"
+    valueReference="4"
+    description="Discrete PI state"
+    variability="discrete"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "6" -->
+  <ScalarVariable
+    name="PI.u"
+    valueReference="34"
+    description="Connector of clocked, Real input signal"
+    variability="discrete"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "7" -->
+  <ScalarVariable
+    name="PI.x"
+    valueReference="35"
+    description="Discrete PI state"
+    variability="discrete"
+    initial="exact">
+    <Real start="0.0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "8" -->
+  <ScalarVariable
+    name="PI.y"
+    valueReference="36"
+    description="Connector of clocked, Real output signal"
+    variability="discrete"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "9" -->
+  <ScalarVariable
+    name="angle.flange.tau"
+    valueReference="37"
+    description="Cut torque in the flange"
+    initial="exact">
+    <Real start="0.0" unit="N.m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "10" -->
+  <ScalarVariable
+    name="feedback1.u1"
+    valueReference="38"
+    description="Commanded input"
+    variability="discrete"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "11" -->
+  <ScalarVariable
+    name="feedback1.u2"
+    valueReference="39"
+    description="Feedback input"
+    variability="discrete"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "12" -->
+  <ScalarVariable
+    name="feedback1.y"
+    valueReference="40"
+    variability="discrete"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "13" -->
+  <ScalarVariable
+    name="feedback2.u1"
+    valueReference="41"
+    description="Commanded input"
+    variability="discrete"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "14" -->
+  <ScalarVariable
+    name="feedback2.u2"
+    valueReference="42"
+    description="Feedback input"
+    variability="discrete"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "15" -->
+  <ScalarVariable
+    name="feedback2.y"
+    valueReference="43"
+    variability="discrete"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "16" -->
+  <ScalarVariable
+    name="gain.u"
+    valueReference="44"
+    description="Input signal connector"
+    variability="discrete"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "17" -->
+  <ScalarVariable
+    name="gain.y"
+    valueReference="45"
+    description="Output signal connector"
+    variability="discrete"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "18" -->
+  <ScalarVariable
+    name="hold1.u"
+    valueReference="46"
+    description="Connector of clocked, Real input signal"
+    variability="discrete"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "19" -->
+  <ScalarVariable
+    name="kinematicPTP.endTime"
+    valueReference="56"
+    description="Time instant at which movement stops"
+    >
+    <Real unit="s"/>
+  </ScalarVariable>
+  <!-- Index of variable = "20" -->
+  <ScalarVariable
+    name="kinematicPTP.q[1]"
+    valueReference="57"
+    description="Reference position of path planning"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "21" -->
+  <ScalarVariable
+    name="kinematicPTP.qd[1]"
+    valueReference="58"
+    description="Reference speed of path planning"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "22" -->
+  <ScalarVariable
+    name="kinematicPTP.qdd[1]"
+    valueReference="59"
+    description="Reference acceleration of path planning"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "23" -->
+  <ScalarVariable
+    name="load.a"
+    valueReference="71"
+    description="Absolute angular acceleration of component (= der(w))"
+    >
+    <Real unit="rad/s2"/>
+  </ScalarVariable>
+  <!-- Index of variable = "24" -->
+  <ScalarVariable
+    name="load.flange_b.tau"
+    valueReference="72"
+    description="Cut torque in the flange"
+    initial="exact">
+    <Real start="0.0" unit="N.m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "25" -->
+  <ScalarVariable
+    name="sample1.y"
+    valueReference="73"
+    description="Connector of clocked, Real output signal"
+    variability="discrete"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "26" -->
+  <ScalarVariable
+    name="sample2.y"
+    valueReference="74"
+    description="Connector of clocked, Real output signal"
+    variability="discrete"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "27" -->
+  <ScalarVariable
+    name="sample3.y"
+    valueReference="75"
+    description="Connector of clocked, Real output signal"
+    variability="discrete"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "28" -->
+  <ScalarVariable
+    name="speed.flange.tau"
+    valueReference="76"
+    description="Cut torque in the flange"
+    initial="exact">
+    <Real start="0.0" unit="N.m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "29" -->
+  <ScalarVariable
+    name="super.u"
+    valueReference="77"
+    description="Connector of clocked, Real input signal"
+    variability="discrete"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "30" -->
+  <ScalarVariable
+    name="super.y"
+    valueReference="78"
+    description="Connector of clocked, Real output signal (clock of y is faster as clock of u)"
+    variability="discrete"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "31" -->
+  <ScalarVariable
+    name="torque.tau"
+    valueReference="80"
+    description="Accelerating torque acting at flange (= -flange.tau)"
+    >
+    <Real unit="N.m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "32" -->
+  <ScalarVariable
+    name="PI.T"
+    valueReference="81"
+    description="Time constant of continuous PI controller"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="0.5" min="1e-60"/>
+  </ScalarVariable>
+  <!-- Index of variable = "33" -->
+  <ScalarVariable
+    name="PI.k"
+    valueReference="82"
+    description="Gain of continuous PI controller"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="100.0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "34" -->
+  <ScalarVariable
+    name="gain.k"
+    valueReference="83"
+    description="Gain value multiplied with input signal"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="20.0" unit="1"/>
+  </ScalarVariable>
+  <!-- Index of variable = "35" -->
+  <ScalarVariable
+    name="hold1.y_start"
+    valueReference="84"
+    description="Value of output y before the first tick of the clock associated to input u"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="0.0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "36" -->
+  <ScalarVariable
+    name="kinematicPTP.q_begin[1]"
+    valueReference="90"
+    description="Start position"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="0.0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "37" -->
+  <ScalarVariable
+    name="kinematicPTP.q_end[1]"
+    valueReference="91"
+    description="End position"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="3.141592653589793"/>
+  </ScalarVariable>
+  <!-- Index of variable = "38" -->
+  <ScalarVariable
+    name="kinematicPTP.qd_max[1]"
+    valueReference="92"
+    description="Maximum velocities der(q)"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="2.0" min="1e-60"/>
+  </ScalarVariable>
+  <!-- Index of variable = "39" -->
+  <ScalarVariable
+    name="kinematicPTP.qdd_max[1]"
+    valueReference="93"
+    description="Maximum accelerations der(qd)"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="3.0" min="1e-60"/>
+  </ScalarVariable>
+  <!-- Index of variable = "40" -->
+  <ScalarVariable
+    name="kinematicPTP.startTime"
+    valueReference="94"
+    description="Time instant at which movement starts"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="0.0" unit="s"/>
+  </ScalarVariable>
+  <!-- Index of variable = "41" -->
+  <ScalarVariable
+    name="load.J"
+    valueReference="95"
+    description="Moment of inertia"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="10.0" min="0.0" unit="kg.m2"/>
+  </ScalarVariable>
+  <!-- Index of variable = "42" -->
+  <ScalarVariable
+    name="angle.flange.phi"
+    valueReference="1"
+    description="Absolute rotation angle of flange"
+    >
+    <Real unit="rad"/>
+  </ScalarVariable>
+  <!-- Index of variable = "43" -->
+  <ScalarVariable
+    name="angle.phi"
+    valueReference="1"
+    description="Absolute angle of flange as output signal"
+    >
+    <Real unit="rad"/>
+  </ScalarVariable>
+  <!-- Index of variable = "44" -->
+  <ScalarVariable
+    name="hold1.y"
+    valueReference="80"
+    description="Connector of continuous-time, Real output signal"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "45" -->
+  <ScalarVariable
+    name="load.flange_a.phi"
+    valueReference="1"
+    description="Absolute rotation angle of flange"
+    >
+    <Real unit="rad"/>
+  </ScalarVariable>
+  <!-- Index of variable = "46" -->
+  <ScalarVariable
+    name="load.flange_a.tau"
+    valueReference="80"
+    description="Cut torque in the flange"
+    >
+    <Real unit="N.m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "47" -->
+  <ScalarVariable
+    name="load.flange_b.phi"
+    valueReference="1"
+    description="Absolute rotation angle of flange"
+    >
+    <Real unit="rad"/>
+  </ScalarVariable>
+  <!-- Index of variable = "48" -->
+  <ScalarVariable
+    name="load.phi"
+    valueReference="1"
+    description="Absolute rotation angle of component"
+    >
+    <Real unit="rad"/>
+  </ScalarVariable>
+  <!-- Index of variable = "49" -->
+  <ScalarVariable
+    name="sample1.u"
+    valueReference="0"
+    description="Connector of continuous-time, Real input signal"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "50" -->
+  <ScalarVariable
+    name="sample2.u"
+    valueReference="1"
+    description="Connector of continuous-time, Real input signal"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "51" -->
+  <ScalarVariable
+    name="sample3.u"
+    valueReference="57"
+    description="Connector of continuous-time, Real input signal"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "52" -->
+  <ScalarVariable
+    name="speed.w"
+    valueReference="0"
+    description="Absolute angular velocity of flange as output signal"
+    >
+    <Real unit="rad/s"/>
+  </ScalarVariable>
+  <!-- Index of variable = "53" -->
+  <ScalarVariable
+    name="torque.flange.phi"
+    valueReference="1"
+    description="Absolute rotation angle of flange"
+    >
+    <Real unit="rad"/>
+  </ScalarVariable>
+  <!-- Index of variable = "54" -->
+  <ScalarVariable
+    name="torque.flange.tau"
+    valueReference="109"
+    description="Cut torque in the flange"
+    >
+    <Real unit="N.m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "55" -->
+  <ScalarVariable
+    name="fastClock.factor"
+    valueReference="0"
+    description="Sample factor with respect to resolution"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Integer/>
+  </ScalarVariable>
+  <!-- Index of variable = "56" -->
+  <ScalarVariable
+    name="fastClock.resolution"
+    valueReference="1"
+    description="Clock resolution"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Enumeration declaredType="Modelica.Clocked.Types.Resolution"/>
+  </ScalarVariable>
+  <!-- Index of variable = "57" -->
+  <ScalarVariable
+    name="kinematicPTP.nout"
+    valueReference="3"
+    description="Number of output signals (= dimension of q, qd, qdd, moving)"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Integer/>
+  </ScalarVariable>
+  <!-- Index of variable = "58" -->
+  <ScalarVariable
+    name="load.stateSelect"
+    valueReference="4"
+    description="Priority to use phi and w as states"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Enumeration declaredType="StateSelect"/>
+  </ScalarVariable>
+  <!-- Index of variable = "59" -->
+  <ScalarVariable
+    name="slowClock.factor"
+    valueReference="5"
+    description="Sample factor with respect to resolution"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Integer/>
+  </ScalarVariable>
+  <!-- Index of variable = "60" -->
+  <ScalarVariable
+    name="slowClock.resolution"
+    valueReference="6"
+    description="Clock resolution"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Enumeration declaredType="Modelica.Clocked.Types.Resolution"/>
+  </ScalarVariable>
+  <!-- Index of variable = "61" -->
+  <ScalarVariable
+    name="super.factor"
+    valueReference="8"
+    description="Super-sampling factor &gt;= 1 (ignored if inferFactor=true)"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Integer/>
+  </ScalarVariable>
+  <!-- Index of variable = "62" -->
+  <ScalarVariable
+    name="kinematicPTP.moving[1]"
+    valueReference="1"
+    description="= true, if end position not yet reached; = false, if end position reached or axis is completely at rest"
+    variability="discrete"
+    >
+    <Boolean/>
+  </ScalarVariable>
+  <!-- Index of variable = "63" -->
+  <ScalarVariable
+    name="fastClock.useSolver"
+    valueReference="3"
+    description="= true, if solverMethod shall be explicitly defined"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Boolean/>
+  </ScalarVariable>
+  <!-- Index of variable = "64" -->
+  <ScalarVariable
+    name="slowClock.useSolver"
+    valueReference="4"
+    description="= true, if solverMethod shall be explicitly defined"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Boolean/>
+  </ScalarVariable>
+  <!-- Index of variable = "65" -->
+  <ScalarVariable
+    name="super.inferFactor"
+    valueReference="5"
+    description="= true, if super-sampling factor is inferred"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Boolean/>
+  </ScalarVariable>
+  <!-- Index of variable = "66" -->
+  <ScalarVariable
+    name="torque.useSupport"
+    valueReference="6"
+    description="= true, if support flange enabled, otherwise implicitly grounded"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Boolean/>
+  </ScalarVariable>
+  <!-- Index of variable = "67" -->
+  <ScalarVariable
+    name="fastClock.solverMethod"
+    valueReference="0"
+    description="Integration method used for discretized continuous-time partitions"
+    variability="fixed"
+    causality="parameter"
+    >
+    <String start="ExplicitEuler"/>
+  </ScalarVariable>
+  <!-- Index of variable = "68" -->
+  <ScalarVariable
+    name="slowClock.solverMethod"
+    valueReference="1"
+    description="Integration method used for discretized continuous-time partitions"
+    variability="fixed"
+    causality="parameter"
+    >
+    <String start="ExplicitEuler"/>
+  </ScalarVariable>
+  </ModelVariables>
+  <ModelStructure>
+    <Derivatives>
+      <Unknown index="3" dependencies="1 2 5" dependenciesKind="dependent dependent dependent" />
+      <Unknown index="4" dependencies="1" dependenciesKind="dependent" />
+    </Derivatives>
+    <InitialUnknowns>
+      <Unknown index="3" dependencies="33 68" dependenciesKind="dependent dependent" />
+      <Unknown index="4" dependencies="1" dependenciesKind="dependent" />
+      <Unknown index="55" dependencies="" dependenciesKind="" />
+      <Unknown index="56" dependencies="" dependenciesKind="" />
+      <Unknown index="57" dependencies="" dependenciesKind="" />
+      <Unknown index="58" dependencies="" dependenciesKind="" />
+      <Unknown index="59" dependencies="" dependenciesKind="" />
+      <Unknown index="60" dependencies="" dependenciesKind="" />
+      <Unknown index="61" dependencies="" dependenciesKind="" />
+      <Unknown index="63" dependencies="" dependenciesKind="" />
+      <Unknown index="64" dependencies="" dependenciesKind="" />
+      <Unknown index="65" dependencies="" dependenciesKind="" />
+      <Unknown index="66" dependencies="" dependenciesKind="" />
+    </InitialUnknowns>
+  </ModelStructure>
+</fmiModelDescription>

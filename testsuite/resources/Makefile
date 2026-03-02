@@ -40,6 +40,10 @@ Modelica.Blocks.Sources.Constant \
 Modelica.Blocks.Sources.Sine \
 Modelica.Blocks.Sources.Step \
 Modelica.Electrical.Analog.Examples.CauerLowPassAnalog \
+Modelica.Mechanics.MultiBody.Examples.Elementary.Pendulum \
+Modelica.Clocked.Examples.CascadeControlledDrive.AbsoluteClocks \
+setstartTime \
+setSimpleLoop \
 nls.cs \
 nls.me \
 QuarterCarModel.DisplacementDisplacement.Chassis \

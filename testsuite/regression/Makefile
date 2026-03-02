@@ -1,7 +1,10 @@
 TEST = ../rtest -v
 
 TESTFILES = \
+AbsoluteClocks.lua \
 Pendulum.lua \
+simpleLoop.lua \
+setStartTime.lua \
 
 # Run make failingtest
 FAILINGTESTFILES = \
