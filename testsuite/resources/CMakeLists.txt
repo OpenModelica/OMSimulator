@@ -38,6 +38,10 @@ set(OM_OMS_TESTSUITE_RESOURCES_FMUS
         ${CMAKE_CURRENT_SOURCE_DIR}/Modelica.Blocks.Sources.Sine
         ${CMAKE_CURRENT_SOURCE_DIR}/Modelica.Blocks.Sources.Step
         ${CMAKE_CURRENT_SOURCE_DIR}/Modelica.Electrical.Analog.Examples.CauerLowPassAnalog
+        ${CMAKE_CURRENT_SOURCE_DIR}/Modelica.Mechanics.MultiBody.Examples.Elementary.Pendulum \
+        ${CMAKE_CURRENT_SOURCE_DIR}/Modelica.Clocked.Examples.CascadeControlledDrive.AbsoluteClocks \
+        ${CMAKE_CURRENT_SOURCE_DIR}/setstartTime \
+        ${CMAKE_CURRENT_SOURCE_DIR}/simpleLoop \
         ${CMAKE_CURRENT_SOURCE_DIR}/nls.cs
         ${CMAKE_CURRENT_SOURCE_DIR}/nls.me
         ${CMAKE_CURRENT_SOURCE_DIR}/QuarterCarModel.DisplacementDisplacement.Chassis
