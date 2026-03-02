@@ -2,7 +2,7 @@
 -- teardown_command: rm -rf Pendulum-lua/ pendulum_res.mat
 -- linux: no
 -- ucrt64: yes
--- win: no
+-- win: yes
 -- mac: no
 
 oms_setCommandLineOption("--suppressPath=true")
@@ -27,3 +27,14 @@ oms_simulate("model")
 oms_terminate("model")
 
 oms_delete("model")
+
+
+-- Result:
+-- info:    maximum step size for 'model.root': 0.010000
+-- info:    Result file: pendulum_res.mat (bufferSize=1)
+-- info:    Parameter model.root.A.world.label1 will not be stored in the result file, because the signal type is not supported
+-- info:    Parameter model.root.A.world.label2 will not be stored in the result file, because the signal type is not supported
+-- info:    Final Statistics for 'model.root':
+--          NumSteps = 118 NumRhsEvals  = 134 NumLinSolvSetups = 17
+--          NumNonlinSolvIters = 133 NumNonlinSolvConvFails = 0 NumErrTestFails = 2
+-- endResult
