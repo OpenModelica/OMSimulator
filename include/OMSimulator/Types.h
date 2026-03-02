@@ -316,15 +316,32 @@ typedef struct {
   double y2;
 } ssd_system_geometry_t;
 
+/*
+ * \brief 4.5.2.1 ssc:LinearTransformation
+ * This element provides for a linear transformation of the source value to the target value,
+ *  i.e. in the calculation target = factor * source + offset.
+*/
+typedef struct {
+  /*
+   * This attribute specifies an optional factor value to use in a linear transformation. The default is 1.
+   */
+  double factor;
+  /*
+   * This attribute specifies an optional offset value to use in a linear transformation. The default is 0.
+   */
+  double offset;
+} oms_linear_transformation_t;
+
 /**
  * \brief Connection between two connectors.
  */
 typedef struct {
-  oms_connection_type_enu_t type;                  ///< Connection type
-  char* conA;                                      ///< Name of connector A
-  char* conB;                                      ///< Name of connector B
-  ssd_connection_geometry_t* geometry;             ///< Geometry information of the connection
-  bool suppressUnitConversion;                     ///< Boolean to specify if automatic unit conversion between connections should be suppressed
+  oms_connection_type_enu_t type;                    ///< Connection type
+  char* conA;                                        ///< Name of connector A
+  char* conB;                                        ///< Name of connector B
+  ssd_connection_geometry_t* geometry;               ///< Geometry information of the connection
+  bool suppressUnitConversion;                       ///< Boolean to specify if automatic unit conversion between connections should be suppressed
+  oms_linear_transformation_t* linearTransformation; ///< Linear transformation of the source value to the target value, i.e. in the calculation target = factor * source + offset.
 } oms_connection_t;
 
 /**
