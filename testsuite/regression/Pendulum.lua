@@ -15,11 +15,7 @@ oms_addSystem("model.root", oms_system_sc)
 
 oms_addSubModel("model.root.A", "../resources/Modelica.Mechanics.MultiBody.Examples.Elementary.Pendulum.fmu")
 
-initialStepSize = 0.01
-minimumStepSize = 0.01
-maximumStepSize = 0.01
-
-oms_setVariableStepSize("model", initialStepSize, minimumStepSize, maximumStepSize);
+oms_setVariableStepSize("model", 1e-6, 1e-12, 0.01);
 oms_setResultFile("model", "pendulum_res.mat")
 
 oms_instantiate("model")

@@ -1206,28 +1206,32 @@ oms_status_enu_t SimulateSingleFMU(const filesystem::path& path)
     if(oms_status_ok != oms_setResultFile(modelName.c_str(), oms::Flags::ResultFile().value.c_str(), 1))
       return logError("oms_setResultFile failed");
 
-  if (oms::Flags::StartTime().given) 
+  if (oms::Flags::StartTime().given)
     status = oms_setStartTime(modelName.c_str(), oms::Flags::StartTime());
   else
     status = oms_setStartTime(modelName.c_str(), defaultExperiment.startTime);
   if(oms_status_ok != status) return logError("oms_setStartTime failed");
-  
+
   if (oms::Flags::StopTime().given)
   	status = oms_setStopTime(modelName.c_str(), oms::Flags::StopTime());
   else
   	status = oms_setStopTime(modelName.c_str(), defaultExperiment.stopTime);
   if(oms_status_ok != status) return logError("oms_setStopTime failed");
-  
+
   if (oms::Flags::Tolerance().given)
     status = oms_setTolerance(modelName.c_str(), oms::Flags::Tolerance(), oms::Flags::Tolerance());
   else
     status = oms_setTolerance(modelName.c_str(), defaultExperiment.tolerance, defaultExperiment.tolerance);
   if(oms_status_ok != status) return logError("oms_setTolerance failed");
-  
-  // set the maximum stepSize
-  double initialStepSize = oms::Flags::InitialStepSize().given ? oms::Flags::InitialStepSize().value : defaultExperiment.stepSize;
-  double minimumStepSize = oms::Flags::MinimumStepSize().given ? oms::Flags::MinimumStepSize().value : defaultExperiment.stepSize;
-  status = oms_setVariableStepSize(modelName.c_str(), initialStepSize, minimumStepSize, defaultExperiment.stepSize);
+
+  // set the initial, minimum and maximum stepSize
+  double initialStepSize = oms::Flags::InitialStepSize().value;
+  double minimumStepSize = oms::Flags::MinimumStepSize().value;
+
+  if (oms::Flags::MaximumStepSize().given)
+    status = oms_setVariableStepSize(modelName.c_str(), initialStepSize, minimumStepSize, oms::Flags::MaximumStepSize().value);
+  else
+    status = oms_setVariableStepSize(modelName.c_str(), initialStepSize, minimumStepSize, defaultExperiment.stepSize);
   if(oms_status_ok != status) return logError("oms_setVariableStepSize failed");
 
   if (oms::Flags::Intervals().given)
