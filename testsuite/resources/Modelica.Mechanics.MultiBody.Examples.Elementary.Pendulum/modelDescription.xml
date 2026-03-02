@@ -1,0 +1,2777 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription
+  fmiVersion="2.0"
+  modelName="Modelica.Mechanics.MultiBody.Examples.Elementary.Pendulum"
+  guid="{17868641-7eb8-489c-81b7-dd0ced31366f}"
+  description="Simple pendulum with one revolute joint and one body"
+  version=""
+  generationTool="OpenModelica Compiler OpenModelica v1.27.0-dev-165-g0c524016a1 (64-bit)"
+  generationDateAndTime="2026-02-27T14:58:01Z"
+  variableNamingConvention="structured"
+  numberOfEventIndicators="0">
+  <ModelExchange
+    modelIdentifier="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum"
+    needsExecutionTool="false"
+    completedIntegratorStepNotNeeded="false"
+    canBeInstantiatedOnlyOncePerProcess="false"
+    canNotUseMemoryManagementFunctions="false"
+    canGetAndSetFMUstate="false"
+    canSerializeFMUstate="false"
+    providesDirectionalDerivative="false">
+    <SourceFiles>
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum.c" />
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum_01exo.c" />
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum_02nls.c" />
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum_03lsy.c" />
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum_04set.c" />
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum_05evt.c" />
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum_06inz.c" />
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum_07dly.c" />
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum_08bnd.c" />
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum_09alg.c" />
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum_10asr.c" />
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum_11mix.c" />
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum_12jac.c" />
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum_13opt.c" />
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum_14lnz.c" />
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum_15syn.c" />
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum_16dae.c" />
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum_17inl.c" />
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum_18spd.c" />
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum_FMU.c" />
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum_functions.c" />
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum_init_fmu.c" />
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum_records.c" />
+      <File name="fmi-export/fmu2_model_interface.c" />
+      <File name="fmi-export/fmu_read_flags.c" />
+      <File name="gc/memory_pool.c" />
+      <File name="gc/omc_gc.c" />
+      <File name="math-support/pivot.c" />
+      <File name="meta/meta_modelica_catch.c" />
+      <File name="simulation/arrayIndex.c" />
+      <File name="simulation/eval_dep.c" />
+      <File name="simulation/jacobian_util.c" />
+      <File name="simulation/omc_simulation_util.c" />
+      <File name="simulation/options.c" />
+      <File name="simulation/simulation_info_json.c" />
+      <File name="simulation/simulation_omc_assert.c" />
+      <File name="simulation/solver/delay.c" />
+      <File name="simulation/solver/discrete_changes.c" />
+      <File name="simulation/solver/initialization/initialization.c" />
+      <File name="simulation/solver/linearSolverLapack.c" />
+      <File name="simulation/solver/linearSolverTotalPivot.c" />
+      <File name="simulation/solver/linearSystem.c" />
+      <File name="simulation/solver/model_help.c" />
+      <File name="simulation/solver/omc_math.c" />
+      <File name="simulation/solver/spatialDistribution.c" />
+      <File name="simulation/solver/stateset.c" />
+      <File name="simulation/solver/synchronous.c" />
+      <File name="util/base_array.c" />
+      <File name="util/boolean_array.c" />
+      <File name="util/context.c" />
+      <File name="util/division.c" />
+      <File name="util/doubleEndedList.c" />
+      <File name="util/generic_array.c" />
+      <File name="util/index_spec.c" />
+      <File name="util/integer_array.c" />
+      <File name="util/list.c" />
+      <File name="util/modelica_string.c" />
+      <File name="util/modelica_string_lit.c" />
+      <File name="util/ModelicaUtilities.c" />
+      <File name="util/omc_error.c" />
+      <File name="util/omc_file.c" />
+      <File name="util/omc_init.c" />
+      <File name="util/omc_mmap.c" />
+      <File name="util/omc_msvc.c" />
+      <File name="util/omc_numbers.c" />
+      <File name="util/parallel_helper.c" />
+      <File name="util/rational.c" />
+      <File name="util/real_array.c" />
+      <File name="util/ringbuffer.c" />
+      <File name="util/simulation_options.c" />
+      <File name="util/string_array.c" />
+      <File name="util/utility.c" />
+      <File name="util/varinfo.c" />
+      <File name="external_solvers/dgemm.c" />
+      <File name="external_solvers/dgemv.c" />
+      <File name="external_solvers/dger.c" />
+      <File name="external_solvers/dgesv.c" />
+      <File name="external_solvers/dgetf2.c" />
+      <File name="external_solvers/dgetrf.c" />
+      <File name="external_solvers/dgetri.c" />
+      <File name="external_solvers/dgetrs.c" />
+      <File name="external_solvers/dlamch.c" />
+      <File name="external_solvers/dlaswp.c" />
+      <File name="external_solvers/dscal.c" />
+      <File name="external_solvers/dswap.c" />
+      <File name="external_solvers/dtrmm.c" />
+      <File name="external_solvers/dtrmv.c" />
+      <File name="external_solvers/dtrsm.c" />
+      <File name="external_solvers/dtrti2.c" />
+      <File name="external_solvers/dtrtri.c" />
+      <File name="external_solvers/exit_.c" />
+      <File name="external_solvers/F77_aloc.c" />
+      <File name="external_solvers/i_nint.c" />
+      <File name="external_solvers/idamax.c" />
+      <File name="external_solvers/ieeeck.c" />
+      <File name="external_solvers/ilaenv.c" />
+      <File name="external_solvers/iparmq.c" />
+      <File name="external_solvers/lsame.c" />
+      <File name="external_solvers/pow_di.c" />
+      <File name="external_solvers/s_cat.c" />
+      <File name="external_solvers/s_cmp.c" />
+      <File name="external_solvers/s_copy.c" />
+      <File name="external_solvers/xerbla.c" />
+      <File name="external_solvers/dogleg_.c" />
+      <File name="external_solvers/dpmpar_.c" />
+      <File name="external_solvers/enorm_.c" />
+      <File name="external_solvers/hybrj_.c" />
+      <File name="external_solvers/qform_.c" />
+      <File name="external_solvers/qrfac_.c" />
+      <File name="external_solvers/r1mpyq_.c" />
+      <File name="external_solvers/r1updt_.c" />
+      <File name="ModelicaExternalC/ModelicaIO.c" />
+      <File name="ModelicaExternalC/ModelicaMatIO.c" />
+      <File name="ModelicaExternalC/ModelicaStandardTables.c" />
+      <File name="ModelicaExternalC/ModelicaStandardTablesDummyUsertab.c" />
+      <File name="ModelicaExternalC/snprintf.c" />
+    </SourceFiles>
+  </ModelExchange>
+  <CoSimulation
+    modelIdentifier="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum"
+    needsExecutionTool="false"
+    canHandleVariableCommunicationStepSize="true"
+    canInterpolateInputs="true"
+    maxOutputDerivativeOrder="1"
+    canRunAsynchronuously = "false"
+    canBeInstantiatedOnlyOncePerProcess="false"
+    canNotUseMemoryManagementFunctions="false"
+    canGetAndSetFMUstate="false"
+    canSerializeFMUstate="false"
+    providesDirectionalDerivative="false">
+    <SourceFiles>
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum.c" />
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum_01exo.c" />
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum_02nls.c" />
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum_03lsy.c" />
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum_04set.c" />
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum_05evt.c" />
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum_06inz.c" />
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum_07dly.c" />
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum_08bnd.c" />
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum_09alg.c" />
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum_10asr.c" />
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum_11mix.c" />
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum_12jac.c" />
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum_13opt.c" />
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum_14lnz.c" />
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum_15syn.c" />
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum_16dae.c" />
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum_17inl.c" />
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum_18spd.c" />
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum_FMU.c" />
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum_functions.c" />
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum_init_fmu.c" />
+      <File name="Modelica_Mechanics_MultiBody_Examples_Elementary_Pendulum_records.c" />
+      <File name="fmi-export/fmu2_model_interface.c" />
+      <File name="fmi-export/fmu_read_flags.c" />
+      <File name="gc/memory_pool.c" />
+      <File name="gc/omc_gc.c" />
+      <File name="math-support/pivot.c" />
+      <File name="meta/meta_modelica_catch.c" />
+      <File name="simulation/arrayIndex.c" />
+      <File name="simulation/eval_dep.c" />
+      <File name="simulation/jacobian_util.c" />
+      <File name="simulation/omc_simulation_util.c" />
+      <File name="simulation/options.c" />
+      <File name="simulation/simulation_info_json.c" />
+      <File name="simulation/simulation_omc_assert.c" />
+      <File name="simulation/solver/delay.c" />
+      <File name="simulation/solver/discrete_changes.c" />
+      <File name="simulation/solver/initialization/initialization.c" />
+      <File name="simulation/solver/linearSolverLapack.c" />
+      <File name="simulation/solver/linearSolverTotalPivot.c" />
+      <File name="simulation/solver/linearSystem.c" />
+      <File name="simulation/solver/model_help.c" />
+      <File name="simulation/solver/omc_math.c" />
+      <File name="simulation/solver/spatialDistribution.c" />
+      <File name="simulation/solver/stateset.c" />
+      <File name="simulation/solver/synchronous.c" />
+      <File name="util/base_array.c" />
+      <File name="util/boolean_array.c" />
+      <File name="util/context.c" />
+      <File name="util/division.c" />
+      <File name="util/doubleEndedList.c" />
+      <File name="util/generic_array.c" />
+      <File name="util/index_spec.c" />
+      <File name="util/integer_array.c" />
+      <File name="util/list.c" />
+      <File name="util/modelica_string.c" />
+      <File name="util/modelica_string_lit.c" />
+      <File name="util/ModelicaUtilities.c" />
+      <File name="util/omc_error.c" />
+      <File name="util/omc_file.c" />
+      <File name="util/omc_init.c" />
+      <File name="util/omc_mmap.c" />
+      <File name="util/omc_msvc.c" />
+      <File name="util/omc_numbers.c" />
+      <File name="util/parallel_helper.c" />
+      <File name="util/rational.c" />
+      <File name="util/real_array.c" />
+      <File name="util/ringbuffer.c" />
+      <File name="util/simulation_options.c" />
+      <File name="util/string_array.c" />
+      <File name="util/utility.c" />
+      <File name="util/varinfo.c" />
+      <File name="external_solvers/dgemm.c" />
+      <File name="external_solvers/dgemv.c" />
+      <File name="external_solvers/dger.c" />
+      <File name="external_solvers/dgesv.c" />
+      <File name="external_solvers/dgetf2.c" />
+      <File name="external_solvers/dgetrf.c" />
+      <File name="external_solvers/dgetri.c" />
+      <File name="external_solvers/dgetrs.c" />
+      <File name="external_solvers/dlamch.c" />
+      <File name="external_solvers/dlaswp.c" />
+      <File name="external_solvers/dscal.c" />
+      <File name="external_solvers/dswap.c" />
+      <File name="external_solvers/dtrmm.c" />
+      <File name="external_solvers/dtrmv.c" />
+      <File name="external_solvers/dtrsm.c" />
+      <File name="external_solvers/dtrti2.c" />
+      <File name="external_solvers/dtrtri.c" />
+      <File name="external_solvers/exit_.c" />
+      <File name="external_solvers/F77_aloc.c" />
+      <File name="external_solvers/i_nint.c" />
+      <File name="external_solvers/idamax.c" />
+      <File name="external_solvers/ieeeck.c" />
+      <File name="external_solvers/ilaenv.c" />
+      <File name="external_solvers/iparmq.c" />
+      <File name="external_solvers/lsame.c" />
+      <File name="external_solvers/pow_di.c" />
+      <File name="external_solvers/s_cat.c" />
+      <File name="external_solvers/s_cmp.c" />
+      <File name="external_solvers/s_copy.c" />
+      <File name="external_solvers/xerbla.c" />
+      <File name="external_solvers/dogleg_.c" />
+      <File name="external_solvers/dpmpar_.c" />
+      <File name="external_solvers/enorm_.c" />
+      <File name="external_solvers/hybrj_.c" />
+      <File name="external_solvers/qform_.c" />
+      <File name="external_solvers/qrfac_.c" />
+      <File name="external_solvers/r1mpyq_.c" />
+      <File name="external_solvers/r1updt_.c" />
+      <File name="ModelicaExternalC/ModelicaIO.c" />
+      <File name="ModelicaExternalC/ModelicaMatIO.c" />
+      <File name="ModelicaExternalC/ModelicaStandardTables.c" />
+      <File name="ModelicaExternalC/ModelicaStandardTablesDummyUsertab.c" />
+      <File name="ModelicaExternalC/snprintf.c" />
+    </SourceFiles>
+  </CoSimulation>
+  <UnitDefinitions>
+    <Unit name="m3/s2">
+      <BaseUnit m="3" s="-2" />
+    </Unit>
+    <Unit name="N.m/m">
+      <BaseUnit m="1" s="-2" kg="1" />
+    </Unit>
+    <Unit name="N/m">
+      <BaseUnit s="-2" kg="1" />
+    </Unit>
+    <Unit name="1">
+      <BaseUnit />
+    </Unit>
+    <Unit name="N.m.s/rad">
+      <BaseUnit m="2" s="-1" kg="1" />
+    </Unit>
+    <Unit name="kg">
+      <BaseUnit kg="1" />
+    </Unit>
+    <Unit name="kg.m2">
+      <BaseUnit m="2" kg="1" />
+    </Unit>
+    <Unit name="m">
+      <BaseUnit m="1" />
+    </Unit>
+    <Unit name="W">
+      <BaseUnit m="2" s="-3" kg="1" />
+    </Unit>
+    <Unit name="rad/s2">
+      <BaseUnit s="-2" />
+    </Unit>
+    <Unit name="m/s">
+      <BaseUnit m="1" s="-1" />
+    </Unit>
+    <Unit name="N.m">
+      <BaseUnit m="2" s="-2" kg="1" />
+    </Unit>
+    <Unit name="N">
+      <BaseUnit m="1" s="-2" kg="1" />
+    </Unit>
+    <Unit name="m/s2">
+      <BaseUnit m="1" s="-2" />
+    </Unit>
+    <Unit name="s-2">
+      <BaseUnit s="-2" />
+    </Unit>
+    <Unit name="Hz">
+      <BaseUnit s="-1" />
+    </Unit>
+    <Unit name="rad/s">
+      <BaseUnit s="-1" />
+    </Unit>
+    <Unit name="rad">
+      <BaseUnit />
+    </Unit>
+  </UnitDefinitions>
+  <TypeDefinitions>
+    <SimpleType name="StateSelect">
+      <Enumeration>
+        <Item name="never" value="1"/>
+        <Item name="avoid" value="2"/>
+        <Item name="default" value="3"/>
+        <Item name="prefer" value="4"/>
+        <Item name="always" value="5"/>
+      </Enumeration>
+    </SimpleType>
+    <SimpleType name="Modelica.Mechanics.MultiBody.Types.GravityTypes">
+      <Enumeration>
+        <Item name="NoGravity" value="1"/>
+        <Item name="UniformGravity" value="2"/>
+        <Item name="PointGravity" value="3"/>
+      </Enumeration>
+    </SimpleType>
+  </TypeDefinitions>
+  <LogCategories>
+    <Category name="logEvents" />
+    <Category name="logSingularLinearSystems" />
+    <Category name="logNonlinearSystems" />
+    <Category name="logDynamicStateSelection" />
+    <Category name="logStatusWarning" />
+    <Category name="logStatusDiscard" />
+    <Category name="logStatusError" />
+    <Category name="logStatusFatal" />
+    <Category name="logStatusPending" />
+    <Category name="logAll" />
+    <Category name="logFmi2Call" />
+  </LogCategories>
+  <DefaultExperiment startTime="0.0" stopTime="5.0" tolerance="1e-6" stepSize="0.01"/>
+  <ModelVariables>
+  <!-- Index of variable = "1" -->
+  <ScalarVariable
+    name="rev.phi"
+    valueReference="0"
+    description="Relative rotation angle from frame_a to frame_b"
+    initial="exact">
+    <Real start="0.0" unit="rad"/>
+  </ScalarVariable>
+  <!-- Index of variable = "2" -->
+  <ScalarVariable
+    name="rev.w"
+    valueReference="1"
+    description="First derivative of angle phi (relative angular velocity)"
+    initial="exact">
+    <Real start="0.0" unit="rad/s"/>
+  </ScalarVariable>
+  <!-- Index of variable = "3" -->
+  <ScalarVariable
+    name="der(rev.phi)"
+    valueReference="2"
+    description="der(Relative rotation angle from frame_a to frame_b)"
+    >
+    <Real derivative="1" unit="Hz"/>
+  </ScalarVariable>
+  <!-- Index of variable = "4" -->
+  <ScalarVariable
+    name="der(rev.w)"
+    valueReference="3"
+    description="der(First derivative of angle phi (relative angular velocity))"
+    >
+    <Real derivative="2" unit="s-2"/>
+  </ScalarVariable>
+  <!-- Index of variable = "5" -->
+  <ScalarVariable
+    name="der(body.w_a[1])"
+    valueReference="4"
+    description="Absolute angular velocity of frame_a resolved in frame_a"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "6" -->
+  <ScalarVariable
+    name="der(body.w_a[2])"
+    valueReference="5"
+    description="Absolute angular velocity of frame_a resolved in frame_a"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "7" -->
+  <ScalarVariable
+    name="der(body.w_a[3])"
+    valueReference="6"
+    description="Absolute angular velocity of frame_a resolved in frame_a"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "8" -->
+  <ScalarVariable
+    name="der(damper.phi_rel)"
+    valueReference="7"
+    description="Relative rotation angle (= flange_b.phi - flange_a.phi)"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "9" -->
+  <ScalarVariable
+    name="der(damper.w_rel)"
+    valueReference="8"
+    description="Relative angular velocity (= der(phi_rel))"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "10" -->
+  <ScalarVariable
+    name="body.a_0[1]"
+    valueReference="18"
+    description="Absolute acceleration of frame_a resolved in world frame (= der(v_0))"
+    initial="exact">
+    <Real start="0.0" unit="m/s2"/>
+  </ScalarVariable>
+  <!-- Index of variable = "11" -->
+  <ScalarVariable
+    name="body.a_0[2]"
+    valueReference="19"
+    description="Absolute acceleration of frame_a resolved in world frame (= der(v_0))"
+    initial="exact">
+    <Real start="0.0" unit="m/s2"/>
+  </ScalarVariable>
+  <!-- Index of variable = "12" -->
+  <ScalarVariable
+    name="body.a_0[3]"
+    valueReference="20"
+    description="Absolute acceleration of frame_a resolved in world frame (= der(v_0))"
+    initial="exact">
+    <Real start="0.0" unit="m/s2"/>
+  </ScalarVariable>
+  <!-- Index of variable = "13" -->
+  <ScalarVariable
+    name="body.frame_a.R.T[1,1]"
+    valueReference="32"
+    description="Transformation matrix from world frame to local frame"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "14" -->
+  <ScalarVariable
+    name="body.frame_a.R.T[1,2]"
+    valueReference="33"
+    description="Transformation matrix from world frame to local frame"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "15" -->
+  <ScalarVariable
+    name="body.frame_a.R.T[1,3]"
+    valueReference="34"
+    description="Transformation matrix from world frame to local frame"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "16" -->
+  <ScalarVariable
+    name="body.frame_a.R.T[2,1]"
+    valueReference="35"
+    description="Transformation matrix from world frame to local frame"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "17" -->
+  <ScalarVariable
+    name="body.frame_a.R.T[2,2]"
+    valueReference="36"
+    description="Transformation matrix from world frame to local frame"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "18" -->
+  <ScalarVariable
+    name="body.frame_a.R.T[2,3]"
+    valueReference="37"
+    description="Transformation matrix from world frame to local frame"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "19" -->
+  <ScalarVariable
+    name="body.frame_a.R.T[3,1]"
+    valueReference="38"
+    description="Transformation matrix from world frame to local frame"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "20" -->
+  <ScalarVariable
+    name="body.frame_a.R.T[3,2]"
+    valueReference="39"
+    description="Transformation matrix from world frame to local frame"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "21" -->
+  <ScalarVariable
+    name="body.frame_a.R.T[3,3]"
+    valueReference="40"
+    description="Transformation matrix from world frame to local frame"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "22" -->
+  <ScalarVariable
+    name="body.frame_a.f[1]"
+    valueReference="41"
+    description="Cut-force resolved in connector frame"
+    >
+    <Real unit="N"/>
+  </ScalarVariable>
+  <!-- Index of variable = "23" -->
+  <ScalarVariable
+    name="body.frame_a.f[2]"
+    valueReference="42"
+    description="Cut-force resolved in connector frame"
+    >
+    <Real unit="N"/>
+  </ScalarVariable>
+  <!-- Index of variable = "24" -->
+  <ScalarVariable
+    name="body.frame_a.f[3]"
+    valueReference="43"
+    description="Cut-force resolved in connector frame"
+    >
+    <Real unit="N"/>
+  </ScalarVariable>
+  <!-- Index of variable = "25" -->
+  <ScalarVariable
+    name="body.frame_a.t[1]"
+    valueReference="44"
+    description="Cut-torque resolved in connector frame"
+    >
+    <Real unit="N.m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "26" -->
+  <ScalarVariable
+    name="body.frame_a.t[2]"
+    valueReference="45"
+    description="Cut-torque resolved in connector frame"
+    >
+    <Real unit="N.m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "27" -->
+  <ScalarVariable
+    name="body.frame_a.t[3]"
+    valueReference="46"
+    description="Cut-torque resolved in connector frame"
+    >
+    <Real unit="N.m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "28" -->
+  <ScalarVariable
+    name="body.g_0[1]"
+    valueReference="47"
+    description="Gravity acceleration resolved in world frame"
+    initial="exact">
+    <Real start="0.0" unit="m/s2"/>
+  </ScalarVariable>
+  <!-- Index of variable = "29" -->
+  <ScalarVariable
+    name="body.g_0[3]"
+    valueReference="48"
+    description="Gravity acceleration resolved in world frame"
+    initial="exact">
+    <Real start="0.0" unit="m/s2"/>
+  </ScalarVariable>
+  <!-- Index of variable = "30" -->
+  <ScalarVariable
+    name="body.v_0[1]"
+    valueReference="72"
+    description="Absolute velocity of frame_a, resolved in world frame (= der(r_0))"
+    initial="exact">
+    <Real start="0.0" unit="m/s"/>
+  </ScalarVariable>
+  <!-- Index of variable = "31" -->
+  <ScalarVariable
+    name="body.v_0[2]"
+    valueReference="73"
+    description="Absolute velocity of frame_a, resolved in world frame (= der(r_0))"
+    initial="exact">
+    <Real start="0.0" unit="m/s"/>
+  </ScalarVariable>
+  <!-- Index of variable = "32" -->
+  <ScalarVariable
+    name="body.v_0[3]"
+    valueReference="74"
+    description="Absolute velocity of frame_a, resolved in world frame (= der(r_0))"
+    initial="exact">
+    <Real start="0.0" unit="m/s"/>
+  </ScalarVariable>
+  <!-- Index of variable = "33" -->
+  <ScalarVariable
+    name="body.w_a[1]"
+    valueReference="75"
+    description="Absolute angular velocity of frame_a resolved in frame_a"
+    >
+    <Real unit="rad/s"/>
+  </ScalarVariable>
+  <!-- Index of variable = "34" -->
+  <ScalarVariable
+    name="body.w_a[2]"
+    valueReference="76"
+    description="Absolute angular velocity of frame_a resolved in frame_a"
+    >
+    <Real unit="rad/s"/>
+  </ScalarVariable>
+  <!-- Index of variable = "35" -->
+  <ScalarVariable
+    name="body.w_a[3]"
+    valueReference="77"
+    description="Absolute angular velocity of frame_a resolved in frame_a"
+    >
+    <Real unit="rad/s"/>
+  </ScalarVariable>
+  <!-- Index of variable = "36" -->
+  <ScalarVariable
+    name="body.z_a[1]"
+    valueReference="78"
+    description="Absolute angular acceleration of frame_a resolved in frame_a"
+    >
+    <Real unit="rad/s2"/>
+  </ScalarVariable>
+  <!-- Index of variable = "37" -->
+  <ScalarVariable
+    name="body.z_a[2]"
+    valueReference="79"
+    description="Absolute angular acceleration of frame_a resolved in frame_a"
+    >
+    <Real unit="rad/s2"/>
+  </ScalarVariable>
+  <!-- Index of variable = "38" -->
+  <ScalarVariable
+    name="body.z_a[3]"
+    valueReference="80"
+    description="Absolute angular acceleration of frame_a resolved in frame_a"
+    >
+    <Real unit="rad/s2"/>
+  </ScalarVariable>
+  <!-- Index of variable = "39" -->
+  <ScalarVariable
+    name="damper.a_rel"
+    valueReference="81"
+    description="Relative angular acceleration (= der(w_rel))"
+    >
+    <Real unit="rad/s2"/>
+  </ScalarVariable>
+  <!-- Index of variable = "40" -->
+  <ScalarVariable
+    name="damper.lossPower"
+    valueReference="82"
+    description="Loss power leaving component via heatPort (&gt; 0, if heat is flowing out of component)"
+    >
+    <Real unit="W"/>
+  </ScalarVariable>
+  <!-- Index of variable = "41" -->
+  <ScalarVariable
+    name="damper.phi_rel"
+    valueReference="83"
+    description="Relative rotation angle (= flange_b.phi - flange_a.phi)"
+    >
+    <Real unit="rad"/>
+  </ScalarVariable>
+  <!-- Index of variable = "42" -->
+  <ScalarVariable
+    name="damper.tau"
+    valueReference="84"
+    description="Torque between flanges (= flange_b.tau)"
+    >
+    <Real unit="N.m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "43" -->
+  <ScalarVariable
+    name="damper.w_rel"
+    valueReference="85"
+    description="Relative angular velocity (= der(phi_rel))"
+    >
+    <Real unit="rad/s"/>
+  </ScalarVariable>
+  <!-- Index of variable = "44" -->
+  <ScalarVariable
+    name="rev.a"
+    valueReference="89"
+    description="Second derivative of angle phi (relative angular acceleration)"
+    >
+    <Real unit="rad/s2"/>
+  </ScalarVariable>
+  <!-- Index of variable = "45" -->
+  <ScalarVariable
+    name="rev.frame_a.f[1]"
+    valueReference="100"
+    description="Cut-force resolved in connector frame"
+    >
+    <Real unit="N"/>
+  </ScalarVariable>
+  <!-- Index of variable = "46" -->
+  <ScalarVariable
+    name="rev.frame_a.f[2]"
+    valueReference="101"
+    description="Cut-force resolved in connector frame"
+    >
+    <Real unit="N"/>
+  </ScalarVariable>
+  <!-- Index of variable = "47" -->
+  <ScalarVariable
+    name="rev.frame_a.f[3]"
+    valueReference="102"
+    description="Cut-force resolved in connector frame"
+    >
+    <Real unit="N"/>
+  </ScalarVariable>
+  <!-- Index of variable = "48" -->
+  <ScalarVariable
+    name="rev.frame_a.t[1]"
+    valueReference="103"
+    description="Cut-torque resolved in connector frame"
+    >
+    <Real unit="N.m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "49" -->
+  <ScalarVariable
+    name="rev.frame_a.t[2]"
+    valueReference="104"
+    description="Cut-torque resolved in connector frame"
+    >
+    <Real unit="N.m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "50" -->
+  <ScalarVariable
+    name="rev.frame_a.t[3]"
+    valueReference="105"
+    description="Cut-torque resolved in connector frame"
+    >
+    <Real unit="N.m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "51" -->
+  <ScalarVariable
+    name="world.frame_b.R.T[1,1]"
+    valueReference="106"
+    description="Transformation matrix from world frame to local frame"
+    initial="exact">
+    <Real start="0.0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "52" -->
+  <ScalarVariable
+    name="world.frame_b.R.T[1,2]"
+    valueReference="107"
+    description="Transformation matrix from world frame to local frame"
+    initial="exact">
+    <Real start="0.0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "53" -->
+  <ScalarVariable
+    name="world.frame_b.R.T[1,3]"
+    valueReference="108"
+    description="Transformation matrix from world frame to local frame"
+    initial="exact">
+    <Real start="0.0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "54" -->
+  <ScalarVariable
+    name="world.frame_b.R.T[2,1]"
+    valueReference="109"
+    description="Transformation matrix from world frame to local frame"
+    initial="exact">
+    <Real start="0.0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "55" -->
+  <ScalarVariable
+    name="world.frame_b.R.T[2,2]"
+    valueReference="110"
+    description="Transformation matrix from world frame to local frame"
+    initial="exact">
+    <Real start="0.0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "56" -->
+  <ScalarVariable
+    name="world.frame_b.R.T[2,3]"
+    valueReference="111"
+    description="Transformation matrix from world frame to local frame"
+    initial="exact">
+    <Real start="0.0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "57" -->
+  <ScalarVariable
+    name="world.frame_b.R.T[3,1]"
+    valueReference="112"
+    description="Transformation matrix from world frame to local frame"
+    initial="exact">
+    <Real start="0.0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "58" -->
+  <ScalarVariable
+    name="world.frame_b.R.T[3,2]"
+    valueReference="113"
+    description="Transformation matrix from world frame to local frame"
+    initial="exact">
+    <Real start="0.0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "59" -->
+  <ScalarVariable
+    name="world.frame_b.R.T[3,3]"
+    valueReference="114"
+    description="Transformation matrix from world frame to local frame"
+    initial="exact">
+    <Real start="0.0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "60" -->
+  <ScalarVariable
+    name="world.frame_b.R.w[1]"
+    valueReference="115"
+    description="Absolute angular velocity of local frame, resolved in local frame"
+    initial="exact">
+    <Real start="0.0" unit="rad/s"/>
+  </ScalarVariable>
+  <!-- Index of variable = "61" -->
+  <ScalarVariable
+    name="world.frame_b.R.w[2]"
+    valueReference="116"
+    description="Absolute angular velocity of local frame, resolved in local frame"
+    initial="exact">
+    <Real start="0.0" unit="rad/s"/>
+  </ScalarVariable>
+  <!-- Index of variable = "62" -->
+  <ScalarVariable
+    name="world.frame_b.R.w[3]"
+    valueReference="117"
+    description="Absolute angular velocity of local frame, resolved in local frame"
+    initial="exact">
+    <Real start="0.0" unit="rad/s"/>
+  </ScalarVariable>
+  <!-- Index of variable = "63" -->
+  <ScalarVariable
+    name="world.frame_b.r_0[1]"
+    valueReference="118"
+    description="Position vector from world frame to the connector frame origin, resolved in world frame"
+    initial="exact">
+    <Real start="0.0" unit="m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "64" -->
+  <ScalarVariable
+    name="world.frame_b.r_0[2]"
+    valueReference="119"
+    description="Position vector from world frame to the connector frame origin, resolved in world frame"
+    initial="exact">
+    <Real start="0.0" unit="m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "65" -->
+  <ScalarVariable
+    name="world.frame_b.r_0[3]"
+    valueReference="120"
+    description="Position vector from world frame to the connector frame origin, resolved in world frame"
+    initial="exact">
+    <Real start="0.0" unit="m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "66" -->
+  <ScalarVariable
+    name="body.I[1,1]"
+    valueReference="553"
+    description="Inertia tensor"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Real unit="kg.m2"/>
+  </ScalarVariable>
+  <!-- Index of variable = "67" -->
+  <ScalarVariable
+    name="body.I[1,2]"
+    valueReference="554"
+    description="Inertia tensor"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Real unit="kg.m2"/>
+  </ScalarVariable>
+  <!-- Index of variable = "68" -->
+  <ScalarVariable
+    name="body.I[1,3]"
+    valueReference="555"
+    description="Inertia tensor"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Real unit="kg.m2"/>
+  </ScalarVariable>
+  <!-- Index of variable = "69" -->
+  <ScalarVariable
+    name="body.I[2,1]"
+    valueReference="556"
+    description="Inertia tensor"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Real unit="kg.m2"/>
+  </ScalarVariable>
+  <!-- Index of variable = "70" -->
+  <ScalarVariable
+    name="body.I[2,2]"
+    valueReference="557"
+    description="Inertia tensor"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Real unit="kg.m2"/>
+  </ScalarVariable>
+  <!-- Index of variable = "71" -->
+  <ScalarVariable
+    name="body.I[2,3]"
+    valueReference="558"
+    description="Inertia tensor"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Real unit="kg.m2"/>
+  </ScalarVariable>
+  <!-- Index of variable = "72" -->
+  <ScalarVariable
+    name="body.I[3,1]"
+    valueReference="559"
+    description="Inertia tensor"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Real unit="kg.m2"/>
+  </ScalarVariable>
+  <!-- Index of variable = "73" -->
+  <ScalarVariable
+    name="body.I[3,2]"
+    valueReference="560"
+    description="Inertia tensor"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Real unit="kg.m2"/>
+  </ScalarVariable>
+  <!-- Index of variable = "74" -->
+  <ScalarVariable
+    name="body.I[3,3]"
+    valueReference="561"
+    description="Inertia tensor"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Real unit="kg.m2"/>
+  </ScalarVariable>
+  <!-- Index of variable = "75" -->
+  <ScalarVariable
+    name="body.I_11"
+    valueReference="562"
+    description="Element (1,1) of inertia tensor"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="0.001" min="0.0" unit="kg.m2"/>
+  </ScalarVariable>
+  <!-- Index of variable = "76" -->
+  <ScalarVariable
+    name="body.I_21"
+    valueReference="563"
+    description="Element (2,1) of inertia tensor"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="0.0" min="-1e60" unit="kg.m2"/>
+  </ScalarVariable>
+  <!-- Index of variable = "77" -->
+  <ScalarVariable
+    name="body.I_22"
+    valueReference="564"
+    description="Element (2,2) of inertia tensor"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="0.001" min="0.0" unit="kg.m2"/>
+  </ScalarVariable>
+  <!-- Index of variable = "78" -->
+  <ScalarVariable
+    name="body.I_31"
+    valueReference="565"
+    description="Element (3,1) of inertia tensor"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="0.0" min="-1e60" unit="kg.m2"/>
+  </ScalarVariable>
+  <!-- Index of variable = "79" -->
+  <ScalarVariable
+    name="body.I_32"
+    valueReference="566"
+    description="Element (3,2) of inertia tensor"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="0.0" min="-1e60" unit="kg.m2"/>
+  </ScalarVariable>
+  <!-- Index of variable = "80" -->
+  <ScalarVariable
+    name="body.I_33"
+    valueReference="567"
+    description="Element (3,3) of inertia tensor"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="0.001" min="0.0" unit="kg.m2"/>
+  </ScalarVariable>
+  <!-- Index of variable = "81" -->
+  <ScalarVariable
+    name="body.R_start.T[1,1]"
+    valueReference="572"
+    description="Transformation matrix from world frame to local frame"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "82" -->
+  <ScalarVariable
+    name="body.R_start.T[1,2]"
+    valueReference="573"
+    description="Transformation matrix from world frame to local frame"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "83" -->
+  <ScalarVariable
+    name="body.R_start.T[1,3]"
+    valueReference="574"
+    description="Transformation matrix from world frame to local frame"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "84" -->
+  <ScalarVariable
+    name="body.R_start.T[2,1]"
+    valueReference="575"
+    description="Transformation matrix from world frame to local frame"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "85" -->
+  <ScalarVariable
+    name="body.R_start.T[2,2]"
+    valueReference="576"
+    description="Transformation matrix from world frame to local frame"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "86" -->
+  <ScalarVariable
+    name="body.R_start.T[2,3]"
+    valueReference="577"
+    description="Transformation matrix from world frame to local frame"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "87" -->
+  <ScalarVariable
+    name="body.R_start.T[3,1]"
+    valueReference="578"
+    description="Transformation matrix from world frame to local frame"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "88" -->
+  <ScalarVariable
+    name="body.R_start.T[3,2]"
+    valueReference="579"
+    description="Transformation matrix from world frame to local frame"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "89" -->
+  <ScalarVariable
+    name="body.R_start.T[3,3]"
+    valueReference="580"
+    description="Transformation matrix from world frame to local frame"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "90" -->
+  <ScalarVariable
+    name="body.R_start.w[1]"
+    valueReference="581"
+    description="Absolute angular velocity of local frame, resolved in local frame"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Real unit="rad/s"/>
+  </ScalarVariable>
+  <!-- Index of variable = "91" -->
+  <ScalarVariable
+    name="body.R_start.w[2]"
+    valueReference="582"
+    description="Absolute angular velocity of local frame, resolved in local frame"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Real unit="rad/s"/>
+  </ScalarVariable>
+  <!-- Index of variable = "92" -->
+  <ScalarVariable
+    name="body.R_start.w[3]"
+    valueReference="583"
+    description="Absolute angular velocity of local frame, resolved in local frame"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Real unit="rad/s"/>
+  </ScalarVariable>
+  <!-- Index of variable = "93" -->
+  <ScalarVariable
+    name="body.angles_start[1]"
+    valueReference="584"
+    description="Initial values of angles to rotate world frame around 'sequence_start' axes into frame_a"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="0.0" unit="rad"/>
+  </ScalarVariable>
+  <!-- Index of variable = "94" -->
+  <ScalarVariable
+    name="body.angles_start[2]"
+    valueReference="585"
+    description="Initial values of angles to rotate world frame around 'sequence_start' axes into frame_a"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="0.0" unit="rad"/>
+  </ScalarVariable>
+  <!-- Index of variable = "95" -->
+  <ScalarVariable
+    name="body.angles_start[3]"
+    valueReference="586"
+    description="Initial values of angles to rotate world frame around 'sequence_start' axes into frame_a"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="0.0" unit="rad"/>
+  </ScalarVariable>
+  <!-- Index of variable = "96" -->
+  <ScalarVariable
+    name="body.cylinderDiameter"
+    valueReference="593"
+    description="Diameter of cylinder"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="0.037037037037037035" min="0.0" unit="m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "97" -->
+  <ScalarVariable
+    name="body.g_0[2]"
+    valueReference="594"
+    description="Gravity acceleration resolved in world frame"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Real unit="m/s2"/>
+  </ScalarVariable>
+  <!-- Index of variable = "98" -->
+  <ScalarVariable
+    name="body.m"
+    valueReference="595"
+    description="Mass of rigid body"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="1.0" min="0.0" unit="kg"/>
+  </ScalarVariable>
+  <!-- Index of variable = "99" -->
+  <ScalarVariable
+    name="body.r_CM[1]"
+    valueReference="599"
+    description="Vector from frame_a to center of mass, resolved in frame_a"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="0.5" unit="m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "100" -->
+  <ScalarVariable
+    name="body.r_CM[2]"
+    valueReference="600"
+    description="Vector from frame_a to center of mass, resolved in frame_a"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="0.0" unit="m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "101" -->
+  <ScalarVariable
+    name="body.r_CM[3]"
+    valueReference="601"
+    description="Vector from frame_a to center of mass, resolved in frame_a"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="0.0" unit="m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "102" -->
+  <ScalarVariable
+    name="body.specularCoefficient"
+    valueReference="602"
+    description="Reflection of ambient light (= 0: light is completely absorbed)"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Real min="0.0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "103" -->
+  <ScalarVariable
+    name="body.sphereDiameter"
+    valueReference="606"
+    description="Diameter of sphere"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Real min="0.0" unit="m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "104" -->
+  <ScalarVariable
+    name="body.w_0_start[1]"
+    valueReference="607"
+    description="Initial or guess values of angular velocity of frame_a resolved in world frame"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="0.0" unit="rad/s"/>
+  </ScalarVariable>
+  <!-- Index of variable = "105" -->
+  <ScalarVariable
+    name="body.w_0_start[2]"
+    valueReference="608"
+    description="Initial or guess values of angular velocity of frame_a resolved in world frame"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="0.0" unit="rad/s"/>
+  </ScalarVariable>
+  <!-- Index of variable = "106" -->
+  <ScalarVariable
+    name="body.w_0_start[3]"
+    valueReference="609"
+    description="Initial or guess values of angular velocity of frame_a resolved in world frame"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="0.0" unit="rad/s"/>
+  </ScalarVariable>
+  <!-- Index of variable = "107" -->
+  <ScalarVariable
+    name="body.z_0_start[1]"
+    valueReference="610"
+    description="Initial values of angular acceleration z_0 = der(w_0)"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="0.0" unit="rad/s2"/>
+  </ScalarVariable>
+  <!-- Index of variable = "108" -->
+  <ScalarVariable
+    name="body.z_0_start[2]"
+    valueReference="611"
+    description="Initial values of angular acceleration z_0 = der(w_0)"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="0.0" unit="rad/s2"/>
+  </ScalarVariable>
+  <!-- Index of variable = "109" -->
+  <ScalarVariable
+    name="body.z_0_start[3]"
+    valueReference="612"
+    description="Initial values of angular acceleration z_0 = der(w_0)"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="0.0" unit="rad/s2"/>
+  </ScalarVariable>
+  <!-- Index of variable = "110" -->
+  <ScalarVariable
+    name="damper.d"
+    valueReference="613"
+    description="Damping constant"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="0.1" min="0.0" unit="N.m.s/rad"/>
+  </ScalarVariable>
+  <!-- Index of variable = "111" -->
+  <ScalarVariable
+    name="damper.flange_a.phi"
+    valueReference="614"
+    description="Absolute rotation angle of flange"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Real unit="rad"/>
+  </ScalarVariable>
+  <!-- Index of variable = "112" -->
+  <ScalarVariable
+    name="damper.phi_nominal"
+    valueReference="615"
+    description="Nominal value of phi_rel (used for scaling)"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="1e-4" min="0.0" unit="rad"/>
+  </ScalarVariable>
+  <!-- Index of variable = "113" -->
+  <ScalarVariable
+    name="rev.cylinderDiameter"
+    valueReference="623"
+    description="Diameter of cylinder representing the joint axis"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Real min="0.0" unit="m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "114" -->
+  <ScalarVariable
+    name="rev.cylinderLength"
+    valueReference="624"
+    description="Length of cylinder representing the joint axis"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Real min="0.0" unit="m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "115" -->
+  <ScalarVariable
+    name="rev.n[1]"
+    valueReference="630"
+    description="Axis of rotation resolved in frame_a (= same as in frame_b)"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Real unit="1"/>
+  </ScalarVariable>
+  <!-- Index of variable = "116" -->
+  <ScalarVariable
+    name="rev.n[2]"
+    valueReference="631"
+    description="Axis of rotation resolved in frame_a (= same as in frame_b)"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Real unit="1"/>
+  </ScalarVariable>
+  <!-- Index of variable = "117" -->
+  <ScalarVariable
+    name="rev.n[3]"
+    valueReference="632"
+    description="Axis of rotation resolved in frame_a (= same as in frame_b)"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Real unit="1"/>
+  </ScalarVariable>
+  <!-- Index of variable = "118" -->
+  <ScalarVariable
+    name="rev.specularCoefficient"
+    valueReference="633"
+    description="Reflection of ambient light (= 0: light is completely absorbed)"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Real min="0.0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "119" -->
+  <ScalarVariable
+    name="rev.support.phi"
+    valueReference="634"
+    description="Absolute rotation angle of flange"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Real unit="rad"/>
+  </ScalarVariable>
+  <!-- Index of variable = "120" -->
+  <ScalarVariable
+    name="world.axisDiameter"
+    valueReference="635"
+    description="Diameter of world axes arrows"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Real min="0.0" unit="m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "121" -->
+  <ScalarVariable
+    name="world.axisLength"
+    valueReference="636"
+    description="Length of world axes arrows"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="0.5" min="0.0" unit="m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "122" -->
+  <ScalarVariable
+    name="world.defaultArrowDiameter"
+    valueReference="637"
+    description="Default for arrow diameter (e.g., of forces, torques, sensors)"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="0.025" unit="m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "123" -->
+  <ScalarVariable
+    name="world.defaultAxisLength"
+    valueReference="638"
+    description="Default for length of a frame axis (but not world frame)"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="0.2" unit="m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "124" -->
+  <ScalarVariable
+    name="world.defaultBodyDiameter"
+    valueReference="639"
+    description="Default for diameter of sphere representing the center of mass of a body"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Real unit="m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "125" -->
+  <ScalarVariable
+    name="world.defaultForceLength"
+    valueReference="640"
+    description="Default for the fixed length of a shape representing a force (e.g., damper)"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="0.1" unit="m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "126" -->
+  <ScalarVariable
+    name="world.defaultForceWidth"
+    valueReference="641"
+    description="Default for the fixed width of a shape representing a force (e.g., spring, bushing)"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="0.05" unit="m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "127" -->
+  <ScalarVariable
+    name="world.defaultFrameDiameterFraction"
+    valueReference="642"
+    description="Default for arrow diameter of a coordinate system as a fraction of axis length"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="40.0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "128" -->
+  <ScalarVariable
+    name="world.defaultJointLength"
+    valueReference="643"
+    description="Default for the fixed length of a shape representing a joint"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="0.1" unit="m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "129" -->
+  <ScalarVariable
+    name="world.defaultJointWidth"
+    valueReference="644"
+    description="Default for the fixed width of a shape representing a joint"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="0.05" unit="m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "130" -->
+  <ScalarVariable
+    name="world.defaultN_to_m"
+    valueReference="645"
+    description="Default scaling of force arrows (length = force/defaultN_to_m)"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="1000.0" min="0.0" unit="N/m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "131" -->
+  <ScalarVariable
+    name="world.defaultNm_to_m"
+    valueReference="646"
+    description="Default scaling of torque arrows (length = torque/defaultNm_to_m)"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="1000.0" min="0.0" unit="N.m/m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "132" -->
+  <ScalarVariable
+    name="world.defaultSpecularCoefficient"
+    valueReference="647"
+    description="Default reflection of ambient light (= 0: light is completely absorbed)"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="0.7" min="0.0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "133" -->
+  <ScalarVariable
+    name="world.defaultWidthFraction"
+    valueReference="648"
+    description="Default for shape width as a fraction of shape length (e.g., for Parts.FixedTranslation)"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="20.0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "134" -->
+  <ScalarVariable
+    name="world.g"
+    valueReference="649"
+    description="Constant gravity acceleration"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="9.80665" unit="m/s2"/>
+  </ScalarVariable>
+  <!-- Index of variable = "135" -->
+  <ScalarVariable
+    name="world.gravityArrowDiameter"
+    valueReference="650"
+    description="Diameter of gravity arrow"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Real min="0.0" unit="m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "136" -->
+  <ScalarVariable
+    name="world.gravityArrowLength"
+    valueReference="656"
+    description="Length of gravity arrow"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Real unit="m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "137" -->
+  <ScalarVariable
+    name="world.gravityArrowTail[1]"
+    valueReference="663"
+    description="Position vector from origin of world frame to arrow tail, resolved in world frame"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="0.0" unit="m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "138" -->
+  <ScalarVariable
+    name="world.gravityArrowTail[2]"
+    valueReference="664"
+    description="Position vector from origin of world frame to arrow tail, resolved in world frame"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="0.0" unit="m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "139" -->
+  <ScalarVariable
+    name="world.gravityArrowTail[3]"
+    valueReference="665"
+    description="Position vector from origin of world frame to arrow tail, resolved in world frame"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="0.0" unit="m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "140" -->
+  <ScalarVariable
+    name="world.gravitySphereDiameter"
+    valueReference="669"
+    description="Diameter of sphere representing gravity center (default = mean diameter of earth)"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="1.2742e7" min="0.0" unit="m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "141" -->
+  <ScalarVariable
+    name="world.groundAxis_u[1]"
+    valueReference="670"
+    description="Vector along 1st axis (called u) of ground plane, resolved in world frame (should be perpendicular to gravity direction)"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="1.0" unit="1"/>
+  </ScalarVariable>
+  <!-- Index of variable = "142" -->
+  <ScalarVariable
+    name="world.groundAxis_u[2]"
+    valueReference="671"
+    description="Vector along 1st axis (called u) of ground plane, resolved in world frame (should be perpendicular to gravity direction)"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="0.0" unit="1"/>
+  </ScalarVariable>
+  <!-- Index of variable = "143" -->
+  <ScalarVariable
+    name="world.groundAxis_u[3]"
+    valueReference="672"
+    description="Vector along 1st axis (called u) of ground plane, resolved in world frame (should be perpendicular to gravity direction)"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="0.0" unit="1"/>
+  </ScalarVariable>
+  <!-- Index of variable = "144" -->
+  <ScalarVariable
+    name="world.groundLength_u"
+    valueReference="673"
+    description="Length of ground plane along groundAxis_u"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="2.0" unit="m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "145" -->
+  <ScalarVariable
+    name="world.groundLength_v"
+    valueReference="674"
+    description="Length of ground plane perpendicular to groundAxis_u"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Real unit="m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "146" -->
+  <ScalarVariable
+    name="world.mu"
+    valueReference="680"
+    description="Gravity field constant (default = field constant of earth)"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="3.986004418e14" min="0.0" unit="m3/s2"/>
+  </ScalarVariable>
+  <!-- Index of variable = "147" -->
+  <ScalarVariable
+    name="world.n[1]"
+    valueReference="681"
+    description="Direction of gravity resolved in world frame (gravity = g*n/length(n))"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Real unit="1"/>
+  </ScalarVariable>
+  <!-- Index of variable = "148" -->
+  <ScalarVariable
+    name="world.n[2]"
+    valueReference="682"
+    description="Direction of gravity resolved in world frame (gravity = g*n/length(n))"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Real unit="1"/>
+  </ScalarVariable>
+  <!-- Index of variable = "149" -->
+  <ScalarVariable
+    name="world.n[3]"
+    valueReference="683"
+    description="Direction of gravity resolved in world frame (gravity = g*n/length(n))"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Real unit="1"/>
+  </ScalarVariable>
+  <!-- Index of variable = "150" -->
+  <ScalarVariable
+    name="world.nominalLength"
+    valueReference="684"
+    description="Nominal length of multi-body system"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Real unit="m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "151" -->
+  <ScalarVariable
+    name="body.frame_a.R.w[1]"
+    valueReference="75"
+    description="Absolute angular velocity of local frame, resolved in local frame"
+    >
+    <Real unit="rad/s"/>
+  </ScalarVariable>
+  <!-- Index of variable = "152" -->
+  <ScalarVariable
+    name="body.frame_a.R.w[2]"
+    valueReference="76"
+    description="Absolute angular velocity of local frame, resolved in local frame"
+    >
+    <Real unit="rad/s"/>
+  </ScalarVariable>
+  <!-- Index of variable = "153" -->
+  <ScalarVariable
+    name="body.frame_a.R.w[3]"
+    valueReference="77"
+    description="Absolute angular velocity of local frame, resolved in local frame"
+    >
+    <Real unit="rad/s"/>
+  </ScalarVariable>
+  <!-- Index of variable = "154" -->
+  <ScalarVariable
+    name="body.frame_a.r_0[1]"
+    valueReference="118"
+    description="Position vector from world frame to the connector frame origin, resolved in world frame"
+    >
+    <Real unit="m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "155" -->
+  <ScalarVariable
+    name="body.frame_a.r_0[2]"
+    valueReference="119"
+    description="Position vector from world frame to the connector frame origin, resolved in world frame"
+    >
+    <Real unit="m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "156" -->
+  <ScalarVariable
+    name="body.frame_a.r_0[3]"
+    valueReference="120"
+    description="Position vector from world frame to the connector frame origin, resolved in world frame"
+    >
+    <Real unit="m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "157" -->
+  <ScalarVariable
+    name="body.r_0[1]"
+    valueReference="118"
+    description="Position vector from origin of world frame to origin of frame_a"
+    >
+    <Real unit="m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "158" -->
+  <ScalarVariable
+    name="body.r_0[2]"
+    valueReference="119"
+    description="Position vector from origin of world frame to origin of frame_a"
+    >
+    <Real unit="m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "159" -->
+  <ScalarVariable
+    name="body.r_0[3]"
+    valueReference="120"
+    description="Position vector from origin of world frame to origin of frame_a"
+    >
+    <Real unit="m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "160" -->
+  <ScalarVariable
+    name="damper.flange_a.tau"
+    valueReference="783"
+    description="Cut torque in the flange"
+    >
+    <Real unit="N.m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "161" -->
+  <ScalarVariable
+    name="damper.flange_b.phi"
+    valueReference="0"
+    description="Absolute rotation angle of flange"
+    >
+    <Real unit="rad"/>
+  </ScalarVariable>
+  <!-- Index of variable = "162" -->
+  <ScalarVariable
+    name="damper.flange_b.tau"
+    valueReference="84"
+    description="Cut torque in the flange"
+    >
+    <Real unit="N.m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "163" -->
+  <ScalarVariable
+    name="rev.angle"
+    valueReference="0"
+    description="= phi"
+    >
+    <Real unit="rad"/>
+  </ScalarVariable>
+  <!-- Index of variable = "164" -->
+  <ScalarVariable
+    name="rev.axis.phi"
+    valueReference="0"
+    description="Absolute rotation angle of flange"
+    >
+    <Real unit="rad"/>
+  </ScalarVariable>
+  <!-- Index of variable = "165" -->
+  <ScalarVariable
+    name="rev.axis.tau"
+    valueReference="797"
+    description="Cut torque in the flange"
+    >
+    <Real unit="N.m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "166" -->
+  <ScalarVariable
+    name="rev.frame_a.R.T[1,1]"
+    valueReference="106"
+    description="Transformation matrix from world frame to local frame"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "167" -->
+  <ScalarVariable
+    name="rev.frame_a.R.T[1,2]"
+    valueReference="107"
+    description="Transformation matrix from world frame to local frame"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "168" -->
+  <ScalarVariable
+    name="rev.frame_a.R.T[1,3]"
+    valueReference="108"
+    description="Transformation matrix from world frame to local frame"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "169" -->
+  <ScalarVariable
+    name="rev.frame_a.R.T[2,1]"
+    valueReference="109"
+    description="Transformation matrix from world frame to local frame"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "170" -->
+  <ScalarVariable
+    name="rev.frame_a.R.T[2,2]"
+    valueReference="110"
+    description="Transformation matrix from world frame to local frame"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "171" -->
+  <ScalarVariable
+    name="rev.frame_a.R.T[2,3]"
+    valueReference="111"
+    description="Transformation matrix from world frame to local frame"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "172" -->
+  <ScalarVariable
+    name="rev.frame_a.R.T[3,1]"
+    valueReference="112"
+    description="Transformation matrix from world frame to local frame"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "173" -->
+  <ScalarVariable
+    name="rev.frame_a.R.T[3,2]"
+    valueReference="113"
+    description="Transformation matrix from world frame to local frame"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "174" -->
+  <ScalarVariable
+    name="rev.frame_a.R.T[3,3]"
+    valueReference="114"
+    description="Transformation matrix from world frame to local frame"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "175" -->
+  <ScalarVariable
+    name="rev.frame_a.R.w[1]"
+    valueReference="115"
+    description="Absolute angular velocity of local frame, resolved in local frame"
+    >
+    <Real unit="rad/s"/>
+  </ScalarVariable>
+  <!-- Index of variable = "176" -->
+  <ScalarVariable
+    name="rev.frame_a.R.w[2]"
+    valueReference="116"
+    description="Absolute angular velocity of local frame, resolved in local frame"
+    >
+    <Real unit="rad/s"/>
+  </ScalarVariable>
+  <!-- Index of variable = "177" -->
+  <ScalarVariable
+    name="rev.frame_a.R.w[3]"
+    valueReference="117"
+    description="Absolute angular velocity of local frame, resolved in local frame"
+    >
+    <Real unit="rad/s"/>
+  </ScalarVariable>
+  <!-- Index of variable = "178" -->
+  <ScalarVariable
+    name="rev.frame_a.r_0[1]"
+    valueReference="118"
+    description="Position vector from world frame to the connector frame origin, resolved in world frame"
+    >
+    <Real unit="m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "179" -->
+  <ScalarVariable
+    name="rev.frame_a.r_0[2]"
+    valueReference="119"
+    description="Position vector from world frame to the connector frame origin, resolved in world frame"
+    >
+    <Real unit="m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "180" -->
+  <ScalarVariable
+    name="rev.frame_a.r_0[3]"
+    valueReference="120"
+    description="Position vector from world frame to the connector frame origin, resolved in world frame"
+    >
+    <Real unit="m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "181" -->
+  <ScalarVariable
+    name="rev.frame_b.R.T[1,1]"
+    valueReference="32"
+    description="Transformation matrix from world frame to local frame"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "182" -->
+  <ScalarVariable
+    name="rev.frame_b.R.T[1,2]"
+    valueReference="33"
+    description="Transformation matrix from world frame to local frame"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "183" -->
+  <ScalarVariable
+    name="rev.frame_b.R.T[1,3]"
+    valueReference="34"
+    description="Transformation matrix from world frame to local frame"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "184" -->
+  <ScalarVariable
+    name="rev.frame_b.R.T[2,1]"
+    valueReference="35"
+    description="Transformation matrix from world frame to local frame"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "185" -->
+  <ScalarVariable
+    name="rev.frame_b.R.T[2,2]"
+    valueReference="36"
+    description="Transformation matrix from world frame to local frame"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "186" -->
+  <ScalarVariable
+    name="rev.frame_b.R.T[2,3]"
+    valueReference="37"
+    description="Transformation matrix from world frame to local frame"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "187" -->
+  <ScalarVariable
+    name="rev.frame_b.R.T[3,1]"
+    valueReference="38"
+    description="Transformation matrix from world frame to local frame"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "188" -->
+  <ScalarVariable
+    name="rev.frame_b.R.T[3,2]"
+    valueReference="39"
+    description="Transformation matrix from world frame to local frame"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "189" -->
+  <ScalarVariable
+    name="rev.frame_b.R.T[3,3]"
+    valueReference="40"
+    description="Transformation matrix from world frame to local frame"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "190" -->
+  <ScalarVariable
+    name="rev.frame_b.R.w[1]"
+    valueReference="75"
+    description="Absolute angular velocity of local frame, resolved in local frame"
+    >
+    <Real unit="rad/s"/>
+  </ScalarVariable>
+  <!-- Index of variable = "191" -->
+  <ScalarVariable
+    name="rev.frame_b.R.w[2]"
+    valueReference="76"
+    description="Absolute angular velocity of local frame, resolved in local frame"
+    >
+    <Real unit="rad/s"/>
+  </ScalarVariable>
+  <!-- Index of variable = "192" -->
+  <ScalarVariable
+    name="rev.frame_b.R.w[3]"
+    valueReference="77"
+    description="Absolute angular velocity of local frame, resolved in local frame"
+    >
+    <Real unit="rad/s"/>
+  </ScalarVariable>
+  <!-- Index of variable = "193" -->
+  <ScalarVariable
+    name="rev.frame_b.f[1]"
+    valueReference="841"
+    description="Cut-force resolved in connector frame"
+    >
+    <Real unit="N"/>
+  </ScalarVariable>
+  <!-- Index of variable = "194" -->
+  <ScalarVariable
+    name="rev.frame_b.f[2]"
+    valueReference="842"
+    description="Cut-force resolved in connector frame"
+    >
+    <Real unit="N"/>
+  </ScalarVariable>
+  <!-- Index of variable = "195" -->
+  <ScalarVariable
+    name="rev.frame_b.f[3]"
+    valueReference="843"
+    description="Cut-force resolved in connector frame"
+    >
+    <Real unit="N"/>
+  </ScalarVariable>
+  <!-- Index of variable = "196" -->
+  <ScalarVariable
+    name="rev.frame_b.r_0[1]"
+    valueReference="118"
+    description="Position vector from world frame to the connector frame origin, resolved in world frame"
+    >
+    <Real unit="m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "197" -->
+  <ScalarVariable
+    name="rev.frame_b.r_0[2]"
+    valueReference="119"
+    description="Position vector from world frame to the connector frame origin, resolved in world frame"
+    >
+    <Real unit="m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "198" -->
+  <ScalarVariable
+    name="rev.frame_b.r_0[3]"
+    valueReference="120"
+    description="Position vector from world frame to the connector frame origin, resolved in world frame"
+    >
+    <Real unit="m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "199" -->
+  <ScalarVariable
+    name="rev.frame_b.t[1]"
+    valueReference="847"
+    description="Cut-torque resolved in connector frame"
+    >
+    <Real unit="N.m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "200" -->
+  <ScalarVariable
+    name="rev.frame_b.t[2]"
+    valueReference="848"
+    description="Cut-torque resolved in connector frame"
+    >
+    <Real unit="N.m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "201" -->
+  <ScalarVariable
+    name="rev.frame_b.t[3]"
+    valueReference="849"
+    description="Cut-torque resolved in connector frame"
+    >
+    <Real unit="N.m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "202" -->
+  <ScalarVariable
+    name="rev.support.tau"
+    valueReference="84"
+    description="Cut torque in the flange"
+    >
+    <Real unit="N.m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "203" -->
+  <ScalarVariable
+    name="rev.tau"
+    valueReference="855"
+    description="Driving torque in direction of axis of rotation"
+    >
+    <Real unit="N.m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "204" -->
+  <ScalarVariable
+    name="world.frame_b.f[1]"
+    valueReference="856"
+    description="Cut-force resolved in connector frame"
+    >
+    <Real unit="N"/>
+  </ScalarVariable>
+  <!-- Index of variable = "205" -->
+  <ScalarVariable
+    name="world.frame_b.f[2]"
+    valueReference="857"
+    description="Cut-force resolved in connector frame"
+    >
+    <Real unit="N"/>
+  </ScalarVariable>
+  <!-- Index of variable = "206" -->
+  <ScalarVariable
+    name="world.frame_b.f[3]"
+    valueReference="858"
+    description="Cut-force resolved in connector frame"
+    >
+    <Real unit="N"/>
+  </ScalarVariable>
+  <!-- Index of variable = "207" -->
+  <ScalarVariable
+    name="world.frame_b.t[1]"
+    valueReference="859"
+    description="Cut-torque resolved in connector frame"
+    >
+    <Real unit="N.m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "208" -->
+  <ScalarVariable
+    name="world.frame_b.t[2]"
+    valueReference="860"
+    description="Cut-torque resolved in connector frame"
+    >
+    <Real unit="N.m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "209" -->
+  <ScalarVariable
+    name="world.frame_b.t[3]"
+    valueReference="861"
+    description="Cut-torque resolved in connector frame"
+    >
+    <Real unit="N.m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "210" -->
+  <ScalarVariable
+    name="body.sphereColor[1]"
+    valueReference="0"
+    description="Color of sphere"
+    variability="discrete"
+    initial="exact">
+    <Integer start="0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "211" -->
+  <ScalarVariable
+    name="body.sphereColor[2]"
+    valueReference="1"
+    description="Color of sphere"
+    variability="discrete"
+    initial="exact">
+    <Integer start="0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "212" -->
+  <ScalarVariable
+    name="body.sphereColor[3]"
+    valueReference="2"
+    description="Color of sphere"
+    variability="discrete"
+    initial="exact">
+    <Integer start="0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "213" -->
+  <ScalarVariable
+    name="rev.cylinderColor[1]"
+    valueReference="3"
+    description="Color of cylinder representing the joint axis"
+    variability="discrete"
+    initial="exact">
+    <Integer start="0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "214" -->
+  <ScalarVariable
+    name="rev.cylinderColor[2]"
+    valueReference="4"
+    description="Color of cylinder representing the joint axis"
+    variability="discrete"
+    initial="exact">
+    <Integer start="0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "215" -->
+  <ScalarVariable
+    name="rev.cylinderColor[3]"
+    valueReference="5"
+    description="Color of cylinder representing the joint axis"
+    variability="discrete"
+    initial="exact">
+    <Integer start="0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "216" -->
+  <ScalarVariable
+    name="world.axisColor_x[1]"
+    valueReference="6"
+    description="Color of x-arrow"
+    variability="discrete"
+    initial="exact">
+    <Integer start="0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "217" -->
+  <ScalarVariable
+    name="world.axisColor_x[2]"
+    valueReference="7"
+    description="Color of x-arrow"
+    variability="discrete"
+    initial="exact">
+    <Integer start="0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "218" -->
+  <ScalarVariable
+    name="world.axisColor_x[3]"
+    valueReference="8"
+    description="Color of x-arrow"
+    variability="discrete"
+    initial="exact">
+    <Integer start="0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "219" -->
+  <ScalarVariable
+    name="world.gravityArrowColor[1]"
+    valueReference="9"
+    description="Color of gravity arrow"
+    variability="discrete"
+    initial="exact">
+    <Integer start="0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "220" -->
+  <ScalarVariable
+    name="world.gravityArrowColor[2]"
+    valueReference="10"
+    description="Color of gravity arrow"
+    variability="discrete"
+    initial="exact">
+    <Integer start="0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "221" -->
+  <ScalarVariable
+    name="world.gravityArrowColor[3]"
+    valueReference="11"
+    description="Color of gravity arrow"
+    variability="discrete"
+    initial="exact">
+    <Integer start="0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "222" -->
+  <ScalarVariable
+    name="world.gravitySphereColor[1]"
+    valueReference="12"
+    description="Color of gravity sphere"
+    variability="discrete"
+    initial="exact">
+    <Integer start="0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "223" -->
+  <ScalarVariable
+    name="world.gravitySphereColor[2]"
+    valueReference="13"
+    description="Color of gravity sphere"
+    variability="discrete"
+    initial="exact">
+    <Integer start="0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "224" -->
+  <ScalarVariable
+    name="world.gravitySphereColor[3]"
+    valueReference="14"
+    description="Color of gravity sphere"
+    variability="discrete"
+    initial="exact">
+    <Integer start="0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "225" -->
+  <ScalarVariable
+    name="world.groundColor[1]"
+    valueReference="15"
+    description="Color of ground plane"
+    variability="discrete"
+    initial="exact">
+    <Integer start="0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "226" -->
+  <ScalarVariable
+    name="world.groundColor[2]"
+    valueReference="16"
+    description="Color of ground plane"
+    variability="discrete"
+    initial="exact">
+    <Integer start="0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "227" -->
+  <ScalarVariable
+    name="world.groundColor[3]"
+    valueReference="17"
+    description="Color of ground plane"
+    variability="discrete"
+    initial="exact">
+    <Integer start="0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "228" -->
+  <ScalarVariable
+    name="body.sequence_angleStates[1]"
+    valueReference="18"
+    description="Sequence of rotations to rotate world frame into frame_a around the 3 angles used as potential states"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Integer/>
+  </ScalarVariable>
+  <!-- Index of variable = "229" -->
+  <ScalarVariable
+    name="body.sequence_angleStates[2]"
+    valueReference="19"
+    description="Sequence of rotations to rotate world frame into frame_a around the 3 angles used as potential states"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Integer/>
+  </ScalarVariable>
+  <!-- Index of variable = "230" -->
+  <ScalarVariable
+    name="body.sequence_angleStates[3]"
+    valueReference="20"
+    description="Sequence of rotations to rotate world frame into frame_a around the 3 angles used as potential states"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Integer/>
+  </ScalarVariable>
+  <!-- Index of variable = "231" -->
+  <ScalarVariable
+    name="body.sequence_start[1]"
+    valueReference="21"
+    description="Sequence of rotations to rotate world frame into frame_a at initial time"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Integer/>
+  </ScalarVariable>
+  <!-- Index of variable = "232" -->
+  <ScalarVariable
+    name="body.sequence_start[2]"
+    valueReference="22"
+    description="Sequence of rotations to rotate world frame into frame_a at initial time"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Integer/>
+  </ScalarVariable>
+  <!-- Index of variable = "233" -->
+  <ScalarVariable
+    name="body.sequence_start[3]"
+    valueReference="23"
+    description="Sequence of rotations to rotate world frame into frame_a at initial time"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Integer/>
+  </ScalarVariable>
+  <!-- Index of variable = "234" -->
+  <ScalarVariable
+    name="damper.stateSelect"
+    valueReference="24"
+    description="Priority to use phi_rel and w_rel as states"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Enumeration declaredType="StateSelect"/>
+  </ScalarVariable>
+  <!-- Index of variable = "235" -->
+  <ScalarVariable
+    name="rev.stateSelect"
+    valueReference="25"
+    description="Priority to use joint angle phi and w=der(phi) as states"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Enumeration declaredType="StateSelect"/>
+  </ScalarVariable>
+  <!-- Index of variable = "236" -->
+  <ScalarVariable
+    name="world.gravityType"
+    valueReference="26"
+    description="Type of gravity field"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Enumeration declaredType="Modelica.Mechanics.MultiBody.Types.GravityTypes"/>
+  </ScalarVariable>
+  <!-- Index of variable = "237" -->
+  <ScalarVariable
+    name="body.cylinderColor[1]"
+    valueReference="0"
+    description="Color of cylinder"
+    variability="discrete"
+    >
+    <Integer/>
+  </ScalarVariable>
+  <!-- Index of variable = "238" -->
+  <ScalarVariable
+    name="body.cylinderColor[2]"
+    valueReference="1"
+    description="Color of cylinder"
+    variability="discrete"
+    >
+    <Integer/>
+  </ScalarVariable>
+  <!-- Index of variable = "239" -->
+  <ScalarVariable
+    name="body.cylinderColor[3]"
+    valueReference="2"
+    description="Color of cylinder"
+    variability="discrete"
+    >
+    <Integer/>
+  </ScalarVariable>
+  <!-- Index of variable = "240" -->
+  <ScalarVariable
+    name="world.axisColor_y[1]"
+    valueReference="6"
+    variability="discrete"
+    >
+    <Integer/>
+  </ScalarVariable>
+  <!-- Index of variable = "241" -->
+  <ScalarVariable
+    name="world.axisColor_y[2]"
+    valueReference="7"
+    variability="discrete"
+    >
+    <Integer/>
+  </ScalarVariable>
+  <!-- Index of variable = "242" -->
+  <ScalarVariable
+    name="world.axisColor_y[3]"
+    valueReference="8"
+    variability="discrete"
+    >
+    <Integer/>
+  </ScalarVariable>
+  <!-- Index of variable = "243" -->
+  <ScalarVariable
+    name="world.axisColor_z[1]"
+    valueReference="6"
+    description="Color of z-arrow"
+    variability="discrete"
+    >
+    <Integer/>
+  </ScalarVariable>
+  <!-- Index of variable = "244" -->
+  <ScalarVariable
+    name="world.axisColor_z[2]"
+    valueReference="7"
+    description="Color of z-arrow"
+    variability="discrete"
+    >
+    <Integer/>
+  </ScalarVariable>
+  <!-- Index of variable = "245" -->
+  <ScalarVariable
+    name="world.axisColor_z[3]"
+    valueReference="8"
+    description="Color of z-arrow"
+    variability="discrete"
+    >
+    <Integer/>
+  </ScalarVariable>
+  <!-- Index of variable = "246" -->
+  <ScalarVariable
+    name="body.angles_fixed"
+    valueReference="0"
+    description="= true, if angles_start are used as initial values, else as guess values"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Boolean/>
+  </ScalarVariable>
+  <!-- Index of variable = "247" -->
+  <ScalarVariable
+    name="body.animation"
+    valueReference="1"
+    description="= true, if animation shall be enabled (show cylinder and sphere)"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Boolean/>
+  </ScalarVariable>
+  <!-- Index of variable = "248" -->
+  <ScalarVariable
+    name="body.enforceStates"
+    valueReference="2"
+    description="= true, if absolute variables of body object shall be used as states (StateSelect.always)"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Boolean/>
+  </ScalarVariable>
+  <!-- Index of variable = "249" -->
+  <ScalarVariable
+    name="body.useQuaternions"
+    valueReference="3"
+    description="= true, if quaternions shall be used as potential states otherwise use 3 angles as potential states"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Boolean/>
+  </ScalarVariable>
+  <!-- Index of variable = "250" -->
+  <ScalarVariable
+    name="body.w_0_fixed"
+    valueReference="4"
+    description="= true, if w_0_start are used as initial values, else as guess values"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Boolean/>
+  </ScalarVariable>
+  <!-- Index of variable = "251" -->
+  <ScalarVariable
+    name="body.z_0_fixed"
+    valueReference="5"
+    description="= true, if z_0_start are used as initial values, else as guess values"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Boolean/>
+  </ScalarVariable>
+  <!-- Index of variable = "252" -->
+  <ScalarVariable
+    name="damper.useHeatPort"
+    valueReference="6"
+    description="= true, if heatPort is enabled"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Boolean/>
+  </ScalarVariable>
+  <!-- Index of variable = "253" -->
+  <ScalarVariable
+    name="rev.animation"
+    valueReference="7"
+    description="= true, if animation shall be enabled (show axis as cylinder)"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Boolean/>
+  </ScalarVariable>
+  <!-- Index of variable = "254" -->
+  <ScalarVariable
+    name="rev.useAxisFlange"
+    valueReference="8"
+    description="= true, if axis flange is enabled"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Boolean/>
+  </ScalarVariable>
+  <!-- Index of variable = "255" -->
+  <ScalarVariable
+    name="world.animateGravity"
+    valueReference="9"
+    description="= true, if gravity field shall be visualized (acceleration vector or field center)"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Boolean/>
+  </ScalarVariable>
+  <!-- Index of variable = "256" -->
+  <ScalarVariable
+    name="world.animateGround"
+    valueReference="10"
+    description="= true, if ground plane shall be visualized"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Boolean/>
+  </ScalarVariable>
+  <!-- Index of variable = "257" -->
+  <ScalarVariable
+    name="world.animateWorld"
+    valueReference="11"
+    description="= true, if world coordinate system shall be visualized"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Boolean/>
+  </ScalarVariable>
+  <!-- Index of variable = "258" -->
+  <ScalarVariable
+    name="world.axisShowLabels"
+    valueReference="12"
+    description="= true, if labels shall be shown"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Boolean/>
+  </ScalarVariable>
+  <!-- Index of variable = "259" -->
+  <ScalarVariable
+    name="world.driveTrainMechanics3D"
+    valueReference="13"
+    description="= true, if 3-dim. mechanical effects of Parts.Mounting1D/Rotor1D/BevelGear1D shall be taken into account"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Boolean start="true"/>
+  </ScalarVariable>
+  <!-- Index of variable = "260" -->
+  <ScalarVariable
+    name="world.enableAnimation"
+    valueReference="14"
+    description="= true, if animation of all components is enabled"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Boolean/>
+  </ScalarVariable>
+  <!-- Index of variable = "261" -->
+  <ScalarVariable
+    name="world.label1"
+    valueReference="5"
+    description="Label of horizontal axis in icon"
+    variability="fixed"
+    causality="parameter"
+    >
+    <String start="x"/>
+  </ScalarVariable>
+  <!-- Index of variable = "262" -->
+  <ScalarVariable
+    name="world.label2"
+    valueReference="6"
+    description="Label of vertical axis in icon"
+    variability="fixed"
+    causality="parameter"
+    >
+    <String start="y"/>
+  </ScalarVariable>
+  </ModelVariables>
+  <ModelStructure>
+    <Derivatives>
+      <Unknown index="3" dependencies="2" dependenciesKind="dependent" />
+      <Unknown index="4" dependencies="1 2" dependenciesKind="dependent dependent" />
+    </Derivatives>
+    <InitialUnknowns>
+      <Unknown index="3" dependencies="2" dependenciesKind="dependent" />
+      <Unknown index="4" dependencies="1 2 98 99 100 101 110 134" dependenciesKind="dependent dependent dependent dependent dependent dependent dependent dependent" />
+      <Unknown index="66" dependencies="75" dependenciesKind="dependent" />
+      <Unknown index="67" dependencies="76" dependenciesKind="dependent" />
+      <Unknown index="68" dependencies="78" dependenciesKind="dependent" />
+      <Unknown index="69" dependencies="76" dependenciesKind="dependent" />
+      <Unknown index="70" dependencies="77" dependenciesKind="dependent" />
+      <Unknown index="71" dependencies="79" dependenciesKind="dependent" />
+      <Unknown index="72" dependencies="78" dependenciesKind="dependent" />
+      <Unknown index="73" dependencies="79" dependenciesKind="dependent" />
+      <Unknown index="74" dependencies="80" dependenciesKind="dependent" />
+      <Unknown index="81" dependencies="" dependenciesKind="" />
+      <Unknown index="82" dependencies="" dependenciesKind="" />
+      <Unknown index="83" dependencies="" dependenciesKind="" />
+      <Unknown index="84" dependencies="" dependenciesKind="" />
+      <Unknown index="85" dependencies="" dependenciesKind="" />
+      <Unknown index="86" dependencies="" dependenciesKind="" />
+      <Unknown index="87" dependencies="" dependenciesKind="" />
+      <Unknown index="88" dependencies="" dependenciesKind="" />
+      <Unknown index="89" dependencies="" dependenciesKind="" />
+      <Unknown index="90" dependencies="" dependenciesKind="" />
+      <Unknown index="91" dependencies="" dependenciesKind="" />
+      <Unknown index="92" dependencies="" dependenciesKind="" />
+      <Unknown index="97" dependencies="134" dependenciesKind="dependent" />
+      <Unknown index="102" dependencies="132" dependenciesKind="dependent" />
+      <Unknown index="103" dependencies="" dependenciesKind="" />
+      <Unknown index="111" dependencies="" dependenciesKind="" />
+      <Unknown index="113" dependencies="129" dependenciesKind="dependent" />
+      <Unknown index="114" dependencies="128" dependenciesKind="dependent" />
+      <Unknown index="115" dependencies="" dependenciesKind="" />
+      <Unknown index="116" dependencies="" dependenciesKind="" />
+      <Unknown index="117" dependencies="" dependenciesKind="" />
+      <Unknown index="118" dependencies="132" dependenciesKind="dependent" />
+      <Unknown index="119" dependencies="" dependenciesKind="" />
+      <Unknown index="120" dependencies="121 127" dependenciesKind="dependent dependent" />
+      <Unknown index="124" dependencies="" dependenciesKind="" />
+      <Unknown index="135" dependencies="133" dependenciesKind="dependent" />
+      <Unknown index="136" dependencies="121" dependenciesKind="dependent" />
+      <Unknown index="145" dependencies="144" dependenciesKind="dependent" />
+      <Unknown index="147" dependencies="" dependenciesKind="" />
+      <Unknown index="148" dependencies="" dependenciesKind="" />
+      <Unknown index="149" dependencies="" dependenciesKind="" />
+      <Unknown index="150" dependencies="" dependenciesKind="" />
+      <Unknown index="228" dependencies="" dependenciesKind="" />
+      <Unknown index="229" dependencies="" dependenciesKind="" />
+      <Unknown index="230" dependencies="" dependenciesKind="" />
+      <Unknown index="231" dependencies="" dependenciesKind="" />
+      <Unknown index="232" dependencies="" dependenciesKind="" />
+      <Unknown index="233" dependencies="" dependenciesKind="" />
+      <Unknown index="234" dependencies="" dependenciesKind="" />
+      <Unknown index="235" dependencies="" dependenciesKind="" />
+      <Unknown index="236" dependencies="" dependenciesKind="" />
+      <Unknown index="246" dependencies="" dependenciesKind="" />
+      <Unknown index="247" dependencies="" dependenciesKind="" />
+      <Unknown index="248" dependencies="" dependenciesKind="" />
+      <Unknown index="249" dependencies="" dependenciesKind="" />
+      <Unknown index="250" dependencies="" dependenciesKind="" />
+      <Unknown index="251" dependencies="" dependenciesKind="" />
+      <Unknown index="252" dependencies="" dependenciesKind="" />
+      <Unknown index="253" dependencies="" dependenciesKind="" />
+      <Unknown index="254" dependencies="" dependenciesKind="" />
+      <Unknown index="255" dependencies="" dependenciesKind="" />
+      <Unknown index="256" dependencies="" dependenciesKind="" />
+      <Unknown index="257" dependencies="" dependenciesKind="" />
+      <Unknown index="258" dependencies="" dependenciesKind="" />
+      <Unknown index="260" dependencies="" dependenciesKind="" />
+    </InitialUnknowns>
+  </ModelStructure>
+</fmiModelDescription>

@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription
+  fmiVersion="2.0"
+  modelName="simpleLoop"
+  guid="{41472bad-15b1-4203-8f25-cadf1676ec22}"
+  description=""
+  version=""
+  generationTool="OpenModelica Compiler OpenModelica v1.27.0-dev-165-g0c524016a1 (64-bit)"
+  generationDateAndTime="2026-02-27T15:44:17Z"
+  variableNamingConvention="structured"
+  numberOfEventIndicators="0">
+  <ModelExchange
+    modelIdentifier="simpleLoop"
+    needsExecutionTool="false"
+    completedIntegratorStepNotNeeded="false"
+    canBeInstantiatedOnlyOncePerProcess="false"
+    canNotUseMemoryManagementFunctions="false"
+    canGetAndSetFMUstate="false"
+    canSerializeFMUstate="false"
+    providesDirectionalDerivative="false">
+    <SourceFiles>
+      <File name="simpleLoop.c" />
+      <File name="simpleLoop_01exo.c" />
+      <File name="simpleLoop_02nls.c" />
+      <File name="simpleLoop_03lsy.c" />
+      <File name="simpleLoop_04set.c" />
+      <File name="simpleLoop_05evt.c" />
+      <File name="simpleLoop_06inz.c" />
+      <File name="simpleLoop_07dly.c" />
+      <File name="simpleLoop_08bnd.c" />
+      <File name="simpleLoop_09alg.c" />
+      <File name="simpleLoop_10asr.c" />
+      <File name="simpleLoop_11mix.c" />
+      <File name="simpleLoop_12jac.c" />
+      <File name="simpleLoop_13opt.c" />
+      <File name="simpleLoop_14lnz.c" />
+      <File name="simpleLoop_15syn.c" />
+      <File name="simpleLoop_16dae.c" />
+      <File name="simpleLoop_17inl.c" />
+      <File name="simpleLoop_18spd.c" />
+      <File name="simpleLoop_FMU.c" />
+      <File name="simpleLoop_functions.c" />
+      <File name="simpleLoop_init_fmu.c" />
+      <File name="simpleLoop_records.c" />
+      <File name="fmi-export/fmu2_model_interface.c" />
+      <File name="fmi-export/fmu_read_flags.c" />
+      <File name="gc/memory_pool.c" />
+      <File name="gc/omc_gc.c" />
+      <File name="math-support/pivot.c" />
+      <File name="meta/meta_modelica_catch.c" />
+      <File name="simulation/arrayIndex.c" />
+      <File name="simulation/eval_dep.c" />
+      <File name="simulation/jacobian_util.c" />
+      <File name="simulation/omc_simulation_util.c" />
+      <File name="simulation/options.c" />
+      <File name="simulation/simulation_info_json.c" />
+      <File name="simulation/simulation_omc_assert.c" />
+      <File name="simulation/solver/delay.c" />
+      <File name="simulation/solver/discrete_changes.c" />
+      <File name="simulation/solver/initialization/initialization.c" />
+      <File name="simulation/solver/linearSolverLapack.c" />
+      <File name="simulation/solver/linearSolverTotalPivot.c" />
+      <File name="simulation/solver/linearSystem.c" />
+      <File name="simulation/solver/model_help.c" />
+      <File name="simulation/solver/omc_math.c" />
+      <File name="simulation/solver/spatialDistribution.c" />
+      <File name="simulation/solver/stateset.c" />
+      <File name="simulation/solver/synchronous.c" />
+      <File name="util/base_array.c" />
+      <File name="util/boolean_array.c" />
+      <File name="util/context.c" />
+      <File name="util/division.c" />
+      <File name="util/doubleEndedList.c" />
+      <File name="util/generic_array.c" />
+      <File name="util/index_spec.c" />
+      <File name="util/integer_array.c" />
+      <File name="util/list.c" />
+      <File name="util/modelica_string.c" />
+      <File name="util/modelica_string_lit.c" />
+      <File name="util/ModelicaUtilities.c" />
+      <File name="util/omc_error.c" />
+      <File name="util/omc_file.c" />
+      <File name="util/omc_init.c" />
+      <File name="util/omc_mmap.c" />
+      <File name="util/omc_msvc.c" />
+      <File name="util/omc_numbers.c" />
+      <File name="util/parallel_helper.c" />
+      <File name="util/rational.c" />
+      <File name="util/real_array.c" />
+      <File name="util/ringbuffer.c" />
+      <File name="util/simulation_options.c" />
+      <File name="util/string_array.c" />
+      <File name="util/utility.c" />
+      <File name="util/varinfo.c" />
+      <File name="external_solvers/dgemm.c" />
+      <File name="external_solvers/dgemv.c" />
+      <File name="external_solvers/dger.c" />
+      <File name="external_solvers/dgesv.c" />
+      <File name="external_solvers/dgetf2.c" />
+      <File name="external_solvers/dgetrf.c" />
+      <File name="external_solvers/dgetri.c" />
+      <File name="external_solvers/dgetrs.c" />
+      <File name="external_solvers/dlamch.c" />
+      <File name="external_solvers/dlaswp.c" />
+      <File name="external_solvers/dscal.c" />
+      <File name="external_solvers/dswap.c" />
+      <File name="external_solvers/dtrmm.c" />
+      <File name="external_solvers/dtrmv.c" />
+      <File name="external_solvers/dtrsm.c" />
+      <File name="external_solvers/dtrti2.c" />
+      <File name="external_solvers/dtrtri.c" />
+      <File name="external_solvers/exit_.c" />
+      <File name="external_solvers/F77_aloc.c" />
+      <File name="external_solvers/i_nint.c" />
+      <File name="external_solvers/idamax.c" />
+      <File name="external_solvers/ieeeck.c" />
+      <File name="external_solvers/ilaenv.c" />
+      <File name="external_solvers/iparmq.c" />
+      <File name="external_solvers/lsame.c" />
+      <File name="external_solvers/pow_di.c" />
+      <File name="external_solvers/s_cat.c" />
+      <File name="external_solvers/s_cmp.c" />
+      <File name="external_solvers/s_copy.c" />
+      <File name="external_solvers/xerbla.c" />
+      <File name="external_solvers/dogleg_.c" />
+      <File name="external_solvers/dpmpar_.c" />
+      <File name="external_solvers/enorm_.c" />
+      <File name="external_solvers/hybrj_.c" />
+      <File name="external_solvers/qform_.c" />
+      <File name="external_solvers/qrfac_.c" />
+      <File name="external_solvers/r1mpyq_.c" />
+      <File name="external_solvers/r1updt_.c" />
+      <File name="ModelicaExternalC/ModelicaIO.c" />
+      <File name="ModelicaExternalC/ModelicaMatIO.c" />
+      <File name="ModelicaExternalC/ModelicaStandardTables.c" />
+      <File name="ModelicaExternalC/ModelicaStandardTablesDummyUsertab.c" />
+      <File name="ModelicaExternalC/snprintf.c" />
+    </SourceFiles>
+  </ModelExchange>
+  <LogCategories>
+    <Category name="logEvents" />
+    <Category name="logSingularLinearSystems" />
+    <Category name="logNonlinearSystems" />
+    <Category name="logDynamicStateSelection" />
+    <Category name="logStatusWarning" />
+    <Category name="logStatusDiscard" />
+    <Category name="logStatusError" />
+    <Category name="logStatusFatal" />
+    <Category name="logStatusPending" />
+    <Category name="logAll" />
+    <Category name="logFmi2Call" />
+  </LogCategories>
+  <DefaultExperiment startTime="0.0" stopTime="1.0" tolerance="1e-6" stepSize="0.002"/>
+  <ModelVariables>
+  <!-- Index of variable = "1" -->
+  <ScalarVariable
+    name="s"
+    valueReference="0"
+    initial="exact">
+    <Real start="1.0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "2" -->
+  <ScalarVariable
+    name="der(s)"
+    valueReference="1"
+    >
+    <Real derivative="1"/>
+  </ScalarVariable>
+  <!-- Index of variable = "3" -->
+  <ScalarVariable
+    name="x"
+    valueReference="2"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "4" -->
+  <ScalarVariable
+    name="y"
+    valueReference="3"
+    initial="approx">
+    <Real start="0.0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "5" -->
+  <ScalarVariable
+    name="z"
+    valueReference="4"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "6" -->
+  <ScalarVariable
+    name="a"
+    valueReference="5"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="1.0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "7" -->
+  <ScalarVariable
+    name="b"
+    valueReference="6"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="-1.0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "8" -->
+  <ScalarVariable
+    name="c"
+    valueReference="7"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="7.0"/>
+  </ScalarVariable>
+  </ModelVariables>
+  <ModelStructure>
+    <Derivatives>
+      <Unknown index="2" dependencies="" dependenciesKind="" />
+    </Derivatives>
+    <InitialUnknowns>
+      <Unknown index="2" dependencies="6 7 8" dependenciesKind="dependent dependent dependent" />
+    </InitialUnknowns>
+  </ModelStructure>
+</fmiModelDescription>
