@@ -34,8 +34,9 @@
 
 #include "ComRef.h"
 #include "Connector.h"
+#include "Connection.h"
 #include "Variable.h"
-
+#include "OMSimulator/Types.h"
 #include <deque>
 #include <map>
 #include <set>
@@ -59,6 +60,7 @@ namespace oms
     std::set<oms::ComRef> component_names;
     double factor;
     bool suppressUnitConversion;
+    oms_linear_transformation_t linearTransformation;
   };
 
   class DirectedGraph
@@ -81,7 +83,7 @@ namespace oms
     const std::vector<Connector>& getNodes() const {return nodes;}
     const scc_t& getEdges() const {return edges;}
 
-    void setUnits(Connector* conA, Connector* conB, bool suppressUnitConversion);
+    void setUnits(Connector* conA, Connector* conB, bool suppressUnitConversion, Connection* connection);
     void dumpNodes() const;
 
   private:
@@ -103,7 +105,7 @@ namespace oms
     {
       oms::ComRef conA;
       oms::ComRef conB;
-      bool unitConversion;
+      Connection* connection;
     };
 
     std::vector<suppressUnitConversion> unitConversion;

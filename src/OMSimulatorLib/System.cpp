@@ -1678,9 +1678,9 @@ oms_status_enu_t oms::System::updateDependencyGraphs()
                              oms::Connection::isValidExportConnectorName(*varA, *varB);
       if (validConnection)
       {
-        initializationGraph.setUnits(varA, varB, connection->getSuppressUnitConversion());
-        eventGraph.setUnits(varA, varB, connection->getSuppressUnitConversion());
-        simulationGraph.setUnits(varA, varB, connection->getSuppressUnitConversion());
+        initializationGraph.setUnits(varA, varB, connection->getSuppressUnitConversion(), connection);
+        eventGraph.setUnits(varA, varB, connection->getSuppressUnitConversion(), connection);
+        simulationGraph.setUnits(varA, varB, connection->getSuppressUnitConversion(), connection);
       }
     }
   }

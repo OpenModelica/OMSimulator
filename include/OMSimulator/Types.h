@@ -341,7 +341,7 @@ typedef struct {
   char* conB;                                        ///< Name of connector B
   ssd_connection_geometry_t* geometry;               ///< Geometry information of the connection
   bool suppressUnitConversion;                       ///< Boolean to specify if automatic unit conversion between connections should be suppressed
-  oms_linear_transformation_t* linearTransformation; ///< Linear transformation of the source value to the target value, i.e. in the calculation target = factor * source + offset.
+  oms_linear_transformation_t linearTransformation;  ///< Linear transformation of the source value to the target value, i.e. in the calculation target = factor * source + offset.
 } oms_connection_t;
 
 /**
