@@ -146,6 +146,14 @@ class InstantiatedModel:
         status = Capi.addConnection(start, end)
         if status != Status.ok:
           raise RuntimeError(f"Failed to add oms_addConnection: {status}")
+        ## add linear transformation if exist
+        if "linear transformation" in connection:
+          factor = connection["linear transformation"]["factor"]
+          offset = connection["linear transformation"]["offset"]
+          self.apiCall.append(f'oms_setConnectionLinearTransformation("{start}", "{end}", {factor}, {offset})')
+          status = Capi.setConnectionLinearTransformation(start, end, float(factor), float(offset))
+          if status != Status.ok:
+            raise RuntimeError(f"Failed to set connection linear transformation: {status}")
 
     ## set start values
     self.setStartValues(self.system.value, self.system.name, self.system.parameterMapping)
