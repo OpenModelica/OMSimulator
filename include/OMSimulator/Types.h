@@ -330,6 +330,7 @@ typedef struct {
    * This attribute specifies an optional offset value to use in a linear transformation. The default is 0.
    */
   double offset;
+  bool isSet; ///< This flag indicates whether the linear transformation has been set or not. The default is false.
 } oms_linear_transformation_t;
 
 /**
