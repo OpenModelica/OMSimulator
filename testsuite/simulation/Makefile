@@ -6,7 +6,7 @@ exportJson1.py \
 exportJson2.py \
 exportJson4.py \
 fmuSimulation1.py \
-LinearTransfomration.py \
+LinearTransformation.py \
 PIController.py \
 QuarterCarModel.py \
 tankYPipe.py \

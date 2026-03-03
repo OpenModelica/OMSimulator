@@ -1382,6 +1382,33 @@ oms_status_enu_t oms::System::setConnectionGeometry(const oms::ComRef& crefA, co
   return logError_ConnectionNotInSystem(crefA, crefB, this);
 }
 
+oms_status_enu_t oms::System::setConnectionLinearTransformation(const oms::ComRef& crefA, const oms::ComRef& crefB, double factor, double offset)
+{
+  oms::ComRef tailA(crefA);
+  oms::ComRef headA = tailA.pop_front();
+
+  oms::ComRef tailB(crefB);
+  oms::ComRef headB = tailB.pop_front();
+
+  //If both A and B references the same subsystem, recurse into that subsystem
+  if (headA == headB)
+  {
+    auto subsystem = subsystems.find(headA);
+    if (subsystem != subsystems.end())
+      return subsystem->second->setConnectionLinearTransformation(tailA, tailB, factor, offset);
+  }
+
+  for (auto& connection : connections)
+    if (connection && connection->isEqual(crefA, crefB))
+    {
+      bool inverse = connection->isStrictEqual(crefB, crefA);
+      connection->setLinearTransformation(factor, offset);
+      return oms_status_ok;
+    }
+
+  return logError_ConnectionNotInSystem(crefA, crefB, this);
+}
+
 oms_status_enu_t oms::System::setBusGeometry(const oms::ComRef& cref, const oms::ssd::ConnectorGeometry *geometry)
 {
   oms::ComRef tail(cref);
