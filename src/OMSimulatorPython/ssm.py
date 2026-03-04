@@ -69,10 +69,16 @@ class SSM:
   def exportMappingEntry(self, node):
     """Exports the SSM mapping entries to an SSD node."""
     for source, targets in self.mappingEntry.items():
-      for target in targets:
+      for entry in targets:
         ssm_mapping_node = ET.SubElement(node, namespace.tag("ssm", "MappingEntry"))
+        target = entry["target"]
         ssm_mapping_node.set("source", str(source))
         ssm_mapping_node.set("target", str(target))
+        linearTransformation = entry["linearTransformation"]
+        if linearTransformation:
+          ssm_linearTransformation_node = ET.SubElement(ssm_mapping_node, namespace.tag("ssc", "LinearTransformation"))
+          ssm_linearTransformation_node.set("factor", str(linearTransformation.factor))
+          ssm_linearTransformation_node.set("offset", str(linearTransformation.offset))
 
   def exportSSMTemplate(self, node, connectors : list, prefix = None):
     if not connectors:
