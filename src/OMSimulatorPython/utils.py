@@ -3,7 +3,7 @@ import warnings
 from lxml import etree as ET
 from pathlib import Path
 
-from OMSimulator.connection import Connection, ConnectionGeometry
+from OMSimulator.connection import Connection, ConnectionGeometry, LinearTransformation
 from OMSimulator.connector import Connector, ConnectorGeometry
 from OMSimulator.unit import Unit
 from OMSimulator.variable import Causality, SignalType, Float64, Float32, Int8, Int16, Int32, Int64, UInt8, UInt16, UInt32, UInt64
@@ -141,7 +141,15 @@ def parseSSM(filename):
   for mapping in root.findall("ssm:MappingEntry", namespaces=namespace.ns):
     source = mapping.get("source")
     target = mapping.get("target")
-    mappingEntry[source].append(target)
+    linearTransformation = None
+    ## find ssc:LinearTransformation in the same mapping entry
+    linearTransformation_node = mapping.find("ssc:LinearTransformation", namespaces=namespace.ns)
+    if linearTransformation_node is not None:
+      factor = linearTransformation_node.get("factor")
+      offset = linearTransformation_node.get("offset")
+      linearTransformation = LinearTransformation(factor, offset)
+    ##TODO add support for other GTTransformation such as BooleanMappingTransformation, IntegerMappingTransformation and EnumerationMappingTransformation
+    mappingEntry[source].append({"target": target, "linearTransformation": linearTransformation})
   return mappingEntry
 
 def parseParameterBindingHelper(parameters):

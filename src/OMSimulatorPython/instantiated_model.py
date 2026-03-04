@@ -239,7 +239,9 @@ class InstantiatedModel:
       for source, targets in ssm.mappingEntry.items():
         if CRef(source) in value.start_values:
           source_value, _, _ = value.start_values[CRef(source)]
-          for target in targets:
+          for entry in targets:
+            target = entry["target"]
+            linearTransformation = entry["linearTransformation"]
             value_path = self.map_cref(systemName, str(target))
             self.apply_start_value(value_path, source_value)
     else:

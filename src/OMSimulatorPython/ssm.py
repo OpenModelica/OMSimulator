@@ -3,6 +3,7 @@ from pathlib import Path
 from lxml import etree as ET
 
 from OMSimulator import namespace, utils, CRef
+from OMSimulator.connection import LinearTransformation
 from collections import defaultdict
 
 
@@ -15,8 +16,11 @@ class SSM:
       ##TODO import from ssm
       self.importFromSSM(self.filename)
 
-  def mapParameter(self, source: str, target: str):
-    self.mappingEntry[source].append(target)
+  def mapParameter(self, source: str, target: str, linearTransformation: LinearTransformation = None):
+    self.mappingEntry[source].append({
+        "target": target,
+        "linearTransformation": linearTransformation
+    })
 
   def empty(self) -> bool:
     return not self.mappingEntry
@@ -81,5 +85,7 @@ class SSM:
   def importFromSSM(self, filename):
     mappingentry = utils.parseSSM(filename)
     for source, targets in mappingentry.items():
-      for target in targets:
-        self.mapParameter(source, target)
+      for entry in targets:
+        target = entry["target"]
+        linearTransformation = entry["linearTransformation"]
+        self.mapParameter(source, target, linearTransformation)
