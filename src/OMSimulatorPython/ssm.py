@@ -17,6 +17,7 @@ class SSM:
       self.importFromSSM(self.filename)
 
   def mapParameter(self, source: str, target: str, linearTransformation: LinearTransformation = None):
+    ##TODO add support for other GTTransformation such as BooleanMappingTransformation, IntegerMappingTransformation and EnumerationMappingTransformation
     self.mappingEntry[source].append({
         "target": target,
         "linearTransformation": linearTransformation

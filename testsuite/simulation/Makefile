@@ -8,6 +8,7 @@ exportJson4.py \
 fmuSimulation1.py \
 LinearTransformation1.py \
 LinearTransformation2.py \
+LinearTransformation3.py \
 PIController.py \
 QuarterCarModel.py \
 tankYPipe.py \
