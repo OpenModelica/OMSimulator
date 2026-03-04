@@ -32,7 +32,15 @@ class SSM:
 
     for source, targets in self.mappingEntry.items():
       print(f"{prefix} source: {source}")
-      print(f"{prefix} |-- targets: {targets}")
+      target_list = []
+      for entry in targets:
+        target = entry["target"]
+        linearTransformation = entry["linearTransformation"]
+        if linearTransformation:
+          target_list.append((target, linearTransformation))
+        else:
+          target_list.append(target)
+      print(f"{prefix} |-- targets: {target_list}")
 
   def exportToSSD(self, node):
     """Exports the SSM mapping to an SSD node."""
