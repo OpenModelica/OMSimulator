@@ -13,7 +13,7 @@ Settings.suppressPath = True
 ## this example shows how to use linear transformation in parameter mapping
 
 model2 = SSP('../resources/LinearTransformation3.ssp')
-#model2.list()
+model2.list()
 instantiated_model = model2.instantiate() ## internally generate the json file and also set the model state like virgin,
 instantiated_model.setResultFile("LinearTransformation3_res.mat")
 
