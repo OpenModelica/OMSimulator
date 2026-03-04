@@ -38,8 +38,6 @@ instantiated_model.delete()
 
 
 ## Result:
-## value_path: model.root.Gain1.u, source_value: 2.0, linearTransformation: LinearTransformation (factor: 2, offset: 10)
-## value_path: model.root.Gain1.k, source_value: 2.0, linearTransformation: LinearTransformation (factor: 4, offset: 5)
 ## info: After instantiation:
 ## info:    default.Gain1.k: 13.0
 ## info:    default.Gain1.u: 14.0
