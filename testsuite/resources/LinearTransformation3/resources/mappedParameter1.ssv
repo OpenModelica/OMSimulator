@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ssv:ParameterSet xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" version="2.0" name="parameters">
+  <ssv:Parameters>
+    <ssv:Parameter name="mapped_Gain_u">
+      <ssv:Real value="2.0"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="mapped_Gain_k">
+      <ssv:Real value="2.0"/>
+    </ssv:Parameter>
+  </ssv:Parameters>
+</ssv:ParameterSet>

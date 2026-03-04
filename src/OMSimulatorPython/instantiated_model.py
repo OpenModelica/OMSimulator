@@ -243,6 +243,9 @@ class InstantiatedModel:
             target = entry["target"]
             linearTransformation = entry["linearTransformation"]
             value_path = self.map_cref(systemName, str(target))
+            print(f"value_path: {value_path}, source_value: {source_value}, linearTransformation: {linearTransformation}")
+            if linearTransformation:
+              source_value = source_value * float(linearTransformation.factor) + float(linearTransformation.offset)
             self.apply_start_value(value_path, source_value)
     else:
       for key, (source_value, _, _) in value.start_values.items():
