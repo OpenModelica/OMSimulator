@@ -101,14 +101,7 @@ namespace oms
     std::vector< scc_t > sortedConnections;
     bool sortedConnectionsAreValid;
 
-    struct suppressUnitConversion
-    {
-      oms::ComRef conA;
-      oms::ComRef conB;
-      Connection* connection;
-    };
-
-    std::vector<suppressUnitConversion> unitConversion;
+    std::vector<Connection*> connections; // needed to set the units and resolve linear transformation of the connections in the strongly connected components
   };
 }
 

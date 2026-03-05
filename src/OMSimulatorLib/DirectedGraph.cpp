@@ -302,18 +302,24 @@ void oms::DirectedGraph::calculateSortedConnections()
 
           // set suppressUnitConversion = true or false
           scc.suppressUnitConversion = false;
-          for (const auto &it : unitConversion)
+          for (const auto &it : connections)
           {
-            if (it.conA == conA.getName() && it.conB == conB.getName())
+            if (it->getSignalA() == conA.getName() && it->getSignalB() == conB.getName())
             {
-              scc.suppressUnitConversion = it.connection->getSuppressUnitConversion();
+              scc.suppressUnitConversion = it->getSuppressUnitConversion();
               break;
             }
           }
         }
         // apply linear transformation on connection if exists
-        for (const auto &it : unitConversion)
-          scc.linearTransformation = it.connection->getLinearTransformation();
+        for (const auto &it : connections)
+        {
+          if (it->getSignalA() == conA.getName() && it->getSignalB() == conB.getName())
+          {
+            scc.linearTransformation = it->getLinearTransformation();
+            break;
+          }
+        }
       }
     }
 
@@ -346,26 +352,19 @@ void oms::DirectedGraph::setUnits(Connector* conA, Connector* conB, Connection* 
   /* get the full cref to check the connector owner with nodes
      (e.g) model.root.A.y1 ==> A.y1
   */
-  ComRef crefA(conA->getOwner() + conA->getName());
-  ComRef tailA = crefA.pop_front();
-  ComRef tailB = crefA.pop_front();
 
-  ComRef crefB(conB->getOwner() + conB->getName());
-  ComRef tailA1 = crefB.pop_front();
-  ComRef tailB1 = crefB.pop_front();
-
-  unitConversion.push_back({crefA, crefB, connection});
+  connections.push_back(connection);
 
   for (auto &it : nodes)
   {
-    if (it.getName() == crefA)
+    if (it.getName() == connection->getSignalA())
     {
       for (const auto &con : conA->connectorUnits)
         it.connectorUnits[con.first] = con.second;
       // set the export name for the connector
       it.setExportName(conA->getExportName());
     }
-    if (it.getName() == crefB)
+    if (it.getName() == connection->getSignalB())
     {
       for (const auto &con : conB->connectorUnits)
         it.connectorUnits[con.first] = con.second;
