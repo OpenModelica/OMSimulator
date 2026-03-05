@@ -45,6 +45,7 @@ model2 = SSP('SimpleSimulation3.ssp')
 model2.list()
 print("", flush=True)
 instantiated_model = model2.instantiate() ## internally generate the json file and also set the model state like virgin,
+print(instantiated_model.dumpApiCalls(), flush=True)
 instantiated_model.setResultFile("SimpleSimulation3_res.mat")
 
 instantiated_model.initialize()
