@@ -146,6 +146,14 @@ class InstantiatedModel:
         status = Capi.addConnection(start, end)
         if status != Status.ok:
           raise RuntimeError(f"Failed to add oms_addConnection: {status}")
+        ## add linear transformation if exist
+        if "linear transformation" in connection:
+          factor = connection["linear transformation"]["factor"]
+          offset = connection["linear transformation"]["offset"]
+          self.apiCall.append(f'oms_setConnectionLinearTransformation("{start}", "{end}", {factor}, {offset})')
+          status = Capi.setConnectionLinearTransformation(start, end, float(factor), float(offset))
+          if status != Status.ok:
+            raise RuntimeError(f"Failed to set connection linear transformation: {status}")
 
     ## set start values
     self.setStartValues(self.system.value, self.system.name, self.system.parameterMapping)
@@ -231,8 +239,12 @@ class InstantiatedModel:
       for source, targets in ssm.mappingEntry.items():
         if CRef(source) in value.start_values:
           source_value, _, _ = value.start_values[CRef(source)]
-          for target in targets:
+          for entry in targets:
+            target = entry["target"]
+            linearTransformation = entry["linearTransformation"]
             value_path = self.map_cref(systemName, str(target))
+            if linearTransformation:
+              source_value = source_value * float(linearTransformation.factor) + float(linearTransformation.offset)
             self.apply_start_value(value_path, source_value)
     else:
       for key, (source_value, _, _) in value.start_values.items():

@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command: rm SimpleSimulation3.ssp SimpleSimulation3_res.mat
+## teardown_command: rm -rf SimpleSimulation3.ssp SimpleSimulation3_res.mat
 ## linux: yes
 ## ucrt64: yes
 ## win: yes
@@ -45,6 +45,10 @@ model2 = SSP('SimpleSimulation3.ssp')
 model2.list()
 print("", flush=True)
 instantiated_model = model2.instantiate() ## internally generate the json file and also set the model state like virgin,
+instantiated_model.setValue(CRef('default', 'Add1', 'u1'), 0.0)
+instantiated_model.setValue(CRef('default', 'Add1', 'u2'), 0.0)
+instantiated_model.setValue(CRef('default', 'Add2', 'u1'), 0.0)
+instantiated_model.setValue(CRef('default', 'Add2', 'u2'), 0.0)
 instantiated_model.setResultFile("SimpleSimulation3_res.mat")
 
 instantiated_model.initialize()
@@ -108,11 +112,11 @@ instantiated_model.delete()
 ## |-- |-- |-- |-- (name=solver2, method=cvode, tolerance=0.0001)
 ## |-- UnitDefinitions:
 ## |-- |-- Unit: 1
-## |-- |-- |-- BaseUnit: 
+## |-- |-- |-- BaseUnit:
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
-## 
+##
 ## info:    model doesn't contain any continuous state
 ## info:    maximum step size for 'model.root.solver2': 0.001000
 ## info:    model doesn't contain any continuous state

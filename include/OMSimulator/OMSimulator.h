@@ -136,6 +136,7 @@ OMSAPI oms_status_enu_t OMSCALL oms_setBoolean(const char* cref, bool value);
 OMSAPI oms_status_enu_t OMSCALL oms_setBusGeometry(const char* bus, const ssd_connector_geometry_t* geometry);
 OMSAPI oms_status_enu_t OMSCALL oms_setCommandLineOption(const char* cmd);
 OMSAPI oms_status_enu_t OMSCALL oms_setConnectionGeometry(const char* crefA, const char* crefB, const ssd_connection_geometry_t* geometry);
+OMSAPI oms_status_enu_t OMSCALL oms_setConnectionLinearTransformation(const char* crefA, const char* crefB, double factor, double offset);
 OMSAPI oms_status_enu_t OMSCALL oms_setConnectorGeometry(const char* cref, const ssd_connector_geometry_t* geometry);
 OMSAPI oms_status_enu_t OMSCALL oms_setElementGeometry(const char* cref, const ssd_element_geometry_t* geometry);
 OMSAPI oms_status_enu_t OMSCALL oms_setFixedStepSize(const char* cref, double stepSize);

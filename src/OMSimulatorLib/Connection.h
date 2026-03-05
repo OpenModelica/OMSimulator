@@ -62,6 +62,9 @@ namespace oms
     const oms::ssd::ConnectionGeometry* getGeometry() const {return reinterpret_cast<oms::ssd::ConnectionGeometry*>(geometry);}
     void setGeometry(const oms::ssd::ConnectionGeometry* newGeometry, bool inverse=false);
 
+    const oms_linear_transformation_t getLinearTransformation() const { return linearTransformation; }
+    void setLinearTransformation(double factor, double offset);
+
     oms_connection_type_enu_t getType() const {return type;}
 
     bool isEqual(const oms::Connection& connection) const;

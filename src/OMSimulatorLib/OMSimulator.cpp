@@ -604,6 +604,27 @@ oms_status_enu_t oms_setConnectionGeometry(const char *crefA, const char *crefB,
   return system->setConnectionGeometry(tailA, tailB, reinterpret_cast<const oms::ssd::ConnectionGeometry*>(geometry));
 }
 
+oms_status_enu_t oms_setConnectionLinearTransformation(const char *crefA, const char *crefB, double factor, double offset)
+{
+  oms::ComRef tailA(crefA);
+  oms::ComRef modelCref = tailA.pop_front();
+  oms::ComRef systemCref = tailA.pop_front();
+
+  oms::ComRef tailB(crefB);
+  tailB.pop_front();
+  tailB.pop_front();
+
+  oms::Model* model = oms::Scope::GetInstance().getModel(modelCref);
+  if (!model)
+    return logError_ModelNotInScope(modelCref);
+
+  oms::System* system = model->getSystem(systemCref);
+  if (!system)
+    return logError_SystemNotInModel(modelCref, systemCref);
+
+  return system->setConnectionLinearTransformation(tailA, tailB, factor, offset);
+}
+
 oms_status_enu_t oms_getConnections(const char *cref, oms_connection_t ***connections)
 {
   oms::ComRef tail(cref);

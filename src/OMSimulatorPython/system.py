@@ -674,12 +674,20 @@ class System:
       elif endSolver is None and startSolver is not None:
         solver = startSolver
       ##TODO group components and connection without solver information, right now they are grouped under NONE category
-      solver_connections[solver].append({
+      connection_info = {
             "start element": [self.name] + ([systemName] if systemName else []) + ([startElement] if startElement else []),
             "start connector": str(connection.startConnector),
             "end element": [self.name] + ([systemName] if systemName else []) + ([endElement] if endElement else []),
             "end connector": str(connection.endConnector)
-        })
+        }
+      ## add linear transformation info if available
+      if connection.linearTransformation:
+        connection_info["linear transformation"] = {
+          "factor": connection.linearTransformation.factor,
+          "offset": connection.linearTransformation.offset
+        }
+      ## TODO handle connection geometry
+      solver_connections[solver].append(connection_info)
 
   def export(self, root):
     node = ET.SubElement(root, namespace.tag("ssd", "System"), attrib={"name": str(self.name)})

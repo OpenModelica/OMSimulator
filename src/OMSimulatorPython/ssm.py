@@ -3,6 +3,7 @@ from pathlib import Path
 from lxml import etree as ET
 
 from OMSimulator import namespace, utils, CRef
+from OMSimulator.connection import LinearTransformation
 from collections import defaultdict
 
 
@@ -15,8 +16,12 @@ class SSM:
       ##TODO import from ssm
       self.importFromSSM(self.filename)
 
-  def mapParameter(self, source: str, target: str):
-    self.mappingEntry[source].append(target)
+  def mapParameter(self, source: str, target: str, linearTransformation: LinearTransformation = None):
+    ##TODO add support for other GTTransformation such as BooleanMappingTransformation, IntegerMappingTransformation and EnumerationMappingTransformation
+    self.mappingEntry[source].append({
+        "target": target,
+        "linearTransformation": linearTransformation
+    })
 
   def empty(self) -> bool:
     return not self.mappingEntry
@@ -27,7 +32,15 @@ class SSM:
 
     for source, targets in self.mappingEntry.items():
       print(f"{prefix} source: {source}")
-      print(f"{prefix} |-- targets: {targets}")
+      target_list = []
+      for entry in targets:
+        target = entry["target"]
+        linearTransformation = entry["linearTransformation"]
+        if linearTransformation:
+          target_list.append((target, linearTransformation))
+        else:
+          target_list.append(target)
+      print(f"{prefix} |-- targets: {target_list}")
 
   def exportToSSD(self, node):
     """Exports the SSM mapping to an SSD node."""
@@ -64,10 +77,16 @@ class SSM:
   def exportMappingEntry(self, node):
     """Exports the SSM mapping entries to an SSD node."""
     for source, targets in self.mappingEntry.items():
-      for target in targets:
+      for entry in targets:
         ssm_mapping_node = ET.SubElement(node, namespace.tag("ssm", "MappingEntry"))
+        target = entry["target"]
         ssm_mapping_node.set("source", str(source))
         ssm_mapping_node.set("target", str(target))
+        linearTransformation = entry["linearTransformation"]
+        if linearTransformation:
+          ssm_linearTransformation_node = ET.SubElement(ssm_mapping_node, namespace.tag("ssc", "LinearTransformation"))
+          ssm_linearTransformation_node.set("factor", str(linearTransformation.factor))
+          ssm_linearTransformation_node.set("offset", str(linearTransformation.offset))
 
   def exportSSMTemplate(self, node, connectors : list, prefix = None):
     if not connectors:
@@ -81,5 +100,7 @@ class SSM:
   def importFromSSM(self, filename):
     mappingentry = utils.parseSSM(filename)
     for source, targets in mappingentry.items():
-      for target in targets:
-        self.mapParameter(source, target)
+      for entry in targets:
+        target = entry["target"]
+        linearTransformation = entry["linearTransformation"]
+        self.mapParameter(source, target, linearTransformation)

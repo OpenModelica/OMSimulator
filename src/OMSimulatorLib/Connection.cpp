@@ -56,6 +56,11 @@ oms::Connection::Connection(const oms::ComRef& conA, const oms::ComRef& conB, bo
   this->geometry = reinterpret_cast<ssd_connection_geometry_t*>(new oms::ssd::ConnectionGeometry());
 
   this->suppressUnitConversion = suppressUnitConversion;
+
+  // default linear transformation settings
+  this->linearTransformation.factor = 1.0;
+  this->linearTransformation.offset = 0.0;
+  this->linearTransformation.isSet  = false;
 }
 
 oms::Connection::~Connection()
@@ -80,6 +85,7 @@ oms::Connection::Connection(const oms::Connection& rhs)
   this->geometry = reinterpret_cast<ssd_connection_geometry_t*>(geometry_);
 
   this->suppressUnitConversion = rhs.suppressUnitConversion;
+  this->linearTransformation = rhs.linearTransformation;
 }
 
 oms::Connection& oms::Connection::operator=(const oms::Connection& rhs)
@@ -105,6 +111,7 @@ oms::Connection& oms::Connection::operator=(const oms::Connection& rhs)
   this->geometry = reinterpret_cast<ssd_connection_geometry_t*>(geometry_);
 
   this->suppressUnitConversion = rhs.suppressUnitConversion;
+  this->linearTransformation = rhs.linearTransformation;
 
   return *this;
 }
@@ -142,6 +149,13 @@ void oms::Connection::setGeometry(const oms::ssd::ConnectionGeometry* newGeometr
     delete geometry_;
   geometry_ = new oms::ssd::ConnectionGeometry(*newGeometry, inverse);
   this->geometry = reinterpret_cast<ssd_connection_geometry_t*>(geometry_);
+}
+
+void oms::Connection::setLinearTransformation(double factor, double offset)
+{
+  this->linearTransformation.factor = factor;
+  this->linearTransformation.offset = offset;
+  this->linearTransformation.isSet = true;
 }
 
 bool oms::Connection::isStrictEqual(const oms::ComRef& signalA, const oms::ComRef& signalB) const

@@ -74,6 +74,8 @@ class capi:
     self.obj.oms_removeSignalsFromResults.restype = ctypes.c_int
     self.obj.oms_setCommandLineOption.argtypes = [ctypes.c_char_p]
     self.obj.oms_setCommandLineOption.restype = ctypes.c_int
+    self.obj.oms_setConnectionLinearTransformation.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_double, ctypes.c_double]
+    self.obj.oms_setConnectionLinearTransformation.restype = ctypes.c_int
     self.obj.oms_setTempDirectory.argtypes = [ctypes.c_char_p]
     self.obj.oms_setTempDirectory.restype = ctypes.c_int
     self.obj.oms_setExportName.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
@@ -197,6 +199,12 @@ class capi:
 
   def setCommandLineOption(self, cmd):
     status = self.obj.oms_setCommandLineOption(cmd.encode())
+    return Status(status)
+
+  def setConnectionLinearTransformation(self, crefA, crefB, factor, offset):
+    '''Set the linear transformation for a connection between two connectors.
+    The linear transformation is defined as: output = factor * input + offset.'''
+    status = self.obj.oms_setConnectionLinearTransformation(crefA.encode(), crefB.encode(), factor, offset)
     return Status(status)
 
   def setTempDirectory(self, newTempDir):
