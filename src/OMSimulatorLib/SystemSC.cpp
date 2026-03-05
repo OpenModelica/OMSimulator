@@ -42,6 +42,7 @@
 #include <algorithm>
 #include <cstring>
 #include <sstream>
+#include <iostream>
 
 int oms::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
@@ -988,6 +989,7 @@ oms_status_enu_t oms::SystemSC::updateInputs(DirectedGraph& graph)
         else
           value = sortedConnections[i].factor*value;
 
+        std::cout << "\n Linear transformation: " << sortedConnections[i].linearTransformation.isSet << "=" << sortedConnections[i].linearTransformation.factor << "=" << value << " = " << sortedConnections[i].linearTransformation.offset << std::endl;
         // Check for linear transformation. Set the value multiplied by factor and added by offset i.e. (factor * value + offset).
         if (sortedConnections[i].linearTransformation.isSet)
           value = sortedConnections[i].linearTransformation.factor*value + sortedConnections[i].linearTransformation.offset;
