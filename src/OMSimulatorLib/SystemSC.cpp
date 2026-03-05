@@ -989,10 +989,10 @@ oms_status_enu_t oms::SystemSC::updateInputs(DirectedGraph& graph)
         else
           value = sortedConnections[i].factor*value;
 
-        std::cout << "\n Linear transformation: " << sortedConnections[i].linearTransformation.isSet << "=" << sortedConnections[i].linearTransformation.factor << " = " << sortedConnections[i].linearTransformation.offset << std::endl;
         // Check for linear transformation. Set the value multiplied by factor and added by offset i.e. (factor * value + offset).
         if (sortedConnections[i].linearTransformation.isSet)
         {
+          std::cout << "\n Linear transformation: " << sortedConnections[i].linearTransformation.isSet << "=" << sortedConnections[i].linearTransformation.factor << " = " << sortedConnections[i].linearTransformation.offset << std::endl;
           value = sortedConnections[i].linearTransformation.factor*value + sortedConnections[i].linearTransformation.offset;
         }
         if (oms_status_ok != setReal(graph.getNodes()[input].getName(), value)) return oms_status_error;
