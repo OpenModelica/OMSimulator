@@ -313,12 +313,7 @@ void oms::DirectedGraph::calculateSortedConnections()
         }
         // apply linear transformation on connection if exists
         for (const auto &it : unitConversion)
-        {
-          if (it.conA == conA.getName() && it.conB == conB.getName())
-          {
-            scc.linearTransformation = it.connection->getLinearTransformation();
-          }
-        }
+          scc.linearTransformation = it.connection->getLinearTransformation();
       }
     }
 
