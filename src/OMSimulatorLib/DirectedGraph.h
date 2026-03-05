@@ -83,7 +83,7 @@ namespace oms
     const std::vector<Connector>& getNodes() const {return nodes;}
     const scc_t& getEdges() const {return edges;}
 
-    void setUnits(Connector* conA, Connector* conB, bool suppressUnitConversion, Connection* connection);
+    void setUnits(Connector* conA, Connector* conB, Connection* connection);
     void dumpNodes() const;
 
   private:

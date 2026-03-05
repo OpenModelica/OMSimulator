@@ -349,7 +349,7 @@ void oms::DirectedGraph::calculateSortedConnections()
   sortedConnectionsAreValid = true;
 }
 
-void oms::DirectedGraph::setUnits(Connector* conA, Connector* conB, bool suppressUnitConversion, Connection* connection)
+void oms::DirectedGraph::setUnits(Connector* conA, Connector* conB, Connection* connection)
 {
   /* get the full cref to check the connector owner with nodes
      (e.g) model.root.A.y1 ==> A.y1
