@@ -266,8 +266,6 @@ void oms::DirectedGraph::calculateSortedConnections()
       if (oms::Connection::isValid(conA.getName(), conB.getName(), conA, conB) ||
           oms::Connection::isValidExportConnectorName(conA, conB))
       {
-        // std::cout << "\n valid connection from " << conA.getName().c_str() << " ==> " << conB.getName().c_str();
-        // std::cout << "\n*******" << std::endl;
         scc.connections.push_back(std::pair<int, int>(edges.connections[components[i][j]]));
         scc.component_names.insert(conA.getOwner());
         scc.component_names.insert(conB.getOwner());
@@ -313,13 +311,12 @@ void oms::DirectedGraph::calculateSortedConnections()
             }
           }
         }
-        // apply linear transformation if exists
+        // apply linear transformation on connection if exists
         for (const auto &it : unitConversion)
         {
           if (it.conA == conA.getName() && it.conB == conB.getName())
           {
             scc.linearTransformation = it.connection->getLinearTransformation();
-            break;
           }
         }
       }
