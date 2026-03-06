@@ -1225,7 +1225,7 @@ oms_status_enu_t SimulateSingleFMU(const filesystem::path& path)
   if(oms_status_ok != status) return logError("oms_setTolerance failed");
 
   double refStepSize;
-  // priority of maximum step size is given to command line argument, then defaultExperiment and then default value of maximum step size (1e-3)
+  // priority order commandLine > defaultExperiment > default
   if (oms::Flags::MaximumStepSize().given)
     refStepSize = oms::Flags::MaximumStepSize().value;
   else if (defaultExperiment.stepSize > 0.0)
