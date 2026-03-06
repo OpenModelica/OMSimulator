@@ -104,7 +104,7 @@ oms_delete("deleteStartValuesInSSV")
 -- 					<ssc:Annotation type="org.openmodelica">
 -- 						<oms:Annotations>
 -- 							<oms:SimulationInformation>
--- 								<oms:VariableStepSolver description="cvode" absoluteTolerance="0.0001" relativeTolerance="0.0001" minimumStepSize="1e-12" maximumStepSize="0.001" initialStepSize="1e-06" />
+-- 								<oms:VariableStepSolver description="cvode" absoluteTolerance="0.0001" relativeTolerance="0.0001" minimumStepSize="1e-12" maximumStepSize="0.001" initialStepSize="1e-03" />
 -- 							</oms:SimulationInformation>
 -- 						</oms:Annotations>
 -- 					</ssc:Annotation>
