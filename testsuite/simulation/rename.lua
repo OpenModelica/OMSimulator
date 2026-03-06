@@ -114,7 +114,7 @@ print("info:      model.root_1.add_1.u2           : " .. oms_getReal("model.root
 -- 					<ssc:Annotation type="org.openmodelica">
 -- 						<oms:Annotations>
 -- 							<oms:SimulationInformation>
--- 								<oms:VariableStepSolver description="cvode" absoluteTolerance="0.0001" relativeTolerance="0.0001" minimumStepSize="1e-12" maximumStepSize="0.001" initialStepSize="1e-06" />
+-- 								<oms:VariableStepSolver description="cvode" absoluteTolerance="0.0001" relativeTolerance="0.0001" minimumStepSize="1e-12" maximumStepSize="0.001" initialStepSize="1e-03" />
 -- 							</oms:SimulationInformation>
 -- 						</oms:Annotations>
 -- 					</ssc:Annotation>
@@ -232,7 +232,7 @@ print("info:      model.root_1.add_1.u2           : " .. oms_getReal("model.root
 -- 					<ssc:Annotation type="org.openmodelica">
 -- 						<oms:Annotations>
 -- 							<oms:SimulationInformation>
--- 								<oms:VariableStepSolver description="euler" absoluteTolerance="0.0001" relativeTolerance="0.0001" minimumStepSize="1e-12" maximumStepSize="0.001" initialStepSize="1e-06" />
+-- 								<oms:VariableStepSolver description="euler" absoluteTolerance="0.0001" relativeTolerance="0.0001" minimumStepSize="1e-12" maximumStepSize="0.001" initialStepSize="1e-03" />
 -- 							</oms:SimulationInformation>
 -- 						</oms:Annotations>
 -- 					</ssc:Annotation>

@@ -59,7 +59,7 @@ oms::Flags::FlagValues::FlagValues() :
   dumpAlgLoops(false),
   emitEvents(true),
   ignoreInitialUnknowns(false),
-  initialStepSize(1e-6),
+  initialStepSize(1e-3),
   inputExtrapolation(false),
   intervals(100),
   masterAlgorithm(oms_solver_wc_ma),

@@ -132,7 +132,7 @@ oms_delete("deleteStartValuesInSSV")
 --                       relativeTolerance="0.0001"
 --                       minimumStepSize="1e-12"
 --                       maximumStepSize="0.001"
---                       initialStepSize="1e-06" />
+--                       initialStepSize="1e-03" />
 --                   </oms:SimulationInformation>
 --                 </oms:Annotations>
 --               </ssc:Annotation>
