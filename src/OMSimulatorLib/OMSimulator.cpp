@@ -1224,14 +1224,23 @@ oms_status_enu_t SimulateSingleFMU(const filesystem::path& path)
     status = oms_setTolerance(modelName.c_str(), defaultExperiment.tolerance, defaultExperiment.tolerance);
   if(oms_status_ok != status) return logError("oms_setTolerance failed");
 
-  // set the initial, minimum and maximum stepSize
-  double initialStepSize = oms::Flags::InitialStepSize().value;
-  double minimumStepSize = oms::Flags::MinimumStepSize().value;
-
+  double refStepSize;
+  // priority of maximum step size is given to command line argument, then defaultExperiment and then default value of maximum step size (1e-3)
   if (oms::Flags::MaximumStepSize().given)
-    status = oms_setVariableStepSize(modelName.c_str(), initialStepSize, minimumStepSize, oms::Flags::MaximumStepSize().value);
+    refStepSize = oms::Flags::MaximumStepSize().value;
+  else if (defaultExperiment.stepSize > 0.0)
+    refStepSize = defaultExperiment.stepSize;
   else
-    status = oms_setVariableStepSize(modelName.c_str(), initialStepSize, minimumStepSize, defaultExperiment.stepSize);
+    refStepSize = 1e-3; // default value of maximum step size
+
+  /*
+   *scale the initial, minimum stepSize with reference step size, if maximumStepSize is smaller than default value of maximum step size (1e-3) or if user has provided maximum step size via command line argument, then initial and minimum step size will also be scaled down accordingly.
+   *This is to avoid the case where initial or minimum step size is larger than maximum step size which can lead to simulation failure.
+  */
+  double initialStepSize = oms::Flags::InitialStepSize().value * refStepSize;
+  double minimumStepSize = oms::Flags::MinimumStepSize().value * refStepSize;
+
+  status = oms_setVariableStepSize(modelName.c_str(), initialStepSize, minimumStepSize, refStepSize);
   if(oms_status_ok != status) return logError("oms_setVariableStepSize failed");
 
   if (oms::Flags::Intervals().given)
