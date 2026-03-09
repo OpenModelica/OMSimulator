@@ -686,7 +686,13 @@ class System:
           "factor": connection.linearTransformation.factor,
           "offset": connection.linearTransformation.offset
         }
-      ## TODO handle connection geometry
+      ## add connection geometry if available
+      if connection.connectionGeometry:
+        connection_info["connection geometry"] = {
+          "pointsX": connection.connectionGeometry.pointsX,
+          "pointsY": connection.connectionGeometry.pointsY
+        }
+
       solver_connections[solver].append(connection_info)
 
   def export(self, root):
