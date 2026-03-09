@@ -12,6 +12,13 @@ class Status(Enum):
   fatal = 4
   pending = 5
 
+## C structure for connection geometry to properly pass the data from Python to C API
+class ssd_connection_geometry_t(ctypes.Structure):
+  _fields_ = [
+    ("pointsX", ctypes.POINTER(ctypes.c_double)),
+    ("pointsY", ctypes.POINTER(ctypes.c_double)),
+    ("n", ctypes.c_uint)
+  ]
 
 class capi:
   def __init__(self):
@@ -76,6 +83,8 @@ class capi:
     self.obj.oms_setCommandLineOption.restype = ctypes.c_int
     self.obj.oms_setConnectionLinearTransformation.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_double, ctypes.c_double]
     self.obj.oms_setConnectionLinearTransformation.restype = ctypes.c_int
+    self.obj.oms_setConnectionGeometry.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.POINTER(ssd_connection_geometry_t)]
+    self.obj.oms_setConnectionGeometry.restype = ctypes.c_int
     self.obj.oms_setTempDirectory.argtypes = [ctypes.c_char_p]
     self.obj.oms_setTempDirectory.restype = ctypes.c_int
     self.obj.oms_setExportName.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
