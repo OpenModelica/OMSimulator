@@ -154,6 +154,14 @@ class InstantiatedModel:
           status = Capi.setConnectionLinearTransformation(start, end, float(factor), float(offset))
           if status != Status.ok:
             raise RuntimeError(f"Failed to set connection linear transformation: {status}")
+        ## add connection geometry if exist
+        if "connection geometry" in connection:
+          pointsX = connection["connection geometry"]["pointsX"]
+          pointsY = connection["connection geometry"]["pointsY"]
+          self.apiCall.append(f'oms_setConnectionGeometry("{start}", "{end}", {pointsX}, {pointsY})')
+          status = Capi.setConnectionGeometry(start, end, pointsX, pointsY)
+          if status != Status.ok:
+            raise RuntimeError(f"Failed to set connection geometry: {status}")
 
     ## set start values
     self.setStartValues(self.system.value, self.system.name, self.system.parameterMapping)

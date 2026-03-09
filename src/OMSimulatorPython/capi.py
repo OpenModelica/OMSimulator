@@ -216,6 +216,20 @@ class capi:
     status = self.obj.oms_setConnectionLinearTransformation(crefA.encode(), crefB.encode(), factor, offset)
     return Status(status)
 
+  def setConnectionGeometry(self, crefA, crefB, pointsX, pointsY):
+    '''Set the connection geometry for a connection between two connectors.
+    The connection geometry is defined by a list of points (pointsX, pointsY) that define the path of the connection in the diagram.'''
+    n = len(pointsX)
+    if n != len(pointsY):
+      raise ValueError("pointsX and pointsY must have the same length")
+    geometry = ssd_connection_geometry_t(
+      (ctypes.c_double * n)(*pointsX),
+      (ctypes.c_double * n)(*pointsY),
+      n
+    )
+    status = self.obj.oms_setConnectionGeometry(crefA.encode(), crefB.encode(), ctypes.byref(geometry))
+    return Status(status)
+
   def setTempDirectory(self, newTempDir):
     status = self.obj.oms_setTempDirectory(newTempDir.encode())
     return Status(status)
