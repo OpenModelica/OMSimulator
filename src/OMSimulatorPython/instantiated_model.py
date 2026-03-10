@@ -1,4 +1,3 @@
-from re import S
 from OMSimulator.capi import Capi, Status
 from OMSimulator.component import Component
 from OMSimulator.componenttable import ComponentTable
@@ -121,6 +120,19 @@ class InstantiatedModel:
           raise RuntimeError(f"Failed to add oms_addSubModel: {status}")
         export_name = ".".join(comp["name"])
         #print(f"Setting export name for {comp_path} to {export_name}")
+
+        ## parse connector geometry for the component if exist and set it to capi after adding the component, this is needed for proper mapping of connector geometry
+        for connector in comp["connectors"]:
+          if "geometry" in connector:
+            connector_path = ".".join([comp_path, connector["name"]])
+            geometry = connector["geometry"]
+            x = geometry.get("x", 0.0)
+            y = geometry.get("y", 0.0)
+            status = Capi.setConnectorGeometry(connector_path, x, y)
+            if status != Status.ok:
+              raise RuntimeError(f"Failed to set connector geometry for {connector_path}: {status}")
+            self.apiCall.append(f'oms_setConnectorGeometry("{connector_path}", {x}, {y})')
+
         if not export_name in self.mappedCrefs:
           self.mappedCrefs[export_name] = comp_path
           self.mappedCrefs[".".join(comp["name"][:-1])] = solver_path # map parent system too for connector lookup
