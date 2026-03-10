@@ -12,7 +12,19 @@ class Status(Enum):
   fatal = 4
   pending = 5
 
-
+## C structure for connection geometry to properly pass the data from Python to C API
+class ssd_connection_geometry_t(ctypes.Structure):
+  _fields_ = [
+    ("pointsX", ctypes.POINTER(ctypes.c_double)),
+    ("pointsY", ctypes.POINTER(ctypes.c_double)),
+    ("n", ctypes.c_uint)
+  ]
+## C structure for connector geometry to properly pass the data from Python to C API
+class ssd_connector_geometry_t(ctypes.Structure):
+  _fields_ = [
+    ("x", ctypes.c_double),
+    ("y", ctypes.c_double)
+  ]
 class capi:
   def __init__(self):
     dirname = os.path.dirname(__file__)
@@ -76,6 +88,10 @@ class capi:
     self.obj.oms_setCommandLineOption.restype = ctypes.c_int
     self.obj.oms_setConnectionLinearTransformation.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_double, ctypes.c_double]
     self.obj.oms_setConnectionLinearTransformation.restype = ctypes.c_int
+    self.obj.oms_setConnectionGeometry.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.POINTER(ssd_connection_geometry_t)]
+    self.obj.oms_setConnectionGeometry.restype = ctypes.c_int
+    self.obj.oms_setConnectorGeometry.argtypes = [ctypes.c_char_p, ctypes.POINTER(ssd_connector_geometry_t)]
+    self.obj.oms_setConnectorGeometry.restype = ctypes.c_int
     self.obj.oms_setTempDirectory.argtypes = [ctypes.c_char_p]
     self.obj.oms_setTempDirectory.restype = ctypes.c_int
     self.obj.oms_setExportName.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
@@ -205,6 +221,27 @@ class capi:
     '''Set the linear transformation for a connection between two connectors.
     The linear transformation is defined as: output = factor * input + offset.'''
     status = self.obj.oms_setConnectionLinearTransformation(crefA.encode(), crefB.encode(), factor, offset)
+    return Status(status)
+
+  def setConnectionGeometry(self, crefA, crefB, pointsX, pointsY):
+    '''Set the connection geometry for a connection between two connectors.
+    The connection geometry is defined by a list of points (pointsX, pointsY) that define the path of the connection in the diagram.'''
+    n = len(pointsX)
+    if n != len(pointsY):
+      raise ValueError("pointsX and pointsY must have the same length")
+    geometry = ssd_connection_geometry_t(
+      (ctypes.c_double * n)(*pointsX),
+      (ctypes.c_double * n)(*pointsY),
+      n
+    )
+    status = self.obj.oms_setConnectionGeometry(crefA.encode(), crefB.encode(), ctypes.byref(geometry))
+    return Status(status)
+
+  def setConnectorGeometry(self, cref, x, y):
+    '''Set the connector geometry for a connector.
+    The connector geometry is defined by a point (x, y) that defines the position of the connector in the diagram.'''
+    geometry = ssd_connector_geometry_t(x, y)
+    status = self.obj.oms_setConnectorGeometry(cref.encode(), ctypes.byref(geometry))
     return Status(status)
 
   def setTempDirectory(self, newTempDir):

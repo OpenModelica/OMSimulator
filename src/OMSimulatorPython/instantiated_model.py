@@ -1,4 +1,3 @@
-from re import S
 from OMSimulator.capi import Capi, Status
 from OMSimulator.component import Component
 from OMSimulator.componenttable import ComponentTable
@@ -121,6 +120,20 @@ class InstantiatedModel:
           raise RuntimeError(f"Failed to add oms_addSubModel: {status}")
         export_name = ".".join(comp["name"])
         #print(f"Setting export name for {comp_path} to {export_name}")
+
+        ## parse connector geometry for the component if exist and set it to capi after adding the component, this is needed for proper mapping of connector geometry
+        if "connectors" in comp:
+          for connector in comp["connectors"]:
+            if "geometry" in connector:
+              connector_path = ".".join([comp_path, connector["name"]])
+              geometry = connector["geometry"]
+              x = geometry.get("x", 0.0)
+              y = geometry.get("y", 0.0)
+              status = Capi.setConnectorGeometry(connector_path, x, y)
+              if status != Status.ok:
+                raise RuntimeError(f"Failed to set connector geometry for {connector_path}: {status}")
+              self.apiCall.append(f'oms_setConnectorGeometry("{connector_path}", {x}, {y})')
+
         if not export_name in self.mappedCrefs:
           self.mappedCrefs[export_name] = comp_path
           self.mappedCrefs[".".join(comp["name"][:-1])] = solver_path # map parent system too for connector lookup
@@ -154,6 +167,14 @@ class InstantiatedModel:
           status = Capi.setConnectionLinearTransformation(start, end, float(factor), float(offset))
           if status != Status.ok:
             raise RuntimeError(f"Failed to set connection linear transformation: {status}")
+        ## add connection geometry if exist
+        if "connection geometry" in connection:
+          pointsX = connection["connection geometry"]["pointsX"]
+          pointsY = connection["connection geometry"]["pointsY"]
+          self.apiCall.append(f'oms_setConnectionGeometry("{start}", "{end}", {pointsX}, {pointsY})')
+          status = Capi.setConnectionGeometry(start, end, pointsX, pointsY)
+          if status != Status.ok:
+            raise RuntimeError(f"Failed to set connection geometry: {status}")
 
     ## set start values
     self.setStartValues(self.system.value, self.system.name, self.system.parameterMapping)
@@ -281,6 +302,15 @@ class InstantiatedModel:
       status = Capi.addConnector(connector_path, connector.causality.value, connector.signal_type.value)
       if status != Status.ok:
         raise RuntimeError(f"Failed to add oms_addConnector:{status}")
+      ## set connector geometry if exist
+      if connector.connectorGeometry:
+        x = connector.connectorGeometry.x
+        y = connector.connectorGeometry.y
+        self.apiCall.append(f'oms_setConnectorGeometry("{connector_path}", {x}, {y})')
+        status = Capi.setConnectorGeometry(connector_path, x, y)
+        if status != Status.ok:
+          raise RuntimeError(f"Failed to set connector geometry for {connector_path}: {status}")
+
       export_name = systemName
       if not export_name in self.mappedCrefs:
         self.mappedCrefs[export_name] = connector_path
@@ -293,7 +323,7 @@ class InstantiatedModel:
     for key, element in elements.items():
       connector_path = ".".join([self.system.name, str(element.name)])
       if currentSystem == connector_path:
-          self._addConnector(element.connectors, connector_path)
+        self._addConnector(element.connectors, connector_path)
 
       ## recurse into subsystem
       if isinstance(element, System):
