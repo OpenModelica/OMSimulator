@@ -301,6 +301,15 @@ class InstantiatedModel:
       status = Capi.addConnector(connector_path, connector.causality.value, connector.signal_type.value)
       if status != Status.ok:
         raise RuntimeError(f"Failed to add oms_addConnector:{status}")
+      ## set connector geometry if exist
+      if connector.connectorGeometry:
+        x = connector.connectorGeometry.x
+        y = connector.connectorGeometry.y
+        self.apiCall.append(f'oms_setConnectorGeometry("{connector_path}", {x}, {y})')
+        status = Capi.setConnectorGeometry(connector_path, x, y)
+        if status != Status.ok:
+          raise RuntimeError(f"Failed to set connector geometry for {connector_path}: {status}")
+
       export_name = systemName
       if not export_name in self.mappedCrefs:
         self.mappedCrefs[export_name] = connector_path
@@ -313,7 +322,7 @@ class InstantiatedModel:
     for key, element in elements.items():
       connector_path = ".".join([self.system.name, str(element.name)])
       if currentSystem == connector_path:
-          self._addConnector(element.connectors, connector_path)
+        self._addConnector(element.connectors, connector_path)
 
       ## recurse into subsystem
       if isinstance(element, System):
