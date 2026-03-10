@@ -644,10 +644,25 @@ class System:
           fmuType = fmu.fmuType
         else:
           fmuType = element.implementation
+        ## add connectors info for the component in the json, this is needed for propagating connector geomtery to capi
+        connector_info = []
+        for connector in element.connectors:
+          connector_info.append({
+              "name": str(connector.name),
+              "causality": connector.causality.name if connector.causality else None,
+              "type": connector.signal_type.name if connector.signal_type else None,
+          })
+          ## add connector geometry if available
+          if connector.connectorGeometry:
+            connector_info[-1]["geometry"] = {
+                "x": connector.connectorGeometry.x if connector.connectorGeometry else None,
+                "y": connector.connectorGeometry.y if connector.connectorGeometry else None
+            }
         solver_groups[element.solver].append({
             "name": [self.name] + ([systemName] if systemName else []) + [str(element.name)],
             "type": fmuType,
-            "path": str(Path(tempdir, str(element.fmuPath))) if tempdir is not None else str(element.fmuPath)
+            "path": str(Path(tempdir, str(element.fmuPath))) if tempdir is not None else str(element.fmuPath),
+            "connectors": connector_info
         })
         componentSolver[str(element.name)] = element.solver
       elif isinstance(element, ComponentTable):
