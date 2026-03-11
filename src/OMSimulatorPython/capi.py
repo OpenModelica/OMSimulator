@@ -259,10 +259,10 @@ class capi:
     status = self.obj.oms_setConnectorGeometry(cref.encode(), ctypes.byref(geometry))
     return Status(status)
 
-  def setElementGeometry(self, cref, x1, y1, x2, y2, rotation=0.0, iconSource=None, iconRotation=0.0, iconFlip=False, iconFixedAspectRatio=False):
+  def setElementGeometry(self, cref, x1, y1, x2, y2, rotation=0.0, iconSource=b"", iconRotation=0.0, iconFlip=False, iconFixedAspectRatio=False):
     '''Set the element geometry for a model or system.
     The element geometry is defined by a bounding box (x1, y1, x2, y2) that defines the position and size of the element in the diagram, as well as optional rotation and icon information.'''
-    geometry = ssd_element_geometry_t(x1, y1, x2, y2, rotation, iconSource.encode() if iconSource else "", iconRotation, iconFlip, iconFixedAspectRatio)
+    geometry = ssd_element_geometry_t(x1, y1, x2, y2, rotation, iconSource, iconRotation, iconFlip, iconFixedAspectRatio)
     status = self.obj.oms_setElementGeometry(cref.encode(), ctypes.byref(geometry))
     return Status(status)
 

@@ -134,6 +134,23 @@ class InstantiatedModel:
                 raise RuntimeError(f"Failed to set connector geometry for {connector_path}: {status}")
               self.apiCall.append(f'oms_setConnectorGeometry("{connector_path}", {x}, {y})')
 
+        ## parse element geometry for the component if exist and set it to capi after adding the component, this is needed for proper mapping of element geometry
+        if "element geometry" in comp:
+          geometry = comp["element geometry"]
+          x1 = geometry.get("x1", 0.0)
+          y1 = geometry.get("y1", 0.0)
+          x2 = geometry.get("x2", 0.0)
+          y2 = geometry.get("y2", 0.0)
+          rotation = geometry.get("rotation")
+          iconSource = geometry.get("iconSource", b"")
+          iconRotation = geometry.get("iconRotation", 0.0)
+          iconFlip = geometry.get("iconFlip", False)
+          iconFixedAspectRatio = geometry.get("iconFixedAspectRatio", False)
+          status = Capi.setElementGeometry(comp_path, x1, y1, x2, y2, rotation, iconSource, iconRotation, iconFlip, iconFixedAspectRatio)
+          if status != Status.ok:
+            raise RuntimeError(f"Failed to set element geometry for {comp_path}: {status}")
+          self.apiCall.append(f'oms_setElementGeometry("{comp_path}", {x1}, {y1}, {x2}, {y2}, {rotation}, "{iconSource}", {iconRotation}, {iconFlip}, {iconFixedAspectRatio})')
+
         if not export_name in self.mappedCrefs:
           self.mappedCrefs[export_name] = comp_path
           self.mappedCrefs[".".join(comp["name"][:-1])] = solver_path # map parent system too for connector lookup
