@@ -664,6 +664,21 @@ class System:
             "path": str(Path(tempdir, str(element.fmuPath))) if tempdir is not None else str(element.fmuPath),
             "connectors": connector_info
         })
+        ## add element geometry if available, this is needed for propagating element geometry to capi
+        if element.elementgeometry:
+          element_geometry = {
+              "x1": element.elementgeometry.x1,
+              "y1": element.elementgeometry.y1,
+              "x2": element.elementgeometry.x2,
+              "y2": element.elementgeometry.y2,
+              "rotation": element.elementgeometry.rotation,
+              "iconSource": element.elementgeometry.icon_source,
+              "iconRotation": element.elementgeometry.icon_rotation,
+              "iconFlip": element.elementgeometry.icon_flip,
+              "iconFixedAspectRatio": element.elementgeometry.icon_fixed_aspect_ratio
+          }
+          solver_groups[element.solver][-1]["element geometry"] = element_geometry
+
         componentSolver[str(element.name)] = element.solver
       elif isinstance(element, ComponentTable):
         solver_groups[element.solver].append({
