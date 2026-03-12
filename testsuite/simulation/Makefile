@@ -28,6 +28,7 @@ SimpleSimulation13.py \
 SimpleSimulation14.py \
 SimpleSimulation15.py \
 stepUntil.py \
+FMI3_SimpleSimulation1.py \
 
 # Run make failingtest
 FAILINGTESTFILES = \
