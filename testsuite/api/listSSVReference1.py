@@ -5,7 +5,7 @@
 ## win: yes
 ## mac: yes
 
-from OMSimulator import SSP, CRef, Settings, SSV
+from OMSimulator import SSP, CRef, Settings, SSV, SignalType
 
 Settings.suppressPath = True
 
@@ -26,15 +26,15 @@ component2 = model.addComponent(CRef('default', 'Add2'), 'resources/Add.fmu')
 model.addComponent(CRef('default', 'sub-system', 'Add3'), 'resources/Add.fmu')
 
 ssv1 = SSV()
-ssv1.setValue("k1", 2.0, "m")
-ssv1.setValue("k2", 3.0, "kg")
-ssv1.setValue("param3", "hello")
+ssv1.setValue("k1", 2.0, SignalType.Real, "m")
+ssv1.setValue("k2", 3.0, SignalType.Real, "kg")
+ssv1.setValue("param3", "hello", SignalType.String)
 ssv1.export("list1.ssv")
 
 ssv2 = SSV()
-ssv2.setValue("k1", 200.0, "m")
-ssv2.setValue("k2", 300.0, "kg")
-ssv2.setValue("param3", "ssp")
+ssv2.setValue("k1", 200.0, SignalType.Real, "m")
+ssv2.setValue("k2", 300.0, SignalType.Real, "kg")
+ssv2.setValue("param3", "ssp", SignalType.String)
 ssv2.export("list2.ssv")
 
 ## add list1.ssv to to ssp resources
