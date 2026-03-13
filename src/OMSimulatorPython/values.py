@@ -2,13 +2,13 @@ from lxml import etree as ET
 from OMSimulator.unit import Unit
 from OMSimulator.ssm import SSM
 from OMSimulator import namespace
-from OMSimulator.variable import Float32, Float64, Int8, Int16, Int32, Int64, UInt8, UInt16, UInt32, UInt64
+from OMSimulator.variable import SignalType, Float32, Float64, Int8, Int16, Int32, Int64, UInt8, UInt16, UInt32, UInt64
 
 class Values:
   def __init__(self):
     self.start_values = {}
 
-  def setValue(self, name, value, type, unit=None, description=None):
+  def setValue(self, name, value, type : SignalType | None, unit=None, description=None):
     if unit is not None and not isinstance(value, float):
       raise TypeError("Unit can only be set for Real values.")
     self.start_values[name] = (value, type, unit, description)
@@ -74,7 +74,7 @@ class Values:
         parameter_node.set("description", description)
 
       if type:
-        type_tag = type
+        type_tag = type.name
       else:
         type_tag = self._getVariableType(value)
 
