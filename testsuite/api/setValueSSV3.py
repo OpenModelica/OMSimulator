@@ -35,15 +35,15 @@ ssv1.setValue("input1", 3.0)
 ssv1.export("myfile5.ssv")
 
 ssv2 = SSV()
-ssv2.setValue("k1", 2.0, "m")
-ssv2.setValue("k2", 3.0, "kg")
-ssv2.setValue("param3", "hello")
+ssv2.setValue("k1", 2.0, SignalType.Real, "m")
+ssv2.setValue("k2", 3.0, SignalType.Real, "kg")
+ssv2.setValue("param3", "hello", SignalType.String)
 ssv2.export("myfile6.ssv")
 
 ssv3 = SSV()
-ssv3.setValue("k1", 200.0, "m")
-ssv3.setValue("k2", 300.0, "kg")
-ssv3.setValue("param3", "ssp")
+ssv3.setValue("k1", 200.0, SignalType.Real, "m")
+ssv3.setValue("k2", 300.0, SignalType.Real, "kg")
+ssv3.setValue("param3", "ssp", SignalType.String)
 ssv3.export("myfile7.ssv")
 
 

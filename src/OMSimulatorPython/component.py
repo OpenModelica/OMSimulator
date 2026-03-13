@@ -145,7 +145,12 @@ class Component:
       utils.exportAnnotations(component_node, self.solver)
 
   def setValue(self, cref:str, value, unit=None, description = None):
-    self.value.setValue(cref, value, unit, description)
+    for connector in self.connectors:
+      if str(connector.name) == str(cref):
+        self.value.setValue(cref, value, connector.signal_type, unit, description)
+        return
+    ## it is possible that the parameter is not defined as connector but only in the ssv file or ssm mapping, so we allow setting values without types
+    self.value.setValue(cref, value, None, unit, description)
 
   def getValue(self, cref:str):
     return self.value.getValue(cref)

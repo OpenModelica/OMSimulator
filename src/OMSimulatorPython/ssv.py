@@ -2,7 +2,7 @@ from pathlib import Path
 
 from lxml import etree as ET
 from OMSimulator.values import Values
-
+from OMSimulator.variable import SignalType
 from OMSimulator import namespace, utils
 
 
@@ -14,8 +14,8 @@ class SSV:
       self.filename = Path(ssv_path)
       self.importFromSSV(self.filename)
 
-  def setValue(self, cref:str, value, unit = None, description = None):
-    self.value.setValue(cref, value, unit, description)
+  def setValue(self, cref:str, value, type : SignalType | None = None, unit = None, description = None):
+    self.value.setValue(cref, value, type, unit, description)
 
   def list(self, prefix = ""):
     self.value.list(prefix)
@@ -40,5 +40,5 @@ class SSV:
 
   def importFromSSV(self, filename):
     parameterValues = utils.parseSSV(filename)
-    for key, (value, unit, description) in parameterValues.items():
-      self.setValue(key, value, unit, description)
+    for key, (value, type, unit, description) in parameterValues.items():
+      self.setValue(key, value, type, unit, description)
