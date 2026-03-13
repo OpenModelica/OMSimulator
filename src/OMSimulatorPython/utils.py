@@ -20,8 +20,8 @@ warnings.formatwarning = _simple_warning
 
 def _setParameters(parameterValues: dict, obj):
   if len(parameterValues) > 0:
-    for key, (value, unit, description) in parameterValues.items():
-      obj.value.setValue(key, value, unit, description)
+    for key, (value, type, unit, description) in parameterValues.items():
+      obj.value.setValue(key, value, type, unit, description)
 
 def parseDefaultExperiment(node, root):
   default_experiment = node.find("ssd:DefaultExperiment", namespaces=namespace.ns)
@@ -180,7 +180,9 @@ def parseParameterBindingHelper(parameters):
         if value_element is not None:
           value = value_element.get("value")
           unit = value_element.get("unit")
-          parameterValues[name] = (cast_func(value), unit, description)  # Convert to correct type
+           # Extract type name (remove namespace prefix)
+          type_name = value_type.split(":")[1]
+          parameterValues[name] = (value, type_name, unit, description)  # Convert to correct type
           break  # Stop after first found type
     return parameterValues
 

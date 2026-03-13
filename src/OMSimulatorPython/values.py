@@ -73,11 +73,11 @@ class Values:
       if description:
         parameter_node.set("description", description)
 
-      type_tag = self._getVariableType(value)
+      # type_tag = self._getVariableType(value)
 
       parameter_type = ET.SubElement(parameter_node, namespace.tag("ssv", type))
       value_ = str(value.value if hasattr(value, 'value') else value)
-      if type_tag == "Boolean":
+      if type == "Boolean":
         value_ = "true" if value else "false"
       parameter_type.set("value", value_)
       if unit is not None:
