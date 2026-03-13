@@ -182,7 +182,7 @@ def parseParameterBindingHelper(parameters):
           unit = value_element.get("unit")
            # Extract type name (remove namespace prefix)
           type_name = value_type.split(":")[1]
-          parameterValues[name] = (value, type_name, unit, description)  # Convert to correct type
+          parameterValues[name] = (cast_func(value), type_name, unit, description)  # Convert to correct type
           break  # Stop after first found type
     return parameterValues
 
