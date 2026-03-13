@@ -276,7 +276,7 @@ class InstantiatedModel:
     if ssm and ssm.mappingEntry:
       for source, targets in ssm.mappingEntry.items():
         if CRef(source) in value.start_values:
-          source_value, _, _ = value.start_values[CRef(source)]
+          (source_value, _, _, _) = value.start_values[CRef(source)]
           for entry in targets:
             target = entry["target"]
             linearTransformation = entry["linearTransformation"]
