@@ -8,10 +8,10 @@ class Values:
   def __init__(self):
     self.start_values = {}
 
-  def setValue(self, name, value, unit=None, description=None):
+  def setValue(self, name, value, type, unit=None, description=None):
     if unit is not None and not isinstance(value, float):
       raise TypeError("Unit can only be set for Real values.")
-    self.start_values[name] = (value, unit, description)
+    self.start_values[name] = (value, type, unit, description)
 
   def getValue(self, name):
     return self.start_values.get(name)
@@ -26,9 +26,9 @@ class Values:
     if self.empty():
       return
 
-    for key, (value, unit, description) in self.start_values.items():
+    for key, (value, type, unit, description) in self.start_values.items():
       type_tag = self._getVariableType(value)
-      print(f"{prefix} ({type_tag} {key}, {str(value.value if hasattr(value, 'value') else value)}, {unit}, '{description}')")
+      print(f"{prefix} ({type} {key}, {str(value.value if hasattr(value, 'value') else value)}, {unit}, '{description}')")
 
   def exportToSSD(self, node, parameterMapping : SSM | None = None, unitDefinitions = None):
     if self.empty():
@@ -64,7 +64,7 @@ class Values:
 
   def add_parameters(self, parameters_node, prefix = None):
     """Generic function to add XML parameters based on the value type."""
-    for key, (value, unit, description) in self.start_values.items():
+    for key, (value, type, unit, description) in self.start_values.items():
       parameter_node = ET.SubElement(parameters_node, namespace.tag("ssv", "Parameter"))
       if prefix:
         parameter_node.set("name", str(prefix) + "." + str(key))
@@ -75,7 +75,7 @@ class Values:
 
       type_tag = self._getVariableType(value)
 
-      parameter_type = ET.SubElement(parameter_node, namespace.tag("ssv", type_tag))
+      parameter_type = ET.SubElement(parameter_node, namespace.tag("ssv", type))
       value_ = str(value.value if hasattr(value, 'value') else value)
       if type_tag == "Boolean":
         value_ = "true" if value else "false"
