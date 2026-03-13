@@ -14,7 +14,7 @@ class SSV:
       self.filename = Path(ssv_path)
       self.importFromSSV(self.filename)
 
-  def setValue(self, cref:str, value, type : SignalType | None, unit = None, description = None):
+  def setValue(self, cref:str, value, type : SignalType | None = None, unit = None, description = None):
     self.value.setValue(cref, value, type, unit, description)
 
   def list(self, prefix = ""):
