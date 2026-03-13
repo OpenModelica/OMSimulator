@@ -27,8 +27,11 @@ class Values:
       return
 
     for key, (value, type, unit, description) in self.start_values.items():
-      type_tag = self._getVariableType(value)
-      print(f"{prefix} ({type} {key}, {str(value.value if hasattr(value, 'value') else value)}, {unit}, '{description}')")
+      if type:
+        type_tag = type.name
+      else:
+        type_tag = self._getVariableType(value)
+      print(f"{prefix} ({type_tag} {key}, {str(value.value if hasattr(value, 'value') else value)}, {unit}, '{description}')")
 
   def exportToSSD(self, node, parameterMapping : SSM | None = None, unitDefinitions = None):
     if self.empty():
