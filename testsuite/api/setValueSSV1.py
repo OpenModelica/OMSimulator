@@ -5,7 +5,7 @@
 ## win: yes
 ## mac: yes
 
-from OMSimulator import SSP, CRef, Settings, SSV
+from OMSimulator import SSP, CRef, Settings, SSV, SignalType
 
 Settings.suppressPath = True
 
