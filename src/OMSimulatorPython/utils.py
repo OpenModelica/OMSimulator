@@ -185,7 +185,7 @@ def parseParameterBindingHelper(parameters):
           type_name = value_type.split(":")[1]
           if type_name == "Enumeration":
             type_name = "Integer"  # Treat Enumeration as Integer for type purposes
-          parameterValues[name] = (cast_func(value), type_name, unit, description)  # Convert to correct type
+          parameterValues[name] = (cast_func(value), SignalType[type_name], unit, description)  # Convert to correct type
           break  # Stop after first found type
     return parameterValues
 
