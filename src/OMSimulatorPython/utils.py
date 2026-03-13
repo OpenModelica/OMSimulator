@@ -163,6 +163,7 @@ def parseParameterBindingHelper(parameters):
                       "ssv:Integer": int,
                       "ssv:Boolean": lambda v: v.lower() == "true",  # Convert "true"/"false" to bool
                       "ssv:String": str,
+                      "ssv:Enumeration": int,
                        ## FMI-3.0 types
                       "ssv:Float64": Float64,
                       "ssv:Float32": Float32,
@@ -182,6 +183,8 @@ def parseParameterBindingHelper(parameters):
           unit = value_element.get("unit")
            # Extract type name (remove namespace prefix)
           type_name = value_type.split(":")[1]
+          if type_name == "Enumeration":
+            type_name = "Integer"  # Treat Enumeration as Integer for type purposes
           parameterValues[name] = (cast_func(value), type_name, unit, description)  # Convert to correct type
           break  # Stop after first found type
     return parameterValues
