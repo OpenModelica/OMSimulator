@@ -146,7 +146,7 @@ class Component:
 
   def setValue(self, cref:str, value, unit=None, description = None):
     for connector in self.connectors:
-      if connector.name == cref:
+      if str(connector.name) == str(cref):
         self.value.setValue(cref, value, connector.signal_type.name, unit, description)
         return
     raise ValueError(f"Signal type not found for '{cref}' in {self.name}")
