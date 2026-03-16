@@ -304,7 +304,7 @@ class System:
     first = cref.first()
 
     ## Check if the cref is a top level system connector
-    if self._connectorExists(first, delete = True):
+    if self._deleteConnector(first):
       return
 
     match self.elements.get(first):
@@ -472,15 +472,19 @@ class System:
     else:
       raise ValueError(f"info: Invalid connection from '{startElement}.{startConnector}'->'{endElement}.{endConnector}' as causality are violated with '{source_owner}.{source_kind.name}' -> '{dest_owner}.{dest_kind.name}'")
 
-
-  def _connectorExists(self, cref: CRef, delete = False) -> bool:
+  def _connectorExists(self, cref: CRef) -> Connector | None:
     """Check if a connector exists in the system."""
+    for connector in self.connectors:
+      if connector.name == cref:
+        return connector
+    return None
+
+  def _deleteConnector(self, cref: CRef) -> bool:
+    """Delete connector if it exists."""
     for i, connector in enumerate(self.connectors):
       if connector.name == cref:
-        if delete:
-          del self.connectors[i]
-          # Remove connections associated with this connector
-          self.deleteAllConnection(cref)
+        self.deleteAllConnection(cref)
+        del self.connectors[i]
         return True
     return False
 
@@ -490,7 +494,8 @@ class System:
 
     ## check if element is a top level system connectors
     ## or allow non existing connectors to support parameter mapping throgh SSM inline or ssm file by checking if cref
-    if self._connectorExists(cref) or cref.is_root():
+    connector = self._connectorExists(cref)
+    if connector or cref.is_root():
       return (None, None)
 
     if element is None:
@@ -508,8 +513,10 @@ class System:
     first = cref.first()
     ## Check if the cref is a top level system connector
     ## or allow non existing connectors to support parameter mapping throgh SSM inline or ssm file by checking if cref
-    if self._connectorExists(first) or cref.is_root():
-      self.value.setValue(cref, value, unit)
+    connector = self._connectorExists(first)
+    if connector or cref.is_root():
+      signal_type = connector.signal_type if connector else None
+      self.value.setValue(cref, value, signal_type, unit, description)
       return
 
     match self.elements.get(first):
@@ -524,7 +531,8 @@ class System:
     first = cref.first()
     ## Check if the cref is a top level system connector
     ## or allow non existing connectors to support parameter mapping throgh SSM inline or ssm file by checking if cref
-    if self._connectorExists(first) or cref.is_root():
+    connector = self._connectorExists(first)
+    if connector or cref.is_root():
       self.value.getValue(cref)
       return
 

@@ -2,16 +2,16 @@ from lxml import etree as ET
 from OMSimulator.unit import Unit
 from OMSimulator.ssm import SSM
 from OMSimulator import namespace
-from OMSimulator.variable import Float32, Float64, Int8, Int16, Int32, Int64, UInt8, UInt16, UInt32, UInt64
+from OMSimulator.variable import SignalType, Float32, Float64, Int8, Int16, Int32, Int64, UInt8, UInt16, UInt32, UInt64
 
 class Values:
   def __init__(self):
     self.start_values = {}
 
-  def setValue(self, name, value, unit=None, description=None):
+  def setValue(self, name, value, type : SignalType | None, unit=None, description=None):
     if unit is not None and not isinstance(value, float):
       raise TypeError("Unit can only be set for Real values.")
-    self.start_values[name] = (value, unit, description)
+    self.start_values[name] = (value, type, unit, description)
 
   def getValue(self, name):
     return self.start_values.get(name)
@@ -26,8 +26,11 @@ class Values:
     if self.empty():
       return
 
-    for key, (value, unit, description) in self.start_values.items():
-      type_tag = self._getVariableType(value)
+    for key, (value, type, unit, description) in self.start_values.items():
+      if type:
+        type_tag = type.name
+      else:
+        type_tag = self._getVariableType(value)
       print(f"{prefix} ({type_tag} {key}, {str(value.value if hasattr(value, 'value') else value)}, {unit}, '{description}')")
 
   def exportToSSD(self, node, parameterMapping : SSM | None = None, unitDefinitions = None):
@@ -64,7 +67,7 @@ class Values:
 
   def add_parameters(self, parameters_node, prefix = None):
     """Generic function to add XML parameters based on the value type."""
-    for key, (value, unit, description) in self.start_values.items():
+    for key, (value, type, unit, description) in self.start_values.items():
       parameter_node = ET.SubElement(parameters_node, namespace.tag("ssv", "Parameter"))
       if prefix:
         parameter_node.set("name", str(prefix) + "." + str(key))
@@ -73,7 +76,10 @@ class Values:
       if description:
         parameter_node.set("description", description)
 
-      type_tag = self._getVariableType(value)
+      if type:
+        type_tag = type.name
+      else:
+        type_tag = self._getVariableType(value)
 
       parameter_type = ET.SubElement(parameter_node, namespace.tag("ssv", type_tag))
       value_ = str(value.value if hasattr(value, 'value') else value)

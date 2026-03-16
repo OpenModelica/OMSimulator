@@ -5,25 +5,25 @@
 ## win: yes
 ## mac: yes
 
-from OMSimulator import SSP, CRef, Settings, SSV
+from OMSimulator import SSP, CRef, Settings, SSV, SignalType
 
 Settings.suppressPath = True
 
 # This example creates a new SSV file and set some parameter values and export it to filesystem
 
 ssv1 = SSV()
-ssv1.setValue("k1", 2.0, "m")
-ssv1.setValue("k2", 3.0)
-ssv1.setValue("k3", 3)
-ssv1.setValue("k4", False)
-ssv1.setValue("param3", "hello")
+ssv1.setValue("k1", 2.0, SignalType.Real, "m")
+ssv1.setValue("k2", 3.0, SignalType.Real)
+ssv1.setValue("k3", 3, SignalType.Integer)
+ssv1.setValue("k4", False, SignalType.Boolean)
+ssv1.setValue("param3", "hello", SignalType.String)
 ssv1.export("myfile1.ssv")
 
 
 ssv2 = SSV()
-ssv2.setValue("k1", 20.0, "m")
-ssv2.setValue("k2", 30.0, "kg")
-ssv2.setValue("param3", "helloSSP")
+ssv2.setValue("k1", 20.0, SignalType.Real, "m")
+ssv2.setValue("k2", 30.0, SignalType.Real, "kg")
+ssv2.setValue("param3", "helloSSP", SignalType.String)
 ssv2.export("myfile2.ssv")
 
 files = ["myfile1.ssv", "myfile2.ssv"]
