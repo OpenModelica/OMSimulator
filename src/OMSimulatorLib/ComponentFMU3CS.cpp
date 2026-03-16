@@ -997,77 +997,80 @@ oms_status_enu_t oms::ComponentFMU3CS::getInteger(const fmi3ValueReference& vr, 
 {
   CallClock callClock(clock);
 
-   // Temporary variables for different types
-  int64_t value64;
-  int32_t value32;
-  int16_t value16;
-  int8_t value8;
-  uint64_t valueU64;
-  uint32_t valueU32;
-  uint16_t valueU16;
-  uint8_t valueU8;
-
   switch (numericType)
   {
     case oms_signal_numeric_type_INT64:
     {
-      if (fmi3OK != fmi3_getInt64(fmu, &vr, 1, &value64, 1))
+      int64_t v64;
+      if (fmi3OK != fmi3_getInt64(fmu, &vr, 1, &v64, 1))
         return oms_status_error;
-      if (value64 < INT_MIN || value64 > INT_MAX)
-        return oms_status_error;  // Value out of range for int
-      value = static_cast<int>(value64);  // Cast to int
+      if (v64 < INT_MIN || v64 > INT_MAX)
+        return oms_status_error; // out of int range
+      value = static_cast<int>(v64);
       break;
     }
     case oms_signal_numeric_type_INT32:
     {
-      if (fmi3OK != fmi3_getInt32(fmu, &vr, 1, &value, 1))
+      int32_t v32;
+      if (fmi3OK != fmi3_getInt32(fmu, &vr, 1, &v32, 1))
         return oms_status_error;
+      value = static_cast<int>(v32); // safe
       break;
     }
     case oms_signal_numeric_type_INT16:
     {
-      if (fmi3OK != fmi3_getInt16(fmu, &vr, 1, &value16, 1))
+      int16_t v16;
+      if (fmi3OK != fmi3_getInt16(fmu, &vr, 1, &v16, 1))
         return oms_status_error;
-      value = static_cast<int>(value16);
+      value = static_cast<int>(v16); // safe
       break;
     }
     case oms_signal_numeric_type_INT8:
     {
-      if (fmi3OK != fmi3_getInt8(fmu, &vr, 1, &value8, 1))
+      int8_t v8;
+      if (fmi3OK != fmi3_getInt8(fmu, &vr, 1, &v8, 1))
         return oms_status_error;
-      value = static_cast<int>(value8);
+      value = static_cast<int>(v8); // safe
       break;
     }
     case oms_signal_numeric_type_UINT64:
     {
-      if (fmi3OK != fmi3_getUInt64(fmu, &vr, 1, &valueU64, 1))
+      uint64_t vU64;
+      if (fmi3OK != fmi3_getUInt64(fmu, &vr, 1, &vU64, 1))
         return oms_status_error;
-      value = static_cast<int>(valueU64);
+      if (vU64 > static_cast<uint64_t>(INT_MAX))
+        return oms_status_error; // cannot fit in int
+      value = static_cast<int>(vU64);
       break;
     }
     case oms_signal_numeric_type_UINT32:
     {
-      if (fmi3OK != fmi3_getUInt32(fmu, &vr, 1, &valueU32, 1))
+      uint32_t vU32;
+      if (fmi3OK != fmi3_getUInt32(fmu, &vr, 1, &vU32, 1))
         return oms_status_error;
-      value = static_cast<int>(valueU32);
+      if (vU32 > static_cast<uint32_t>(INT_MAX))
+        return oms_status_error; // cannot fit in int
+      value = static_cast<int>(vU32);
       break;
     }
     case oms_signal_numeric_type_UINT16:
     {
-      if (fmi3OK != fmi3_getUInt16(fmu, &vr, 1, &valueU16, 1))
+      uint16_t vU16;
+      if (fmi3OK != fmi3_getUInt16(fmu, &vr, 1, &vU16, 1))
         return oms_status_error;
-      value = static_cast<int>(valueU16);
+      value = static_cast<int>(vU16); // safe
       break;
     }
     case oms_signal_numeric_type_UINT8:
     {
-      if (fmi3OK != fmi3_getUInt8(fmu, &vr, 1, &valueU8, 1))
+      uint8_t vU8;
+      if (fmi3OK != fmi3_getUInt8(fmu, &vr, 1, &vU8, 1))
         return oms_status_error;
-      value = static_cast<int>(valueU8);
+      value = static_cast<int>(vU8); // safe
       break;
     }
-    default :
-      return logError("Unsupported Numeric Type");
+    default:
+      return logError("Unsupported Numeric Type for var");
   }
   return oms_status_ok;
 }
@@ -1631,75 +1634,67 @@ oms_status_enu_t oms::ComponentFMU3CS::setInteger(const ComRef& cref, int value)
   else
   {
     fmi3ValueReference vr = allVariables[j].getValueReferenceFMI3();
-    int64_t value64;
-    int32_t value32;
-    int16_t value16;
-    int8_t value8;
-    uint64_t valueU64;
-    uint32_t valueU32;
-    uint16_t valueU16;
-    uint8_t valueU8;
     switch (allVariables[j].getNumericType())
     {
       case oms_signal_numeric_type_INT64:
       {
-        value64 = static_cast<int>(value); // Cast to int
-        if (fmi3OK != fmi3_setInt64(fmu, &vr, 1, &value64, 1))
+        int64_t v = static_cast<int64_t>(value);
+        if (fmi3OK != fmi3_setInt64(fmu, &vr, 1, &v, 1))
           return oms_status_error;
         break;
       }
       case oms_signal_numeric_type_INT32:
       {
-        if (fmi3OK != fmi3_setInt32(fmu, &vr, 1, &value, 1))
+        int32_t v = static_cast<int32_t>(value);
+        if (fmi3OK != fmi3_setInt32(fmu, &vr, 1, &v, 1))
           return oms_status_error;
         break;
       }
       case oms_signal_numeric_type_INT16:
       {
-        value16 = static_cast<int>(value);
-        if (fmi3OK != fmi3_setInt16(fmu, &vr, 1, &value16, 1))
+        int16_t v = static_cast<int16_t>(value);
+        if (fmi3OK != fmi3_setInt16(fmu, &vr, 1, &v, 1))
           return oms_status_error;
         break;
       }
-
       case oms_signal_numeric_type_INT8:
       {
-        value8 = static_cast<int>(value);
-        if (fmi3OK != fmi3_setInt8(fmu, &vr, 1, &value8, 1))
+        int8_t v = static_cast<int8_t>(value);
+        if (fmi3OK != fmi3_setInt8(fmu, &vr, 1, &v, 1))
           return oms_status_error;
         break;
       }
       case oms_signal_numeric_type_UINT64:
       {
-        valueU64 = static_cast<int>(value);
-        if (fmi3OK != fmi3_setUInt64(fmu, &vr, 1, &valueU64, 1))
+        uint64_t v = static_cast<uint64_t>(value);
+        if (fmi3OK != fmi3_setUInt64(fmu, &vr, 1, &v, 1))
           return oms_status_error;
         break;
       }
       case oms_signal_numeric_type_UINT32:
       {
-        valueU32 = static_cast<int>(value);
-        if (fmi3OK != fmi3_setUInt32(fmu, &vr, 1, &valueU32, 1))
+        uint32_t v = static_cast<uint32_t>(value);
+        if (fmi3OK != fmi3_setUInt32(fmu, &vr, 1, &v, 1))
           return oms_status_error;
         break;
       }
       case oms_signal_numeric_type_UINT16:
       {
-        valueU16 = static_cast<int>(value);
-        if (fmi3OK != fmi3_setUInt16(fmu, &vr, 1, &valueU16, 1))
+        uint16_t v = static_cast<uint16_t>(value);
+        if (fmi3OK != fmi3_setUInt16(fmu, &vr, 1, &v, 1))
           return oms_status_error;
         break;
       }
       case oms_signal_numeric_type_UINT8:
       {
-        valueU8 = static_cast<int>(value);
-        if (fmi3OK != fmi3_setUInt8(fmu, &vr, 1, &valueU8, 1))
+        uint8_t v = static_cast<uint8_t>(value);
+        if (fmi3OK != fmi3_setUInt8(fmu, &vr, 1, &v, 1))
           return oms_status_error;
         break;
       }
       default:
         return logError("Unsupported Numeric Type for var: \"" + std::string(cref.c_str()) + "\"");
-      }
+    }
   }
 
   return oms_status_ok;
