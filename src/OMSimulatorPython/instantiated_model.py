@@ -276,31 +276,32 @@ class InstantiatedModel:
     if ssm and ssm.mappingEntry:
       for source, targets in ssm.mappingEntry.items():
         if CRef(source) in value.start_values:
-          (source_value, _, _, _) = value.start_values[CRef(source)]
+          (source_value, type, _, _) = value.start_values[CRef(source)]
           for entry in targets:
             target = entry["target"]
             linearTransformation = entry["linearTransformation"]
             value_path = self.map_cref(systemName, str(target))
             if linearTransformation:
               source_value = source_value * float(linearTransformation.factor) + float(linearTransformation.offset)
-            self.apply_start_value(value_path, source_value)
+            self.apply_start_value(value_path, source_value, type)
     else:
       for key, (source_value, type, _, _) in value.start_values.items():
         value_path = self.map_cref(systemName, str(key))
-        self.apply_start_value(value_path, source_value)
+        self.apply_start_value(value_path, source_value, type)
 
-  def apply_start_value(self, value_path:str, value):
+  def apply_start_value(self, value_path:str, value, type):
     # Determine the variable type
-    type, status = Capi.getVariableType(value_path)
-    if status != Status.ok:
-      raise RuntimeError(f"Failed to get variable type for {value_path}: {status}")
+    if type is None:
+      type, status = Capi.getVariableType(value_path)
+      if status != Status.ok:
+        raise RuntimeError(f"Failed to get variable type for {value_path}: {status}")
     ## TODO: handle FMi3 data types directly, like Float64, Int32,
     value_ = value.value if hasattr(value, 'value') else value
 
     match SignalType(type):
-      case SignalType.Real:  # oms_signal_type_real
+      case SignalType.Real | SignalType.Float32 | SignalType.Float64:  # oms_signal_type_real
         self._setReal(value_path, float(value_))
-      case SignalType.Integer:  # oms_signal_type_integer
+      case SignalType.Integer | SignalType.Int32 | SignalType.Int8 | SignalType.UInt8 | SignalType.Int16 | SignalType.UInt16 | SignalType.Int32 |SignalType.UInt32 | SignalType.Int64 | SignalType.UInt64:  # oms_signal_type_integer
         self._setInteger(value_path, int(value_))
       case SignalType.Boolean:  # oms_signal_type_boolean
         self._setBoolean(value_path, bool(value_))

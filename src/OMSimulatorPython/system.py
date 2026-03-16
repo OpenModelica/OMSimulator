@@ -481,8 +481,8 @@ class System:
           del self.connectors[i]
           # Remove connections associated with this connector
           self.deleteAllConnection(cref)
-        return True
-    return False
+        return connector
+    return None
 
   def _getComponentResourcePath(self, cref):
     element_name = cref.first()
@@ -508,8 +508,9 @@ class System:
     first = cref.first()
     ## Check if the cref is a top level system connector
     ## or allow non existing connectors to support parameter mapping throgh SSM inline or ssm file by checking if cref
-    if self._connectorExists(first) or cref.is_root():
-      self.value.setValue(cref, value, unit)
+    connector = self._connectorExists(first)
+    if connector or cref.is_root():
+      self.value.setValue(cref, value, connector.signal_type, unit, description)
       return
 
     match self.elements.get(first):
