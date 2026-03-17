@@ -1355,6 +1355,37 @@ oms_status_enu_t oms::System::setConnectorGeometry(const oms::ComRef& cref, cons
   return logError("Connector " + std::string(cref) + " not found in system " + std::string(getCref()));
 }
 
+oms_status_enu_t oms::System::setConnectorNumericType(const oms::ComRef& cref, const oms_signal_numeric_type_enu_t numericType)
+{
+  oms::ComRef tail(cref);
+  oms::ComRef head = tail.pop_front();
+  auto subsystem = subsystems.find(head);
+  if (subsystem != subsystems.end())
+    return subsystem->second->setConnectorNumericType(tail, numericType);
+
+  auto component = components.find(head);
+  if (component != components.end())
+  {
+    oms::Connector *connector = component->second->getConnector(tail);
+    if (connector)
+    {
+      connector->setNumericType(numericType);
+      return oms_status_ok;
+    }
+    else {
+      return logError("Connector " + std::string(tail) + " not found in component " + std::string(head));
+    }
+  }
+
+  oms::Connector* connector = this->getConnector(cref);
+  if (connector)
+  {
+    connector->setNumericType(numericType);
+    return oms_status_ok;
+  }
+  return logError("Connector " + std::string(cref) + " not found in system " + std::string(getCref()));
+}
+
 oms_status_enu_t oms::System::setConnectionGeometry(const oms::ComRef& crefA, const oms::ComRef& crefB, const oms::ssd::ConnectionGeometry *geometry)
 {
   oms::ComRef tailA(crefA);

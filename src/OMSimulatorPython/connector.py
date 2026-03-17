@@ -80,7 +80,7 @@ class Connector:
 
         SignalType.Boolean:     (SignalType.Boolean, SignalNumericType.NONE),
         SignalType.String:      (SignalType.String, SignalNumericType.NONE),
-        SignalType.Enumeration: (SignalType.Enumeration, SignalNumericType.INT32),
+        SignalType.Enumeration: (SignalType.Enumeration, SignalNumericType.INT64),
         SignalType.Binary:      (SignalType.Binary, SignalNumericType.NONE),
     }
     return SIGNAL_SPLIT[self.signal_type]

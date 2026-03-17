@@ -106,6 +106,7 @@ namespace oms
     oms_status_enu_t deleteConnection(const ComRef& crefA, const ComRef& crefB);
     oms_status_enu_t setConnectorGeometry(const ComRef& cref, const oms::ssd::ConnectorGeometry* geometry);
     oms_status_enu_t setConnectionGeometry(const ComRef &crefA, const ComRef &crefB, const oms::ssd::ConnectionGeometry* geometry);
+    oms_status_enu_t setConnectorNumericType(const ComRef& cref, const oms_signal_numeric_type_enu_t numericType);
     oms_status_enu_t setConnectionLinearTransformation(const oms::ComRef& crefA, const oms::ComRef& crefB, double factor, double offset);
     oms_status_enu_t addBus(const ComRef& cref);
     oms_status_enu_t newResources(const ComRef& cref, const std::string& ssvFilename, const std::string& ssmFilename = "", bool externalresources = false);
