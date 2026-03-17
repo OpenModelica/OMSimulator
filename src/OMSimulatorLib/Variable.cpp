@@ -167,9 +167,11 @@ void oms::Variable::configureFMI3Variable(fmiHandle* fmi4c, int index_)
       break;
     case fmi3DataTypeBoolean:
       type = oms_signal_type_boolean;
+      numericType = oms_signal_numeric_type_none;
       break;
     case fmi3DataTypeString:
       type = oms_signal_type_string;
+      numericType = oms_signal_numeric_type_none;
       break;
     case fmi3DataTypeEnumeration:
       type = oms_signal_type_enum;
