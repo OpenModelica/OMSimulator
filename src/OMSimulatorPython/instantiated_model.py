@@ -317,7 +317,7 @@ class InstantiatedModel:
       name = [systemName] + [str(connector.name)]
       connector_path = ".".join([self.mappedCrefs[systemName], str(connector.name)])
       self.apiCall.append(f'oms_addConnector("{connector_path}", "{connector.causality}", {connector.signal_type})')
-      status = Capi.addConnector(connector_path, connector.causality.value, connector.signal_type.value)
+      status = Capi.addConnector(connector_path, connector.causality.value, connector.c_signal_type.value)
       if status != Status.ok:
         raise RuntimeError(f"Failed to add oms_addConnector:{status}")
       ## set connector geometry if exist

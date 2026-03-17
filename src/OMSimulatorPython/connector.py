@@ -45,7 +45,7 @@ class Connector:
     self.description = None
     self.enumName = None
     ## split signal type into signal type and numeric type for handling FMI2 and FMI3 types in a unified way
-    (self.signal_type, self.numericType) = self.splitSignalType()
+    (self.c_signal_type, self.numericType) = self.splitSignalType()
 
   def getCref(self):
     return self.name
