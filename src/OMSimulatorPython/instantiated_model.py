@@ -5,7 +5,7 @@ from OMSimulator.cref import CRef
 from OMSimulator.system import System
 from OMSimulator.values import Values
 from OMSimulator.ssm import SSM
-from OMSimulator.variable import Causality, SignalType
+from OMSimulator.variable import Causality, SignalType, SignalNumericType
 import json
 import tempfile
 from enum import Enum
@@ -320,6 +320,12 @@ class InstantiatedModel:
       status = Capi.addConnector(connector_path, connector.causality.value, connector.c_signal_type.value)
       if status != Status.ok:
         raise RuntimeError(f"Failed to add oms_addConnector:{status}")
+      ## set connector numeric type if exist, this is needed for proper handling of FMI3 connectors with different numeric types
+      if connector.numericType != SignalNumericType.NONE:
+        self.apiCall.append(f'oms_setConnectorNumericType("{connector_path}", {connector.numericType})')
+        status = Capi.setConnectorNumericType(connector_path, connector.numericType.value)
+        if status != Status.ok:
+          raise RuntimeError(f"Failed to set connector numeric type for {connector_path}: {status}")
       ## set connector geometry if exist
       if connector.connectorGeometry:
         x = connector.connectorGeometry.x
