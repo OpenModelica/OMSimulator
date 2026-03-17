@@ -38,6 +38,7 @@ class ssd_element_geometry_t(ctypes.Structure):
     ("iconFlip", ctypes.c_bool),
     ("iconFixedAspectRatio", ctypes.c_bool),
   ]
+
 class capi:
   def __init__(self):
     dirname = os.path.dirname(__file__)
@@ -105,6 +106,8 @@ class capi:
     self.obj.oms_setConnectionGeometry.restype = ctypes.c_int
     self.obj.oms_setConnectorGeometry.argtypes = [ctypes.c_char_p, ctypes.POINTER(ssd_connector_geometry_t)]
     self.obj.oms_setConnectorGeometry.restype = ctypes.c_int
+    self.obj.oms_setConnectorNumericType.argtypes = [ctypes.c_char_p, ctypes.c_int]
+    self.obj.oms_setConnectorNumericType.restype = ctypes.c_int
     self.obj.oms_setElementGeometry.argtypes = [ctypes.c_char_p, ctypes.POINTER(ssd_element_geometry_t)]
     self.obj.oms_setElementGeometry.restype = ctypes.c_int
     self.obj.oms_setTempDirectory.argtypes = [ctypes.c_char_p]
@@ -257,6 +260,12 @@ class capi:
     The connector geometry is defined by a point (x, y) that defines the position of the connector in the diagram.'''
     geometry = ssd_connector_geometry_t(x, y)
     status = self.obj.oms_setConnectorGeometry(cref.encode(), ctypes.byref(geometry))
+    return Status(status)
+
+  def setConnectorNumericType(self, cref, numericType):
+    '''Set the numeric type for a connector.
+    This is used to specify the numeric type of the connector, which is important for FMI3 connectors that can have different numeric types (e.g., float32, float64, int32, int64).'''
+    status = self.obj.oms_setConnectorNumericType(cref.encode(), numericType)
     return Status(status)
 
   def setElementGeometry(self, cref, x1, y1, x2, y2, rotation=0.0, iconSource=b"", iconRotation=0.0, iconFlip=False, iconFixedAspectRatio=False):

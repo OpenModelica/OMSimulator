@@ -35,6 +35,20 @@ class SignalType(Enum):
   UInt64    = 14
   Binary    = 15
 
+## class to represent the numeric type of a signal, which is relevant for FMI3 variables, maintain the order to refect c code enum oms_signal_numeric_type_enu_t
+class SignalNumericType(Enum):
+  FLOAT32 = 0    # Represents fmi3Float32
+  FLOAT64 = 1    # Represents fmi3Float64
+  INT8    = 2    # Represents fmi3Int8
+  UINT8   = 3    # Represents fmi3UInt8
+  INT16   = 4    # Represents fmi3Int16
+  UINT16  = 5    # Represents fmi3UInt16
+  INT32   = 6    # Represents fmi3Int32
+  UINT32  = 7    # Represents fmi3UInt32
+  INT64   = 8    # Represents fmi3Int64
+  UINT64  = 9    # Represents fmi3UInt64
+  NONE    = 10   # Represents no numeric type (e.g., for Boolean, String)
+
 class FMI3Type:
   """Base class for all FMI3 types."""
   def __init__(self, value):

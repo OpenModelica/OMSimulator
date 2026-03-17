@@ -249,15 +249,27 @@ oms::Component* oms::ComponentFMU3CS::NewComponent(const oms::ComRef& cref, oms:
   int j = 1;
   int size = 1 + component->inputs.size();
   for (const auto& i : component->inputs)
+  {
     component->connectors.push_back(new Connector(oms_causality_input, component->allVariables[i].getType(), component->allVariables[i].getCref(), component->getFullCref(), j++/(double)size));
+    component->connectors.back()->setNumericType(component->allVariables[i].getNumericType());
+  }
   j = 1;
   size = 1 + component->outputs.size();
   for (const auto& i : component->outputs)
+  {
     component->connectors.push_back(new Connector(oms_causality_output, component->allVariables[i].getType(), component->allVariables[i].getCref(), component->getFullCref(), j++/(double)size));
+    component->connectors.back()->setNumericType(component->allVariables[i].getNumericType());
+  }
   for (const auto& i : component->parameters)
+  {
     component->connectors.push_back(new Connector(oms_causality_parameter, component->allVariables[i].getType(), component->allVariables[i].getCref(), component->getFullCref()));
+    component->connectors.back()->setNumericType(component->allVariables[i].getNumericType());
+  }
   for (const auto& i : component->calculatedParameters)
+  {
     component->connectors.push_back(new Connector(oms_causality_calculatedParameter, component->allVariables[i].getType(), component->allVariables[i].getCref(), component->getFullCref()));
+    component->connectors.back()->setNumericType(component->allVariables[i].getNumericType());
+  }
   component->connectors.push_back(NULL);
   component->element.setConnectors(&component->connectors[0]);
 

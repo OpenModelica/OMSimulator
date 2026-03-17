@@ -583,6 +583,23 @@ oms_status_enu_t oms_setConnectorGeometry(const char *cref, const ssd_connector_
   return system->setConnectorGeometry(tail, reinterpret_cast<const oms::ssd::ConnectorGeometry*>(geometry));
 }
 
+oms_status_enu_t oms_setConnectorNumericType(const char *cref, const oms_signal_numeric_type_enu_t numericType)
+{
+  oms::ComRef tail(cref);
+  oms::ComRef modelCref = tail.pop_front();
+  oms::ComRef systemCref = tail.pop_front();
+
+  oms::Model* model = oms::Scope::GetInstance().getModel(modelCref);
+  if (!model)
+    return logError_ModelNotInScope(modelCref);
+
+  oms::System* system = model->getSystem(systemCref);
+  if (!system)
+    return logError_SystemNotInModel(modelCref, systemCref);
+
+  return system->setConnectorNumericType(tail, numericType);
+}
+
 oms_status_enu_t oms_setConnectionGeometry(const char *crefA, const char *crefB, const ssd_connection_geometry_t *geometry)
 {
   oms::ComRef tailA(crefA);

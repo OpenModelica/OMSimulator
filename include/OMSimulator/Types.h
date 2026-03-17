@@ -125,7 +125,8 @@ typedef enum {
   oms_signal_numeric_type_INT32,     // Represents fmi3Int32
   oms_signal_numeric_type_UINT32,    // Represents fmi3UInt32
   oms_signal_numeric_type_INT64,     // Represents fmi3Int64
-  oms_signal_numeric_type_UINT64     // Represents fmi3UInt64
+  oms_signal_numeric_type_UINT64,     // Represents fmi3UInt64
+  oms_signal_numeric_type_none        // Represents no numeric type (e.g., for non-numeric signals)
 } oms_signal_numeric_type_enu_t;
 
 /**
