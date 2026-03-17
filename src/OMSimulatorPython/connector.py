@@ -2,7 +2,7 @@ from typing import Union
 
 from lxml import etree as ET
 from OMSimulator.cref import CRef
-from OMSimulator.variable import Causality, SignalType
+from OMSimulator.variable import Causality, SignalType, SignalNumericType
 
 from OMSimulator import namespace
 
@@ -44,6 +44,8 @@ class Connector:
     self.connectorGeometry = None
     self.description = None
     self.enumName = None
+    ## split signal type into signal type and numeric type for handling FMI2 and FMI3 types in a unified way
+    (self.signal_type, self.numericType) = self.splitSignalType()
 
   def getCref(self):
     return self.name
@@ -59,6 +61,29 @@ class Connector:
 
   def setEnumerationName(self, name: str):
     self.enumName = name
+
+  def splitSignalType(self):
+    SIGNAL_SPLIT = {
+        SignalType.Real:        (SignalType.Real, SignalNumericType.FLOAT64),
+        SignalType.Float32:     (SignalType.Real, SignalNumericType.FLOAT32),
+        SignalType.Float64:     (SignalType.Real, SignalNumericType.FLOAT64),
+
+        SignalType.Integer:     (SignalType.Integer, SignalNumericType.INT32),
+        SignalType.Int8:        (SignalType.Integer, SignalNumericType.INT8),
+        SignalType.UInt8:       (SignalType.Integer, SignalNumericType.UINT8),
+        SignalType.Int16:       (SignalType.Integer, SignalNumericType.INT16),
+        SignalType.UInt16:      (SignalType.Integer, SignalNumericType.UINT16),
+        SignalType.Int32:       (SignalType.Integer, SignalNumericType.INT32),
+        SignalType.UInt32:      (SignalType.Integer, SignalNumericType.UINT32),
+        SignalType.Int64:       (SignalType.Integer, SignalNumericType.INT64),
+        SignalType.UInt64:      (SignalType.Integer, SignalNumericType.UINT64),
+
+        SignalType.Boolean:     (SignalType.Boolean, SignalNumericType.NONE),
+        SignalType.String:      (SignalType.String, SignalNumericType.NONE),
+        SignalType.Enumeration: (SignalType.Enumeration, SignalNumericType.INT32),
+        SignalType.Binary:      (SignalType.Binary, SignalNumericType.NONE),
+    }
+    return SIGNAL_SPLIT[self.signal_type]
 
   def list(self, prefix=""):
     print(f"{prefix} ({self.name}, {self.causality}, {self.signal_type}, {self.unit}, '{self.description}')")
