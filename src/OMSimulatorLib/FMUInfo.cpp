@@ -86,6 +86,9 @@ void oms::FMUInfo::update(oms_component_enu_t componentType, fmiHandle* fmu)
     case oms_component_fmu3: // FMI 3.0
       updateFMI3Info(fmu);
       break;
+    case oms_component_dcp: // DCP
+      updateDCPInfo();
+      break;
     default: // Unsupported type
       logError("Unsupported component type for Variable constructor");
   }
@@ -192,4 +195,9 @@ void oms::FMUInfo::updateFMI3Info(fmiHandle* fmu)
     //providesPerElementDependencies
     //providesEvaluateDiscreteStates
   }
+}
+
+void oms::FMUInfo::updateDCPInfo()
+{
+    //Not sure if we need anything for DCP?
 }

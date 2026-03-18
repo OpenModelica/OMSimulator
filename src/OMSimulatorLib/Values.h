@@ -112,6 +112,7 @@ namespace oms
 
     oms_status_enu_t parseModelDescription(const filesystem::path& root, std::string& guid_); ///< path without the filename, i.e. modelDescription.xml
     oms_status_enu_t parseModelDescriptionFmi3(const filesystem::path& root, std::string& guid_); ///< path without the filename, i.e. modelDescription.xml
+    oms_status_enu_t parseSlaveDescription(const std::string &dcpPath, std::string &guid_);
 
     oms_status_enu_t rename(const oms::ComRef& oldCref, const oms::ComRef& newCref);
     oms_status_enu_t renameInResources(const oms::ComRef& oldCref, const oms::ComRef& newCref);
@@ -159,6 +160,8 @@ namespace oms
 
     std::map<ComRef, std::string> modelDescriptionVariableUnits;  ///< variable units read from modeldescription.xml
     std::map<ComRef, std::string> variableUnits;  ///< variable units set by user
+
+    uint8_t dcpId;
 
     struct unitDefinitionsToExport
     {

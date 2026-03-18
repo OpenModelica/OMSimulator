@@ -35,6 +35,8 @@
 #include "Logging.h"
 #include "ssd/Tags.h"
 #include "Util.h"
+#include "XercesValidator.h"
+#include "dcp/zip/DcpSlaveReader.hpp"
 
 #include <iostream>
 #include <map>
@@ -1856,6 +1858,258 @@ oms_status_enu_t oms::Values::parseModelDescriptionFmi3(const filesystem::path& 
     }
   }
   return oms_status_ok;
+}
+
+oms_status_enu_t oms::Values::parseSlaveDescription(const std::string &dcpPath, std::string& guid_)
+{
+    std::shared_ptr<SlaveDescription_t> desc = getSlaveDescriptionFromDcpFile(1, 0, dcpPath);
+
+    guid_ = desc->uuid;
+
+    for(const auto &def : desc->UnitDefinitions) {
+        std::map<std::string, std::string> baseUnits;
+        baseUnits["kg"] = std::to_string(def.BaseUnit->kg);
+        baseUnits["m"] = std::to_string(def.BaseUnit->m);
+        baseUnits["s"] = std::to_string(def.BaseUnit->s);
+        baseUnits["A"] = std::to_string(def.BaseUnit->A);
+        baseUnits["K"] = std::to_string(def.BaseUnit->K);
+        baseUnits["mol"] = std::to_string(def.BaseUnit->mol);
+        baseUnits["cd"] = std::to_string(def.BaseUnit->cd);
+        baseUnits["rad"] = std::to_string(def.BaseUnit->rad);
+        baseUnits["factor"] = std::to_string(def.BaseUnit->factor);
+        baseUnits["offset"] = std::to_string(def.BaseUnit->offset);
+        modeldescriptionUnitDefinitions[def.name] = baseUnits;
+    }
+
+    //Reading start values like this is madness, but it seems to be the
+    //only option with the way variables are structured in DCP and DCPLib...
+    for(const auto &var : desc->Variables) {
+        if(var.Input) {
+            if(var.Input->Float64) {
+                if(var.Input->Float64->start.get()) {
+                    modelDescriptionRealStartValues[ComRef(var.name)] = (*var.Input->Float64->start.get())[0];
+                }
+                if(var.Input->Float64->unit.get()) {
+                    modelDescriptionVariableUnits[ComRef(var.name)] = (*var.Input->Float64->unit.get());
+                }
+            }
+            else if(var.Input->Float32) {
+                if(var.Input->Float32->start.get()) {
+                    modelDescriptionRealStartValues[ComRef(var.name)] = (*var.Input->Float32->start.get())[0];
+                }
+                modelDescriptionVariableUnits[ComRef(var.name)] = (*var.Input->Float32->unit.get());
+            }
+            else if(var.Input->Int64) {
+                if(var.Input->Int64->start.get()) {
+                    modelDescriptionIntegerStartValues[ComRef(var.name)] = (*var.Input->Int64->start.get())[0];
+                }
+            }
+            else if(var.Input->Int32) {
+                if(var.Input->Int32->start.get()) {
+                    modelDescriptionIntegerStartValues[ComRef(var.name)] = (*var.Input->Int32->start.get())[0];
+                }
+            }
+            else if(var.Input->Int16) {
+                if(var.Input->Int16->start.get()) {
+                    modelDescriptionIntegerStartValues[ComRef(var.name)] = (*var.Input->Int16->start.get())[0];
+                }
+            }
+            else if(var.Input->Int8) {
+                if(var.Input->Int8->start.get()) {
+                    modelDescriptionIntegerStartValues[ComRef(var.name)] = (*var.Input->Int8->start.get())[0];
+                }
+            }
+            else if(var.Input->Uint64) {
+                if(var.Input->Uint64->start.get()) {
+                    modelDescriptionIntegerStartValues[ComRef(var.name)] = (*var.Input->Uint64->start.get())[0];
+                }
+            }
+            else if(var.Input->Uint32) {
+                if(var.Input->Uint32->start.get()) {
+                    modelDescriptionIntegerStartValues[ComRef(var.name)] = (*var.Input->Uint32->start.get())[0];
+                }
+            }
+            else if(var.Input->Uint16) {
+                if(var.Input->Uint16->start.get()) {
+                    modelDescriptionIntegerStartValues[ComRef(var.name)] = (*var.Input->Uint16->start.get())[0];
+                }
+            }
+            else if(var.Input->Uint8) {
+                if(var.Input->Uint8->start.get()) {
+                    modelDescriptionIntegerStartValues[ComRef(var.name)] = (*var.Input->Uint8->start.get())[0];
+                }
+            }
+            else if(var.Input->String) {
+                if(var.Input->String->start.get()) {
+                    modelDescriptionStringStartValues[ComRef(var.name)] = (*var.Input->String->start.get())[0];
+                }
+            }
+            //TODO: What about binary variables?
+        }
+        else if(var.Output) {
+            if(var.Output->Float64) {
+                if(var.Output->Float64->start.get()) {
+                    modelDescriptionRealStartValues[ComRef(var.name)] = (*var.Output->Float64->start.get())[0];
+                }
+                if(var.Output->Float64->unit.get()) {
+                    modelDescriptionVariableUnits[ComRef(var.name)] = (*var.Output->Float64->unit.get());        //Crash here!
+                }
+            }
+            else if(var.Output->Float32) {
+                if(var.Output->Float32->start.get()) {
+                    modelDescriptionRealStartValues[ComRef(var.name)] = (*var.Output->Float32->start.get())[0];
+                }
+                modelDescriptionVariableUnits[ComRef(var.name)] = (*var.Input->Float32->unit.get());
+            }
+            else if(var.Output->Int64) {
+                if(var.Output->Int64->start.get()) {
+                    modelDescriptionIntegerStartValues[ComRef(var.name)] = (*var.Output->Int64->start.get())[0];
+                }
+            }
+            else if(var.Output->Int32) {
+                if(var.Output->Int32->start.get()) {
+                    modelDescriptionIntegerStartValues[ComRef(var.name)] = (*var.Output->Int32->start.get())[0];
+                }
+            }
+            else if(var.Output->Int16) {
+                if(var.Output->Int16->start.get()) {
+                    modelDescriptionIntegerStartValues[ComRef(var.name)] = (*var.Output->Int16->start.get())[0];
+                }
+            }
+            else if(var.Output->Int8) {
+                if(var.Output->Int8->start.get()) {
+                    modelDescriptionIntegerStartValues[ComRef(var.name)] = (*var.Output->Int8->start.get())[0];
+                }
+            }
+            else if(var.Output->Uint64) {
+                if(var.Output->Uint64->start.get()) {
+                    modelDescriptionIntegerStartValues[ComRef(var.name)] = (*var.Output->Uint64->start.get())[0];
+                }
+            }
+            else if(var.Output->Uint32) {
+                if(var.Output->Uint32->start.get()) {
+                    modelDescriptionIntegerStartValues[ComRef(var.name)] = (*var.Output->Uint32->start.get())[0];
+                }
+            }
+            else if(var.Output->Uint16) {
+                if(var.Output->Uint16->start.get()) {
+                    modelDescriptionIntegerStartValues[ComRef(var.name)] = (*var.Output->Uint16->start.get())[0];
+                }
+            }
+            else if(var.Output->Uint8) {
+                if(var.Output->Uint8->start.get()) {
+                    modelDescriptionIntegerStartValues[ComRef(var.name)] = (*var.Output->Uint8->start.get())[0];
+                }
+            }
+            else if(var.Output->String) {
+                if(var.Output->String->start.get()) {
+                    modelDescriptionStringStartValues[ComRef(var.name)] = (*var.Output->String->start.get())[0];
+                }
+            }
+            //TODO: What about binary variables?
+
+            if(var.Output->Dependencies && var.Output->Dependencies->Initialization) {
+                std::vector<int> deps;
+                for(const auto &dep : var.Output->Dependencies->Initialization->dependecies) {
+                    deps.push_back(dep.vr);
+                }
+                modelStructureInitialUnknownsDependencyExist[var.valueReference] = true;
+                modelStructureInitialUnknowns[var.valueReference] = deps;
+            }
+            else if(var.Output->Dependencies && var.Output->Dependencies->Run) {
+                std::vector<int> deps;
+                for(const auto &dep : var.Output->Dependencies->Run->dependecies) {
+                    deps.push_back(dep.vr);
+                }
+                modelStructureOutputDependencyExist[var.valueReference] = true;
+                modelStructureOutputs[var.valueReference] = deps;
+            }
+        }
+        else if(var.Parameter) {
+            if(var.Parameter->Float64) {
+                if(var.Parameter->Float64->start.get()) {
+                        modelDescriptionRealStartValues[ComRef(var.name)] = (*var.Parameter->Float64->start.get())[0];
+                }
+                modelDescriptionVariableUnits[ComRef(var.name)] = (*var.Input->Float64->unit.get());
+            }
+            else if(var.Parameter->Float32) {
+                if(var.Parameter->Float32->start.get()) {
+                    modelDescriptionRealStartValues[ComRef(var.name)] = (*var.Parameter->Float32->start.get())[0];
+                }
+                modelDescriptionVariableUnits[ComRef(var.name)] = (*var.Input->Float32->unit.get());
+            }
+            else if(var.Parameter->Int64) {
+                if(var.Parameter->Int64->start.get()) {
+                    modelDescriptionIntegerStartValues[ComRef(var.name)] = (*var.Parameter->Int64->start.get())[0];
+                }
+            }
+            else if(var.Parameter->Int32) {
+                if(var.Parameter->Int32->start.get()) {
+                    modelDescriptionIntegerStartValues[ComRef(var.name)] = (*var.Parameter->Int32->start.get())[0];
+                }
+            }
+            else if(var.Parameter->Int16) {
+                if(var.Parameter->Int16->start.get()) {
+                    modelDescriptionIntegerStartValues[ComRef(var.name)] = (*var.Parameter->Int16->start.get())[0];
+                }
+            }
+            else if(var.Parameter->Int8) {
+                if(var.Parameter->Int8->start.get()) {
+                    modelDescriptionIntegerStartValues[ComRef(var.name)] = (*var.Parameter->Int8->start.get())[0];
+                }
+            }
+            else if(var.Parameter->Uint64) {
+                if(var.Parameter->Uint64->start.get()) {
+                    modelDescriptionIntegerStartValues[ComRef(var.name)] = (*var.Parameter->Uint64->start.get())[0];
+                }
+            }
+            else if(var.Parameter->Uint32) {
+                if(var.Parameter->Uint32->start.get()) {
+                    modelDescriptionIntegerStartValues[ComRef(var.name)] = (*var.Parameter->Uint32->start.get())[0];
+                }
+            }
+            else if(var.Parameter->Uint16) {
+                if(var.Parameter->Uint16->start.get()) {
+                    modelDescriptionIntegerStartValues[ComRef(var.name)] = (*var.Parameter->Uint16->start.get())[0];
+                }
+            }
+            else if(var.Parameter->Uint8) {
+                if(var.Parameter->Uint8->start.get()) {
+                    modelDescriptionIntegerStartValues[ComRef(var.name)] = (*var.Parameter->Uint8->start.get())[0];
+                }
+            }
+            else if(var.Parameter->String) {
+                if(var.Parameter->String->start.get()) {
+                    modelDescriptionStringStartValues[ComRef(var.name)] = (*var.Parameter->String->start.get())[0];
+                }
+            }
+            //TODO: What about binary variables?
+        }
+        else if(var.StructuralParameter) {
+            if(var.StructuralParameter->Uint64) {
+                if(var.StructuralParameter->Uint64->start.get()) {
+                    modelDescriptionIntegerStartValues[ComRef(var.name)] = (*var.StructuralParameter->Uint64->start.get())[0];
+                }
+            }
+            else if(var.StructuralParameter->Uint32) {
+                if(var.StructuralParameter->Uint32->start.get()) {
+                    modelDescriptionIntegerStartValues[ComRef(var.name)] = (*var.StructuralParameter->Uint32->start.get())[0];
+                }
+            }
+            else if(var.StructuralParameter->Uint16) {
+                if(var.StructuralParameter->Uint16->start.get()) {
+                    modelDescriptionIntegerStartValues[ComRef(var.name)] = (*var.StructuralParameter->Uint16->start.get())[0];
+                }
+            }
+            else if(var.StructuralParameter->Uint8) {
+                if(var.StructuralParameter->Uint8->start.get()) {
+                    modelDescriptionIntegerStartValues[ComRef(var.name)] = (*var.StructuralParameter->Uint8->start.get())[0];
+                }
+            }
+        }
+    }
+
+    return oms_status_ok;
 }
 
 void oms::Values::parseModelStructureDependencies(std::string &dependencies, std::vector<int> &dependencyList)

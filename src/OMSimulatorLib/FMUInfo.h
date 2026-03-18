@@ -61,6 +61,7 @@ namespace oms
   private:
     void updateFMI2Info(fmiHandle *fmi4c);
     void updateFMI3Info(fmiHandle *fmi4c);
+    void updateDCPInfo();
 
     // methods to copy the object
     FMUInfo(const FMUInfo& rhs);            ///< not implemented

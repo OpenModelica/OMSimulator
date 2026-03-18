@@ -35,10 +35,18 @@
 #include "ComRef.h"
 #include "Connector.h"
 #include "OMSimulator/Types.h"
+#include "dcp/model/DcpTypes.hpp"
+#include "dcp/xml/DcpSlaveDescriptionElements.hpp"
 
 #include <fmi4c.h>
 #include <string>
 #include <vector>
+
+// TODO: Maybe move this to separate file (dcp)
+typedef enum {dcpCausalityInput, dcpCausalityOutput, dcpCausalityParameter, dcpCausalityLocal, dcpCausalityStructuralParameter } dcpCausality_t;
+typedef enum {dcpFloat64, dcpFloat32, dcpInt64, dcpInt32, dcpInt16, dcpInt8, dcpUInt64, dcpUInt32, dcpUInt16, dcpUInt8, dcpString, dcpBinary} dcpDataType_t;
+
+class SlaveDescription_t;
 
 namespace oms
 {
@@ -46,6 +54,7 @@ namespace oms
   {
   public:
     Variable(fmiHandle * fmi4c, int index, oms_component_enu_t componentType);
+    Variable(SlaveDescription_t *desc, int index);   //For DCP components, component type is implicit
     ~Variable();
 
     void markAsState(size_t der_index) { is_state = true; this->der_index = der_index; }
@@ -87,6 +96,7 @@ namespace oms
 
     fmi2ValueReference getValueReference() const { return fmi2Vr; }
     fmi3ValueReference getValueReferenceFMI3() const { return fmi3Vr; }
+    valueReference_t getValueReferenceDCP() const { return dcpVr; }
     oms_signal_type_enu_t getType() const { return type; }
     oms_signal_numeric_type_enu_t getNumericType() const {return numericType;}
     const std::string& getDescription() const { return description; }
@@ -106,6 +116,7 @@ namespace oms
 
     void configureFMI2Variable(fmiHandle *fmi4c, int index);
     void configureFMI3Variable(fmiHandle *fmi4c, int index);
+    void configureDCPVariable(SlaveDescription_t *desc, int index);
 
     ComRef cref;
     std::string description;
@@ -122,6 +133,12 @@ namespace oms
     fmi3Causality fmi3Causality_;
     fmi3Variability fmi3Variability_;
     fmi3Initial fmi3InitialProperty;
+
+    // DCP specific members
+    valueReference_t dcpVr;
+    dcpCausality_t dcpCausality;
+    Variability dcpVariability;
+    dcpDataType_t dcpDataType;
 
     bool is_state;
     bool is_der;
