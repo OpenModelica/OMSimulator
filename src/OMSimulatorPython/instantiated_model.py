@@ -129,6 +129,10 @@ class InstantiatedModel:
         ## parse connector geometry for the component if exist and set it to capi after adding the component, this is needed for proper mapping of connector geometry
         if "connectors" in comp:
           for connector in comp["connectors"]:
+            comp_name = ".".join(comp["name"])
+            connector_name =".".join([comp_name]+[connector["name"]])
+            if not connector_name in self.mappedCrefs:
+              self.mappedCrefs[connector_name] = f"{comp_path}.{connector['name']}"
             if "geometry" in connector:
               connector_path = ".".join([comp_path, connector["name"]])
               geometry = connector["geometry"]
@@ -173,10 +177,10 @@ class InstantiatedModel:
 
       ## add connections
       for connection in unit["connections"]:
-        start_element = ".".join(connection['start element'])
-        end_element = ".".join(connection['end element'])
-        start = self.mappedCrefs[start_element] + f".{connection['start connector']}"
-        end = self.mappedCrefs[end_element] + f".{connection['end connector']}"
+        start_element = ".".join(connection['start element'] + [connection['start connector']])
+        end_element = ".".join(connection['end element'] + [connection['end connector']])
+        start = self.mappedCrefs[start_element]
+        end = self.mappedCrefs[end_element]
         self.apiCall.append(f'oms_addConnection("{start}", "{end}")')
         status = Capi.addConnection(start, end)
         if status != Status.ok:
