@@ -110,7 +110,12 @@ class InstantiatedModel:
       listofsystems = []
       ## add components
       for comp in unit["components"]:
-        comp_path = ".".join([solver_path] + [comp["name"][-1]])
+        if len(comp["name"]) <= 2:
+          comp_path = ".".join([solver_path] + [comp["name"][-1]])
+        else:
+          ## add prefix to nested systems to avoid name conflicts while flattening the system during instantiation, e.g. sub-system1_Add1, sub-system1_Gain1
+          comp_name = f"{comp['name'][-2].replace('-', '_')}_{comp['name'][-1]}"
+          comp_path = ".".join([solver_path] + [comp_name])
         currentSystem = ".".join(comp["name"][:-1])
         if currentSystem not in listofsystems:
           listofsystems.append(currentSystem)
@@ -315,7 +320,13 @@ class InstantiatedModel:
   def _addConnector(self, connectors, systemName):
     for connector in connectors:
       name = [systemName] + [str(connector.name)]
-      connector_path = ".".join([self.mappedCrefs[systemName], str(connector.name)])
+      system_name = systemName.split(".")
+      if len(system_name) == 1:
+        connector_path = ".".join([self.mappedCrefs[systemName], str(connector.name)])
+      else:
+        ## add prefix to nested systems to avoid name conflicts while flattening the system during instantiation, e.g. sub-system1_input1, sub-system1_param1
+        connector_name_prefix = f"{system_name[-1].replace('-', '_')}_{str(connector.name)}"  # replace '-' with '_' for sub-system name in connector path
+        connector_path = ".".join([self.mappedCrefs[systemName], connector_name_prefix])
       self.apiCall.append(f'oms_addConnector("{connector_path}", "{connector.causality}", {connector.signal_type})')
       status = Capi.addConnector(connector_path, connector.causality.value, connector.c_signal_type.value)
       if status != Status.ok:
