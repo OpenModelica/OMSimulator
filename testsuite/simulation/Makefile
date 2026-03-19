@@ -31,6 +31,7 @@ stepUntil.py \
 FMI3_SimpleSimulation1.py \
 FMI3_SimpleSimulation2.py \
 FMI3_SimpleSimulation3.py \
+NestedSystemSimulation1.py \
 
 # Run make failingtest
 FAILINGTESTFILES = \
