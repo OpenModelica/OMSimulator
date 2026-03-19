@@ -36,6 +36,11 @@ model.addComponent(CRef('default', 'Gain1'), 'resources/Gain.fmu')
 model.addComponent(CRef('default', 'sub-system1', 'Add1'), 'resources/Add.fmu')
 model.addComponent(CRef('default', 'sub-system1', 'Gain1'), 'resources/Gain.fmu')
 
+model.setValue(CRef('default', 'input1'), 3.0)
+model.setValue(CRef('default', 'sub-system1', 'input1'), 10.0)
+
+model.addConnection(CRef('default', 'input1'), CRef('default', 'Gain1', 'u'))
+model.addConnection(CRef('default', 'sub-system1', 'input1'), CRef('default', 'sub-system1', 'Gain1', 'u'))
 model.addConnection(CRef('default', 'Gain1', 'y'), CRef('default', 'Add1', 'u1'))
 model.addConnection(CRef('default', 'sub-system1', 'Gain1', 'y'), CRef('default', 'sub-system1', 'Add1', 'u1'))
 

@@ -285,13 +285,15 @@ class InstantiatedModel:
           for entry in targets:
             target = entry["target"]
             linearTransformation = entry["linearTransformation"]
-            value_path = self.map_cref(systemName, str(target))
+            cref = f"{systemName}.{str(target)}"
+            value_path = self.mappedCrefs[cref]
             if linearTransformation:
               source_value = source_value * float(linearTransformation.factor) + float(linearTransformation.offset)
             self.apply_start_value(value_path, source_value, type)
     else:
       for key, (source_value, type, _, _) in value.start_values.items():
-        value_path = self.map_cref(systemName, str(key))
+        cref = f"{systemName}.{str(key)}"
+        value_path = self.mappedCrefs[cref]
         self.apply_start_value(value_path, source_value, type)
 
   def apply_start_value(self, value_path:str, value, type):
@@ -319,7 +321,7 @@ class InstantiatedModel:
 
   def _addConnector(self, connectors, systemName):
     for connector in connectors:
-      name = [systemName] + [str(connector.name)]
+      connector_name =".".join([systemName]+[str(connector.name)])
       system_name = systemName.split(".")
       if len(system_name) == 1:
         connector_path = ".".join([self.mappedCrefs[systemName], str(connector.name)])
@@ -347,8 +349,8 @@ class InstantiatedModel:
           raise RuntimeError(f"Failed to set connector geometry for {connector_path}: {status}")
 
       export_name = systemName
-      if not export_name in self.mappedCrefs:
-        self.mappedCrefs[export_name] = connector_path
+      if not connector_name in self.mappedCrefs:
+        self.mappedCrefs[connector_name] = connector_path
       status = Capi.setExportName(connector_path, export_name)  # Set export name if provided
       if status != Status.ok:
         raise RuntimeError(f"Failed to set export name: {status}")
