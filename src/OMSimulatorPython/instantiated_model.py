@@ -274,6 +274,26 @@ class InstantiatedModel:
 
     return ".".join(mapped_prefix + result)
 
+  def validate_cref(self, systemName: str, suffix: str) -> str:
+    ## remove common path from suffix
+    ## e.g. systemName = model.root.solver2.gain1
+    ##      suffix = gain1.R1.T
+    ##      result = model.root.solver2.gain1.R1.T
+
+    a_parts = systemName.split(".")
+    b_parts = suffix.split(".")
+
+    # detect overlap
+    overlap = 0
+    for i in range(1, min(len(a_parts), len(b_parts)) + 1):
+      if a_parts[-i:] == b_parts[:i]:
+        overlap = i
+    cref = ".".join(a_parts + b_parts[overlap:])
+    if cref not in self.mappedCrefs:
+      raise KeyError(f"Missing required key: '{cref}'")
+
+    return self.mappedCrefs[cref]
+
   def setStartValues(self, value: Values, systemName: str, ssm: SSM | None):
     if value.empty():
       return
@@ -290,14 +310,14 @@ class InstantiatedModel:
             target = entry["target"]
             linearTransformation = entry["linearTransformation"]
             cref = f"{systemName}.{str(target)}"
-            value_path = self.mappedCrefs[cref]
+            value_path = self.validate_cref(systemName, str(target))
             if linearTransformation:
               source_value = source_value * float(linearTransformation.factor) + float(linearTransformation.offset)
             self.apply_start_value(value_path, source_value, type)
     else:
       for key, (source_value, type, _, _) in value.start_values.items():
         cref = f"{systemName}.{str(key)}"
-        value_path = self.mappedCrefs[cref]
+        value_path = self.validate_cref(systemName, str(key))
         self.apply_start_value(value_path, source_value, type)
 
   def apply_start_value(self, value_path:str, value, type):
