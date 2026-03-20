@@ -355,7 +355,7 @@ class InstantiatedModel:
       export_name = systemName
       if not connector_name in self.mappedCrefs:
         self.mappedCrefs[connector_name] = connector_path
-      status = Capi.setExportName(connector_path, export_name)  # Set export name if provided
+      status = Capi.setExportName(connector_path, connector_name)  # Set export name if provided
       if status != Status.ok:
         raise RuntimeError(f"Failed to set export name: {status}")
 
