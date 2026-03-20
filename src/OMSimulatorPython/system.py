@@ -689,10 +689,19 @@ class System:
 
         componentSolver[str(element.name)] = element.solver
       elif isinstance(element, ComponentTable):
+        ## add connectors info for the component in the json, this is needed for propagating connector geomtery to capi
+        connector_info = []
+        for connector in element.connectors:
+          connector_info.append({
+              "name": str(connector.name),
+              "causality": connector.causality.name if connector.causality else None,
+              "type": connector.signal_type.name if connector.signal_type else None,
+          })
         solver_groups[element.solver].append({
             "name": [self.name] + ([systemName] if systemName else []) + [str(element.name)],
             "type": "table",
-            "path": str(Path(tempdir, str(element.filePath))) if tempdir is not None else str(element.filePath)
+            "path": str(Path(tempdir, str(element.filePath))) if tempdir is not None else str(element.filePath),
+            "connectors": connector_info
         })
       elif isinstance(element, System):
         # recurse into subsystems

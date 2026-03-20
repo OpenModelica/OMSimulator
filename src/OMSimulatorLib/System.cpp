@@ -2416,23 +2416,23 @@ oms_status_enu_t oms::System::registerSignalsForResultFile(ResultWriter& resultF
     // check for exportName, to be used in result file to map the variable to the correct signal in ssp
     std::string name;
     if (!connector->getExportName().empty())
-      name = connector->getExportName().c_str();
+      name = connector->getExportName();
     else
-      name = getFullCref().c_str();
+      name = std::string(getFullCref() + connector->getName().c_str());
 
     if (oms_signal_type_real == connector->getType())
     {
-      unsigned int ID = resultFile.addSignal(std::string(ComRef(name) + connector->getName()), "connector", SignalType_REAL);
+      unsigned int ID = resultFile.addSignal(name, "connector", SignalType_REAL);
       resultFileMapping[ID] = i;
     }
     else if (oms_signal_type_integer == connector->getType())
     {
-      unsigned int ID = resultFile.addSignal(std::string(ComRef(name) + connector->getName()), "connector", SignalType_INT);
+      unsigned int ID = resultFile.addSignal(name, "connector", SignalType_INT);
       resultFileMapping[ID] = i;
     }
     else if (oms_signal_type_boolean == connector->getType())
     {
-      unsigned int ID = resultFile.addSignal(std::string(ComRef(name) + connector->getName()), "connector", SignalType_BOOL);
+      unsigned int ID = resultFile.addSignal(name, "connector", SignalType_BOOL);
       resultFileMapping[ID] = i;
     }
   }
