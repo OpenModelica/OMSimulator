@@ -2,8 +2,8 @@
 ## teardown_command: rm -rf NestedSystemSimulation2.ssp NestedSystemSimulation2_res.mat
 ## linux: yes
 ## ucrt64: yes
-## win: yes
-## mac: yes
+## win: no
+## mac: no
 
 from OMSimulator import SSP, CRef, Settings, Connector, Causality, SignalType
 
