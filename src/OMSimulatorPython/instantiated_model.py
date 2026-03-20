@@ -295,10 +295,11 @@ class InstantiatedModel:
       if a_parts[-i:] == b_parts[:i]:
         overlap = i
     cref = ".".join(a_parts + b_parts[overlap:])
-    if cref not in self.mappedCrefs:
-      raise KeyError(f"Missing required key: '{cref}'")
-
-    return self.mappedCrefs[cref]
+    if cref in self.mappedCrefs:
+      return self.mappedCrefs[cref]
+    else:
+      ## it is possible some variables are not listed in connectors but it is still valid signal
+      return self.map_cref(systemName, suffix)
 
   def setStartValues(self, value: Values, systemName: str, ssm: SSM | None):
     if value.empty():
