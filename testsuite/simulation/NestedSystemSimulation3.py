@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command: rm -rf NestedSystemSimulation1.ssp NestedSystemSimulation1_res.mat
+## teardown_command: rm -rf NestedSystemSimulation3.ssp NestedSystemSimulation3_res.mat
 ## linux: yes
 ## ucrt64: yes
 ## win: yes
@@ -44,15 +44,26 @@ model.addConnection(CRef('default', 'sub-system1', 'input1'), CRef('default', 's
 model.addConnection(CRef('default', 'Gain1', 'y'), CRef('default', 'Add1', 'u1'))
 model.addConnection(CRef('default', 'sub-system1', 'Gain1', 'y'), CRef('default', 'sub-system1', 'Add1', 'u1'))
 
-model.export('NestedSystemSimulation1.ssp')
+#model.list()
+solver1 = {'name' : 'solver1',  'method': 'cvode', 'tolerance': 1e-4}
+model.newSolver(solver1)
 
-model2 = SSP('NestedSystemSimulation1.ssp')
+model.setSolver(CRef('default', 'Gain1'), 'solver1')
+model.setSolver(CRef('default', 'Add1'), 'solver1')
+
+
+model.setSolver(CRef('default', 'sub-system1', 'Gain1'), 'solver1')
+model.setSolver(CRef('default', 'sub-system1', 'Add1'), 'solver1')
+
+model.export('NestedSystemSimulation3.ssp')
+
+model2 = SSP('NestedSystemSimulation3.ssp')
 model2.list()
 
 instantiated_model = model2.instantiate() ## internally generate the json file and also set the model state like virgin,
 #print(instantiated_model.dumpApiCalls(), flush=True)
 
-instantiated_model.setResultFile("NestedSystemSimulation1_res.mat")
+instantiated_model.setResultFile("NestedSystemSimulation3_res.mat")
 
 print(f"info: After instantiation:")
 print(f"info:    default.input1: {instantiated_model.getValue(CRef('default', 'input1'))}", flush=True)
@@ -119,12 +130,16 @@ instantiated_model.delete()
 ## |-- |-- |-- |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, 'Connector of Real output signal')
 ## |-- |-- |-- |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None, 'Gain of input signal 1')
 ## |-- |-- |-- |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, 'Gain of input signal 2')
+## |-- |-- |-- |-- |-- |-- |-- Solver Settings:
+## |-- |-- |-- |-- |-- |-- |-- |-- name: solver1
 ## |-- |-- |-- |-- |-- |-- FMU: Gain1 'None'
 ## |-- |-- |-- |-- |-- |-- |-- path: resources/Gain.fmu
 ## |-- |-- |-- |-- |-- |-- |-- Connectors:
 ## |-- |-- |-- |-- |-- |-- |-- |-- (u, Causality.input, SignalType.Real, None, 'Input signal connector')
 ## |-- |-- |-- |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, 'Output signal connector')
 ## |-- |-- |-- |-- |-- |-- |-- |-- (k, Causality.parameter, SignalType.Real, 1, 'Gain value multiplied with input signal')
+## |-- |-- |-- |-- |-- |-- |-- Solver Settings:
+## |-- |-- |-- |-- |-- |-- |-- |-- name: solver1
 ## |-- |-- |-- |-- |-- Connections:
 ## |-- |-- |-- |-- |-- |-- .input1 -> Gain1.u
 ## |-- |-- |-- |-- |-- |-- Gain1.y -> Add1.u1
@@ -136,15 +151,21 @@ instantiated_model.delete()
 ## |-- |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, 'Connector of Real output signal')
 ## |-- |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None, 'Gain of input signal 1')
 ## |-- |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, 'Gain of input signal 2')
+## |-- |-- |-- |-- |-- Solver Settings:
+## |-- |-- |-- |-- |-- |-- name: solver1
 ## |-- |-- |-- |-- FMU: Gain1 'None'
 ## |-- |-- |-- |-- |-- path: resources/Gain.fmu
 ## |-- |-- |-- |-- |-- Connectors:
 ## |-- |-- |-- |-- |-- |-- (u, Causality.input, SignalType.Real, None, 'Input signal connector')
 ## |-- |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, 'Output signal connector')
 ## |-- |-- |-- |-- |-- |-- (k, Causality.parameter, SignalType.Real, 1, 'Gain value multiplied with input signal')
+## |-- |-- |-- |-- |-- Solver Settings:
+## |-- |-- |-- |-- |-- |-- name: solver1
 ## |-- |-- |-- Connections:
 ## |-- |-- |-- |-- .input1 -> Gain1.u
 ## |-- |-- |-- |-- Gain1.y -> Add1.u1
+## |-- |-- |-- Solver Settings:
+## |-- |-- |-- |-- (name=solver1, method=cvode, tolerance=0.0001)
 ## |-- UnitDefinitions:
 ## |-- |-- Unit: 1
 ## |-- |-- |-- BaseUnit:
@@ -164,7 +185,9 @@ instantiated_model.delete()
 ## info:    default.sub-system1.Gain1.u: 0.0
 ## info:    default.sub-system1.Gain1.y: 0.0
 ## info:    default.sub-system1.Add1.u1: 0.0
-## info:    Result file: NestedSystemSimulation1_res.mat (bufferSize=1)
+## info:    model doesn't contain any continuous state
+## info:    maximum step size for 'model.root': 0.001000
+## info:    Result file: NestedSystemSimulation3_res.mat (bufferSize=1)
 ## info: After simulation:
 ## info:    default.input1: 3.0
 ## info:    default.param1: 0.0
@@ -178,4 +201,7 @@ instantiated_model.delete()
 ## info:    default.sub-system1.Gain1.u: 10.0
 ## info:    default.sub-system1.Gain1.y: 10.0
 ## info:    default.sub-system1.Add1.u1: 10.0
+## info:    Final Statistics for 'model.root':
+##          NumSteps = 1001 NumRhsEvals  = 1002 NumLinSolvSetups = 51
+##          NumNonlinSolvIters = 1001 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
 ## endResult
