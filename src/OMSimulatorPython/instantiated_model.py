@@ -397,10 +397,17 @@ class InstantiatedModel:
   def setValue(self, cref: CRef, value):
     """Sets a value for a specific CRef in the model."""
     name = ".".join(cref.names)
-    if name not in self.mappedCrefs:
-      raise KeyError(f"Missing required key: '{name}'")
 
-    value_path = self.mappedCrefs[name]
+    ## check for top level connectors with alias names first
+    ## e.g model.root.sub_system_input which will be in mapped crefs
+    if name in self.mappedCrefs:
+      value_path = self.mappedCrefs[name]
+    else:
+      ## check for other crefs by splitting with suffixes
+      name = ".".join(cref.names[:-1])
+      if name not in self.mappedCrefs:
+        raise KeyError(f"Missing required key: '{cref.names}'")
+      value_path = ".".join([self.mappedCrefs[name], cref.names[-1]])
 
     # Determine the variable type
     type, status = Capi.getVariableType(value_path)
@@ -449,10 +456,16 @@ class InstantiatedModel:
 
   def getValue(self, cref: CRef):
     name = ".".join(cref.names)
-    if name not in self.mappedCrefs:
-      raise KeyError(f"Missing required key: '{name}'")
-
-    value_path = self.mappedCrefs[name]
+    ## check for top level connectors with alias names first
+    ## e.g model.root.sub_system_input which will be in mapped crefs
+    if name in self.mappedCrefs:
+      value_path = self.mappedCrefs[name]
+    else:
+      ## check for other crefs by splitting with suffixes
+      name = ".".join(cref.names[:-1])
+      if name not in self.mappedCrefs:
+        raise KeyError(f"Missing required key: '{cref.names}'")
+      value_path = ".".join([self.mappedCrefs[name], cref.names[-1]])
 
     # Determine the variable type
     type, status = Capi.getVariableType(value_path)
