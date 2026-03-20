@@ -428,11 +428,11 @@ class InstantiatedModel:
       raise RuntimeError(f"Failed to set value for {mapped_cref}: {status}")
 
   def getValue(self, cref: CRef):
-    name = ".".join(cref.names[:-1])
+    name = ".".join(cref.names)
     if name not in self.mappedCrefs:
       raise KeyError(f"Missing required key: '{name}'")
 
-    value_path = ".".join([self.mappedCrefs[name], cref.names[-1]])
+    value_path = self.mappedCrefs[name]
 
     # Determine the variable type
     type, status = Capi.getVariableType(value_path)

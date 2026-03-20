@@ -116,11 +116,15 @@ instantiated_model.delete()
 ## |-- |-- |-- Connectors:
 ## |-- |-- |-- |-- (input1, Causality.input, SignalType.Real, None, 'None')
 ## |-- |-- |-- |-- (param1, Causality.parameter, SignalType.Real, None, 'None')
+## |-- |-- |-- Inline Parameter Bindings:
+## |-- |-- |-- |-- (Real input1, 3.0, None, 'None')
 ## |-- |-- |-- Elements:
 ## |-- |-- |-- |-- System: sub-system1 'None'
 ## |-- |-- |-- |-- |-- Connectors:
 ## |-- |-- |-- |-- |-- |-- (input1, Causality.input, SignalType.Real, None, 'None')
 ## |-- |-- |-- |-- |-- |-- (param1, Causality.parameter, SignalType.Real, None, 'None')
+## |-- |-- |-- |-- |-- Inline Parameter Bindings:
+## |-- |-- |-- |-- |-- |-- (Real input1, 10.0, None, 'None')
 ## |-- |-- |-- |-- |-- Elements:
 ## |-- |-- |-- |-- |-- |-- FMU: Add1 'None'
 ## |-- |-- |-- |-- |-- |-- |-- path: resources/Add.fmu
@@ -137,6 +141,7 @@ instantiated_model.delete()
 ## |-- |-- |-- |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, 'Output signal connector')
 ## |-- |-- |-- |-- |-- |-- |-- |-- (k, Causality.parameter, SignalType.Real, 1, 'Gain value multiplied with input signal')
 ## |-- |-- |-- |-- |-- Connections:
+## |-- |-- |-- |-- |-- |-- .input1 -> Gain1.u
 ## |-- |-- |-- |-- |-- |-- Gain1.y -> Add1.u1
 ## |-- |-- |-- |-- FMU: Add1 'None'
 ## |-- |-- |-- |-- |-- path: resources/Add.fmu
@@ -153,6 +158,7 @@ instantiated_model.delete()
 ## |-- |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, 'Output signal connector')
 ## |-- |-- |-- |-- |-- |-- (k, Causality.parameter, SignalType.Real, 1, 'Gain value multiplied with input signal')
 ## |-- |-- |-- Connections:
+## |-- |-- |-- |-- .input1 -> Gain1.u
 ## |-- |-- |-- |-- Gain1.y -> Add1.u1
 ## |-- UnitDefinitions:
 ## |-- |-- Unit: 1
@@ -161,13 +167,13 @@ instantiated_model.delete()
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
 ## info: After instantiation:
-## info:    default.input1: 0.0
+## info:    default.input1: 3.0
 ## info:    default.param1: 0.0
 ## info:    default.Gain1.k: 1.0
 ## info:    default.Gain1.u: 0.0
 ## info:    default.Gain1.y: 0.0
 ## info:    default.Add1.u1: 0.0
-## info:    default.sub-system1.input1: 0.0
+## info:    default.sub-system1.input1: 10.0
 ## info:    default.sub-system1.param1: 0.0
 ## info:    default.sub-system1.Gain1.k: 1.0
 ## info:    default.sub-system1.Gain1.u: 0.0
@@ -175,16 +181,16 @@ instantiated_model.delete()
 ## info:    default.sub-system1.Add1.u1: 0.0
 ## info:    Result file: NestedSystemSimulation1_res.mat (bufferSize=1)
 ## info: After simulation:
-## info:    default.input1: 0.0
+## info:    default.input1: 3.0
 ## info:    default.param1: 0.0
 ## info:    default.Gain1.k: 1.0
-## info:    default.Gain1.u: 0.0
-## info:    default.Gain1.y: 0.0
-## info:    default.Add1.u1: 0.0
-## info:    default.sub-system1.input1: 0.0
+## info:    default.Gain1.u: 3.0
+## info:    default.Gain1.y: 3.0
+## info:    default.Add1.u1: 3.0
+## info:    default.sub-system1.input1: 10.0
 ## info:    default.sub-system1.param1: 0.0
 ## info:    default.sub-system1.Gain1.k: 1.0
-## info:    default.sub-system1.Gain1.u: 0.0
-## info:    default.sub-system1.Gain1.y: 0.0
-## info:    default.sub-system1.Add1.u1: 0.0
+## info:    default.sub-system1.Gain1.u: 10.0
+## info:    default.sub-system1.Gain1.y: 10.0
+## info:    default.sub-system1.Add1.u1: 10.0
 ## endResult
