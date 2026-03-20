@@ -179,6 +179,12 @@ class InstantiatedModel:
       for connection in unit["connections"]:
         start_element = ".".join(connection['start element'] + [connection['start connector']])
         end_element = ".".join(connection['end element'] + [connection['end connector']])
+
+        if start_element not in self.mappedCrefs:
+          raise KeyError(f"No mapping found for {start_element}")
+        if end_element not in self.mappedCrefs:
+          raise KeyError(f"No mapping found for {end_element}")
+
         start = self.mappedCrefs[start_element]
         end = self.mappedCrefs[end_element]
         self.apiCall.append(f'oms_addConnection("{start}", "{end}")')
