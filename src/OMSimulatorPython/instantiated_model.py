@@ -114,7 +114,7 @@ class InstantiatedModel:
           comp_path = ".".join([solver_path] + [comp["name"][-1]])
         else:
           ## add prefix to nested systems to avoid name conflicts while flattening the system during instantiation, e.g. sub-system1_Add1, sub-system1_Gain1
-          comp_name = f"{comp['name'][-2].replace('-', '_')}_{comp['name'][-1]}"
+          comp_name = f"{comp['name'][-2]}_{comp['name'][-1]}"
           comp_path = ".".join([solver_path] + [comp_name])
         currentSystem = ".".join(comp["name"][:-1])
         if currentSystem not in listofsystems:
@@ -358,7 +358,7 @@ class InstantiatedModel:
         connector_path = ".".join([self.mappedCrefs[systemName], str(connector.name)])
       else:
         ## add prefix to nested systems to avoid name conflicts while flattening the system during instantiation, e.g. sub-system1_input1, sub-system1_param1
-        connector_name_prefix = f"{system_name[-1].replace('-', '_')}_{str(connector.name)}"  # replace '-' with '_' for sub-system name in connector path
+        connector_name_prefix = f"{system_name[-1]}_{str(connector.name)}"  # replace '-' with '_' for sub-system name in connector path
         connector_path = ".".join([self.mappedCrefs[systemName], connector_name_prefix])
       self.apiCall.append(f'oms_addConnector("{connector_path}", "{connector.causality}", {connector.signal_type})')
       status = Capi.addConnector(connector_path, connector.causality.value, connector.c_signal_type.value)
@@ -382,7 +382,7 @@ class InstantiatedModel:
       export_name = systemName
       if not connector_name in self.mappedCrefs:
         self.mappedCrefs[connector_name] = connector_path
-      status = Capi.setExportName(connector_path, connector_name)  # Set export name if provided
+      status = Capi.setExportName(connector_path, export_name)  # Set export name if provided
       if status != Status.ok:
         raise RuntimeError(f"Failed to set export name: {status}")
 
@@ -438,25 +438,25 @@ class InstantiatedModel:
         raise TypeError(f"Unsupported type: {type}")
 
   def _setReal(self, mapped_cref: str, value: float):
-    self.apiCall.append(f'oms_setReal("{mapped_cref}, {value})')
+    self.apiCall.append(f'oms_setReal("{mapped_cref}", {value})')
     status = Capi.setReal(mapped_cref, value) # Get the value from the CAPI
     if status != Status.ok:
       raise RuntimeError(f"Failed to set value for {mapped_cref}: {status}")
 
   def _setInteger(self, mapped_cref: str, value: int):
-    self.apiCall.append(f'oms_setInteger("{mapped_cref}, {value})')
+    self.apiCall.append(f'oms_setInteger("{mapped_cref}", {value})')
     status = Capi.setInteger(mapped_cref, value) # Get the value from the CAPI
     if status != Status.ok:
       raise RuntimeError(f"Failed to set value for {mapped_cref}: {status}")
 
   def _setBoolean(self, mapped_cref: str, value: bool):
-    self.apiCall.append(f'oms_setBoolean("{mapped_cref}, {value})')
+    self.apiCall.append(f'oms_setBoolean("{mapped_cref}", {value})')
     status = Capi.setBoolean(mapped_cref, value) # Get the value from the CAPI
     if status != Status.ok:
       raise RuntimeError(f"Failed to set value for {mapped_cref}: {status}")
 
   def _setString(self, mapped_cref: str, value: str):
-    self.apiCall.append(f'oms_setString("{mapped_cref}, {value})')
+    self.apiCall.append(f'oms_setString("{mapped_cref}", {value})')
     status = Capi.setString(mapped_cref, value) # Get the value from the CAPI
     if status != Status.ok:
       raise RuntimeError(f"Failed to set value for {mapped_cref}: {status}")

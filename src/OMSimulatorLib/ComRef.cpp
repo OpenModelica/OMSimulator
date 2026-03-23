@@ -37,7 +37,7 @@
 #include <regex>
 #include <cstring>
 
-const std::regex re_ident("^[a-zA-Z][a-zA-Z0-9_]*$");
+const std::regex re_ident("^[a-zA-Z][a-zA-Z0-9_-]*$");
 
 oms::ComRef::ComRef()
 {
