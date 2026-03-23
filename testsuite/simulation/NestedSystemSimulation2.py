@@ -64,7 +64,10 @@ model2.list()
 
 instantiated_model = model2.instantiate() ## internally generate the json file and also set the model state like virgin,
 #print(instantiated_model.dumpApiCalls(), flush=True)
-
+instantiated_model.setValue(CRef('default', 'Add1', 'u1'), 0.0)
+instantiated_model.setValue(CRef('default', 'Add1', 'u2'), 0.0)
+instantiated_model.setValue(CRef('default', 'sub-system1', 'Add1', 'u1'), 0.0)
+instantiated_model.setValue(CRef('default', 'sub-system1', 'Add1', 'u2'), 0.0)
 instantiated_model.setResultFile("NestedSystemSimulation2_res.mat")
 
 print(f"info: After instantiation:")
