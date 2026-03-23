@@ -21,7 +21,14 @@ model = SSP('../resources/dcmotor.ssp', temp_dir="./tmp-dcmotor/")
 print('\nActive variant:')
 model.activeVariant.list()
 print("", flush=True)
-model.export('dcmotor.ssp')
+instantiated_model = model.instantiate()
+instantiated_model.setStopTime(10.0)
+instantiated_model.setResultFile("dc_motor_res.mat")
+#print(instantiated_model.dumpApiCalls())
+instantiated_model.initialize()
+instantiated_model.simulate()
+instantiated_model.terminate()
+instantiated_model.delete()
 
 ## Result:
 ## INFO:OMSimulator.ssp:Temporary directory created: <hidden>
@@ -203,7 +210,6 @@ model.export('dcmotor.ssp')
 ##  |-- startTime: 0.0
 ##  |-- stopTime: 1.0
 ##
-## INFO:OMSimulator.ssd:SSD 'DC-Motor' exported to <hidden>
-## INFO:OMSimulator.ssp:SSP file 'dcmotor.ssp' successfully exported!
+## info:    Result file: dc_motor_res.mat (bufferSize=1)
 ## INFO:OMSimulator.ssp:Temporary directory removed: <hidden>
 ## endResult

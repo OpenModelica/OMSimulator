@@ -796,6 +796,23 @@ oms_status_enu_t oms_setExportName(const char* cref, const char* exportName)
   return system->setExportName(tail, exportName);
 }
 
+oms_status_enu_t oms_setAliasName(const char* cref, const char* aliasName)
+{
+  oms::ComRef tail(cref);
+  oms::ComRef front = tail.pop_front();
+
+  oms::Model* model = oms::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  front = tail.pop_front();
+  oms::System* system = model->getSystem(front);
+  if (!system)
+    return logError_SystemNotInModel(model->getCref(), front);
+
+  return system->setAliasName(tail, aliasName);
+}
+
 oms_status_enu_t oms_activateVariant(const char* crefA, const char* crefB)
 {
   oms::ComRef tail(crefA);

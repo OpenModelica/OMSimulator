@@ -110,7 +110,12 @@ class InstantiatedModel:
       listofsystems = []
       ## add components
       for comp in unit["components"]:
-        comp_path = ".".join([solver_path] + [comp["name"][-1]])
+        if len(comp["name"]) <= 2:
+          comp_path = ".".join([solver_path] + [comp["name"][-1]])
+        else:
+          ## add prefix to nested systems to avoid name conflicts while flattening the system during instantiation, e.g. sub-system1_Add1, sub-system1_Gain1
+          comp_name = f"{comp['name'][-2]}_{comp['name'][-1]}"
+          comp_path = ".".join([solver_path] + [comp_name])
         currentSystem = ".".join(comp["name"][:-1])
         if currentSystem not in listofsystems:
           listofsystems.append(currentSystem)
@@ -124,6 +129,10 @@ class InstantiatedModel:
         ## parse connector geometry for the component if exist and set it to capi after adding the component, this is needed for proper mapping of connector geometry
         if "connectors" in comp:
           for connector in comp["connectors"]:
+            comp_name = ".".join(comp["name"])
+            connector_name =".".join([comp_name]+[connector["name"]])
+            if not connector_name in self.mappedCrefs:
+              self.mappedCrefs[connector_name] = f"{comp_path}.{connector['name']}"
             if "geometry" in connector:
               connector_path = ".".join([comp_path, connector["name"]])
               geometry = connector["geometry"]
@@ -168,10 +177,16 @@ class InstantiatedModel:
 
       ## add connections
       for connection in unit["connections"]:
-        start_element = ".".join(connection['start element'])
-        end_element = ".".join(connection['end element'])
-        start = self.mappedCrefs[start_element] + f".{connection['start connector']}"
-        end = self.mappedCrefs[end_element] + f".{connection['end connector']}"
+        start_element = ".".join(connection['start element'] + [connection['start connector']])
+        end_element = ".".join(connection['end element'] + [connection['end connector']])
+
+        if start_element not in self.mappedCrefs:
+          raise KeyError(f"No mapping found for {start_element}")
+        if end_element not in self.mappedCrefs:
+          raise KeyError(f"No mapping found for {end_element}")
+
+        start = self.mappedCrefs[start_element]
+        end = self.mappedCrefs[end_element]
         self.apiCall.append(f'oms_addConnection("{start}", "{end}")')
         status = Capi.addConnection(start, end)
         if status != Status.ok:
@@ -265,6 +280,27 @@ class InstantiatedModel:
 
     return ".".join(mapped_prefix + result)
 
+  def validate_cref(self, systemName: str, suffix: str) -> str:
+    ## remove common path from suffix
+    ## e.g. systemName = model.root.solver2.gain1
+    ##      suffix = gain1.R1.T
+    ##      result = model.root.solver2.gain1.R1.T
+
+    a_parts = systemName.split(".")
+    b_parts = suffix.split(".")
+
+    # detect overlap
+    overlap = 0
+    for i in range(1, min(len(a_parts), len(b_parts)) + 1):
+      if a_parts[-i:] == b_parts[:i]:
+        overlap = i
+    cref = ".".join(a_parts + b_parts[overlap:])
+    if cref in self.mappedCrefs:
+      return self.mappedCrefs[cref]
+    else:
+      ## it is possible some variables are not listed in connectors but it is still valid signal
+      return self.map_cref(systemName, suffix)
+
   def setStartValues(self, value: Values, systemName: str, ssm: SSM | None):
     if value.empty():
       return
@@ -280,13 +316,15 @@ class InstantiatedModel:
           for entry in targets:
             target = entry["target"]
             linearTransformation = entry["linearTransformation"]
-            value_path = self.map_cref(systemName, str(target))
+            cref = f"{systemName}.{str(target)}"
+            value_path = self.validate_cref(systemName, str(target))
             if linearTransformation:
               source_value = source_value * float(linearTransformation.factor) + float(linearTransformation.offset)
             self.apply_start_value(value_path, source_value, type)
     else:
       for key, (source_value, type, _, _) in value.start_values.items():
-        value_path = self.map_cref(systemName, str(key))
+        cref = f"{systemName}.{str(key)}"
+        value_path = self.validate_cref(systemName, str(key))
         self.apply_start_value(value_path, source_value, type)
 
   def apply_start_value(self, value_path:str, value, type):
@@ -314,8 +352,14 @@ class InstantiatedModel:
 
   def _addConnector(self, connectors, systemName):
     for connector in connectors:
-      name = [systemName] + [str(connector.name)]
-      connector_path = ".".join([self.mappedCrefs[systemName], str(connector.name)])
+      connector_name =".".join([systemName]+[str(connector.name)])
+      system_name = systemName.split(".")
+      if len(system_name) == 1:
+        connector_path = ".".join([self.mappedCrefs[systemName], str(connector.name)])
+      else:
+        ## add prefix to nested systems to avoid name conflicts while flattening the system during instantiation, e.g. sub-system1_input1, sub-system1_param1
+        connector_name_prefix = f"{system_name[-1]}_{str(connector.name)}"  # replace '-' with '_' for sub-system name in connector path
+        connector_path = ".".join([self.mappedCrefs[systemName], connector_name_prefix])
       self.apiCall.append(f'oms_addConnector("{connector_path}", "{connector.causality}", {connector.signal_type})')
       status = Capi.addConnector(connector_path, connector.causality.value, connector.c_signal_type.value)
       if status != Status.ok:
@@ -336,11 +380,14 @@ class InstantiatedModel:
           raise RuntimeError(f"Failed to set connector geometry for {connector_path}: {status}")
 
       export_name = systemName
-      if not export_name in self.mappedCrefs:
-        self.mappedCrefs[export_name] = connector_path
+      if not connector_name in self.mappedCrefs:
+        self.mappedCrefs[connector_name] = connector_path
       status = Capi.setExportName(connector_path, export_name)  # Set export name if provided
       if status != Status.ok:
         raise RuntimeError(f"Failed to set export name: {status}")
+      status = Capi.setAliasName(connector_path, str(connector.name))  # Set alias name for connector
+      if status != Status.ok:
+        raise RuntimeError(f"Failed to set alias name: {status}")
 
   def addConnectorFromElements(self, elements, currentSystem):
     ## add connectors mapped with currentSystem
@@ -359,11 +406,18 @@ class InstantiatedModel:
 
   def setValue(self, cref: CRef, value):
     """Sets a value for a specific CRef in the model."""
-    name = ".".join(cref.names[:-1])
-    if name not in self.mappedCrefs:
-      raise KeyError(f"Missing required key: '{name}'")
+    name = ".".join(cref.names)
 
-    value_path = ".".join([self.mappedCrefs[name], cref.names[-1]])
+    ## check for top level connectors with alias names first
+    ## e.g model.root.sub_system_input which will be in mapped crefs
+    if name in self.mappedCrefs:
+      value_path = self.mappedCrefs[name]
+    else:
+      ## check for other crefs by splitting with suffixes
+      name = ".".join(cref.names[:-1])
+      if name not in self.mappedCrefs:
+        raise KeyError(f"Missing required key: '{cref.names}'")
+      value_path = ".".join([self.mappedCrefs[name], cref.names[-1]])
 
     # Determine the variable type
     type, status = Capi.getVariableType(value_path)
@@ -387,35 +441,41 @@ class InstantiatedModel:
         raise TypeError(f"Unsupported type: {type}")
 
   def _setReal(self, mapped_cref: str, value: float):
-    self.apiCall.append(f'oms_setReal("{mapped_cref}, {value})')
+    self.apiCall.append(f'oms_setReal("{mapped_cref}", {value})')
     status = Capi.setReal(mapped_cref, value) # Get the value from the CAPI
     if status != Status.ok:
       raise RuntimeError(f"Failed to set value for {mapped_cref}: {status}")
 
   def _setInteger(self, mapped_cref: str, value: int):
-    self.apiCall.append(f'oms_setInteger("{mapped_cref}, {value})')
+    self.apiCall.append(f'oms_setInteger("{mapped_cref}", {value})')
     status = Capi.setInteger(mapped_cref, value) # Get the value from the CAPI
     if status != Status.ok:
       raise RuntimeError(f"Failed to set value for {mapped_cref}: {status}")
 
   def _setBoolean(self, mapped_cref: str, value: bool):
-    self.apiCall.append(f'oms_setBoolean("{mapped_cref}, {value})')
+    self.apiCall.append(f'oms_setBoolean("{mapped_cref}", {value})')
     status = Capi.setBoolean(mapped_cref, value) # Get the value from the CAPI
     if status != Status.ok:
       raise RuntimeError(f"Failed to set value for {mapped_cref}: {status}")
 
   def _setString(self, mapped_cref: str, value: str):
-    self.apiCall.append(f'oms_setString("{mapped_cref}, {value})')
+    self.apiCall.append(f'oms_setString("{mapped_cref}", {value})')
     status = Capi.setString(mapped_cref, value) # Get the value from the CAPI
     if status != Status.ok:
       raise RuntimeError(f"Failed to set value for {mapped_cref}: {status}")
 
   def getValue(self, cref: CRef):
-    name = ".".join(cref.names[:-1])
-    if name not in self.mappedCrefs:
-      raise KeyError(f"Missing required key: '{name}'")
-
-    value_path = ".".join([self.mappedCrefs[name], cref.names[-1]])
+    name = ".".join(cref.names)
+    ## check for top level connectors with alias names first
+    ## e.g model.root.sub_system_input which will be in mapped crefs
+    if name in self.mappedCrefs:
+      value_path = self.mappedCrefs[name]
+    else:
+      ## check for other crefs by splitting with suffixes
+      name = ".".join(cref.names[:-1])
+      if name not in self.mappedCrefs:
+        raise KeyError(f"Missing required key: '{cref.names}'")
+      value_path = ".".join([self.mappedCrefs[name], cref.names[-1]])
 
     # Determine the variable type
     type, status = Capi.getVariableType(value_path)

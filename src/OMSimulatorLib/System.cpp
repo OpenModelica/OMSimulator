@@ -360,6 +360,20 @@ oms_status_enu_t oms::System::setExportName(const oms::ComRef& cref, const std::
   return oms_status_ok;
 }
 
+oms_status_enu_t oms::System::setAliasName(const oms::ComRef& cref, const std::string& aliasName)
+{
+  auto component = getComponent(cref);
+  if (component)
+    return component->setExportName(aliasName);
+
+    // set export name for top level system and subsystem connectors
+  auto connector = getConnector(cref);
+  if (connector)
+    return connector->setAliasName(aliasName);
+
+  return oms_status_ok;
+}
+
 std::string oms::System::getFmiVersion(const std::string& path)
 {
   // unpack the modelDescription.xml in memory to detect the fmiVersion
@@ -2397,13 +2411,6 @@ oms_status_enu_t oms::System::registerSignalsForResultFile(ResultWriter& resultF
 
   resultFileMapping.clear();
 
-  // check for exportName, to be used in result file to map the variable to the correct signal in ssp
-  std::string name;
-  if (!exportName.empty())
-    name = this->exportName;
-  else
-    name = getFullCref();
-
   for (unsigned int i=0; i<connectors.size(); ++i)
   {
     if (!connectors[i])
@@ -2416,23 +2423,23 @@ oms_status_enu_t oms::System::registerSignalsForResultFile(ResultWriter& resultF
     // check for exportName, to be used in result file to map the variable to the correct signal in ssp
     std::string name;
     if (!connector->getExportName().empty())
-      name = connector->getExportName().c_str();
+      name = std::string(ComRef(connector->getExportName()) + connector->getAliasName());
     else
-      name = getFullCref().c_str();
+      name = std::string(getFullCref() + connector->getName());
 
     if (oms_signal_type_real == connector->getType())
     {
-      unsigned int ID = resultFile.addSignal(std::string(ComRef(name) + connector->getName()), "connector", SignalType_REAL);
+      unsigned int ID = resultFile.addSignal(name, "connector", SignalType_REAL);
       resultFileMapping[ID] = i;
     }
     else if (oms_signal_type_integer == connector->getType())
     {
-      unsigned int ID = resultFile.addSignal(std::string(ComRef(name) + connector->getName()), "connector", SignalType_INT);
+      unsigned int ID = resultFile.addSignal(name, "connector", SignalType_INT);
       resultFileMapping[ID] = i;
     }
     else if (oms_signal_type_boolean == connector->getType())
     {
-      unsigned int ID = resultFile.addSignal(std::string(ComRef(name) + connector->getName()), "connector", SignalType_BOOL);
+      unsigned int ID = resultFile.addSignal(name, "connector", SignalType_BOOL);
       resultFileMapping[ID] = i;
     }
   }

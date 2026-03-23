@@ -71,9 +71,11 @@ namespace oms
     void setOwner(const oms::ComRef& owner);
     void setGeometry(const oms::ssd::ConnectorGeometry* newGeometry);
     oms_status_enu_t setExportName(const std::string & exportName) { this->exportName = exportName; return oms_status_ok;};
+    oms_status_enu_t setAliasName(const std::string & aliasName) { this->aliasName = aliasName; return oms_status_ok;}; // to be used in the result file to avoid name conflicts
     oms_status_enu_t setNumericType(oms_signal_numeric_type_enu_t numericType) { this->numericType = numericType; return oms_status_ok; }
     oms_signal_numeric_type_enu_t getNumericType() const { return this->numericType; }
     std::string getExportName() const { return this->exportName; }
+    std::string getAliasName() const { return this->aliasName; }
 
     std::map<std::string, std::map<std::string, std::string>> connectorUnits;  ///< single entry map which contains unit as key and BaseUnits as value for a connector
     std::map<std::string, std::string> enumerationName;  ///< single entry map which contains connector name as key and enumerationName as value for a connector of type ssc:Enumeration
@@ -99,7 +101,8 @@ namespace oms
   private:
     friend bool operator==(const Connector& v1, const Connector& v2);
     friend bool operator!=(const Connector& v1, const Connector& v2);
-    std::string exportName;  ///< name to be used in result file
+    std::string exportName = "";  ///< name to be used in result file
+    std::string aliasName = ""; ///< connector name defined in the ssp file
     oms_signal_numeric_type_enu_t numericType = oms_signal_numeric_type_none;  ///< numeric type for the connector for FMI 3.0
   };
 
