@@ -45,7 +45,8 @@ model.addConnection(CRef('default', 'Gain1', 'y'), CRef('default', 'Add1', 'u1')
 model.addConnection(CRef('default', 'sub-system1', 'Gain1', 'y'), CRef('default', 'sub-system1', 'Add1', 'u1'))
 
 #model.list()
-solver1 = {'name' : 'solver1',  'method': 'euler', 'tolerance': 1e-4}
+## set cvode solver with different tolerance for system and sub-system component
+solver1 = {'name' : 'solver1',  'method': 'cvode', 'tolerance': 1e-5}
 model.newSolver(solver1)
 
 model.setSolver(CRef('default', 'Gain1'), 'solver1')
@@ -170,7 +171,7 @@ instantiated_model.delete()
 ## |-- |-- |-- |-- .input1 -> Gain1.u
 ## |-- |-- |-- |-- Gain1.y -> Add1.u1
 ## |-- |-- |-- Solver Settings:
-## |-- |-- |-- |-- (name=solver1, method=euler, tolerance=0.0001)
+## |-- |-- |-- |-- (name=solver1, method=cvode, tolerance=1e-05)
 ## |-- |-- |-- |-- (name=solver2, method=cvode, tolerance=0.0001)
 ## |-- UnitDefinitions:
 ## |-- |-- Unit: 1
@@ -194,6 +195,7 @@ instantiated_model.delete()
 ## info:    model doesn't contain any continuous state
 ## info:    maximum step size for 'model.root.solver2': 0.001000
 ## info:    model doesn't contain any continuous state
+## info:    maximum step size for 'model.root.solver1': 0.001000
 ## info:    Result file: NestedSystemSimulation2_res.mat (bufferSize=1)
 ## info: After simulation:
 ## info:    default.input1: 3.0
@@ -209,6 +211,9 @@ instantiated_model.delete()
 ## info:    default.sub-system1.Gain1.y: 10.0
 ## info:    default.sub-system1.Add1.u1: 10.0
 ## info:    Final Statistics for 'model.root.solver2':
+##          NumSteps = 1001 NumRhsEvals  = 1002 NumLinSolvSetups = 51
+##          NumNonlinSolvIters = 1001 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
+## info:    Final Statistics for 'model.root.solver1':
 ##          NumSteps = 1001 NumRhsEvals  = 1002 NumLinSolvSetups = 51
 ##          NumNonlinSolvIters = 1001 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
 ## endResult
