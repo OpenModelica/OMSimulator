@@ -114,6 +114,8 @@ class capi:
     self.obj.oms_setTempDirectory.restype = ctypes.c_int
     self.obj.oms_setExportName.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms_setExportName.restype = ctypes.c_int
+    self.obj.oms_setAliasName.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms_setAliasName.restype = ctypes.c_int
     self.obj.oms_setBoolean.argtypes = [ctypes.c_char_p, ctypes.c_bool]
     self.obj.oms_setBoolean.restype = ctypes.c_int
     self.obj.oms_setInteger.argtypes = [ctypes.c_char_p, ctypes.c_int]
@@ -283,6 +285,12 @@ class capi:
     '''Set the export name for a model or system.
     This is used to specify the name under which the model will be exported.'''
     status = self.obj.oms_setExportName(cref.encode(), exportName.encode())
+    return Status(status)
+
+  def setAliasName(self, cref, aliasName):
+    '''Set the export name for top level system and sub-system connectors
+    This is used to specify the name under which the model will be exported.'''
+    status = self.obj.oms_setAliasName(cref.encode(), aliasName.encode())
     return Status(status)
 
   def setReal(self, cref, value):

@@ -69,7 +69,8 @@ OMSAPI oms_status_enu_t OMSCALL oms_addResources(const char* cref, const char* p
 OMSAPI oms_status_enu_t OMSCALL oms_addSignalsToResults(const char* cref, const char* regex);
 OMSAPI oms_status_enu_t OMSCALL oms_addStaticValueIndicator(const char* signal, double lower, double upper, double stepSize);
 OMSAPI oms_status_enu_t OMSCALL oms_addSubModel(const char* cref, const char* fmuPath);
-OMSAPI oms_status_enu_t OMSCALL oms_setExportName(const char* cref, const char* exportName); // set export name for a submodel
+OMSAPI oms_status_enu_t OMSCALL oms_setExportName(const char* cref, const char* exportName); // set export name for a submodel, system and connectors
+OMSAPI oms_status_enu_t OMSCALL oms_setAliasName(const char* cref, const char* aliasName); // set alias name for top level system and sub-system connectors
 OMSAPI oms_status_enu_t OMSCALL oms_addSystem(const char* cref, oms_system_enu_t type);
 OMSAPI oms_status_enu_t OMSCALL oms_addTimeIndicator(const char* signal);
 OMSAPI int OMSCALL oms_compareSimulationResults(const char* filenameA, const char* filenameB, const char* varA, const char* varB, double relTol, double absTol);

@@ -385,6 +385,9 @@ class InstantiatedModel:
       status = Capi.setExportName(connector_path, export_name)  # Set export name if provided
       if status != Status.ok:
         raise RuntimeError(f"Failed to set export name: {status}")
+      status = Capi.setAliasName(connector_path, str(connector.name))  # Set alias name for connector
+      if status != Status.ok:
+        raise RuntimeError(f"Failed to set alias name: {status}")
 
   def addConnectorFromElements(self, elements, currentSystem):
     ## add connectors mapped with currentSystem

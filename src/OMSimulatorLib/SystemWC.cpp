@@ -939,7 +939,7 @@ oms_status_enu_t oms::SystemWC::registerSignalsForResultFile(ResultWriter& resul
     // check for exportName, to be used in result file to map the variable to the correct signal in ssp
     std::string name;
     if (!connector->getExportName().empty())
-      name = std::string(ComRef(connector->getExportName()) + connector->getName());
+      name = std::string(ComRef(connector->getExportName()) + connector->getAliasName());
     else
       name = std::string(ComRef(getFullCref()) + connector->getName());
 
