@@ -13,15 +13,6 @@
     <ssd:Elements>
       <ssd:System
         name="SCSystem">
-        <ssd:ElementGeometry
-          x1="-1.301890"
-          y1="-9.119497"
-          x2="18.698110"
-          y2="10.880503"
-          rotation="0.000000"
-          iconRotation="0.000000"
-          iconFlip="false"
-          iconFixedAspectRatio="false" />
         <ssd:Connectors>
           <ssd:Connector
             name="u"
@@ -32,20 +23,20 @@
               y="0.490094" />
           </ssd:Connector>
         </ssd:Connectors>
+        <ssd:ElementGeometry
+          x1="-1.301890"
+          y1="-9.119497"
+          x2="18.698110"
+          y2="10.880503"
+          rotation="0.000000"
+          iconRotation="0.000000"
+          iconFlip="false"
+          iconFixedAspectRatio="false" />
         <ssd:Elements>
           <ssd:Component
             name="circuit"
             type="application/x-fmu-sharedlibrary"
             source="resources/0004_circuit.fmu">
-            <ssd:ElementGeometry
-              x1="-17.962260"
-              y1="-12.641510"
-              x2="2.037740"
-              y2="7.358490"
-              rotation="0.000000"
-              iconRotation="0.000000"
-              iconFlip="false"
-              iconFixedAspectRatio="false" />
             <ssd:Connectors>
               <ssd:Connector
                 name="u"
@@ -97,6 +88,15 @@
                 <ssc:Boolean />
               </ssd:Connector>
             </ssd:Connectors>
+            <ssd:ElementGeometry
+              x1="-17.962260"
+              y1="-12.641510"
+              x2="2.037740"
+              y2="7.358490"
+              rotation="0.000000"
+              iconRotation="0.000000"
+              iconFlip="false"
+              iconFixedAspectRatio="false" />
           </ssd:Component>
         </ssd:Elements>
         <ssd:Connections>
@@ -131,15 +131,6 @@
         name="pulse"
         type="application/x-fmu-sharedlibrary"
         source="resources/0001_replacepulse.fmu">
-        <ssd:ElementGeometry
-          x1="-61.308200"
-          y1="-9.798740"
-          x2="-41.308200"
-          y2="10.201260"
-          rotation="0.000000"
-          iconRotation="0.000000"
-          iconFlip="false"
-          iconFixedAspectRatio="false" />
         <ssd:Connectors>
           <ssd:Connector
             name="y"
@@ -182,6 +173,15 @@
             <ssc:Integer />
           </ssd:Connector>
         </ssd:Connectors>
+        <ssd:ElementGeometry
+          x1="-61.308200"
+          y1="-9.798740"
+          x2="-41.308200"
+          y2="10.201260"
+          rotation="0.000000"
+          iconRotation="0.000000"
+          iconFlip="false"
+          iconFixedAspectRatio="false" />
         <ssd:ParameterBindings>
           <ssd:ParameterBinding>
             <ssd:ParameterValues>
