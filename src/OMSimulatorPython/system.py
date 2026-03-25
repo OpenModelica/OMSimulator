@@ -616,7 +616,7 @@ class System:
       # Add solver settings if available
       if solver is not None:
         # Find solver configuration by name
-        solver_config = next((s for s in self.solvers if s["name"] == solver), None)
+        solver_config = next((s for s in self.solvers if s.get("name") == solver), None)
         if solver_config:
           unit["solver"] = {
             "name": solver,
