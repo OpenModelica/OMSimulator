@@ -36,7 +36,8 @@
           <ssd:Component
             name="circuit"
             type="application/x-fmu-sharedlibrary"
-            source="resources/0004_circuit.fmu">
+            source="resources/0004_circuit.fmu"
+            implementation="ModelExchange">
             <ssd:Connectors>
               <ssd:Connector
                 name="u"
