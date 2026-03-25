@@ -7,8 +7,6 @@
 
 ## This example test dc motors fmu's with ME solver
 
-import logging
-logging.basicConfig(level=logging.INFO)
 
 from OMSimulator import SSD, SSP, Settings, CRef
 
@@ -42,7 +40,6 @@ instantiated_model.delete()
 
 
 ## Result:
-## INFO:OMSimulator.ssp:Temporary directory created: <hidden>
 ## warning: [fmi2Warning] stimuli_model/: fmi2SetupExperiment: tolerance control not supported for fmuType fmi2ModelExchange, setting toleranceDefined to fmi2False
 ## warning: [fmi2Warning] emachine_model/: fmi2SetupExperiment: tolerance control not supported for fmuType fmi2ModelExchange, setting toleranceDefined to fmi2False
 ## warning: [fmi2Warning] edrive_mass/: fmi2SetupExperiment: tolerance control not supported for fmuType fmi2ModelExchange, setting toleranceDefined to fmi2False
@@ -51,7 +48,6 @@ instantiated_model.delete()
 ## info:    Final Statistics for 'model.root':
 ##          NumSteps = 10001 NumRhsEvals  = 10002 NumLinSolvSetups = 501
 ##          NumNonlinSolvIters = 10001 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
-## INFO:OMSimulator.ssp:Temporary directory removed: <hidden>
 ## info:    3 warnings
 ## info:    0 errors
 ## endResult

@@ -9,9 +9,6 @@
 ## the main purpose of this example is to parse all the elements in the SSD file
 ## and export it to a file.
 
-import logging
-logging.basicConfig(level=logging.INFO)
-
 from OMSimulator import SSD, SSP, Settings
 
 Settings.suppressPath = True
@@ -31,7 +28,6 @@ instantiated_model.terminate()
 instantiated_model.delete()
 
 ## Result:
-## INFO:OMSimulator.ssp:Temporary directory created: <hidden>
 ##
 ## Active variant:
 ##  <class 'OMSimulator.ssd.SSD'>
@@ -218,7 +214,6 @@ instantiated_model.delete()
 ## info:    Final Statistics for 'model.root':
 ##          NumSteps = 10663 NumRhsEvals  = 10833 NumLinSolvSetups = 606
 ##          NumNonlinSolvIters = 10832 NumNonlinSolvConvFails = 0 NumErrTestFails = 26
-## INFO:OMSimulator.ssp:Temporary directory removed: <hidden>
 ## info:    3 warnings
 ## info:    0 errors
 ## endResult
