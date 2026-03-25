@@ -210,6 +210,15 @@ instantiated_model.delete()
 ##  |-- startTime: 0.0
 ##  |-- stopTime: 1.0
 ##
+## warning: [fmi2Warning] stimuli_model/: fmi2SetupExperiment: tolerance control not supported for fmuType fmi2ModelExchange, setting toleranceDefined to fmi2False
+## warning: [fmi2Warning] SuT_emachine_model/: fmi2SetupExperiment: tolerance control not supported for fmuType fmi2ModelExchange, setting toleranceDefined to fmi2False
+## warning: [fmi2Warning] SuT_edrive_mass/: fmi2SetupExperiment: tolerance control not supported for fmuType fmi2ModelExchange, setting toleranceDefined to fmi2False
+## info:    maximum step size for 'model.root': 0.001000
 ## info:    Result file: dc_motor_res.mat (bufferSize=1)
+## info:    Final Statistics for 'model.root':
+##          NumSteps = 10663 NumRhsEvals  = 10833 NumLinSolvSetups = 606
+##          NumNonlinSolvIters = 10832 NumNonlinSolvConvFails = 0 NumErrTestFails = 26
 ## INFO:OMSimulator.ssp:Temporary directory removed: <hidden>
+## info:    3 warnings
+## info:    0 errors
 ## endResult
