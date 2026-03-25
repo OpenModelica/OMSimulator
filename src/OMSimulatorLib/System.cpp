@@ -1949,7 +1949,8 @@ oms_status_enu_t oms::System::getReal(const ComRef& cref, double& value)
       // no resources available, getReal from inline
       else
       {
-        if (oms_modelState_simulation == getModel().getModelState() && values.realValues[cref] != 0.0)
+        auto it = values.realValues.find(cref);
+        if (oms_modelState_simulation == getModel().getModelState() && it != values.realValues.end() && !std::isnan(it->second))
         {
           value = values.realValues[cref];
           return oms_status_ok;
