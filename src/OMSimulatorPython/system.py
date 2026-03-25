@@ -652,6 +652,17 @@ class System:
           fmuType = fmu.fmuType
         else:
           fmuType = element.implementation
+        ## always set solver for ModelExchange only fmu's if solver not present
+        if fmuType == "me" and element.solver is None:
+          solver_name = "oms_me_solver"
+          if not any(s.get("name") == solver_name for s in self.solvers):
+            self.solvers.append({
+                  "name": solver_name,
+                  "method": "cvode",
+                  "tolerance": 1e-4
+              })
+          element.solver = solver_name
+
         ## add connectors info for the component in the json, this is needed for propagating connector geomtery to capi
         connector_info = []
         for connector in element.connectors:
