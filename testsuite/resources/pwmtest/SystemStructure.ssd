@@ -1,0 +1,280 @@
+<?xml version="1.0"?>
+<ssd:SystemStructureDescription
+  xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
+  xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription"
+  xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues"
+  xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping"
+  xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary"
+  xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
+  name="PWMTest"
+  version="1.0">
+  <ssd:System
+    name="Root">
+    <ssd:Elements>
+      <ssd:System
+        name="SCSystem">
+        <ssd:ElementGeometry
+          x1="-1.301890"
+          y1="-9.119497"
+          x2="18.698110"
+          y2="10.880503"
+          rotation="0.000000"
+          iconRotation="0.000000"
+          iconFlip="false"
+          iconFixedAspectRatio="false" />
+        <ssd:Connectors>
+          <ssd:Connector
+            name="u"
+            kind="input">
+            <ssc:Real />
+            <ssd:ConnectorGeometry
+              x="0.199528"
+              y="0.490094" />
+          </ssd:Connector>
+        </ssd:Connectors>
+        <ssd:Elements>
+          <ssd:Component
+            name="circuit"
+            type="application/x-fmu-sharedlibrary"
+            source="resources/0004_circuit.fmu">
+            <ssd:ElementGeometry
+              x1="-17.962260"
+              y1="-12.641510"
+              x2="2.037740"
+              y2="7.358490"
+              rotation="0.000000"
+              iconRotation="0.000000"
+              iconFlip="false"
+              iconFixedAspectRatio="false" />
+            <ssd:Connectors>
+              <ssd:Connector
+                name="u"
+                kind="input">
+                <ssc:Real />
+                <ssd:ConnectorGeometry
+                  x="0.000000"
+                  y="0.500000" />
+              </ssd:Connector>
+              <ssd:Connector
+                name="inductor.L"
+                kind="parameter">
+                <ssc:Real
+                  unit="H" />
+              </ssd:Connector>
+              <ssd:Connector
+                name="resistor.R"
+                kind="parameter">
+                <ssc:Real
+                  unit="Ohm" />
+              </ssd:Connector>
+              <ssd:Connector
+                name="resistor.T_ref"
+                kind="parameter">
+                <ssc:Real
+                  unit="K" />
+              </ssd:Connector>
+              <ssd:Connector
+                name="resistor.alpha"
+                kind="parameter">
+                <ssc:Real
+                  unit="1/K" />
+              </ssd:Connector>
+              <ssd:Connector
+                name="resistor.T"
+                kind="calculatedParameter">
+                <ssc:Real
+                  unit="K" />
+              </ssd:Connector>
+              <ssd:Connector
+                name="resistor.T_heatPort"
+                kind="calculatedParameter">
+                <ssc:Real
+                  unit="K" />
+              </ssd:Connector>
+              <ssd:Connector
+                name="resistor.useHeatPort"
+                kind="calculatedParameter">
+                <ssc:Boolean />
+              </ssd:Connector>
+            </ssd:Connectors>
+          </ssd:Component>
+        </ssd:Elements>
+        <ssd:Connections>
+          <ssd:Connection
+            startElement=""
+            startConnector="u"
+            endElement="circuit"
+            endConnector="u">
+            <ssd:ConnectionGeometry
+              pointsX="-37.500000 -37.500000"
+              pointsY="-2.000000 -3.000000" />
+          </ssd:Connection>
+        </ssd:Connections>
+        <ssd:Annotations>
+          <ssc:Annotation
+            type="org.openmodelica">
+            <oms:Annotations>
+              <oms:SimulationInformation>
+                <oms:VariableStepSolver
+                  description="cvode"
+                  absoluteTolerance="0.0001"
+                  relativeTolerance="0.0001"
+                  minimumStepSize="1e-08"
+                  maximumStepSize="0.001"
+                  initialStepSize="0.001" />
+              </oms:SimulationInformation>
+            </oms:Annotations>
+          </ssc:Annotation>
+        </ssd:Annotations>
+      </ssd:System>
+      <ssd:Component
+        name="pulse"
+        type="application/x-fmu-sharedlibrary"
+        source="resources/0001_replacepulse.fmu">
+        <ssd:ElementGeometry
+          x1="-61.308200"
+          y1="-9.798740"
+          x2="-41.308200"
+          y2="10.201260"
+          rotation="0.000000"
+          iconRotation="0.000000"
+          iconFlip="false"
+          iconFixedAspectRatio="false" />
+        <ssd:Connectors>
+          <ssd:Connector
+            name="y"
+            kind="output">
+            <ssc:Real />
+            <ssd:ConnectorGeometry
+              x="1.000000"
+              y="0.500000" />
+          </ssd:Connector>
+          <ssd:Connector
+            name="amplitude"
+            kind="parameter">
+            <ssc:Real />
+          </ssd:Connector>
+          <ssd:Connector
+            name="offset"
+            kind="parameter">
+            <ssc:Real />
+          </ssd:Connector>
+          <ssd:Connector
+            name="period"
+            kind="parameter">
+            <ssc:Real
+              unit="s" />
+          </ssd:Connector>
+          <ssd:Connector
+            name="startTime"
+            kind="parameter">
+            <ssc:Real
+              unit="s" />
+          </ssd:Connector>
+          <ssd:Connector
+            name="width"
+            kind="parameter">
+            <ssc:Real />
+          </ssd:Connector>
+          <ssd:Connector
+            name="nperiod"
+            kind="parameter">
+            <ssc:Integer />
+          </ssd:Connector>
+        </ssd:Connectors>
+        <ssd:ParameterBindings>
+          <ssd:ParameterBinding>
+            <ssd:ParameterValues>
+              <ssv:ParameterSet
+                version="1.0"
+                name="parameters">
+                <ssv:Parameters>
+                  <ssv:Parameter
+                    name="width">
+                    <ssv:Real
+                      value="50" />
+                  </ssv:Parameter>
+                  <ssv:Parameter
+                    name="startTime">
+                    <ssv:Real
+                      value="0"
+                      unit="s" />
+                  </ssv:Parameter>
+                  <ssv:Parameter
+                    name="period">
+                    <ssv:Real
+                      value="0.02"
+                      unit="s" />
+                  </ssv:Parameter>
+                  <ssv:Parameter
+                    name="offset">
+                    <ssv:Real
+                      value="0" />
+                  </ssv:Parameter>
+                  <ssv:Parameter
+                    name="amplitude">
+                    <ssv:Real
+                      value="220" />
+                  </ssv:Parameter>
+                  <ssv:Parameter
+                    name="nperiod">
+                    <ssv:Integer
+                      value="-1" />
+                  </ssv:Parameter>
+                </ssv:Parameters>
+              </ssv:ParameterSet>
+            </ssd:ParameterValues>
+          </ssd:ParameterBinding>
+        </ssd:ParameterBindings>
+      </ssd:Component>
+    </ssd:Elements>
+    <ssd:Connections>
+      <ssd:Connection
+        startElement="pulse"
+        startConnector="y"
+        endElement="SCSystem"
+        endConnector="u">
+        <ssd:ConnectionGeometry
+          pointsX="3.000000"
+          pointsY="0.000000" />
+      </ssd:Connection>
+    </ssd:Connections>
+    <ssd:Annotations>
+      <ssc:Annotation
+        type="org.openmodelica">
+        <oms:Annotations>
+          <oms:SimulationInformation>
+            <oms:FixedStepMaster
+              description="oms-ma"
+              stepSize="0.001000"
+              absoluteTolerance="0.000100"
+              relativeTolerance="0.000100" />
+          </oms:SimulationInformation>
+        </oms:Annotations>
+      </ssc:Annotation>
+    </ssd:Annotations>
+  </ssd:System>
+  <ssd:Units>
+    <ssc:Unit
+      name="s">
+      <ssc:BaseUnit
+        s="1" />
+    </ssc:Unit>
+  </ssd:Units>
+  <ssd:DefaultExperiment
+    startTime="0.000000"
+    stopTime="1.000000">
+    <ssd:Annotations>
+      <ssc:Annotation
+        type="org.openmodelica">
+        <oms:Annotations>
+          <oms:SimulationInformation
+            resultFile="PWMTest_res.mat"
+            loggingInterval="0.000000"
+            bufferSize="10"
+            signalFilter="resources/signalFilter.xml" />
+        </oms:Annotations>
+      </ssc:Annotation>
+    </ssd:Annotations>
+  </ssd:DefaultExperiment>
+</ssd:SystemStructureDescription>

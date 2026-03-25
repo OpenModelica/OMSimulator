@@ -78,6 +78,7 @@ invalidSSD \
 invalidSSM \
 invalidSSV \
 ParkerSimPack \
+pwmtest \
 replaceSubmodel4 \
 replaceSubmodel5 \
 toplevelparameter1 \
