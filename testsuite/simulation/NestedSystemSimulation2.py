@@ -77,13 +77,11 @@ print(f"info:    default.param1: {instantiated_model.getValue(CRef('default', 'p
 print(f"info:    default.Gain1.k: {instantiated_model.getValue(CRef('default', 'Gain1', 'k'))}", flush=True)
 print(f"info:    default.Gain1.u: {instantiated_model.getValue(CRef('default', 'Gain1', 'u'))}", flush=True)
 print(f"info:    default.Gain1.y: {instantiated_model.getValue(CRef('default', 'Gain1', 'y'))}", flush=True)
-print(f"info:    default.Add1.u1: {instantiated_model.getValue(CRef('default', 'Add1', 'u1'))}", flush=True)
 print(f"info:    default.sub-system1.input1: {instantiated_model.getValue(CRef('default', 'sub-system1', 'input1'))}", flush=True)
 print(f"info:    default.sub-system1.param1: {instantiated_model.getValue(CRef('default', 'sub-system1', 'param1'))}", flush=True)
 print(f"info:    default.sub-system1.Gain1.k: {instantiated_model.getValue(CRef('default', 'sub-system1', 'Gain1', 'k'))}", flush=True)
 print(f"info:    default.sub-system1.Gain1.u: {instantiated_model.getValue(CRef('default', 'sub-system1', 'Gain1', 'u'))}", flush=True)
 print(f"info:    default.sub-system1.Gain1.y: {instantiated_model.getValue(CRef('default', 'sub-system1', 'Gain1', 'y'))}", flush=True)
-#print(f"info:    default.sub-system1.Add1.u1: {instantiated_model.getValue(CRef('default', 'sub-system1', 'Add1', 'u1'))}", flush=True)
 
 
 instantiated_model.initialize()
@@ -94,13 +92,11 @@ print(f"info:    default.param1: {instantiated_model.getValue(CRef('default', 'p
 print(f"info:    default.Gain1.k: {instantiated_model.getValue(CRef('default', 'Gain1', 'k'))}", flush=True)
 print(f"info:    default.Gain1.u: {instantiated_model.getValue(CRef('default', 'Gain1', 'u'))}", flush=True)
 print(f"info:    default.Gain1.y: {instantiated_model.getValue(CRef('default', 'Gain1', 'y'))}", flush=True)
-print(f"info:    default.Add1.u1: {instantiated_model.getValue(CRef('default', 'Add1', 'u1'))}", flush=True)
 print(f"info:    default.sub-system1.input1: {instantiated_model.getValue(CRef('default', 'sub-system1', 'input1'))}", flush=True)
 print(f"info:    default.sub-system1.param1: {instantiated_model.getValue(CRef('default', 'sub-system1', 'param1'))}", flush=True)
 print(f"info:    default.sub-system1.Gain1.k: {instantiated_model.getValue(CRef('default', 'sub-system1', 'Gain1', 'k'))}", flush=True)
 print(f"info:    default.sub-system1.Gain1.u: {instantiated_model.getValue(CRef('default', 'sub-system1', 'Gain1', 'u'))}", flush=True)
 print(f"info:    default.sub-system1.Gain1.y: {instantiated_model.getValue(CRef('default', 'sub-system1', 'Gain1', 'y'))}", flush=True)
-#print(f"info:    default.sub-system1.Add1.u1: {instantiated_model.getValue(CRef('default', 'sub-system1', 'Add1', 'u1'))}", flush=True)
 
 instantiated_model.terminate()
 instantiated_model.delete()
@@ -185,7 +181,6 @@ instantiated_model.delete()
 ## info:    default.Gain1.k: 1.0
 ## info:    default.Gain1.u: 0.0
 ## info:    default.Gain1.y: 0.0
-## info:    default.Add1.u1: 0.0
 ## info:    default.sub-system1.input1: 10.0
 ## info:    default.sub-system1.param1: 0.0
 ## info:    default.sub-system1.Gain1.k: 1.0
@@ -201,7 +196,6 @@ instantiated_model.delete()
 ## info:    default.Gain1.k: 1.0
 ## info:    default.Gain1.u: 3.0
 ## info:    default.Gain1.y: 3.0
-## info:    default.Add1.u1: 3.0
 ## info:    default.sub-system1.input1: 10.0
 ## info:    default.sub-system1.param1: 0.0
 ## info:    default.sub-system1.Gain1.k: 1.0
