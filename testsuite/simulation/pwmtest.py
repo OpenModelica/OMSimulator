@@ -17,7 +17,7 @@ model = SSP('../resources/PWMTest.ssp')
 model.list()
 print("", flush=True)
 instantiated_model = model.instantiate() ## internally generate the json file and also set the model state like virgin,
-print(instantiated_model.dumpApiCalls())
+#print(instantiated_model.dumpApiCalls())
 instantiated_model.setResultFile("pwm_res.mat")
 instantiated_model.initialize()
 instantiated_model.simulate()
@@ -27,82 +27,74 @@ instantiated_model.delete()
 ## Result:
 ## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
-## |--   resources/CauerLowPassAnalog.fmu
-## |-- Active Variant: default
+## |--   resources/0001_replacepulse.fmu
+## |--   resources/0004_circuit.fmu
+## |--   signalFilter.xml
+## |-- Active Variant: PWMTest
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Variant "default": <hidden>
-## |-- |-- System: default 'None'
+## |-- Variant "PWMTest": <hidden>
+## |-- |-- System: Root 'None'
 ## |-- |-- |-- Connectors:
 ## |-- |-- |-- Elements:
-## |-- |-- |-- |-- FMU: CauerLowPassAnalog 'None'
-## |-- |-- |-- |-- |-- path: resources/CauerLowPassAnalog.fmu
+## |-- |-- |-- |-- System: SCSystem 'None'
 ## |-- |-- |-- |-- |-- Connectors:
-## |-- |-- |-- |-- |-- |-- (C1.C, Causality.calculatedParameter, SignalType.Real, F, 'Capacitance')
-## |-- |-- |-- |-- |-- |-- (C2.C, Causality.calculatedParameter, SignalType.Real, F, 'Capacitance')
-## |-- |-- |-- |-- |-- |-- (C3.C, Causality.calculatedParameter, SignalType.Real, F, 'Capacitance')
-## |-- |-- |-- |-- |-- |-- (C4.C, Causality.calculatedParameter, SignalType.Real, F, 'Capacitance')
-## |-- |-- |-- |-- |-- |-- (C5.C, Causality.calculatedParameter, SignalType.Real, F, 'Capacitance')
-## |-- |-- |-- |-- |-- |-- (L1.L, Causality.calculatedParameter, SignalType.Real, H, 'Inductance')
-## |-- |-- |-- |-- |-- |-- (L2.L, Causality.calculatedParameter, SignalType.Real, H, 'Inductance')
-## |-- |-- |-- |-- |-- |-- (R1.R, Causality.parameter, SignalType.Real, Ohm, 'Resistance at temperature T_ref')
-## |-- |-- |-- |-- |-- |-- (R1.T, Causality.calculatedParameter, SignalType.Real, K, 'Fixed device temperature if useHeatPort = false')
-## |-- |-- |-- |-- |-- |-- (R1.T_heatPort, Causality.calculatedParameter, SignalType.Real, K, 'Temperature of heatPort')
-## |-- |-- |-- |-- |-- |-- (R1.T_ref, Causality.parameter, SignalType.Real, K, 'Reference temperature')
-## |-- |-- |-- |-- |-- |-- (R1.alpha, Causality.parameter, SignalType.Real, 1/K, 'Temperature coefficient of resistance (R_actual = R*(1 + alpha*(T_heatPort - T_ref))')
-## |-- |-- |-- |-- |-- |-- (R2.R, Causality.parameter, SignalType.Real, Ohm, 'Resistance at temperature T_ref')
-## |-- |-- |-- |-- |-- |-- (R2.T, Causality.calculatedParameter, SignalType.Real, K, 'Fixed device temperature if useHeatPort = false')
-## |-- |-- |-- |-- |-- |-- (R2.T_heatPort, Causality.calculatedParameter, SignalType.Real, K, 'Temperature of heatPort')
-## |-- |-- |-- |-- |-- |-- (R2.T_ref, Causality.parameter, SignalType.Real, K, 'Reference temperature')
-## |-- |-- |-- |-- |-- |-- (R2.alpha, Causality.parameter, SignalType.Real, 1/K, 'Temperature coefficient of resistance (R_actual = R*(1 + alpha*(T_heatPort - T_ref))')
-## |-- |-- |-- |-- |-- |-- (V.V, Causality.parameter, SignalType.Real, V, 'Height of step')
-## |-- |-- |-- |-- |-- |-- (V.offset, Causality.parameter, SignalType.Real, V, 'Voltage offset')
-## |-- |-- |-- |-- |-- |-- (V.signalSource.height, Causality.calculatedParameter, SignalType.Real, None, 'Height of step')
-## |-- |-- |-- |-- |-- |-- (V.signalSource.offset, Causality.calculatedParameter, SignalType.Real, None, 'Offset of output signal y')
-## |-- |-- |-- |-- |-- |-- (V.signalSource.startTime, Causality.calculatedParameter, SignalType.Real, s, 'Output y = offset for time < startTime')
-## |-- |-- |-- |-- |-- |-- (V.startTime, Causality.parameter, SignalType.Real, s, 'Time offset')
-## |-- |-- |-- |-- |-- |-- (c1, Causality.parameter, SignalType.Real, F, 'filter coefficient c1')
-## |-- |-- |-- |-- |-- |-- (c2, Causality.calculatedParameter, SignalType.Real, F, 'filter coefficient c2')
-## |-- |-- |-- |-- |-- |-- (c3, Causality.parameter, SignalType.Real, F, 'filter coefficient c3')
-## |-- |-- |-- |-- |-- |-- (c4, Causality.calculatedParameter, SignalType.Real, F, 'filter coefficient c4')
-## |-- |-- |-- |-- |-- |-- (c5, Causality.parameter, SignalType.Real, F, 'filter coefficient c5')
-## |-- |-- |-- |-- |-- |-- (l1, Causality.parameter, SignalType.Real, H, 'filter coefficient I1')
-## |-- |-- |-- |-- |-- |-- (l2, Causality.parameter, SignalType.Real, H, 'filter coefficient I2')
-## |-- |-- |-- |-- |-- |-- (R1.useHeatPort, Causality.calculatedParameter, SignalType.Boolean, None, '=true, if heatPort is enabled')
-## |-- |-- |-- |-- |-- |-- (R2.useHeatPort, Causality.calculatedParameter, SignalType.Boolean, None, '=true, if heatPort is enabled')
-## |-- |-- |-- |-- |-- Solver Settings:
-## |-- |-- |-- |-- |-- |-- name: solver1
+## |-- |-- |-- |-- |-- |-- (u, Causality.input, SignalType.Real, None, 'None')
+## |-- |-- |-- |-- |-- |-- |-- ConnectorGeometry: (x:0.199528, y:0.490094)
+## |-- |-- |-- |-- |-- ElementGeometry:
+## |-- |-- |-- |-- |-- |-- (x1:-1.30189, y1:-9.119497, x2:18.69811, y2:10.880503, rotation:0.0, icon_source:None, icon_rotation:0.0, icon_flip:False, icon_fixed_aspect_ratio:False)
+## |-- |-- |-- |-- |-- Elements:
+## |-- |-- |-- |-- |-- |-- FMU: circuit 'None'
+## |-- |-- |-- |-- |-- |-- |-- path: resources/0004_circuit.fmu
+## |-- |-- |-- |-- |-- |-- |-- Connectors:
+## |-- |-- |-- |-- |-- |-- |-- |-- (u, Causality.input, SignalType.Real, None, 'None')
+## |-- |-- |-- |-- |-- |-- |-- |-- |-- ConnectorGeometry: (x:0.0, y:0.5)
+## |-- |-- |-- |-- |-- |-- |-- |-- (inductor.L, Causality.parameter, SignalType.Real, H, 'None')
+## |-- |-- |-- |-- |-- |-- |-- |-- (resistor.R, Causality.parameter, SignalType.Real, Ohm, 'None')
+## |-- |-- |-- |-- |-- |-- |-- |-- (resistor.T_ref, Causality.parameter, SignalType.Real, K, 'None')
+## |-- |-- |-- |-- |-- |-- |-- |-- (resistor.alpha, Causality.parameter, SignalType.Real, 1/K, 'None')
+## |-- |-- |-- |-- |-- |-- |-- |-- (resistor.T, Causality.calculatedParameter, SignalType.Real, K, 'None')
+## |-- |-- |-- |-- |-- |-- |-- |-- (resistor.T_heatPort, Causality.calculatedParameter, SignalType.Real, K, 'None')
+## |-- |-- |-- |-- |-- |-- |-- |-- (resistor.useHeatPort, Causality.calculatedParameter, SignalType.Boolean, None, 'None')
+## |-- |-- |-- |-- |-- |-- |-- ElementGeometry:
+## |-- |-- |-- |-- |-- |-- |-- |-- (x1:-17.96226, y1:-12.64151, x2:2.03774, y2:7.35849, rotation:0.0, icon_source:None, icon_rotation:0.0, icon_flip:False, icon_fixed_aspect_ratio:False)
+## |-- |-- |-- |-- |-- Connections:
+## |-- |-- |-- |-- |-- |-- .u -> circuit.u
+## |-- |-- |-- |-- |-- |-- |-- ConnectionGeometry: (pointsX: [-37.5, -37.5], pointsY: [-2.0, -3.0])
+## |-- |-- |-- |-- FMU: pulse 'None'
+## |-- |-- |-- |-- |-- path: resources/0001_replacepulse.fmu
+## |-- |-- |-- |-- |-- Connectors:
+## |-- |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, 'None')
+## |-- |-- |-- |-- |-- |-- |-- ConnectorGeometry: (x:1.0, y:0.5)
+## |-- |-- |-- |-- |-- |-- (amplitude, Causality.parameter, SignalType.Real, None, 'None')
+## |-- |-- |-- |-- |-- |-- (offset, Causality.parameter, SignalType.Real, None, 'None')
+## |-- |-- |-- |-- |-- |-- (period, Causality.parameter, SignalType.Real, s, 'None')
+## |-- |-- |-- |-- |-- |-- (startTime, Causality.parameter, SignalType.Real, s, 'None')
+## |-- |-- |-- |-- |-- |-- (width, Causality.parameter, SignalType.Real, None, 'None')
+## |-- |-- |-- |-- |-- |-- (nperiod, Causality.parameter, SignalType.Integer, None, 'None')
+## |-- |-- |-- |-- |-- ElementGeometry:
+## |-- |-- |-- |-- |-- |-- (x1:-61.3082, y1:-9.79874, x2:-41.3082, y2:10.20126, rotation:0.0, icon_source:None, icon_rotation:0.0, icon_flip:False, icon_fixed_aspect_ratio:False)
+## |-- |-- |-- |-- |-- Inline Parameter Bindings:
+## |-- |-- |-- |-- |-- |-- (Real width, 50.0, None, 'None')
+## |-- |-- |-- |-- |-- |-- (Real startTime, 0.0, s, 'None')
+## |-- |-- |-- |-- |-- |-- (Real period, 0.02, s, 'None')
+## |-- |-- |-- |-- |-- |-- (Real offset, 0.0, None, 'None')
+## |-- |-- |-- |-- |-- |-- (Real amplitude, 220.0, None, 'None')
+## |-- |-- |-- |-- |-- |-- (Integer nperiod, -1, None, 'None')
+## |-- |-- |-- Connections:
+## |-- |-- |-- |-- pulse.y -> SCSystem.u
+## |-- |-- |-- |-- |-- ConnectionGeometry: (pointsX: [3.0], pointsY: [0.0])
 ## |-- |-- |-- Solver Settings:
-## |-- |-- |-- |-- (name=solver1, method=cvode, tolerance=0.0001)
+## |-- |-- |-- |-- ()
 ## |-- UnitDefinitions:
 ## |-- |-- Unit: s
 ## |-- |-- |-- BaseUnit: s: 1
-## |-- |-- Unit: 1/K
-## |-- |-- |-- BaseUnit: K: -1
-## |-- |-- Unit: K
-## |-- |-- |-- BaseUnit: K: 1
-## |-- |-- Unit: H
-## |-- |-- |-- BaseUnit: m: 2, s: -2, A: -2, kg: 1
-## |-- |-- Unit: F
-## |-- |-- |-- BaseUnit: m: -2, s: 4, A: 2, kg: -1
-## |-- |-- Unit: Ohm
-## |-- |-- |-- BaseUnit: m: 2, s: -3, A: -2, kg: 1
-## |-- |-- Unit: W
-## |-- |-- |-- BaseUnit: m: 2, s: -3, kg: 1
-## |-- |-- Unit: s-1.A
-## |-- |-- |-- BaseUnit: s: -1, A: 1
-## |-- |-- Unit: km2.s-4.A-1.g
-## |-- |-- |-- BaseUnit: m: 2, s: -4, A: -1, kg: 1, factor: 1000.0
-## |-- |-- Unit: A
-## |-- |-- |-- BaseUnit: A: 1
-## |-- |-- Unit: V
-## |-- |-- |-- BaseUnit: m: 2, s: -3, A: -1, kg: 1
 ## |-- DefaultExperiment
-## |-- |-- startTime: 0.0
-## |-- |-- stopTime: 4.0
+## |-- |-- startTime: 0.000000
+## |-- |-- stopTime: 1.000000
 ##
 ## info:    maximum step size for 'model.root': 0.001000
-## info:    Result file: SimpleSimulation1_res.mat (bufferSize=1)
+## info:    Result file: pwm_res.mat (bufferSize=1)
 ## info:    Final Statistics for 'model.root':
-##          NumSteps = 3001 NumRhsEvals  = 3002 NumLinSolvSetups = 151
-##          NumNonlinSolvIters = 3001 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
+##          NumSteps = 0 NumRhsEvals  = 0 NumLinSolvSetups = 0
+##          NumNonlinSolvIters = 0 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
 ## endResult
