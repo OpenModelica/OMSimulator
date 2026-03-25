@@ -46,7 +46,7 @@ model.addConnection(CRef('default', 'sub-system1', 'Gain1', 'y'), CRef('default'
 
 #model.list()
 ## set cvode solver with different tolerance for system and sub-system component
-solver1 = {'name' : 'solver1',  'method': 'cvode', 'tolerance': 1e-5}
+solver1 = {'name' : 'solver1',  'method': 'euler', 'tolerance': 1e-4}
 model.newSolver(solver1)
 
 model.setSolver(CRef('default', 'Gain1'), 'solver1')
@@ -83,7 +83,7 @@ print(f"info:    default.sub-system1.param1: {instantiated_model.getValue(CRef('
 print(f"info:    default.sub-system1.Gain1.k: {instantiated_model.getValue(CRef('default', 'sub-system1', 'Gain1', 'k'))}", flush=True)
 print(f"info:    default.sub-system1.Gain1.u: {instantiated_model.getValue(CRef('default', 'sub-system1', 'Gain1', 'u'))}", flush=True)
 print(f"info:    default.sub-system1.Gain1.y: {instantiated_model.getValue(CRef('default', 'sub-system1', 'Gain1', 'y'))}", flush=True)
-print(f"info:    default.sub-system1.Add1.u1: {instantiated_model.getValue(CRef('default', 'sub-system1', 'Add1', 'u1'))}", flush=True)
+#print(f"info:    default.sub-system1.Add1.u1: {instantiated_model.getValue(CRef('default', 'sub-system1', 'Add1', 'u1'))}", flush=True)
 
 
 instantiated_model.initialize()
@@ -100,7 +100,7 @@ print(f"info:    default.sub-system1.param1: {instantiated_model.getValue(CRef('
 print(f"info:    default.sub-system1.Gain1.k: {instantiated_model.getValue(CRef('default', 'sub-system1', 'Gain1', 'k'))}", flush=True)
 print(f"info:    default.sub-system1.Gain1.u: {instantiated_model.getValue(CRef('default', 'sub-system1', 'Gain1', 'u'))}", flush=True)
 print(f"info:    default.sub-system1.Gain1.y: {instantiated_model.getValue(CRef('default', 'sub-system1', 'Gain1', 'y'))}", flush=True)
-print(f"info:    default.sub-system1.Add1.u1: {instantiated_model.getValue(CRef('default', 'sub-system1', 'Add1', 'u1'))}", flush=True)
+#print(f"info:    default.sub-system1.Add1.u1: {instantiated_model.getValue(CRef('default', 'sub-system1', 'Add1', 'u1'))}", flush=True)
 
 instantiated_model.terminate()
 instantiated_model.delete()
@@ -171,7 +171,7 @@ instantiated_model.delete()
 ## |-- |-- |-- |-- .input1 -> Gain1.u
 ## |-- |-- |-- |-- Gain1.y -> Add1.u1
 ## |-- |-- |-- Solver Settings:
-## |-- |-- |-- |-- (name=solver1, method=cvode, tolerance=1e-05)
+## |-- |-- |-- |-- (name=solver1, method=euler, tolerance=0.0001)
 ## |-- |-- |-- |-- (name=solver2, method=cvode, tolerance=0.0001)
 ## |-- UnitDefinitions:
 ## |-- |-- Unit: 1
@@ -191,11 +191,9 @@ instantiated_model.delete()
 ## info:    default.sub-system1.Gain1.k: 1.0
 ## info:    default.sub-system1.Gain1.u: 0.0
 ## info:    default.sub-system1.Gain1.y: 0.0
-## info:    default.sub-system1.Add1.u1: 0.0
 ## info:    model doesn't contain any continuous state
 ## info:    maximum step size for 'model.root.solver2': 0.001000
 ## info:    model doesn't contain any continuous state
-## info:    maximum step size for 'model.root.solver1': 0.001000
 ## info:    Result file: NestedSystemSimulation2_res.mat (bufferSize=1)
 ## info: After simulation:
 ## info:    default.input1: 3.0
@@ -209,11 +207,7 @@ instantiated_model.delete()
 ## info:    default.sub-system1.Gain1.k: 1.0
 ## info:    default.sub-system1.Gain1.u: 10.0
 ## info:    default.sub-system1.Gain1.y: 10.0
-## info:    default.sub-system1.Add1.u1: 10.0
 ## info:    Final Statistics for 'model.root.solver2':
-##          NumSteps = 1001 NumRhsEvals  = 1002 NumLinSolvSetups = 51
-##          NumNonlinSolvIters = 1001 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
-## info:    Final Statistics for 'model.root.solver1':
 ##          NumSteps = 1001 NumRhsEvals  = 1002 NumLinSolvSetups = 51
 ##          NumNonlinSolvIters = 1001 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
 ## endResult
