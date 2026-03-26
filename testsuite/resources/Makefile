@@ -86,6 +86,7 @@ toplevelparameter2 \
 dcmotor \
 LinearTransformation \
 LinearTransformation3 \
+acvs_compositeModel \
 
 MOSs = \
 Blocks.mos \
