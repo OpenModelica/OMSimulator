@@ -2,6 +2,7 @@ TEST = ../rtest -v
 
 TESTFILES = \
 dcmotor.py \
+dcmotorMETest.py \
 
 # Run make failingtest
 FAILINGTESTFILES = \

@@ -1,0 +1,160 @@
+<?xml version="1.0"?>
+<oms:SignalFilter
+  version="1.0">
+  <oms:Variable
+    name="PWMTest.Root.pulse.y"
+    type="Real"
+    kind="output" />
+  <oms:Variable
+    name="PWMTest.Root.pulse.amplitude"
+    type="Real"
+    kind="parameter" />
+  <oms:Variable
+    name="PWMTest.Root.pulse.offset"
+    type="Real"
+    kind="parameter" />
+  <oms:Variable
+    name="PWMTest.Root.pulse.period"
+    type="Real"
+    kind="parameter" />
+  <oms:Variable
+    name="PWMTest.Root.pulse.startTime"
+    type="Real"
+    kind="parameter" />
+  <oms:Variable
+    name="PWMTest.Root.pulse.width"
+    type="Real"
+    kind="parameter" />
+  <oms:Variable
+    name="PWMTest.Root.pulse.nperiod"
+    type="Integer"
+    kind="parameter" />
+  <oms:Variable
+    name="PWMTest.Root.SCSystem.u"
+    type="Real"
+    kind="input" />
+  <oms:Variable
+    name="PWMTest.Root.SCSystem.circuit.inductor.i"
+    type="Real"
+    kind="unknown" />
+  <oms:Variable
+    name="PWMTest.Root.SCSystem.circuit.der(inductor.i)"
+    type="Real"
+    kind="unknown" />
+  <oms:Variable
+    name="PWMTest.Root.SCSystem.circuit.ground.p.i"
+    type="Real"
+    kind="unknown" />
+  <oms:Variable
+    name="PWMTest.Root.SCSystem.circuit.ground.p.v"
+    type="Real"
+    kind="unknown" />
+  <oms:Variable
+    name="PWMTest.Root.SCSystem.circuit.inductor.v"
+    type="Real"
+    kind="unknown" />
+  <oms:Variable
+    name="PWMTest.Root.SCSystem.circuit.resistor.LossPower"
+    type="Real"
+    kind="unknown" />
+  <oms:Variable
+    name="PWMTest.Root.SCSystem.circuit.resistor.R_actual"
+    type="Real"
+    kind="unknown" />
+  <oms:Variable
+    name="PWMTest.Root.SCSystem.circuit.resistor.v"
+    type="Real"
+    kind="unknown" />
+  <oms:Variable
+    name="PWMTest.Root.SCSystem.circuit.u"
+    type="Real"
+    kind="input" />
+  <oms:Variable
+    name="PWMTest.Root.SCSystem.circuit.inductor.L"
+    type="Real"
+    kind="parameter" />
+  <oms:Variable
+    name="PWMTest.Root.SCSystem.circuit.resistor.R"
+    type="Real"
+    kind="parameter" />
+  <oms:Variable
+    name="PWMTest.Root.SCSystem.circuit.resistor.T"
+    type="Real"
+    kind="calculatedParameter" />
+  <oms:Variable
+    name="PWMTest.Root.SCSystem.circuit.resistor.T_heatPort"
+    type="Real"
+    kind="calculatedParameter" />
+  <oms:Variable
+    name="PWMTest.Root.SCSystem.circuit.resistor.T_ref"
+    type="Real"
+    kind="parameter" />
+  <oms:Variable
+    name="PWMTest.Root.SCSystem.circuit.resistor.alpha"
+    type="Real"
+    kind="parameter" />
+  <oms:Variable
+    name="PWMTest.Root.SCSystem.circuit.inductor.n.i"
+    type="Real"
+    kind="unknown" />
+  <oms:Variable
+    name="PWMTest.Root.SCSystem.circuit.inductor.n.v"
+    type="Real"
+    kind="unknown" />
+  <oms:Variable
+    name="PWMTest.Root.SCSystem.circuit.inductor.p.i"
+    type="Real"
+    kind="unknown" />
+  <oms:Variable
+    name="PWMTest.Root.SCSystem.circuit.inductor.p.v"
+    type="Real"
+    kind="unknown" />
+  <oms:Variable
+    name="PWMTest.Root.SCSystem.circuit.resistor.i"
+    type="Real"
+    kind="unknown" />
+  <oms:Variable
+    name="PWMTest.Root.SCSystem.circuit.resistor.n.i"
+    type="Real"
+    kind="unknown" />
+  <oms:Variable
+    name="PWMTest.Root.SCSystem.circuit.resistor.n.v"
+    type="Real"
+    kind="unknown" />
+  <oms:Variable
+    name="PWMTest.Root.SCSystem.circuit.resistor.p.i"
+    type="Real"
+    kind="unknown" />
+  <oms:Variable
+    name="PWMTest.Root.SCSystem.circuit.resistor.p.v"
+    type="Real"
+    kind="unknown" />
+  <oms:Variable
+    name="PWMTest.Root.SCSystem.circuit.signalVoltage.i"
+    type="Real"
+    kind="unknown" />
+  <oms:Variable
+    name="PWMTest.Root.SCSystem.circuit.signalVoltage.n.i"
+    type="Real"
+    kind="unknown" />
+  <oms:Variable
+    name="PWMTest.Root.SCSystem.circuit.signalVoltage.n.v"
+    type="Real"
+    kind="unknown" />
+  <oms:Variable
+    name="PWMTest.Root.SCSystem.circuit.signalVoltage.p.i"
+    type="Real"
+    kind="unknown" />
+  <oms:Variable
+    name="PWMTest.Root.SCSystem.circuit.signalVoltage.p.v"
+    type="Real"
+    kind="unknown" />
+  <oms:Variable
+    name="PWMTest.Root.SCSystem.circuit.signalVoltage.v"
+    type="Real"
+    kind="unknown" />
+  <oms:Variable
+    name="PWMTest.Root.SCSystem.circuit.resistor.useHeatPort"
+    type="Bool"
+    kind="calculatedParameter" />
+</oms:SignalFilter>
