@@ -45,22 +45,17 @@ class capi:
     ## look for dll in the current directory for the python pip package
     omslib = os.path.join(dirname, "@OMSIMULATORLIB_STRING@")
 
-    dllSearchPath = False
-
     ## look for dll in the OpenModelica top level directory or OMSimulator stand alone directory
     if not os.path.exists(omslib):
       if os.name == 'nt': # Windows
         omslib = os.path.join(dirname, "@OMSIMULATOR_PYTHON_RELATIVE_DLL_DIR@", "@OMSIMULATORLIB_STRING@")
-        dllDir = os.add_dll_directory(os.path.dirname(omslib))
-        dllSearchPath = True
+        self._dllDir = os.add_dll_directory(os.path.dirname(omslib))
       else:
         # attempt to fix #8163 on Linux
         omslib = os.path.join(dirname, "..", "@OMSIMULATORLIB_STRING@")
 
     self.obj=ctypes.CDLL(omslib)
 
-    if os.name == 'nt' and dllSearchPath: # Windows
-      dllDir.close()
 
     self.obj.oms_addConnection.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_bool]
     self.obj.oms_addConnection.restype = ctypes.c_int
