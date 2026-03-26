@@ -4,6 +4,7 @@ TESTFILES = \
 embrace1.py \
 embrace2.py \
 AircraftVehicleDemonstrator.py \
+acvs_simulate.py\
 
 # Run make failingtest
 FAILINGTESTFILES = \

@@ -64,6 +64,7 @@ set(OM_OMS_TESTSUITE_RESOURCES_FMUS
 set(OM_OMS_TESTSUITE_RESOURCES_SSPS
         ${CMAKE_CURRENT_SOURCE_DIR}/embrace
         ${CMAKE_CURRENT_SOURCE_DIR}/embrace_TwoConf
+        ${CMAKE_CURRENT_SOURCE_DIR}/acvs_compositeModel
         ${CMAKE_CURRENT_SOURCE_DIR}/import_hierarchical_ssv_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/importParameterMapping
         ${CMAKE_CURRENT_SOURCE_DIR}/importParameterMappingInline
