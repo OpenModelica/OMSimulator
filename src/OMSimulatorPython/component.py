@@ -7,7 +7,7 @@ from OMSimulator.elementgeometry import ElementGeometry
 from OMSimulator import namespace
 
 class Component:
-  def __init__(self, name: CRef, fmuPath: Path | str, connectors=None, unitDefinitions=None, enumerationDefinitions=None):
+  def __init__(self, name: CRef, fmuPath: Path | str, implementation=None, connectors=None, unitDefinitions=None, enumerationDefinitions=None):
     from OMSimulator.ssm import SSM
     self.name = CRef(name)
     self.fmuPath = Path(fmuPath).as_posix()
@@ -20,7 +20,7 @@ class Component:
     self.parameterMapping = SSM()
     self.solver = None
     self.parameterResources = []
-    self.implementation = None
+    self.implementation = implementation
 
   def addConnector(self, connector):
     if connector in self.connectors:
@@ -112,6 +112,13 @@ class Component:
     component_node.set("name", str(self.name))
     component_node.set("type", "application/x-fmu-sharedlibrary")
     component_node.set("source", str(self.fmuPath))
+    if self.implementation == "me":
+      component_node.set("implementation", "ModelExchange")
+    elif self.implementation == "cs":
+      component_node.set("implementation", "CoSimulation")
+    else:
+      component_node.set("implementation", "any")
+
     if self.description:
       component_node.set("description", self.description)
 
