@@ -10,6 +10,7 @@ LinearTransformation1.py \
 LinearTransformation2.py \
 LinearTransformation3.py \
 PIController.py \
+pwmtest.py \
 QuarterCarModel.py \
 tankYPipe.py \
 SimpleSimulation1.py \

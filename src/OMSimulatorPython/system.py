@@ -203,7 +203,8 @@ class System:
         connectors = inst.makeConnectors() if inst else list()
         unitDefinitions = inst._unitDefinitions if inst else list()
         enumerationDefinitions = inst._enumerationDefinitions if inst else list()
-        component = Component(first, resource, connectors, unitDefinitions, enumerationDefinitions)
+        fmuType = inst._fmuType if inst else None
+        component = Component(first, resource, fmuType, connectors, unitDefinitions, enumerationDefinitions)
         component.fmuType = inst.fmuType if inst else None
         self.elements[first] = component
         return component
@@ -616,7 +617,7 @@ class System:
       # Add solver settings if available
       if solver is not None:
         # Find solver configuration by name
-        solver_config = next((s for s in self.solvers if s["name"] == solver), None)
+        solver_config = next((s for s in self.solvers if s.get("name") == solver), None)
         if solver_config:
           unit["solver"] = {
             "name": solver,
@@ -652,6 +653,17 @@ class System:
           fmuType = fmu.fmuType
         else:
           fmuType = element.implementation
+        ## always set solver for ModelExchange only fmu's if solver not present
+        if fmuType == "me" and element.solver is None:
+          solver_name = "oms_me_solver"
+          if not any(s.get("name") == solver_name for s in self.solvers):
+            self.solvers.append({
+                  "name": solver_name,
+                  "method": "cvode",
+                  "tolerance": 1e-4
+              })
+          element.solver = solver_name
+
         ## add connectors info for the component in the json, this is needed for propagating connector geomtery to capi
         connector_info = []
         for connector in element.connectors:
