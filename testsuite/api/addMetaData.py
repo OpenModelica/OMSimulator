@@ -17,7 +17,10 @@ model.addResource('../resources/acvs_compositeModel/resources/L90LS_UD_OS_OS.fmu
 model.addResource('../resources/acvs_compositeModel/resources/od_L90LS_UD_OS_OS.xml', new_name='resources/od_L90LS_UD_OS_OS.xml')
 
 model.addComponent(CRef('default', 'L90LS_UD_OS_OS'), 'resources/L90LS_UD_OS_OS.fmu')
+## add meta data reference to component
 model.addMetaDataReference(CRef('default', 'L90LS_UD_OS_OS'),'resources/od_L90LS_UD_OS_OS.xml', type="application/x-uncertainty-quantification")
+## add meta data reference to top level system
+model.addMetaDataReference(CRef('default'),'resources/od_L90LS_UD_OS_OS.xml', type="application/x-uncertainty-quantification")
 model.list()
 model.export('metadata.ssp')
 
@@ -35,6 +38,7 @@ model.export('metadata.ssp')
 ## |-- Variant "default": None
 ## |-- |-- System: default 'None'
 ## |-- |-- |-- Connectors:
+## |-- |-- |-- MetaData: resources/od_L90LS_UD_OS_OS.xml
 ## |-- |-- |-- Elements:
 ## |-- |-- |-- |-- FMU: L90LS_UD_OS_OS 'None'
 ## |-- |-- |-- |-- |-- path: resources/L90LS_UD_OS_OS.fmu
@@ -63,7 +67,7 @@ model.export('metadata.ssp')
 ## |-- |-- |-- |-- |-- |-- (KqMI_PABT_gain, Causality.parameter, SignalType.Real, None, 'Flow trim coefficient Meter-in P->A')
 ## |-- |-- |-- |-- |-- |-- (KqMO_PBAT_gain, Causality.parameter, SignalType.Real, None, 'Flow trim coefficient Meter-out P->B')
 ## |-- |-- |-- |-- |-- |-- (KqMI_PBAT_gain, Causality.parameter, SignalType.Real, None, 'Flow trim coefficient Meter-in P->B')
-## |-- |-- |-- |-- |-- MetaData : resources/od_L90LS_UD_OS_OS.xml
+## |-- |-- |-- |-- |-- MetaData: resources/od_L90LS_UD_OS_OS.xml
 ## |-- UnitDefinitions:
 ## |-- |-- Unit: mm
 ## |-- |-- |-- BaseUnit: m: 1, factor: 1e-3

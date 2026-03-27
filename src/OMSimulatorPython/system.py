@@ -156,6 +156,11 @@ class System:
           if value:
             print(f"{prefix} |-- Parameter Mapping: {value}")
 
+    ## list metadata resources
+    if len(self.metaDataResources) > 0:
+      for resources in self.metaDataResources:
+        print(f"{prefix} MetaData: {resources.get('source')}")
+
     ## list elements
     if len(self.elements) > 0:
       print(f"{prefix} Elements:")
@@ -786,7 +791,7 @@ class System:
     ## export top level parameter bindings
     self.value.exportToSSD(node, self.parameterMapping)
 
-    ## export parameters binding to ssd file with reference to ssv file
+    ## export parameters binding to ssd file with reference to ssv filec
     if len(self.parameterResources) > 0:
       parameter_bindings_node = ET.SubElement(node, namespace.tag("ssd", "ParameterBindings"))
       for resource in self.parameterResources:
@@ -796,6 +801,14 @@ class System:
           if value:
             parameter_mapping_node = ET.SubElement(parameter_binding_node, namespace.tag("ssd", "ParameterMapping"))
             parameter_mapping_node.set("source", value)
+
+    ## export MetaData resources to ssd file
+    if len(self.metaDataResources) > 0:
+      for resource in self.metaDataResources:
+        meta_data_node = ET.SubElement(node, namespace.tag("ssc", "MetaData"))
+        meta_data_node.set("kind", resource.get("kind"))
+        meta_data_node.set("type", resource.get("type"))
+        meta_data_node.set("source", resource.get("source"))
 
     ## export elements
     if len(self.elements) > 0:
