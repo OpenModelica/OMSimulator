@@ -24,8 +24,8 @@ model.addMetaDataReference(CRef('default'),'resources/od_L90LS_UD_OS_OS.xml', ty
 model.list()
 model.export('metadata.ssp')
 
-# model2 = SSP('metadata.ssp')
-# model2.list()
+model2 = SSP('metadata.ssp')
+model2.list()
 
 
 ## Result:

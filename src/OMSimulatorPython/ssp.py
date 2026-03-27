@@ -155,7 +155,7 @@ class SSP:
 
     self.activeVariant.addSSVReference(cref, resource1, resource2)
 
-  def addMetaDataReference(self, cref: CRef, resource: str, kind = "gentle", type = "application/octet-stream"):
+  def addMetaDataReference(self, cref: CRef, resource: str, kind = "general", type = "application/octet-stream"):
     if self.activeVariant is None:
       raise ValueError("No active variant set in the SSP.")
 
