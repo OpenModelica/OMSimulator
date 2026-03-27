@@ -101,7 +101,12 @@ typedef enum {
 typedef enum {
   oms_component_none,
   oms_component_fmu,      ///< FMU
+<<<<<<< HEAD
   oms_component_fmu3,     ///< FMU3
+=======
+  oms_component_fmu3,      ///< FMU3
+  oms_component_dcp,      ///< DCP
+>>>>>>> d03ad7e5 (Initial DCP support (wip))
   oms_component_table,    ///< lookup table
   oms_component_external  ///< external model
 } oms_component_enu_t;
