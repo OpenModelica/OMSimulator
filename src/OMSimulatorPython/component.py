@@ -106,6 +106,11 @@ class Component:
           if value:
             print(f"{prefix} |-- Parameter Mapping: {value}")
 
+    ## list metadata resources
+    if len(self.metaDataResources) > 0:
+      for resources in self.metaDataResources:
+        print(f"{prefix} MetaData: {resources.get('name')}")
+
     ## list solver settings
     if self.solver:
       print(f"{prefix} Solver Settings:")
