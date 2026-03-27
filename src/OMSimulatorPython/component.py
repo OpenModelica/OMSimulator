@@ -20,6 +20,7 @@ class Component:
     self.parameterMapping = SSM()
     self.solver = None
     self.parameterResources = []
+    self.metaDataResources = []
     self.implementation = implementation
 
   def addConnector(self, connector):
@@ -36,6 +37,9 @@ class Component:
 
   def addSSVReference(self, resource1: str, resource2: str | None = None):
     self.parameterResources.append({resource1: resource2})
+
+  def addMetaDataReference(self, resource: str, kind: str, type: str):
+    self.metaDataResources.append({"name":resource, "kind":kind, "type":type})
 
   def mapParameter(self, source: str, target: str):
     self.parameterMapping.mapParameter(source, target)

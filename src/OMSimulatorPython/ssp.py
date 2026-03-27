@@ -114,7 +114,7 @@ class SSP:
       self.resources[str(new_name)] = ResultReader(filePath = filePath)
     ##TODO check for .ssv file and if ssv instances provided
     else:
-      self.resources[Path(filename).name] = new_name
+      self.resources[str(new_name)] = new_name
 
   def getVariant(self, name=None):
     '''Returns the specified variant or the active variant.'''
@@ -154,6 +154,15 @@ class SSP:
       logger.warning(f"Resource '{resource1}' not found in the SSP resources. Add the resource using the addResource API")
 
     self.activeVariant.addSSVReference(cref, resource1, resource2)
+
+  def addMetaDataReference(self, cref: CRef, resource: str, kind = "gentle", type = "application/octet-stream"):
+    if self.activeVariant is None:
+      raise ValueError("No active variant set in the SSP.")
+
+    if resource not in self.resources:
+      logger.warning(f"Resource '{resource}' not found in the SSP resources. Add the resource using the addResource API")
+
+    self.activeVariant.addMetaDataReference(cref, resource, kind, type)
 
   def exportSSVTemplate(self, cref: CRef, filename: Path | None = None):
     if self.activeVariant is None:

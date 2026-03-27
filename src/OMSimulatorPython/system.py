@@ -91,6 +91,7 @@ class System:
     self.value = Values()
     self.parameterMapping = SSM()
     self.parameterResources = []
+    self.metaDataResources = []
     self.model = model
     self.elementgeometry = None
     self.systemgeometry = None
@@ -229,6 +230,22 @@ class System:
         self.elements[first].addSSVReference(cref.pop_first(), resource1, resource2)
       case Component():
         self.elements[first].addSSVReference(resource1, resource2)
+      case _:
+        raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component")
+
+  def addMetaDataReference(self, cref: CRef, resource: str, kind: str, type: str):
+    ## top level system
+    if cref is None:
+      self.metaDataResources.append({"name":resource, "kind":kind, "type":type})
+      return
+
+    first = cref.first()
+
+    match self.elements.get(first):
+      case System():
+        self.elements[first].addMetaDataReference(cref.pop_first(), resource, kind, type)
+      case Component():
+        self.elements[first].addMetaDataReference(resource, kind, type)
       case _:
         raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component")
 
