@@ -117,6 +117,10 @@ class SSD:
     subcref = self._validateCref(cref)
     self.system.addSSVReference(subcref, resource1, resource2)
 
+  def addMetaDataReference(self, cref: CRef, resource: str, kind: str, type: str):
+    subcref = self._validateCref(cref)
+    self.system.addMetaDataReference(subcref, resource, kind, type)
+
   def exportSSVTemplate(self, cref: CRef, node):
     subcref = self._validateCref(cref)
 
