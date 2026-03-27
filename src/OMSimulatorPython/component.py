@@ -39,7 +39,7 @@ class Component:
     self.parameterResources.append({resource1: resource2})
 
   def addMetaDataReference(self, resource: str, kind: str, type: str):
-    self.metaDataResources.append({"name":resource, "kind":kind, "type":type})
+    self.metaDataResources.append({"source":resource, "kind":kind, "type":type})
 
   def mapParameter(self, source: str, target: str):
     self.parameterMapping.mapParameter(source, target)
@@ -109,7 +109,7 @@ class Component:
     ## list metadata resources
     if len(self.metaDataResources) > 0:
       for resources in self.metaDataResources:
-        print(f"{prefix} MetaData: {resources.get('name')}")
+        print(f"{prefix} MetaData: {resources.get('source')}")
 
     ## list solver settings
     if self.solver:
@@ -154,6 +154,14 @@ class Component:
           if value:
             parameter_mapping_node = ET.SubElement(parameter_binding_node, namespace.tag("ssd", "ParameterMapping"))
             parameter_mapping_node.set("source", value)
+
+    ## export MetaData resources to ssd file
+    if len(self.metaDataResources) > 0:
+      for resource in self.metaDataResources:
+        meta_data_node = ET.SubElement(component_node, namespace.tag("ssc", "MetaData"))
+        meta_data_node.set("kind", resource.get("kind"))
+        meta_data_node.set("type", resource.get("type"))
+        meta_data_node.set("source", resource.get("source"))
 
     ## export Annotations
     if self.solver:

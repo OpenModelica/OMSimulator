@@ -236,7 +236,7 @@ class System:
   def addMetaDataReference(self, cref: CRef, resource: str, kind: str, type: str):
     ## top level system
     if cref is None:
-      self.metaDataResources.append({"name":resource, "kind":kind, "type":type})
+      self.metaDataResources.append({"source":resource, "kind":kind, "type":type})
       return
 
     first = cref.first()
