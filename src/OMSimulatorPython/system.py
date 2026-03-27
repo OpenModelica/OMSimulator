@@ -115,6 +115,7 @@ class System:
       system.elementgeometry = ElementGeometry.importFromNode(node)
       system.systemgeometry = SystemGeometry.importFromNode(node)
       utils.parseParameterBindings(node, system, resources)
+      utils.parseMetaData(node, system, resources)
       system.elements = utils.parseElements(node, resources)
       system.solvers = utils.parseAnnotations(node)
       Connection.importFromNode(node, system)

@@ -21,7 +21,7 @@ model.addComponent(CRef('default', 'L90LS_UD_OS_OS'), 'resources/L90LS_UD_OS_OS.
 model.addMetaDataReference(CRef('default', 'L90LS_UD_OS_OS'),'resources/od_L90LS_UD_OS_OS.xml', type="application/x-uncertainty-quantification")
 ## add meta data reference to top level system
 model.addMetaDataReference(CRef('default'),'resources/od_L90LS_UD_OS_OS.xml', type="application/x-uncertainty-quantification")
-model.list()
+#model.list()
 model.export('metadata.ssp')
 
 model2 = SSP('metadata.ssp')
