@@ -29,7 +29,7 @@ instantiated_model.delete()
 ## |-- Resources:
 ## |--   resources/0001_replacepulse.fmu
 ## |--   resources/0004_circuit.fmu
-## |--   signalFilter.xml
+## |--   resources/signalFilter.xml
 ## |-- Active Variant: PWMTest
 ## |-- <class 'OMSimulator.ssd.SSD'>
 ## |-- Variant "PWMTest": <hidden>
