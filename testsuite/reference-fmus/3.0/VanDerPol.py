@@ -26,13 +26,13 @@ instantiated_model.simulate()
 instantiated_model.terminate()
 instantiated_model.delete()
 
-if 1 == Capi.compareSimulationResults("../../references/VanDerPol-cs.mat", "VanDerPol-cs.mat", "model.root.VanDerPol.x0", "default.VanDerPol.x0", 1e-4, 1e-4):
+if 1 == Capi.compareSimulationResults("../../references/VanDerPol-cs.mat", "VanDerPol-cs.mat", "default.VanDerPol.x0", "default.VanDerPol.x0", 1e-4, 1e-4):
   print("signal x0 is equal", flush=True)
 else:
   print("signal x0 is not equal", flush=True)
 
 
-if 1 == Capi.compareSimulationResults("../../references/VanDerPol-cs.mat", "VanDerPol-cs.mat", "model.root.VanDerPol.x1", "default.VanDerPol.x1", 1e-4, 1e-4):
+if 1 == Capi.compareSimulationResults("../../references/VanDerPol-cs.mat", "VanDerPol-cs.mat", "default.VanDerPol.x1", "default.VanDerPol.x1", 1e-4, 1e-4):
   print("signal x1 is equal", flush=True)
 else:
   print("signal x1 is not equal", flush=True)
@@ -59,13 +59,13 @@ instantiated_model.simulate()
 instantiated_model.terminate()
 instantiated_model.delete()
 
-if 1 == Capi.compareSimulationResults("../../references/VanDerPol-me.mat", "VanDerPol-me.mat", "model.root.VanDerPol.x0", "default.VanDerPol.x0", 1e-4, 1e-4):
+if 1 == Capi.compareSimulationResults("../../references/VanDerPol-me.mat", "VanDerPol-me.mat", "default.VanDerPol.x0", "default.VanDerPol.x0", 1e-4, 1e-4):
   print("signal x0 is equal", flush=True)
 else:
   print("signal x0 is not equal", flush=True)
 
 
-if 1 == Capi.compareSimulationResults("../../references/VanDerPol-me.mat", "VanDerPol-me.mat", "model.root.VanDerPol.x1", "default.VanDerPol.x1", 1e-4, 1e-4):
+if 1 == Capi.compareSimulationResults("../../references/VanDerPol-me.mat", "VanDerPol-me.mat", "default.VanDerPol.x1", "default.VanDerPol.x1", 1e-4, 1e-4):
   print("signal x1 is equal", flush=True)
 else:
   print("signal x1 is not equal", flush=True)
