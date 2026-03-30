@@ -60,9 +60,9 @@ else:
 ## Result:
 ## info:    Result file: Dahlquist-cs.mat (bufferSize=1)
 ## signal x is equal
-## info:    maximum step size for 'default': 0.001000
+## info:    maximum step size for 'model.root': 0.001000
 ## info:    Result file: Dahlquist-me.mat (bufferSize=1)
-## info:    Final Statistics for 'default':
+## info:    Final Statistics for 'model.root':
 ##          NumSteps = 10001 NumRhsEvals  = 10002 NumLinSolvSetups = 501
 ##          NumNonlinSolvIters = 10001 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
 ## signal x is equal
