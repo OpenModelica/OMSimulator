@@ -91,6 +91,7 @@ class System:
     self.value = Values()
     self.parameterMapping = SSM()
     self.parameterResources = []
+    self.metaDataResources = []
     self.model = model
     self.elementgeometry = None
     self.systemgeometry = None
@@ -114,6 +115,7 @@ class System:
       system.elementgeometry = ElementGeometry.importFromNode(node)
       system.systemgeometry = SystemGeometry.importFromNode(node)
       utils.parseParameterBindings(node, system, resources)
+      utils.parseMetaData(node, system, resources)
       system.elements = utils.parseElements(node, resources)
       system.solvers = utils.parseAnnotations(node)
       Connection.importFromNode(node, system)
@@ -154,6 +156,11 @@ class System:
           print(f"{prefix} Parameter Bindings: {key}")
           if value:
             print(f"{prefix} |-- Parameter Mapping: {value}")
+
+    ## list metadata resources
+    if len(self.metaDataResources) > 0:
+      for resources in self.metaDataResources:
+        print(f"{prefix} MetaData: {resources.get('source')}")
 
     ## list elements
     if len(self.elements) > 0:
@@ -229,6 +236,22 @@ class System:
         self.elements[first].addSSVReference(cref.pop_first(), resource1, resource2)
       case Component():
         self.elements[first].addSSVReference(resource1, resource2)
+      case _:
+        raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component")
+
+  def addMetaDataReference(self, cref: CRef, resource: str, kind: str, type: str):
+    ## top level system
+    if cref is None:
+      self.metaDataResources.append({"source":resource, "kind":kind, "type":type})
+      return
+
+    first = cref.first()
+
+    match self.elements.get(first):
+      case System():
+        self.elements[first].addMetaDataReference(cref.pop_first(), resource, kind, type)
+      case Component():
+        self.elements[first].addMetaDataReference(resource, kind, type)
       case _:
         raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component")
 
@@ -769,7 +792,7 @@ class System:
     ## export top level parameter bindings
     self.value.exportToSSD(node, self.parameterMapping)
 
-    ## export parameters binding to ssd file with reference to ssv file
+    ## export parameters binding to ssd file with reference to ssv filec
     if len(self.parameterResources) > 0:
       parameter_bindings_node = ET.SubElement(node, namespace.tag("ssd", "ParameterBindings"))
       for resource in self.parameterResources:
@@ -779,6 +802,14 @@ class System:
           if value:
             parameter_mapping_node = ET.SubElement(parameter_binding_node, namespace.tag("ssd", "ParameterMapping"))
             parameter_mapping_node.set("source", value)
+
+    ## export MetaData resources to ssd file
+    if len(self.metaDataResources) > 0:
+      for resource in self.metaDataResources:
+        meta_data_node = ET.SubElement(node, namespace.tag("ssc", "MetaData"))
+        meta_data_node.set("kind", resource.get("kind"))
+        meta_data_node.set("type", resource.get("type"))
+        meta_data_node.set("source", resource.get("source"))
 
     ## export elements
     if len(self.elements) > 0:

@@ -53,6 +53,8 @@ def parseElements(node, resources = None):
     elements[name].elementgeometry = ElementGeometry.importFromNode(system)
     elements[name].systemgeometry = SystemGeometry.importFromNode(system)
     parseParameterBindings(system, elements[name], resources)
+    ## check for meta tag
+    parseMetaData(system, elements[name], resources)
     solvers = parseAnnotations(system)
     if solvers:
       for solver in solvers:
@@ -83,6 +85,8 @@ def parseElements(node, resources = None):
       elements[name].connectors = Connector.importFromNode(component)
       elements[name].elementgeometry = ElementGeometry.importFromNode(component)
       parseParameterBindings(component, elements[name], resources)
+      ## check for meta tag
+      parseMetaData(component, elements[name], resources)
       solvers = parseAnnotations(component)
       if solvers:
         for solver in solvers:
@@ -91,8 +95,16 @@ def parseElements(node, resources = None):
       elements[name] = ComponentTable(name, source)
       elements[name].connectors = Connector.importFromNode(component)
 
-
   return elements
+
+def parseMetaData(node, obj, resources):
+  ssc_meta_node = node.find("ssc:MetaData", namespaces=namespace.ns)
+  if ssc_meta_node is not None:
+    source = ssc_meta_node.get("source", "")
+    kind = ssc_meta_node.get("kind", "general")
+    type = ssc_meta_node.get("type", "application/octet-stream")
+    ## TODO check for other attributes
+    obj.metaDataResources.append({"source": source, "kind":kind, "type":type})
 
 def parseParameterBindings(node, obj, resources):
   """Extract and print system parameters"""

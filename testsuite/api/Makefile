@@ -39,6 +39,7 @@ swapSSV1.py \
 swapSSV2.py \
 swapSSV3.py \
 swapSSV4.py \
+addMetaData.py \
 
 # Run make failingtest
 FAILINGTESTFILES = \
