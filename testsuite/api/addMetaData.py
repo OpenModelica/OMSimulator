@@ -35,7 +35,7 @@ model2.list()
 ## |--   resources/od_L90LS_UD_OS_OS.xml
 ## |-- Active Variant: default
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Variant "default": None
+## |-- Variant "default": <hidden>
 ## |-- |-- System: default 'None'
 ## |-- |-- |-- Connectors:
 ## |-- |-- |-- MetaData: resources/od_L90LS_UD_OS_OS.xml
