@@ -28,7 +28,7 @@ instantiated_model.delete()
 
 
 
-if 1 == Capi.compareSimulationResults("../references/Stair-cs.mat", "Stair-cs.mat", "model.root.Stair.counter", "default.Stair.counter", 1e-4, 1e-4):
+if 1 == Capi.compareSimulationResults("../references/Stair-cs.mat", "Stair-cs.mat", "default.Stair.counter", "default.Stair.counter", 1e-4, 1e-4):
   print("signal counter is equal", flush=True)
 else:
   print("signal counter is not equal", flush=True)
@@ -55,7 +55,7 @@ instantiated_model.simulate()
 instantiated_model.terminate()
 instantiated_model.delete()
 
-if 1 == Capi.compareSimulationResults("../references/Stair-me.mat", "Stair-me.mat", "model.root.Stair.counter", "default.Stair.counter", 1e-4, 1e-4):
+if 1 == Capi.compareSimulationResults("../references/Stair-me.mat", "Stair-me.mat", "default.Stair.counter", "default.Stair.counter", 1e-4, 1e-4):
   print("signal counter is equal", flush=True)
 else:
   print("signal counter is not equal", flush=True)
@@ -63,13 +63,13 @@ else:
 
 ## Result:
 ## info:    Result file: Stair-cs.mat (bufferSize=1)
-## info:    fmi2_doStep discarded for FMU "model.root.Stair"
+## info:    fmi2_doStep discarded for FMU "default.Stair"
 ## signal counter is equal
 ## info:    model doesn't contain any continuous state
-## info:    maximum step size for 'model.root': 0.200000
+## info:    maximum step size for 'default': 0.200000
 ## info:    Result file: Stair-me.mat (bufferSize=1)
-## info:    Simulation terminated by FMU model.root.Stair at time 9.000000
-## info:    Final Statistics for 'model.root':
+## info:    Simulation terminated by FMU default.Stair at time 9.000000
+## info:    Final Statistics for 'default':
 ##          NumSteps = 0 NumRhsEvals  = 0 NumLinSolvSetups = 0
 ##          NumNonlinSolvIters = 0 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
 ## signal counter is equal

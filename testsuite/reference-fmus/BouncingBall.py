@@ -27,12 +27,12 @@ instantiated_model.terminate()
 instantiated_model.delete()
 
 
-if 1 == Capi.compareSimulationResults("../references/BouncingBall-cs.mat", "BouncingBall-cs.mat", "model.root.BouncingBall.h", "default.BouncingBall.h", 1e-4, 1e-4):
+if 1 == Capi.compareSimulationResults("../references/BouncingBall-cs.mat", "BouncingBall-cs.mat", "default.BouncingBall.h", "default.BouncingBall.h", 1e-4, 1e-4):
   print("signal h is equal", flush=True)
 else:
   print("signal h is not equal", flush=True)
 
-if 1 == Capi.compareSimulationResults("../references/BouncingBall-cs.mat", "BouncingBall-cs.mat", "model.root.BouncingBall.v", "default.BouncingBall.v", 1e-4, 1e-4):
+if 1 == Capi.compareSimulationResults("../references/BouncingBall-cs.mat", "BouncingBall-cs.mat", "default.BouncingBall.v", "default.BouncingBall.v", 1e-4, 1e-4):
   print("signal v is equal", flush=True)
 else:
   print("signal v is not equal", flush=True)
@@ -58,12 +58,12 @@ instantiated_model.simulate()
 instantiated_model.terminate()
 instantiated_model.delete()
 
-if 1 == Capi.compareSimulationResults("../references/BouncingBall-me.mat", "BouncingBall-me.mat", "model.root.BouncingBall.h", "default.BouncingBall.h", 1e-4, 1e-4):
+if 1 == Capi.compareSimulationResults("../references/BouncingBall-me.mat", "BouncingBall-me.mat", "default.BouncingBall.h", "default.BouncingBall.h", 1e-4, 1e-4):
   print("signal h is equal", flush=True)
 else:
   print("signal h is not equal", flush=True)
 
-if 1 == Capi.compareSimulationResults("../references/BouncingBall-me.mat", "BouncingBall-me.mat", "model.root.BouncingBall.v", "default.BouncingBall.v", 1e-4, 1e-4):
+if 1 == Capi.compareSimulationResults("../references/BouncingBall-me.mat", "BouncingBall-me.mat", "default.BouncingBall.v", "default.BouncingBall.v", 1e-4, 1e-4):
   print("signal v is equal", flush=True)
 else:
   print("signal v is not equal", flush=True)

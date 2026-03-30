@@ -26,7 +26,7 @@ instantiated_model.terminate()
 instantiated_model.delete()
 
 
-if 1 == Capi.compareSimulationResults("../references/Dahlquist-cs.mat", "Dahlquist-cs.mat", "model.root.Dahlquist.x", "default.Dahlquist.x", 1e-4, 1e-4):
+if 1 == Capi.compareSimulationResults("../references/Dahlquist-cs.mat", "Dahlquist-cs.mat", "default.Dahlquist.x", "default.Dahlquist.x", 1e-4, 1e-4):
   print("signal x is equal", flush=True)
 else:
   print("signal x is not equal", flush=True)
@@ -51,7 +51,7 @@ instantiated_model.simulate()
 
 instantiated_model.terminate()
 instantiated_model.delete()
-if 1 == Capi.compareSimulationResults("../references/Dahlquist-me.mat", "Dahlquist-me.mat", "model.root.Dahlquist.x", "default.Dahlquist.x", 1e-4, 1e-4):
+if 1 == Capi.compareSimulationResults("../references/Dahlquist-me.mat", "Dahlquist-me.mat", "default.Dahlquist.x", "default.Dahlquist.x", 1e-4, 1e-4):
   print("signal x is equal", flush=True)
 else:
   print("signal x is not equal", flush=True)
@@ -60,9 +60,9 @@ else:
 ## Result:
 ## info:    Result file: Dahlquist-cs.mat (bufferSize=1)
 ## signal x is equal
-## info:    maximum step size for 'model.root': 0.001000
+## info:    maximum step size for 'default': 0.001000
 ## info:    Result file: Dahlquist-me.mat (bufferSize=1)
-## info:    Final Statistics for 'model.root':
+## info:    Final Statistics for 'default':
 ##          NumSteps = 10001 NumRhsEvals  = 10002 NumLinSolvSetups = 501
 ##          NumNonlinSolvIters = 10001 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
 ## signal x is equal
