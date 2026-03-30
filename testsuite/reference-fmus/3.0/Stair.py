@@ -28,7 +28,7 @@ instantiated_model.delete()
 
 
 
-if 1 == Capi.compareSimulationResults("../../references/Stair-cs.mat", "Stair-cs.mat", "model.root.Stair.counter", "default.Stair.counter", 1e-4, 1e-4):
+if 1 == Capi.compareSimulationResults("../../references/Stair-cs.mat", "Stair-cs.mat", "default.Stair.counter", "default.Stair.counter", 1e-4, 1e-4):
   print("signal counter is equal", flush=True)
 else:
   print("signal counter is not equal", flush=True)
@@ -58,7 +58,7 @@ instantiated_model.delete()
 
 
 
-if 1 == Capi.compareSimulationResults("../../references/Stair-me.mat", "Stair-me.mat", "model.root.Stair.counter", "default.Stair.counter", 1e-4, 1e-4):
+if 1 == Capi.compareSimulationResults("../../references/Stair-me.mat", "Stair-me.mat", "default.Stair.counter", "default.Stair.counter", 1e-4, 1e-4):
   print("signal counter is equal", flush=True)
 else:
   print("signal counter is not equal", flush=True)
