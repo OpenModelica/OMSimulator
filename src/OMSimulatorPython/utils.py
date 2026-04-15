@@ -139,14 +139,14 @@ def parseParameterBindings(node, obj, resources):
           Unit.importFromNode(param_set, obj, tagname="ssv:Units")
 
 def parseSSV(filename):
-  tree = ET.parse(filename)
+  tree = ET.parse(str(filename))
   root = tree.getroot()
   validateSSP(root, filename, "SystemStructureParameterValues.xsd")
   parameters = root.find("ssv:Parameters", namespaces=namespace.ns)
   return parseParameterBindingHelper(parameters)
 
 def parseSSM(filename):
-  tree = ET.parse(filename)
+  tree = ET.parse(str(filename))
   root = tree.getroot()
   validateSSP(root, filename, "SystemStructureParameterMapping.xsd")
   mappingEntry = defaultdict(list)
