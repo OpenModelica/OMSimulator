@@ -394,7 +394,7 @@ oms_status_enu_t oms::ComponentTable::addSignalsToResults(const char* regex)
     if (x.second)
       continue;
 
-    if (regex_match(std::string(x.first), exp))
+    if (regex_match(std::string(getFullCref() + x.first), exp))
       x.second = true;
   }
 
@@ -409,7 +409,7 @@ oms_status_enu_t oms::ComponentTable::removeSignalsFromResults(const char* regex
     if (!x.second)
       continue;
 
-    if (regex_match(std::string(x.first), exp))
+    if (regex_match(std::string(getFullCref() + x.first), exp))
       x.second = false;
   }
 
