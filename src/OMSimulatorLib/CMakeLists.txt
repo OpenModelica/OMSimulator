@@ -106,9 +106,8 @@ target_link_libraries(OMSimulatorLib
                           oms::3rd::zlib
                           oms::3rd::pugixml::header
                           oms::3rd::json::header
-                          oms::3rd::ctpl::header)
-                          oms::3rd::xerces
                           oms::3rd::ctpl::header
+                          oms::3rd::xerces
                           oms::3rd::libzip
                           oms::3rd::dcplib::core
                           oms::3rd::dcplib::master
@@ -145,7 +144,7 @@ target_link_libraries(OMSimulatorLib_static
                           oms::3rd::zlib
                           oms::3rd::pugixml::header
                           oms::3rd::json::header
-                          oms::3rd::ctpl::header)
+                          oms::3rd::ctpl::header
                           oms::3rd::xerces
                           oms::3rd::ctpl::header
                           oms::3rd::libzip
