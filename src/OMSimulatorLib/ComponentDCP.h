@@ -68,7 +68,7 @@ public:
     oms_status_enu_t exportToSSD(pugi::xml_node& node, Snapshot& snapshot, std::string variantName) const;
     oms_status_enu_t initialize();
     oms_status_enu_t instantiate();
-    oms_status_enu_t stepUntil(double stopTime) { return logError_NotImplemented; }
+    oms_status_enu_t stepUntil(double stopTime) { return oms_status_ok; }
     oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultFile);
     oms_status_enu_t removeSignalsFromResults(const char* regex);
     oms_status_enu_t reset();

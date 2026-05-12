@@ -111,9 +111,10 @@ class DCP:
             var_type = "Real"   #HACK, only FMI2 types are currently supported
           start = type_element.get('start')
           unit = type_element.get('unit')
+          declaredType = type_element.get('declaredType')
 
       # Create and store the variable
-      variable = Variable(name, description, value_reference, causality, variability, var_type, unit, start)
+      variable = Variable(name, description, value_reference, causality, variability, var_type, unit, start, declaredType)
 
       # Assign unit definitions if applicable
       if unit:
