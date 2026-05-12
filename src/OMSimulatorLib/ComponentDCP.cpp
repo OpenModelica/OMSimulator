@@ -469,8 +469,10 @@ oms_status_enu_t oms::ComponentDCP::exportToSSD(pugi::xml_node &node, Snapshot &
 
 oms_status_enu_t oms::ComponentDCP::initialize()
 {
-    // TODO: Implement (dcp)
-    return oms_status_fatal;
+    logInfo("Initialize DCP component " + std::string(getCref())); //DCP debug
+
+    //Nothing to be done (I think?)
+    return oms_status_ok;
 }
 
 oms_status_enu_t oms::ComponentDCP::instantiate()
@@ -501,14 +503,16 @@ oms_status_enu_t oms::ComponentDCP::instantiate()
 
 oms_status_enu_t oms::ComponentDCP::registerSignalsForResultFile(ResultWriter &resultFile)
 {
-    // TODO: Implement (dcp)
-    return oms_status_fatal;
+    logInfo("Enter registerSignalsForResultFile for " + std::string(getFullCref())); //DCP debug
+
+    // Not sure if this is needed
+    return oms_status_ok;
 }
 
 oms_status_enu_t oms::ComponentDCP::removeSignalsFromResults(const char *regex)
 {
-    // TODO: Implement (dcp)
-    return oms_status_fatal;
+    // Not sure if this is needed
+    return oms_status_ok;
 }
 
 oms_status_enu_t oms::ComponentDCP::reset()
@@ -525,8 +529,8 @@ oms_status_enu_t oms::ComponentDCP::terminate()
 
 oms_status_enu_t oms::ComponentDCP::updateSignals(ResultWriter &resultWriter)
 {
-    // TODO: Implement (dcp)
-    return oms_status_fatal;
+    //Not sure if this is needed
+    return oms_status_ok;
 }
 
 void oms::ComponentDCP::getFilteredSignals(std::vector<Connector> &filteredSignals) const
