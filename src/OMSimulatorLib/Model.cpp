@@ -44,6 +44,7 @@
 #include "minizip.h"
 #include <thread>
 #include <algorithm> /* std::unique and std::find are defined here */
+#include <fstream>  //Only for debug output, can remove later
 
 oms::Model::Model(const oms::ComRef& cref, const std::string& tempDir)
   : cref(cref), tempDir(tempDir), resultFilename(std::string(cref) + "_res.mat")
@@ -1189,6 +1190,8 @@ oms_status_enu_t oms::Model::instantiate()
 
 oms_status_enu_t oms::Model::initialize()
 {
+  logInfo("Enter initialize() for model " + std::string(getCref())); //DCP debug
+
   if (!validState(oms_modelState_instantiated))
     return logError_ModelInWrongState(getCref());
 
@@ -1238,6 +1241,8 @@ oms_status_enu_t oms::Model::initialize()
       return logError_Initialization(system->getFullCref());
     }
 
+    logInfo("Signals registered for result file"); //DCP debug
+    
     // create result file
     if (!resultFile->create(resultFilename, startTime, stopTime))
     {
@@ -1248,6 +1253,8 @@ oms_status_enu_t oms::Model::initialize()
       clock.toc();
       return logError_Initialization(system->getFullCref());
     }
+
+    logInfo("Result file created successfully"); //DCP debug
 
     // dump results
     emit(startTime, true);
@@ -1262,6 +1269,8 @@ oms_status_enu_t oms::Model::initialize()
 
 oms_status_enu_t oms::Model::simulate()
 {
+  logInfo("Test print (logInfo)");
+
   clock.tic();
   if (!validState(oms_modelState_simulation))
   {
@@ -1274,6 +1283,8 @@ oms_status_enu_t oms::Model::simulate()
     clock.toc();
     return logError("Model doesn't contain a system");
   }
+
+  // DCPTODO: If system contains DCP components, start a DCP simulation where the system is wrapped as a DCP slave.
 
   oms_status_enu_t status = system->stepUntil(stopTime);
   emit(stopTime, true);

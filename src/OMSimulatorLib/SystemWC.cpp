@@ -226,6 +226,8 @@ unsigned int oms::SystemWC::getMaxOutputDerivativeOrder()
 
 oms_status_enu_t oms::SystemWC::initialize()
 {
+  logInfo("Enter initialize() for system " + std::string(getCref())); //DCP debug
+  
   clock.reset();
   CallClock callClock(clock);
 
@@ -242,6 +244,8 @@ oms_status_enu_t oms::SystemWC::initialize()
   for (const auto& component : getComponents())
     if (oms_status_ok != component.second->initialize())
       return oms_status_error;
+
+  logInfo("All components initialized"); //DCP debug
 
   // prepare data structures for simulation
   if (solverMethod == oms_solver_wc_mav || solverMethod == oms_solver_wc_mav2)
@@ -293,6 +297,8 @@ oms_status_enu_t oms::SystemWC::initialize()
 
   // mark algebraic loops to be updated on next call
   forceLoopsToBeUpdated();
+
+  logInfo("Initialization finished successfully"); //DCP debug
 
   return oms_status_ok;
 }

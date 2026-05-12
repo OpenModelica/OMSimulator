@@ -35,7 +35,7 @@
 #include "Logging.h"
 #include "ssd/Tags.h"
 #include "Util.h"
-#include "XercesValidator.h"
+//#include "XercesValidator.h"
 #include "dcp/zip/DcpSlaveReader.hpp"
 
 #include <iostream>

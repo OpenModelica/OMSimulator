@@ -243,6 +243,8 @@ oms_status_enu_t oms::SystemSC3::instantiate()
 
 oms_status_enu_t oms::SystemSC3::initialize()
 {
+  logInfo("Enter initialize() for system " + std::string(getCref())); //DCP debug
+
   // testFMI3ME(fmus[0]->getFMU());
   // exit(0);
   clock.reset();

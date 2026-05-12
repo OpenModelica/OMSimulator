@@ -11,6 +11,7 @@ from OMSimulator.connector import Connector
 from OMSimulator.elementgeometry import ElementGeometry
 from OMSimulator.fmu import FMU
 from OMSimulator.ssm import SSM
+from OMSimulator.dcp import DCP
 from OMSimulator.values import Values
 
 from OMSimulator import Capi, CRef, namespace, utils
@@ -211,6 +212,14 @@ class System:
         componenttable = ComponentTable(first, resource, inst.connectors)
         self.elements[first] = componenttable
         return componenttable
+      elif isinstance(inst, DCP) or (inst is None and resource.endswith(".dcp")):
+        connectors = inst.makeConnectors() if inst else list()
+        unitDefinitions =  list()
+        enumerationDefinitions = list()
+        component = Component(first, resource, connectors, unitDefinitions, enumerationDefinitions)
+        component.fmuType = inst.fmuType if inst else None
+        self.elements[first] = component
+        return component
       else:
         raise TypeError( f"Unknown component instance for '{first}' in '{self.name}'. "
                  f"Please add the component from the top-level model.")
