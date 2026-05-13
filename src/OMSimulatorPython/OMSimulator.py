@@ -136,6 +136,7 @@ class OMSimulator:
     self.setSolver = Scope._capi.setSolver
     self.setStartTime = Scope._capi.setStartTime
     self.setStopTime = Scope._capi.setStopTime
+    self.setString = Scope._capi.setString
     self.setTempDirectory = Scope._capi.setTempDirectory
     self.setTLMPositionAndOrientation = Scope._capi.setTLMPositionAndOrientation
     self.setTLMSocketData = Scope._capi.setTLMSocketData
