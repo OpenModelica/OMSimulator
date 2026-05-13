@@ -171,14 +171,14 @@ def parseParameterBindings(node, obj, resources):
           Unit.importFromNode(param_set, obj, tagname="ssv:Units")
 
 def parseSSV(filename):
-  tree = ET.parse(filename)
+  tree = ET.parse(str(filename))
   root = tree.getroot()
   validateSSP(root, filename, "SystemStructureParameterValues.xsd")
   parameters = root.find("ssv:Parameters", namespaces=namespace.ns)
   return parseParameterBindingHelper(parameters)
 
 def parseSSM(filename):
-  tree = ET.parse(filename)
+  tree = ET.parse(str(filename))
   root = tree.getroot()
   validateSSP(root, filename, "SystemStructureParameterMapping.xsd")
   mappingEntry = defaultdict(list)
@@ -235,7 +235,7 @@ def parseParameterBindingHelper(parameters):
 
 def validateSSP(root, filename : str, schema_file : str):
   module_dir = Path(__file__).parent
-  schema = ET.XMLSchema(file=Path(module_dir, 'schema/ssp', schema_file))
+  schema = ET.XMLSchema(file=str(Path(module_dir, 'schema/ssp', schema_file)))
   if not schema.validate(root):
     message = f"Failed to validate {Path(filename).name} against schemafile {schema_file}"
     for entry in schema.error_log:

@@ -68,7 +68,7 @@ class SSD:
     '''Imports an SSD file and parses its contents.'''
     try:
       # Determine input type
-      tree = ET.parse(filename)
+      tree = ET.parse(str(filename))
       root = tree.getroot()
       filename = Path(filename).resolve()
       return SSD.importFromNode(root, filename, resources)
