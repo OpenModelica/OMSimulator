@@ -39,10 +39,18 @@
 #include "ComRef.h"
 #include "Connector.h"
 #include "OMSimulator/Types.h"
+#include "dcp/model/DcpTypes.hpp"
+#include "dcp/xml/DcpSlaveDescriptionElements.hpp"
 
 #include <fmi4c.h>
 #include <string>
 #include <vector>
+
+// TODO: Maybe move this to separate file (dcp)
+typedef enum {dcpCausalityInput, dcpCausalityOutput, dcpCausalityParameter, dcpCausalityLocal, dcpCausalityStructuralParameter } dcpCausality_t;
+typedef enum {dcpFloat64, dcpFloat32, dcpInt64, dcpInt32, dcpInt16, dcpInt8, dcpUInt64, dcpUInt32, dcpUInt16, dcpUInt8, dcpString, dcpBinary} dcpDataType_t;
+
+class SlaveDescription_t;
 
 namespace oms
 {
@@ -50,6 +58,7 @@ namespace oms
   {
   public:
     Variable(fmiHandle * fmi4c, int index, oms_component_enu_t componentType);
+    Variable(SlaveDescription_t *desc, int index);   //For DCP components, component type is implicit
     ~Variable();
 
     void markAsState(size_t der_index) { is_state = true; this->der_index = der_index; }
@@ -60,12 +69,13 @@ namespace oms
 
     bool isFmi2() const {return fmi2;}
     bool isFmi3() const {return fmi3;}
+    bool isDcp() const {return dcp;}
 
     // causality attribute
     bool isParameter() const { return isFmi2() ? (fmi2CausalityParameter == fmi2Causality_) : (fmi3CausalityParameter == fmi3Causality_);}
     bool isCalculatedParameter() const { return isFmi2() ? (fmi2CausalityCalculatedParameter == fmi2Causality_) : (fmi3CausalityCalculatedParameter ==fmi3Causality_);}
-    bool isInput() const { return isFmi2() ? (fmi2CausalityInput == fmi2Causality_) : (fmi3CausalityInput == fmi3Causality_);}
-    bool isOutput() const { return isFmi2() ? (fmi2CausalityOutput == fmi2Causality_) : (fmi3CausalityOutput == fmi3Causality_);}
+    bool isInput() const;
+    bool isOutput() const; 
     bool isLocal() const { return isFmi2() ? (fmi2CausalityLocal == fmi2Causality_) : (fmi3CausalityLocal == fmi3Causality_);}
     bool isIndependent() const { return isFmi2() ? (fmi2CausalityIndependent == fmi2Causality_) : (fmi3CausalityIndependent == fmi3Causality_);}
 
@@ -91,6 +101,7 @@ namespace oms
 
     fmi2ValueReference getValueReference() const { return fmi2Vr; }
     fmi3ValueReference getValueReferenceFMI3() const { return fmi3Vr; }
+    valueReference_t getValueReferenceDCP() const { return dcpVr; }
     oms_signal_type_enu_t getType() const { return type; }
     oms_signal_numeric_type_enu_t getNumericType() const {return numericType;}
     const std::string& getDescription() const { return description; }
@@ -110,6 +121,7 @@ namespace oms
 
     void configureFMI2Variable(fmiHandle *fmi4c, int index);
     void configureFMI3Variable(fmiHandle *fmi4c, int index);
+    void configureDCPVariable(SlaveDescription_t *desc, int index);
 
     ComRef cref;
     std::string description;
@@ -127,6 +139,12 @@ namespace oms
     fmi3Variability fmi3Variability_;
     fmi3Initial fmi3InitialProperty;
 
+    // DCP specific members
+    valueReference_t dcpVr;
+    dcpCausality_t dcpCausality;
+    Variability dcpVariability;
+    dcpDataType_t dcpDataType;
+
     bool is_state;
     bool is_der;
     bool is_continuous_time_state;
@@ -136,6 +154,7 @@ namespace oms
     unsigned int index; ///< index origin = 0
     size_t state_index; ///< index origin = 0
     size_t der_index; ///< index origin = 0
+    bool dcp;
     bool fmi2;
     bool fmi3;
     friend bool operator==(const oms::Variable& v1, const oms::Variable& v2);

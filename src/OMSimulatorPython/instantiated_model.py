@@ -212,6 +212,8 @@ class InstantiatedModel:
         start_element = ".".join(connection['start element'] + [connection['start connector']])
         end_element = ".".join(connection['end element'] + [connection['end connector']])
 
+        print(f"Adding connection from {start_element} to {end_element}")
+
         if start_element not in self.mappedCrefs:
           raise KeyError(f"No mapping found for {start_element}")
         if end_element not in self.mappedCrefs:
@@ -249,6 +251,7 @@ class InstantiatedModel:
 
     self.apiCall.append(f'oms_instantiate("{self.modelName}")')
     status = Capi.instantiate(self.modelName)
+    print(f"Model instantiated with status: {status}")
     if status != Status.ok:
       raise RuntimeError(f"Failed to instantiate model: {status}")
     self.fmuInstantitated = True

@@ -38,11 +38,11 @@
 #include "Logging.h"
 #include "Util.h"
 #include <iostream>
+#include "dcp/xml/DcpSlaveDescriptionElements.hpp"
 
 oms::Variable::Variable(fmiHandle* fmi4c, int index_, oms_component_enu_t componentType)
-  : der_index(0), state_index(0), is_state(false), is_der(false), is_continuous_time_state(false), is_continuous_time_der(false), index(index_), fmi2(false), fmi3(false), componentType(componentType)
+  : der_index(0), state_index(0), is_state(false), is_der(false), is_continuous_time_state(false), is_continuous_time_der(false), index(index_), fmi2(false), fmi3(false), dcp(false), componentType(componentType)
 {
-
   // Check the component type
   switch (componentType)
   {
@@ -59,6 +59,12 @@ oms::Variable::Variable(fmiHandle* fmi4c, int index_, oms_component_enu_t compon
     default: // Unsupported type
       logError("Unsupported component type for Variable constructor");
   }
+}
+
+oms::Variable::Variable(SlaveDescription_t *desc, int index)
+: dcp(true), fmi2(false), fmi3(false), index(index), componentType(oms_component_dcp)
+{
+    configureDCPVariable(desc, index);
 }
 
 
@@ -203,8 +209,218 @@ void oms::Variable::configureFMI3Variable(fmiHandle* fmi4c, int index_)
   }
 }
 
+void oms::Variable::configureDCPVariable(SlaveDescription_t *desc, int index)
+{
+    this->index = index;
+
+    Variable_t *var = &desc->Variables[index];
+
+    cref = var->name;
+    if(var->description != nullptr) {
+        description = var->description->data();
+        trim(description);
+    }
+    else {
+        description = "";
+    }
+
+    dcpVr = var->valueReference;
+
+    if(var->Input != nullptr) {
+        dcpCausality = dcpCausalityInput;
+        if(var->Input->Float64 != nullptr) {
+            type = oms_signal_type_real;
+            numericType = oms_signal_numeric_type_FLOAT64;
+        }
+        else if(var->Input->Float32 != nullptr) {
+            type = oms_signal_type_real;
+            numericType = oms_signal_numeric_type_FLOAT32;
+        }
+        else if(var->Input->Int64!= nullptr) {
+            type = oms_signal_type_integer;
+            numericType = oms_signal_numeric_type_INT64;
+        }
+        else if(var->Input->Int32!= nullptr) {
+            type = oms_signal_type_integer;
+            numericType  = oms_signal_numeric_type_INT32;
+        }
+        else if(var->Input->Int16!= nullptr) {
+            type = oms_signal_type_integer;
+            numericType  = oms_signal_numeric_type_INT16;
+        }
+        else if(var->Input->Int8!= nullptr) {
+            type = oms_signal_type_integer;
+            numericType  = oms_signal_numeric_type_INT8;
+        }
+        else if(var->Input->Uint64!= nullptr) {
+            type = oms_signal_type_integer;
+            numericType  = oms_signal_numeric_type_UINT64;
+        }
+        else if(var->Input->Uint32!= nullptr) {
+            type = oms_signal_type_integer;
+            numericType  = oms_signal_numeric_type_UINT32;
+        }
+        else if(var->Input->Uint16!= nullptr) {
+            type = oms_signal_type_integer;
+            numericType  = oms_signal_numeric_type_UINT16;
+        }
+        else if(var->Input->Uint8!= nullptr) {
+            type = oms_signal_type_integer;
+            numericType  = oms_signal_numeric_type_UINT8;
+        }
+        else if(var->Input->String!= nullptr) {
+            type = oms_signal_type_string;
+        }
+        else if(var->Input->Binary!= nullptr) {
+            // TODO: Support binary variables
+        }
+    }
+    else if(var->Output != nullptr) {
+        dcpCausality = dcpCausalityOutput;
+        if(var->Output->Float64 != nullptr) {
+            type = oms_signal_type_real;
+            numericType = oms_signal_numeric_type_FLOAT64;
+        }
+        else if(var->Output->Float32 != nullptr) {
+            type = oms_signal_type_real;
+            numericType = oms_signal_numeric_type_FLOAT32;
+        }
+        else if(var->Output->Int64!= nullptr) {
+            type = oms_signal_type_integer;
+            numericType = oms_signal_numeric_type_INT64;
+        }
+        else if(var->Output->Int32!= nullptr) {
+            type = oms_signal_type_integer;
+            numericType  = oms_signal_numeric_type_INT32;
+        }
+        else if(var->Output->Int16!= nullptr) {
+            type = oms_signal_type_integer;
+            numericType  = oms_signal_numeric_type_INT16;
+        }
+        else if(var->Output->Int8!= nullptr) {
+            type = oms_signal_type_integer;
+            numericType  = oms_signal_numeric_type_INT8;
+        }
+        else if(var->Output->Uint64!= nullptr) {
+            type = oms_signal_type_integer;
+            numericType  = oms_signal_numeric_type_UINT64;
+        }
+        else if(var->Output->Uint32!= nullptr) {
+            type = oms_signal_type_integer;
+            numericType  = oms_signal_numeric_type_UINT32;
+        }
+        else if(var->Output->Uint16!= nullptr) {
+            type = oms_signal_type_integer;
+            numericType  = oms_signal_numeric_type_UINT16;
+        }
+        else if(var->Output->Uint8!= nullptr) {
+            type = oms_signal_type_integer;
+            numericType  = oms_signal_numeric_type_UINT8;
+        }
+        else if(var->Output->String!= nullptr) {
+            type = oms_signal_type_string;
+        }
+        else if(var->Output->Binary!= nullptr) {
+            // TODO: Support binary variables
+        }
+    }
+    else if(var->Parameter != nullptr) {
+        dcpCausality = dcpCausalityParameter;
+        if(var->Parameter->Float64 != nullptr) {
+            type = oms_signal_type_real;
+            numericType = oms_signal_numeric_type_FLOAT64;
+        }
+        else if(var->Parameter->Float32 != nullptr) {
+            type = oms_signal_type_real;
+            numericType = oms_signal_numeric_type_FLOAT32;
+        }
+        else if(var->Parameter->Int64!= nullptr) {
+            type = oms_signal_type_integer;
+            numericType = oms_signal_numeric_type_INT64;
+        }
+        else if(var->Parameter->Int32!= nullptr) {
+            type = oms_signal_type_integer;
+            numericType  = oms_signal_numeric_type_INT32;
+        }
+        else if(var->Parameter->Int16!= nullptr) {
+            type = oms_signal_type_integer;
+            numericType  = oms_signal_numeric_type_INT16;
+        }
+        else if(var->Parameter->Int8!= nullptr) {
+            type = oms_signal_type_integer;
+            numericType  = oms_signal_numeric_type_INT8;
+        }
+        else if(var->Parameter->Uint64!= nullptr) {
+            type = oms_signal_type_integer;
+            numericType  = oms_signal_numeric_type_UINT64;
+        }
+        else if(var->Parameter->Uint32!= nullptr) {
+            type = oms_signal_type_integer;
+            numericType  = oms_signal_numeric_type_UINT32;
+        }
+        else if(var->Parameter->Uint16!= nullptr) {
+            type = oms_signal_type_integer;
+            numericType  = oms_signal_numeric_type_UINT16;
+        }
+        else if(var->Parameter->Uint8!= nullptr) {
+            type = oms_signal_type_integer;
+            numericType  = oms_signal_numeric_type_UINT8;
+        }
+        else if(var->Parameter->String!= nullptr) {
+            type = oms_signal_type_string;
+        }
+        else if(var->Parameter->Binary!= nullptr) {
+            // TODO: Support binary variables
+        }
+    }
+    else if(var->StructuralParameter != nullptr) {
+        dcpCausality = dcpCausalityStructuralParameter;
+        if(var->StructuralParameter->Uint64!= nullptr) {
+            dcpDataType = dcpUInt64;
+        }
+        else if(var->StructuralParameter->Uint32!= nullptr) {
+            dcpDataType = dcpUInt32;
+        }
+        else if(var->StructuralParameter->Uint16!= nullptr) {
+            dcpDataType = dcpUInt16;
+        }
+        else if(var->StructuralParameter->Uint8!= nullptr) {
+            dcpDataType = dcpUInt8;
+        }
+    }
+    dcpVariability = var->variability;
+}
+
 oms::Variable::~Variable()
 {
+}
+
+bool oms::Variable::isInput() const
+{
+  if(isFmi2()) {
+    return fmi2CausalityInput == fmi2Causality_;
+  }
+  else if(isFmi3()) {
+    return fmi3CausalityInput == fmi3Causality_;
+  }
+  else if(isDcp()) {
+    return dcpCausalityInput == dcpCausality;
+  }
+  return false;
+}
+
+bool oms::Variable::isOutput() const
+{
+  if(isFmi2()) {
+    return fmi2CausalityOutput == fmi2Causality_;
+  }
+  else if(isFmi3()) {
+    return fmi3CausalityOutput == fmi3Causality_;
+  }
+  else if(isDcp()) {
+    return dcpCausalityOutput == dcpCausality;
+  }
+  return false;
 }
 
 oms_causality_enu_t oms::Variable::getCausality() const
@@ -230,7 +446,7 @@ oms_causality_enu_t oms::Variable::getCausality() const
       return oms_causality_undefined;
     }
   }
-  else
+  else if (isFmi3())
   {
     // FMI3
     switch (fmi3Causality_)
@@ -246,6 +462,24 @@ oms_causality_enu_t oms::Variable::getCausality() const
 
     case fmi3CausalityCalculatedParameter:
       return oms_causality_calculatedParameter;
+
+    default:
+      return oms_causality_undefined;
+    }
+  }
+  else // DCP
+  {
+    // DCP
+    switch (dcpCausality)
+    {
+    case dcpCausalityInput:
+      return oms_causality_input;
+
+    case dcpCausalityOutput:
+      return oms_causality_output;
+
+    case dcpCausalityParameter:
+      return oms_causality_parameter;
 
     default:
       return oms_causality_undefined;

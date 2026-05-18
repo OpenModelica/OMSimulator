@@ -38,6 +38,7 @@
 #include "Component.h"
 #include "ComponentFMUCS.h"
 #include "ComponentFMU3CS.h"
+#include "ComponentDCP.h"
 #include "ComponentFMUME.h"
 #include "ComponentFMU3ME.h"
 #include "ComponentTable.h"
@@ -62,6 +63,7 @@ oms::System::System(const oms::ComRef& cref, oms_system_enu_t type, oms::Model* 
   initialStepSize = Flags::InitialStepSize();
 
   connections.push_back(NULL);
+  dcpConnections.push_back(NULL);
 
   connectors.push_back(NULL);
   element.setConnectors(&connectors[0]);
@@ -318,6 +320,8 @@ oms_status_enu_t oms::System::addSubModel(const oms::ComRef& cref, const std::st
 
     if (extension == ".fmu" && oms_system_wc == type && fmiVersion == "2.0")
       component = ComponentFMUCS::NewComponent(cref, this, path_.string());
+    else if (extension == ".dcp")
+      component = ComponentDCP::NewComponent(cref, this, path_.string());
     else if (extension == ".fmu" && oms_system_wc == type && fmiVersion == "3.0")
       component = ComponentFMU3CS::NewComponent(cref, this, path_.string());
     else if (extension == ".fmu" && oms_system_sc == type && fmiVersion == "2.0")
@@ -327,7 +331,7 @@ oms_status_enu_t oms::System::addSubModel(const oms::ComRef& cref, const std::st
     else if (extension == ".csv" || extension == ".mat")
       component = ComponentTable::NewComponent(cref, this, path_.string());
     else
-      return logError("supported sub-model formats are \".fmu\", \".csv\", \".mat\"");
+      return logError("supported sub-model formats are \".fmu\", \".dcp\", \".csv\", \".mat\"");
 
     if (!component)
       return oms_status_error;
@@ -1229,9 +1233,19 @@ oms_status_enu_t oms::System::addConnection(const oms::ComRef& crefA, const oms:
   {
     return logError("Unit mismatch in connection: " + std::string(crefA) + " -> " + std::string(crefB));
   }
-  // connection are checked in the python side, directly add the connection
-  connections.back() = new oms::Connection(crefA, crefB, suppressUnitConversion);
-  connections.push_back(NULL);
+
+  auto componentB = getComponent(headB);
+  if ((componentA && oms_component_dcp == componentA->getType()) || (componentB && oms_component_dcp == componentB->getType())) 
+  {
+    //DCP connections should not be used by OMSimulator solver for data exchange, only for setting up the DCP simulation.
+    dcpConnections.back() = new oms::Connection(crefA, crefB, suppressUnitConversion);   
+    dcpConnections.push_back(NULL);
+  } 
+  else {
+    // connection are checked in the python side, directly add the connection
+    connections.back() = new oms::Connection(crefA, crefB, suppressUnitConversion);
+    connections.push_back(NULL);
+  }
 
   return oms_status_ok;
 }
