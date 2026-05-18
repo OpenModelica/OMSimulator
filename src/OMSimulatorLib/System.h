@@ -131,6 +131,7 @@ namespace oms
     std::map<ComRef, System*>& getSubSystems() {return subsystems;}
     std::map<ComRef, Component*>& getComponents() {return components;}
     std::vector<Connection*>& getConnections() {return connections;}
+    std::vector<Connection*>& getDcpConnections() {return dcpConnections;}
     oms_status_enu_t updateDependencyGraphs();
     const DirectedGraph& getInitialUnknownsGraph() {return initializationGraph;}
     const DirectedGraph& getOutputsGraph() {return eventGraph;}
@@ -244,6 +245,7 @@ namespace oms
     std::vector<oms_element_t*> subelements;  ///< last element is always NULL; don't free it
     std::vector<BusConnector*> busconnectors;
     std::vector<Connection*> connections;  ///< last element is always NULL
+    std::vector<Connection*> dcpConnections; ///< dummy connections to be used for setting up a DCP simulation
 
     bool loopsNeedUpdate = true;
     std::vector<AlgLoop> algLoops;  ///< vector of algebraic loop objects
