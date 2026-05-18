@@ -321,8 +321,6 @@ oms_status_enu_t oms::ComponentDCP::instantiate()
 
 oms_status_enu_t oms::ComponentDCP::registerSignalsForResultFile(ResultWriter &resultFile)
 {
-    logInfo("Enter registerSignalsForResultFile for " + std::string(getFullCref())); //DCP debug
-
     // Not sure if this is needed
     return oms_status_ok;
 }
