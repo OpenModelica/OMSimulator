@@ -937,8 +937,6 @@ oms_status_enu_t oms_instantiate(const char* cref_)
 
 oms_status_enu_t oms_initialize(const char* cref_)
 {
-  logInfo("Enter oms_initialize(\"" + std::string(cref_) + "\")");
-
   oms::ComRef cref(cref_);
 
   oms::Model* model = oms::Scope::GetInstance().getModel(cref);

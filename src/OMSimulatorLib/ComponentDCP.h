@@ -100,25 +100,6 @@ private:
 
     double time;
 
-    void dcp_initialize();
-    void dcp_configuration();
-    void dcp_configure();
-    void dcp_run(DcpState currentState);
-    void dcp_doStep();
-    void dcp_stop();
-    void dcp_deregister();
-    void dcp_sendOutputs(DcpState currentState, uint8_t sender);
-    void dcp_receiveAck(uint8_t sender, uint16_t);
-    void dcp_receiveNAck(uint8_t sender, uint16_t pduSeqId, DcpError errorCode);
-    void dcp_dataReceived(uint16_t dataId, size_t length, uint8_t payload[]);
-    void dcp_receiveStateChangedNotification(uint8_t sender, DcpState state);
-
-    UdpDriver *driver;
-    DcpManagerMaster *manager;
-    uint8_t maxInitRuns = 0;
-    uint8_t intializationRuns = 1;
-    std::map<dcpId_t, uint64_t> receivedAcks;
-
     oms::ComRef getValidCref(ComRef cref);
 };
 }

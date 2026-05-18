@@ -63,6 +63,7 @@ namespace oms
     bool isRootOf(ComRef child) const;
 
     ComRef front() const; ///< returns the first part of the ComRef (including suffix if its the only part)
+    ComRef back() const; ///< returns the last part of the ComRef (including suffix if its the only part)
     ComRef pop_front(); ///< returns the first part of the ComRef and removed it from the current object
 
     std::string suffix() const; ///< returns the suffix as string

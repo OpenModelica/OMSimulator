@@ -181,6 +181,19 @@ oms::ComRef oms::ComRef::front() const
   return *this;
 }
 
+oms::ComRef oms::ComRef::back() const
+{
+  for (int i=size()-1; i>=0; --i)
+  {
+    if (cref[i] == '.')
+      return oms::ComRef(cref+i+1);
+    else if (cref[i] == ':')
+      break;
+  }
+
+  return *this;
+}
+
 oms::ComRef oms::ComRef::pop_front()
 {
   for (int i=0; cref[i]; ++i)

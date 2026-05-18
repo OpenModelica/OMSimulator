@@ -55,165 +55,6 @@ oms::ComponentDCP::ComponentDCP(const ComRef& cref, System* parentSystem, const 
 {
 }
 
-void oms::ComponentDCP::dcp_initialize()
-{
-    manager->STC_initialize(1, DcpState::CONFIGURED);
-    intializationRuns++;
-}
-
-void oms::ComponentDCP::dcp_configuration()
-{
-    std::cout << "Configure Slaves" << std::endl;
-    receivedAcks[1] = 0;
-
-    manager->CFG_scope(1, 1, DcpScope::Initialization_Run_NonRealTime);
-
-    uint8_t dataId = 0;
-    for(const auto &var : this->allVariables) {
-        if(var.isOutput()) {
-            manager->CFG_scope(1, dataId, DcpScope::Initialization_Run_NonRealTime);
-            manager->CFG_output(1, dataId, 0, var.getValueReferenceDCP());
-            manager->CFG_steps(1, dataId, 1);
-            dataId++;
-        }
-        else if(var.isInput()) {
-            DcpDataType dataType = DcpDataType::uint8;
-            if(var.getNumericType() == oms_signal_numeric_type_FLOAT64) {
-                dataType = DcpDataType::float64;
-            }
-            else if(var.getNumericType() == oms_signal_numeric_type_FLOAT64) {
-                dataType = DcpDataType::float64;
-            }
-            else if(var.getNumericType() == oms_signal_numeric_type_FLOAT32) {
-                dataType = DcpDataType::float32;
-            }
-            else if(var.getNumericType() == oms_signal_numeric_type_INT64) {
-                dataType = DcpDataType::int64;
-            }
-            else if(var.getNumericType() == oms_signal_numeric_type_INT32) {
-                dataType = DcpDataType::int32;
-            }
-            else if(var.getNumericType() == oms_signal_numeric_type_INT16) {
-                dataType = DcpDataType::int16;
-            }
-            else if(var.getNumericType() == oms_signal_numeric_type_INT8) {
-                dataType = DcpDataType::int8;
-            }
-            else if(var.getNumericType() == oms_signal_numeric_type_UINT64) {
-                dataType = DcpDataType::uint64;
-            }
-            else if(var.getNumericType() == oms_signal_numeric_type_UINT32) {
-                dataType = DcpDataType::uint32;
-            }
-            else if(var.getNumericType() == oms_signal_numeric_type_UINT16) {
-                dataType = DcpDataType::uint16;
-            }
-            else if(var.getNumericType() == oms_signal_numeric_type_UINT8) {
-                dataType = DcpDataType::uint8;
-            }
-
-            manager->CFG_scope(1, dataId, DcpScope::Initialization_Run_NonRealTime);
-            manager->CFG_input(1,dataId, 0, var.getValueReferenceDCP(), dataType);
-            manager->CFG_steps(1, dataId, 1);
-            dataId++;
-        }
-        // TODO: Handle parameters somehow
-
-    }
-
-    manager->CFG_steps(1, 1, 1);
-    manager->CFG_time_res(1, desc->TimeRes.resolutions.front().numerator,
-                          desc->TimeRes.resolutions.front().denominator);
-    manager->CFG_source_network_information_UDP(1, 1, asio::ip::address_v4::from_string(
-                                                          *desc->TransportProtocols.UDP_IPv4->Control->host).to_ulong(), *desc->TransportProtocols.UDP_IPv4->Control->port);
-    manager->CFG_target_network_information_UDP(1, 1,  asio::ip::address_v4::from_string(
-                                                          *desc->TransportProtocols.UDP_IPv4->Control->host).to_ulong(), *desc->TransportProtocols.UDP_IPv4->Control->port);
-}
-
-void oms::ComponentDCP::dcp_configure()
-{
-
-}
-
-void oms::ComponentDCP::dcp_run(DcpState currentState)
-{
-
-}
-
-void oms::ComponentDCP::dcp_doStep()
-{
-
-}
-
-void oms::ComponentDCP::dcp_stop()
-{
-
-}
-
-void oms::ComponentDCP::dcp_deregister()
-{
-
-}
-
-void oms::ComponentDCP::dcp_sendOutputs(DcpState currentState, uint8_t sender)
-{
-
-}
-
-void oms::ComponentDCP::dcp_receiveAck(uint8_t sender, uint16_t)
-{
-
-}
-
-void oms::ComponentDCP::dcp_receiveNAck(uint8_t sender, uint16_t pduSeqId, DcpError errorCode)
-{
-
-}
-
-void oms::ComponentDCP::dcp_dataReceived(uint16_t dataId, size_t length, uint8_t payload[])
-{
-
-}
-
-void oms::ComponentDCP::dcp_receiveStateChangedNotification(uint8_t sender, DcpState state)
-{
-    std::chrono::milliseconds dura(250);
-    //std::this_thread::sleep_for(dura);
-    switch (state) {
-    case DcpState::CONFIGURATION:
-        dcp_configuration();
-        break;
-    case DcpState::CONFIGURED:
-        if (intializationRuns < maxInitRuns) {
-        dcp_initialize();
-
-        } else {
-            dcp_run(DcpState::CONFIGURED);
-        }
-        break;
-    case DcpState::SYNCHRONIZED:
-        dcp_run(DcpState::SYNCHRONIZED);
-        break;
-    case DcpState::PREPARED:
-        dcp_configure();
-        break;
-
-    case DcpState::INITIALIZED:
-        dcp_sendOutputs(DcpState::INITIALIZED, sender);
-        break;
-
-    case DcpState::RUNNING:
-        dcp_stop();
-        break;
-    case DcpState::STOPPED:
-        dcp_deregister();
-        break;
-    case DcpState::ALIVE:
-        //Do something?
-        break;
-    }
-}
-
 oms::ComponentDCP::~ComponentDCP()
 {
 }
@@ -469,35 +310,12 @@ oms_status_enu_t oms::ComponentDCP::exportToSSD(pugi::xml_node &node, Snapshot &
 
 oms_status_enu_t oms::ComponentDCP::initialize()
 {
-    logInfo("Initialize DCP component " + std::string(getCref())); //DCP debug
-
     //Nothing to be done (I think?)
     return oms_status_ok;
 }
 
 oms_status_enu_t oms::ComponentDCP::instantiate()
 {
-    //TODO (dcp): Host and port should not be hard-coded
-    std::string host = "127.0.0.1";
-    int port = 8180;
-
-    OstreamLog stdLog(std::cout);
-
-    driver = new UdpDriver(host, port_t(port));
-    manager = new DcpManagerMaster(driver->getDcpDriver());
-    manager->setAckReceivedListener<SYNC>(
-        std::bind(&oms::ComponentDCP::dcp_receiveAck, this, std::placeholders::_1, std::placeholders::_2));
-    manager->setNAckReceivedListener<SYNC>(
-        std::bind(&oms::ComponentDCP::dcp_receiveNAck, this, std::placeholders::_1, std::placeholders::_2,
-                  std::placeholders::_3));
-    manager->setStateChangedNotificationReceivedListener<SYNC>(
-        std::bind(&oms::ComponentDCP::dcp_receiveStateChangedNotification, this, std::placeholders::_1,
-                  std::placeholders::_2));
-    manager->setDataReceivedListener<SYNC>(
-        std::bind(&oms::ComponentDCP::dcp_dataReceived, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
-    manager->addLogListener(std::bind(&OstreamLog::logOstream, stdLog, std::placeholders::_1));
-    manager->setGenerateLogString(true);
-
     return oms_status_ok;
 }
 
@@ -517,13 +335,11 @@ oms_status_enu_t oms::ComponentDCP::removeSignalsFromResults(const char *regex)
 
 oms_status_enu_t oms::ComponentDCP::reset()
 {
-    manager->stop();
     return oms_status_ok;
 }
 
 oms_status_enu_t oms::ComponentDCP::terminate()
 {
-    manager->stop();
     return oms_status_ok;
 }
 

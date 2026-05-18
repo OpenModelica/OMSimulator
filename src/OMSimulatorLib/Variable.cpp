@@ -37,9 +37,8 @@
 #include "dcp/xml/DcpSlaveDescriptionElements.hpp"
 
 oms::Variable::Variable(fmiHandle* fmi4c, int index_, oms_component_enu_t componentType)
-  : der_index(0), state_index(0), is_state(false), is_der(false), is_continuous_time_state(false), is_continuous_time_der(false), index(index_), fmi2(false), fmi3(false), componentType(componentType)
+  : der_index(0), state_index(0), is_state(false), is_der(false), is_continuous_time_state(false), is_continuous_time_der(false), index(index_), fmi2(false), fmi3(false), dcp(false), componentType(componentType)
 {
-
   // Check the component type
   switch (componentType)
   {
@@ -59,6 +58,7 @@ oms::Variable::Variable(fmiHandle* fmi4c, int index_, oms_component_enu_t compon
 }
 
 oms::Variable::Variable(SlaveDescription_t *desc, int index)
+: dcp(true), fmi2(false), fmi3(false), index(index), componentType(oms_component_dcp)
 {
     configureDCPVariable(desc, index);
 }
@@ -391,6 +391,34 @@ oms::Variable::~Variable()
 {
 }
 
+bool oms::Variable::isInput() const
+{
+  if(isFmi2()) {
+    return fmi2CausalityInput == fmi2Causality_;
+  }
+  else if(isFmi3()) {
+    return fmi3CausalityInput == fmi3Causality_;
+  }
+  else if(isDcp()) {
+    return dcpCausalityInput == dcpCausality;
+  }
+  return false;
+}
+
+bool oms::Variable::isOutput() const
+{
+  if(isFmi2()) {
+    return fmi2CausalityOutput == fmi2Causality_;
+  }
+  else if(isFmi3()) {
+    return fmi3CausalityOutput == fmi3Causality_;
+  }
+  else if(isDcp()) {
+    return dcpCausalityOutput == dcpCausality;
+  }
+  return false;
+}
+
 oms_causality_enu_t oms::Variable::getCausality() const
 {
   if (isFmi2())
@@ -414,7 +442,7 @@ oms_causality_enu_t oms::Variable::getCausality() const
       return oms_causality_undefined;
     }
   }
-  else
+  else if (isFmi3())
   {
     // FMI3
     switch (fmi3Causality_)
@@ -430,6 +458,24 @@ oms_causality_enu_t oms::Variable::getCausality() const
 
     case fmi3CausalityCalculatedParameter:
       return oms_causality_calculatedParameter;
+
+    default:
+      return oms_causality_undefined;
+    }
+  }
+  else // DCP
+  {
+    // DCP
+    switch (dcpCausality)
+    {
+    case dcpCausalityInput:
+      return oms_causality_input;
+
+    case dcpCausalityOutput:
+      return oms_causality_output;
+
+    case dcpCausalityParameter:
+      return oms_causality_parameter;
 
     default:
       return oms_causality_undefined;

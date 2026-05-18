@@ -65,12 +65,13 @@ namespace oms
 
     bool isFmi2() const {return fmi2;}
     bool isFmi3() const {return fmi3;}
+    bool isDcp() const {return dcp;}
 
     // causality attribute
     bool isParameter() const { return isFmi2() ? (fmi2CausalityParameter == fmi2Causality_) : (fmi3CausalityParameter == fmi3Causality_);}
     bool isCalculatedParameter() const { return isFmi2() ? (fmi2CausalityCalculatedParameter == fmi2Causality_) : (fmi3CausalityCalculatedParameter ==fmi3Causality_);}
-    bool isInput() const { return isFmi2() ? (fmi2CausalityInput == fmi2Causality_) : (fmi3CausalityInput == fmi3Causality_);}
-    bool isOutput() const { return isFmi2() ? (fmi2CausalityOutput == fmi2Causality_) : (fmi3CausalityOutput == fmi3Causality_);}
+    bool isInput() const;
+    bool isOutput() const; 
     bool isLocal() const { return isFmi2() ? (fmi2CausalityLocal == fmi2Causality_) : (fmi3CausalityLocal == fmi3Causality_);}
     bool isIndependent() const { return isFmi2() ? (fmi2CausalityIndependent == fmi2Causality_) : (fmi3CausalityIndependent == fmi3Causality_);}
 
@@ -149,6 +150,7 @@ namespace oms
     unsigned int index; ///< index origin = 0
     size_t state_index; ///< index origin = 0
     size_t der_index; ///< index origin = 0
+    bool dcp;
     bool fmi2;
     bool fmi3;
     friend bool operator==(const oms::Variable& v1, const oms::Variable& v2);

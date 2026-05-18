@@ -59,6 +59,7 @@ oms::System::System(const oms::ComRef& cref, oms_system_enu_t type, oms::Model* 
   initialStepSize = Flags::InitialStepSize();
 
   connections.push_back(NULL);
+  dcpConnections.push_back(NULL);
 
   connectors.push_back(NULL);
   element.setConnectors(&connectors[0]);
@@ -1228,9 +1229,19 @@ oms_status_enu_t oms::System::addConnection(const oms::ComRef& crefA, const oms:
   {
     return logError("Unit mismatch in connection: " + std::string(crefA) + " -> " + std::string(crefB));
   }
-  // connection are checked in the python side, directly add the connection
-  connections.back() = new oms::Connection(crefA, crefB, suppressUnitConversion);
-  connections.push_back(NULL);
+
+  auto componentB = getComponent(headB);
+  if ((componentA && oms_component_dcp == componentA->getType()) || (componentB && oms_component_dcp == componentB->getType())) 
+  {
+    //DCP connections should not be used by OMSimulator solver for data exchange, only for setting up the DCP simulation.
+    dcpConnections.back() = new oms::Connection(crefA, crefB, suppressUnitConversion);   
+    dcpConnections.push_back(NULL);
+  } 
+  else {
+    // connection are checked in the python side, directly add the connection
+    connections.back() = new oms::Connection(crefA, crefB, suppressUnitConversion);
+    connections.push_back(NULL);
+  }
 
   return oms_status_ok;
 }
