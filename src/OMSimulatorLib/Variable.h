@@ -39,8 +39,8 @@
 #include "ComRef.h"
 #include "Connector.h"
 #include "OMSimulator/Types.h"
-#include "dcp/model/DcpTypes.hpp"
-#include "dcp/xml/DcpSlaveDescriptionElements.hpp"
+#include <dcp/model/DcpTypes.hpp>
+#include <dcp/xml/DcpSlaveDescriptionElements.hpp>
 
 #include <fmi4c.h>
 #include <string>
