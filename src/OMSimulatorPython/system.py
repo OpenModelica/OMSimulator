@@ -44,6 +44,7 @@ from OMSimulator.elementgeometry import ElementGeometry
 from OMSimulator.fmu import FMU
 from OMSimulator.ssm import SSM
 from OMSimulator.values import Values
+from OMSimulator.variable import Causality, SignalType
 
 from OMSimulator import Capi, CRef, namespace, utils
 
@@ -156,6 +157,29 @@ class System:
     except ET.ParseError as e:
       logger.error(f"Error parsing System: {e}")
       raise
+
+  def addConnectorHelper(self, cref: CRef, connector: Connector):
+    if cref is None:
+      self.addConnector(connector)
+      return
+
+    first = cref.first()
+
+    match self.elements.get(first):
+      case System():
+        self.elements[first].addConnectorHelper(cref.pop_first(), connector)
+
+  def getConnector(self, cref: CRef):
+    first = cref.first()
+    ## Check if the cref is a top level system connector
+    ## or allow non existing connectors to support parameter mapping throgh SSM inline or ssm file by checking if cref
+    connector = self._connectorExists(first)
+    if connector is not None:
+      return connector
+
+    match self.elements.get(first):
+      case System():
+        return self.elements[first].getConnector(cref.pop_first())
 
   def addConnector(self, connector):
     if connector in self.connectors:
@@ -597,6 +621,19 @@ class System:
         self.elements[first].getValue(cref.pop_first())
       case Component():
         self.elements[first].getValue(cref.last())
+      case _:
+        raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component or a Connector")
+
+  def getElement(self, cref: CRef):
+    print(f"Getting element for cref anand: {cref} in system '{self.name}'", flush=True)
+    first = cref.first()
+    print(f"Getting element for cref roger: {first} in system '{self.name}'", flush=True)
+
+    match self.elements.get(first):
+      case System():
+        return self.elements[first].getElement(cref.pop_first())
+      case Component():
+        return self.elements[first]
       case _:
         raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component or a Connector")
 

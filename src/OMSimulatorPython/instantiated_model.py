@@ -577,6 +577,30 @@ class InstantiatedModel:
     if status != Status.ok:
       raise RuntimeError(f"Failed to set start time: {status}")
 
+  def getStartTime(self) -> float:
+    startTime, status = Capi.getStartTime(self.modelName)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to get start time: {status}")
+    return startTime
+
+  def getStopTime(self) -> float:
+    stopTime, status = Capi.getStopTime(self.modelName)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to get stop time: {status}")
+    return stopTime
+
+  def getTime(self) -> float:
+    time, status = Capi.getTime(self.modelName)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to get time: {status}")
+    return time
+
+
+  def doStep(self):
+    status = Capi.doStep(self.modelName)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to do step: {status}")
+
   def setStopTime(self, stopTime: float):
     if self.fmuInstantitated is False:
       raise RuntimeError("FMU must be instantiated before setting stop time")

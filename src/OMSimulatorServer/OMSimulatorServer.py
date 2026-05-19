@@ -41,11 +41,13 @@ import sys
 import threading
 import time
 
-import OMSimulator as oms
+sys.path.insert(0, "C:/OPENMODELICAGIT/OpenModelica/OMSimulator/install/lib")
+
+from OMSimulator import SSP, CRef, Capi
 import zmq
 
 __author__ = 'Lennart Ochel <lennart.ochel@ri.se>'
-__version__ = oms.__version__
+__version__ = Capi.getVersion()
 __copyright__ = '''\
 Copyright (c) 2018-CurrentYear, Open Source Modelica Consortium (OSMC),
 c/o Linköpings universitet, Department of Computer and Information Science,
@@ -68,7 +70,7 @@ class Server:
 
     self._alive = True
     self._context = zmq.Context()
-    self._model = oms.importFile(model)
+    self._model = SSP(model)
     self._mutex = threading.Lock()
     self._pause = interactive
     self._socket_rep = None
@@ -79,9 +81,11 @@ class Server:
     if result_file:
       self._model.resultFile = result_file
 
+    #self.print(f'Model loaded: {self._model.list()}')
     # extract all available signals
-    self._signals = self._model.getAllSignals()
-
+    #self._signals = self._model.getAllSignals()
+    #self._signals = [CRef('test', 'step', 'height'), CRef('test', 'step', 'offset'), CRef('test', 'step', 'y')]
+    self._signals = []
     if interactive and not endpoint_rep:
       self.print('flag --endpoint-rep is mandatory in interactive simulation mode')
       sys.exit(1)
@@ -160,11 +164,21 @@ class Server:
   def run(self):
     self.pub_msg('status', {'progress': 0})
 
-    time_ = self._model.time
-    startTime = self._model.startTime
-    stopTime = self._model.stopTime
-    self._model.instantiate()
-    self._model.initialize()
+    inst_model = self._model.instantiate()
+    inst_model.setResultFile(self._model.resultFile)
+
+    time_ = float(inst_model.getTime())
+    startTime = float(self._model.activeVariant.startTime)
+    stopTime = float(self._model.activeVariant.stopTime)
+
+    inst_model.setStartTime(startTime)
+    inst_model.setStopTime(stopTime)
+
+    inst_model.initialize()
+
+    # for signal in self._signals:
+    #   print("enable signal", signal, flush=True)
+    #   print(f"Value for signal {signal}: {inst_model.getValue(signal)}")
 
     while True:
       if self._pause:
@@ -179,22 +193,24 @@ class Server:
         if self._activeSignals:
           results = {'time': time_}
           for signal in self._activeSignals:
-            type_ = self._signals[signal]['type']
-            if type_ == 'Real':
-              results[signal] = oms.getReal(signal)
-            elif type_ == 'Integer':
-              results[signal] = oms.getInteger(signal)
-            elif type_ == 'Boolean':
-              results[signal] = oms.getBoolean(signal)
+            # type_ = self._signals[signal]['type']
+            # if type_ == 'Real':
+            #   results[signal] = oms.getReal(signal)
+            # elif type_ == 'Integer':
+            #   results[signal] = oms.getInteger(signal)
+            # elif type_ == 'Boolean':
+            #   results[signal] = oms.getBoolean(signal)
+            results[signal] = inst_model.getValue(signal)
           self.pub_msg('results', results)
         with self._mutex:
-          self._model.doStep()
-          time_ = self._model.time
+          inst_model.doStep()
+          time_ = float(inst_model.getTime())
+          #print(f"time: {time_} : {stopTime}", flush=True)
           if time_ >= stopTime and self._alive:
             break
 
-    self._model.terminate()
-    self._model.delete()
+    inst_model.terminate()
+    inst_model.delete()
     self.pub_msg('status', {'progress': 100})
 
 def _main():
@@ -210,11 +226,11 @@ def _main():
   parser.add_argument('--temp', default=None, help='defines the temp directory')
   args = parser.parse_args()
 
-  oms.setCommandLineOption(' '.join(list(map((lambda x: x[1:-1]), args.option))))
-  oms.setLoggingLevel(args.logLevel)
+  Capi.setCommandLineOption(' '.join(list(map((lambda x: x[1:-1]), args.option))))
+  Capi.setLoggingLevel(args.logLevel)
 
   if args.temp:
-    oms.setTempDirectory(args.temp)
+    Capi.setTempDirectory(args.temp)
 
   server = Server(args.model, args.result_file, args.interactive, args.endpoint_pub, args.endpoint_rep)
   # run simulation thread

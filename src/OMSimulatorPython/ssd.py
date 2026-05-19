@@ -36,6 +36,7 @@ from pathlib import Path
 from lxml import etree as ET
 from OMSimulator import capi
 from OMSimulator.cref import CRef
+from OMSimulator.connector import Connector
 from OMSimulator.fmu import FMU
 from OMSimulator.settings import suppress_path_to_str
 from OMSimulator.system import System
@@ -210,6 +211,10 @@ class SSD:
     subcref = self._validateCref(cref)
     self.system.getValue(subcref)
 
+  def getElement(self, cref: CRef):
+    subcref = self._validateCref(cref)
+    return self.system.getElement(subcref)
+
   def mapParameter(self, cref: CRef, source: str, target: str):
     '''Maps a parameter from source to target in the system.'''
     subcref = self._validateCref(cref)
@@ -220,6 +225,14 @@ class SSD:
       raise ValueError("Variant doesn't contain a system")
 
     self.system.addSystem(cref.pop_first(first=self._name))
+
+  def addConnector(self, cref: CRef, connector: Connector):
+    subcref = self._validateCref(cref)
+    self.system.addConnectorHelper(subcref, connector)
+
+  def getConnector(self, cref: CRef):
+    subcref = self._validateCref(cref)
+    return self.system.getConnector(subcref)
 
   def instantiate(self, resources: dict | None = None, tempdir: str | None = None ) -> InstantiatedModel:
     if self.system is None:

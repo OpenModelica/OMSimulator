@@ -43,6 +43,7 @@ from OMSimulator.settings import suppress_path_to_str
 from OMSimulator.ssv import SSV
 from OMSimulator.ssm import SSM
 from OMSimulator.componenttable import ResultReader
+from OMSimulator.connector import Connector
 
 from OMSimulator import SSD, CRef, namespace
 from lxml import etree as ET
@@ -326,6 +327,11 @@ class SSP:
 
     self.activeVariant.getValue(cref)
 
+  def getElement(self, cref: CRef):
+    if self.activeVariant is None:
+      raise ValueError("No active variant set in the SSP.")
+    return self.activeVariant.getElement(cref)
+
   def mapParameter(self, cref: CRef, source: str, target: str):
     """Maps a parameter from source to target in the active variant."""
     if self.activeVariant is None:
@@ -345,6 +351,18 @@ class SSP:
       raise ValueError("No active variant set in the SSP.")
 
     self.activeVariant.addSystem(cref)
+
+  def addConnector(self, cref: CRef, connector: Connector):
+    if self.activeVariant is None:
+      raise ValueError("No active variant set in the SSP.")
+
+    self.activeVariant.addConnector(cref, connector)
+
+  def getConnector(self, cref: CRef):
+    if self.activeVariant is None:
+      raise ValueError("No active variant set in the SSP.")
+
+    return self.activeVariant.getConnector(cref)
 
   def add(self, element):
     '''Adds an SSD or a list/iterable of SSDs to the SSP.'''
@@ -394,7 +412,7 @@ class SSP:
   def export(self, filename: str):
     '''Exports the SSP to file'''
     logger.debug(f"Exporting SSP to {filename} using temp directory: {self.temp_dir}")
-
+    print(f"Exporting SSP to {filename} using temp directory: {self.temp_dir}", flush=True)
     exported_count = 0
     for ssd in self.variants.values():
       if ssd.dirty:

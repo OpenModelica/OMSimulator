@@ -103,6 +103,8 @@ class capi:
     self.obj.oms_compareSimulationResults.restype = ctypes.c_int
     self.obj.oms_delete.argtypes = [ctypes.c_char_p]
     self.obj.oms_delete.restype = ctypes.c_int
+    self.obj.oms_doStep.argtypes = [ctypes.c_char_p]
+    self.obj.oms_doStep.restype = ctypes.c_int
     self.obj.oms_getVersion.argtypes = None
     self.obj.oms_getVersion.restype = ctypes.c_char_p
     self.obj.oms_getBoolean.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_bool)]
@@ -111,6 +113,12 @@ class capi:
     self.obj.oms_getInteger.restype = ctypes.c_int
     self.obj.oms_getReal.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_double)]
     self.obj.oms_getReal.restype = ctypes.c_int
+    self.obj.oms_getTime.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_double)]
+    self.obj.oms_getTime.restype = ctypes.c_int
+    self.obj.oms_getStartTime.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_double)]
+    self.obj.oms_getStartTime.restype = ctypes.c_int
+    self.obj.oms_getStopTime.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_double)]
+    self.obj.oms_getStopTime.restype = ctypes.c_int
     self.obj.oms_getString.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_char_p)]
     self.obj.oms_getString.restype = ctypes.c_int
     self.obj.oms_getVariableType.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_int)]
@@ -207,6 +215,10 @@ class capi:
 
   def delete(self, cref):
     status = self.obj.oms_delete(cref.encode())
+    return Status(status)
+
+  def doStep(self, cref):
+    status = self.obj.oms_doStep(cref.encode())
     return Status(status)
 
   def getVersion(self):
@@ -359,6 +371,21 @@ class capi:
     '''Set the stop time for the simulation.'''
     status = self.obj.oms_setStopTime(cref.encode(), stopTime)
     return Status(status)
+
+  def getStartTime(self, cref):
+    startTime = ctypes.c_double()
+    status = self.obj.oms_getStartTime(cref.encode(), ctypes.byref(startTime))
+    return [startTime.value, Status(status)]
+
+  def getStopTime(self, cref):
+    stopTime = ctypes.c_double()
+    status = self.obj.oms_getStopTime(cref.encode(), ctypes.byref(stopTime))
+    return [stopTime.value, status]
+
+  def getTime(self, cref):
+    time = ctypes.c_double()
+    status = self.obj.oms_getTime(cref.encode(), ctypes.byref(time))
+    return [time.value, Status(status)]
 
   def setTolerance(self, cref, relativeTolerance) -> Status:
     '''Set the relative and absolute tolerance for the simulation.'''
