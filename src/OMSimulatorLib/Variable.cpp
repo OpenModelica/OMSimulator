@@ -38,7 +38,7 @@
 #include "Logging.h"
 #include "Util.h"
 #include <iostream>
-#include "dcp/xml/DcpSlaveDescriptionElements.hpp"
+#include <dcp/xml/DcpSlaveDescriptionElements.hpp>
 
 oms::Variable::Variable(fmiHandle* fmi4c, int index_, oms_component_enu_t componentType)
   : der_index(0), state_index(0), is_state(false), is_der(false), is_continuous_time_state(false), is_continuous_time_der(false), index(index_), fmi2(false), fmi3(false), dcp(false), componentType(componentType)

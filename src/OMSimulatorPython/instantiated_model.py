@@ -251,7 +251,6 @@ class InstantiatedModel:
 
     self.apiCall.append(f'oms_instantiate("{self.modelName}")')
     status = Capi.instantiate(self.modelName)
-    print(f"Model instantiated with status: {status}")
     if status != Status.ok:
       raise RuntimeError(f"Failed to instantiate model: {status}")
     self.fmuInstantitated = True

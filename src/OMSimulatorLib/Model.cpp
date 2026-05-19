@@ -52,7 +52,6 @@
 #include <fstream>  //Only for debug output, can remove later
 
 //#include "dcp/xml/DcpSlaveDescriptionWriter.hpp"
-#include <dcp/zip/DcpSlaveWriter.hpp>
 #include <dcp/xml/DcpSlaveDescriptionElements.hpp>
 #include <dcp/model/constant/DcpLogLevel.hpp>
 
@@ -1304,96 +1303,11 @@ oms_status_enu_t oms::Model::simulate()
   }
 
   if(dcpComponentDetected) {
-
-    //Create server description (DCP file) for the system
-    std::string host = "127.0.0.1"; // TODO: Port should not be hard coded!
-    port_t port = 8002; // TODO: Port should not be hard coded!
-    double timeStep = 0.001; // TODO: Time step should not be hard coded!
-    std::string targetFile = "OMSimulatorSystem_slave_description.dcp"; 
-
-    SlaveDescription_t slaveDescription = make_SlaveDescription(1, 0, "OMSimulatorSystem", generateUuid().c_str());
-    slaveDescription.OpMode.HardRealTime = make_HardRealTime_ptr();
-    slaveDescription.OpMode.SoftRealTime = make_SoftRealTime_ptr();
-    slaveDescription.OpMode.NonRealTime = make_NonRealTime_ptr();
-    Resolution_t resolution = make_Resolution();
-    resolution.numerator = 1;
-    resolution.denominator = denominator_t(1.0/timeStep); // TODO: Time step should not be hard coded!
-    resolution.fixed = false;
-
-    slaveDescription.TimeRes.resolutions.push_back(resolution);
-    slaveDescription.TransportProtocols.UDP_IPv4 = make_UDP_ptr();
-    slaveDescription.TransportProtocols.UDP_IPv4->Control = make_Control_ptr(host, port);
-    slaveDescription.TransportProtocols.UDP_IPv4->DAT_input_output = make_DAT_ptr();
-    slaveDescription.TransportProtocols.UDP_IPv4->DAT_input_output->availablePortRanges.push_back(make_AvailablePortRange(2048, 65535));
-    slaveDescription.TransportProtocols.UDP_IPv4->DAT_parameter = make_DAT_ptr();
-    slaveDescription.TransportProtocols.UDP_IPv4->DAT_parameter->availablePortRanges.push_back(make_AvailablePortRange(2048, 65535));
-    slaveDescription.CapabilityFlags.canAcceptConfigPdus = true;
-    slaveDescription.CapabilityFlags.canHandleReset = false;
-    slaveDescription.CapabilityFlags.canHandleVariableSteps = false;
-    slaveDescription.CapabilityFlags.canMonitorHeartbeat = false;
-    slaveDescription.CapabilityFlags.canProvideLogOnRequest = true;
-    slaveDescription.CapabilityFlags.canProvideLogOnNotification = true;
-
-    int i = 0;
-    for(const auto& connection : system->getDcpConnections()) {
-      if(NULL == connection) {  
-        break;  //Vector is null terminated, break the loop
-      }
-
-      //Get pointers to the connectors of the comnnection
-      oms::Connector* connector1 = system->getConnector(connection->getSignalA());
-      oms::Connector* connector2 = system->getConnector(connection->getSignalB());
-      if(!connector1) {
-        logError("Connector 1 not found for signal: " + std::string(connection->getSignalA()));
-        continue;
-      }
-      if(!connector2) {
-        logError("Connector 2 not found for signal: " + std::string(connection->getSignalB()));
-        continue;
-      }
-      
-      oms::Component* component1 = system->getComponent(connector1->getOwner().back());
-      oms::Component* component2 = system->getComponent(connector2->getOwner().back());
-      if(component1 && component1->getType() == oms_component_dcp) {
-        if(connector2 && connector2->isOutput()) {
-          std::shared_ptr<Output_t> causality = make_Output_ptr<float64_t>();
-          slaveDescription.Variables.push_back(make_Variable_output(connector2->getFullName(), valueReference_t(i), causality));
-          ++i;
-        }
-        else if(connector2 && connector2->isInput()) {
-          std::shared_ptr<CommonCausality_t> causality = make_CommonCausality_ptr<float64_t>();
-          causality->Float64->start = std::make_shared<std::vector<float64_t>>();
-          causality->Float64->start->push_back(0.0);
-          slaveDescription.Variables.push_back(make_Variable_input(connector2->getFullName(), valueReference_t(i), causality));
-          ++i;
-        }
-      }
-      else if(component2 && component2->getType() == oms_component_dcp) {
-        if(connector1 && connector1->isOutput()) {
-          std::shared_ptr<Output_t> causality = make_Output_ptr<float64_t>();
-          slaveDescription.Variables.push_back(make_Variable_output(connector1->getFullName(), valueReference_t(i), causality));
-          ++i;
-        }
-        else if(connector1 && connector1->isInput()) {
-          std::shared_ptr<CommonCausality_t> causality = make_CommonCausality_ptr<float64_t>();
-          causality->Float64->start = std::make_shared<std::vector<float64_t>>();
-          causality->Float64->start->push_back(0.0);
-          slaveDescription.Variables.push_back(make_Variable_input(connector1->getFullName(), valueReference_t(i), causality));
-          ++i;
-        }
-      }
-    }
-
-    slaveDescription.Log = make_Log_ptr();
-    slaveDescription.Log->categories.push_back(make_Category(1, "DCP_SERVER"));
-    slaveDescription.Log->templates.push_back(make_Template(
-          1, 1, (uint8_t) DcpLogLevel::LVL_INFORMATION, "[Time = %float64]: output = %float64"));
-
-    writeDcpSlaveFile(std::make_shared<SlaveDescription_t>(slaveDescription), targetFile);
-
     //Start a DCP slave instance for the system
+    system->startDcpSlave();
 
     //Start a DCP master instance to connect to the slave and run the simulation
+    //this->startDcpMaster();
   }
 
   //This should be in an else branch, but for testing purposes we will run a normal simulation 

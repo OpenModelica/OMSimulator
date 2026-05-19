@@ -72,6 +72,20 @@ list(APPEND OMSIMULATORLIB_SOURCES "${CMAKE_CURRENT_BINARY_DIR}/Version.cpp")
 add_library(OMSimulatorLib SHARED ${OMSIMULATORLIB_SOURCES})
 set_target_properties(OMSimulatorLib PROPERTIES OUTPUT_NAME OMSimulator)
 
+add_library(dcplib INTERFACE)
+# DCPLib headers live in the top-level 3rdParty directory
+target_include_directories(dcplib 
+                           INTERFACE 
+                           ${CMAKE_SOURCE_DIR}/3rdParty/DCPLib/include/core
+                           ${CMAKE_SOURCE_DIR}/3rdParty/DCPLib/include/ethernet
+                           ${CMAKE_SOURCE_DIR}/3rdParty/DCPLib/include/master
+                           ${CMAKE_SOURCE_DIR}/3rdParty/DCPLib/include/slave
+                           ${CMAKE_SOURCE_DIR}/3rdParty/DCPLib/include/xml
+                           ${CMAKE_SOURCE_DIR}/3rdParty/DCPLib/include/zip
+                           ${CMAKE_SOURCE_DIR}/3rdParty/asio/include)
+target_link_libraries(OMSimulatorLib PRIVATE dcplib)
+target_link_libraries(OMSimulatorLib PUBLIC ws2_32)
+
 target_include_directories(OMSimulatorLib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(OMSimulatorLib
@@ -87,13 +101,7 @@ target_link_libraries(OMSimulatorLib
                           oms::3rd::json::header
                           oms::3rd::ctpl::header
                           oms::3rd::xerces
-                          oms::3rd::libzip
-                          oms::3rd::dcplib::core
-                          oms::3rd::dcplib::master
-                          oms::3rd::dcplib::slave
-                          oms::3rd::dcplib::ethernet
-                          oms::3rd::dcplib::zip
-                          oms::3rd::dcplib::xml)
+                          oms::3rd::libzip)
 
 target_link_libraries(OMSimulatorLib PUBLIC ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
 
@@ -127,15 +135,13 @@ target_link_libraries(OMSimulatorLib_static
                           oms::3rd::ctpl::header
                           oms::3rd::xerces
                           oms::3rd::ctpl::header
-                          oms::3rd::libzip
-                          oms::3rd::dcplib::core
-                          oms::3rd::dcplib::master
-                          oms::3rd::dcplib::slave
-                          oms::3rd::dcplib::ethernet
-                          oms::3rd::dcplib::zip
-                          oms::3rd::dcplib::xml)
+                          oms::3rd::libzip)
+                          
+target_link_libraries(OMSimulatorLib_static PRIVATE dcplib)
 
 target_link_libraries(OMSimulatorLib_static PUBLIC ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
+
+target_link_libraries(OMSimulatorLib_static PUBLIC ws2_32)
 
 if(MINGW)
   target_link_libraries(OMSimulatorLib_static PUBLIC shlwapi)

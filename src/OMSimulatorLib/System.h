@@ -55,6 +55,12 @@
 
 #include <ctpl_stl.h>
 
+#include <dcp/log/OstreamLog.hpp>
+
+class DcpManagerSlave;
+class UdpDriver;
+class OstreamLog;
+
 namespace oms
 {
   class AlgLoop;
@@ -197,6 +203,13 @@ namespace oms
     Values& getValues() { return values; }
     std::map<std::string, filesystem::path> fmuGuid;
 
+    oms_status_enu_t startDcpSlave();
+    void dcpConfigure();
+    void dcpInitialize();
+    void dcpDoStep(uint64_t steps);
+    void dcpSetTimeRes(const uint32_t numerator, const uint32_t denominator);
+    void dcpStop();
+
   protected: // methods
     System(const ComRef& cref, oms_system_enu_t type, Model* parentModel, System* parentSystem, oms_solver_enu_t solverMethod);
 
@@ -250,6 +263,15 @@ namespace oms
     bool loopsNeedUpdate = true;
     std::vector<AlgLoop> algLoops;  ///< vector of algebraic loop objects
     std::string getFmiVersion(const std::string& path);
+
+    DcpManagerSlave *dcpManager;
+    UdpDriver* dcpDriver;
+    OstreamLog dcpLog;
+    double dcpTimeStep;
+    std::map<oms::ComRef, double*> dcpInputs;
+    std::map<oms::ComRef, double*> dcpOutputs;
+    std::map<oms::ComRef, valueReference_t> dcpInputValueReferences;
+    std::map<oms::ComRef, valueReference_t> dcpOutputValueReferences;
   };
 }
 
