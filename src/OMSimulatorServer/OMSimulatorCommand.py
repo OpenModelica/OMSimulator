@@ -120,9 +120,28 @@ class OMSServer:
         elif method == "addConnector":
             print(f"addConnector args: {args}", flush=True)
             print(f"addConnector cref: {args.get('cref', 'default')}", flush=True)
+            CAUSALITY_MAP = {
+                "parameter": Causality.parameter,
+                "input": Causality.input,
+                "output": Causality.output,
+                "calculatedParameter": Causality.calculatedParameter,
+                "local": Causality.local,
+                "independent": Causality.independent,
+            }
+
+            SIGNALTYPE_MAP = {
+                "real": SignalType.Real,
+                "integer": SignalType.Integer,
+                "boolean": SignalType.Boolean,
+                "string": SignalType.String,
+                "enum": SignalType.Enumeration,
+            }
+            causality = CAUSALITY_MAP[args["causality"]]
+            signal_type = SIGNALTYPE_MAP[args["type"]]
+
             cref = CRef(*args["cref"])
-            print(f"cref: {cref}", flush=True)
-            self.model.addConnector(cref, Connector(args["name"], Causality.input, SignalType.Real))
+            print(f"cref_roger: {cref} causality: {causality} signal_type: {signal_type}", flush=True)
+            self.model.addConnector(cref, Connector(args["name"], causality, signal_type))
             # print(f"model after addConnector: {self.model.list()}", flush=True)
             return {"status": "ok", "method": method}
 
