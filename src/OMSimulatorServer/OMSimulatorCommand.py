@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from platform import node
+#from platform import node
 import sys
 
 sys.path.insert(0, "C:/OPENMODELICAGIT/OpenModelica/OMSimulator/install/lib")  # add the path to the OMSimulatorPython package
@@ -302,21 +302,48 @@ class OMSServer:
 
        return connector_json
 
-    # def getFMUInfo(self, element):
-    #   fmu_inst = self.model.resources.get(element.fmuPath)
-    #   print(f"Retrieving FMU info for {element.name}, {element.fmuPath}, {fmu_inst}", flush=True)
-    #   if fmu_inst:
-    #      return {
-    #         "description": fmu_inst.description,
-    #         "fmiKind": fmu_inst.fmuType,
-    #         "fmiVersion": fmu_inst.fmiVersion,
-    #         "generationTool": fmu_inst.generationTool,
-    #         "guid": fmu_inst.guid,
-    #         "generationDateAndTime": fmu_inst.generationDateAndTime,
-    #         "modelName": fmu_inst.modelName,
-    #         "path": fmu_inst._fmu_path
-    #     }
+    def getFMUInfo(self, element):
+        fmu_inst = self.model.resources.get(element.fmuPath)
 
+        print(
+            f"Retrieving FMU info for "
+            f"{element.name}, {element.fmuPath}, {fmu_inst}",
+            flush=True
+        )
+
+        if not fmu_inst:
+            return {}
+
+        # Fields copied directly from FMU object
+        fields = [
+            "description",
+            "fmiVersion",
+            "generationTool",
+            "guid",
+            "generationDateAndTime",
+            "modelName",
+            # FMI capability flags
+            "canBeInstantiatedOnlyOncePerProcess",
+            "canGetAndSetFMUstate",
+            "canNotUseMemoryManagementFunctions",
+            "canSerializeFMUstate",
+            "completedIntegratorStepNotNeeded",
+            "needsExecutionTool",
+            "providesDirectionalDerivative",
+            "canInterpolateInputs",
+            "maxOutputDerivativeOrder",
+        ]
+
+        info = {
+            field: getattr(fmu_inst, field, None)
+            for field in fields
+        }
+
+        # Custom / renamed fields
+        info["fmiKind"] = getattr(fmu_inst, "fmuType", None)
+        info["path"] = str(getattr(fmu_inst, "fmuPath", ""))
+
+        return info
 
     def serializeElement(self, element):
       node = {
@@ -331,6 +358,7 @@ class OMSServer:
         node["geometry"] = self.serializeElementGeometry(element)
         print(f"Serialized component {element.name} with geometry: {self.model.resources} , {element.name} , {element.fmuPath}", flush=True)
         #self.getFMUInfo(element)
+        node["fmuInfo"] = self.getFMUInfo(element)
 
       # SYSTEM → recurse into dict
       if isinstance(element, System):
