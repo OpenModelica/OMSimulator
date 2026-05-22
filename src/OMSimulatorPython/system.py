@@ -181,6 +181,35 @@ class System:
       case System():
         return self.elements[first].getConnector(cref.pop_first())
 
+  def split_cref(self, cref: CRef):
+    head = cref.first()
+    tail = cref.pop_first()
+
+    # connector-only cref like ".input"
+    if tail is None:
+      return "", str(head)
+
+    return (head, tail)
+
+  def getConnection(self, crefA: CRef, crefB: CRef):
+    (headA, tailA) = self.split_cref(crefA)
+    (headB, tailB) = self.split_cref(crefB)
+
+    for connection in self.connections:
+      if (str(connection.startElement) == str(headA) and str(connection.startConnector) == str(tailA)) and (str(connection.endElement) == str(headB) and str(connection.endConnector) == str(tailB)):
+        return connection
+      if (str(connection.startElement) == str(headB) and str(connection.startConnector) == str(tailB)) and (str(connection.endElement) == str(headA) and str(connection.endConnector) == str(tailA)):
+        return connection
+
+    ## recurse into subsystems to find the connection
+    for element in self.elements.values():
+      if isinstance(element, System):
+        connection = element.getConnection(crefA.pop_first(), crefB.pop_first())
+        if connection:
+          return connection
+
+    return None
+
   def addConnector(self, connector):
     if connector in self.connectors:
       raise ValueError(f"Connector '{connector.name}' already exists in {self.name}")

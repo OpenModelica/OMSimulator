@@ -9,7 +9,7 @@ import zmq
 from OMSimulator import SSP, CRef, System, Component, ComponentTable, Connector, Causality, SignalType
 from OMSimulator.elementgeometry import ElementGeometry
 from OMSimulator.connector import ConnectorGeometry
-
+from OMSimulator.connection import ConnectionGeometry
 class OMSServer:
     def __init__(self, endpoint):
         self._context = zmq.Context()
@@ -195,6 +195,31 @@ class OMSServer:
             )
             return {"status": "ok", "method": method}
 
+        elif method == "setConnectionGeometry":
+            crefA = CRef(*args["crefA"])
+            crefB = CRef(*args["crefB"])
+
+            geometry = args["geometry"]
+            pointsX = geometry.get("pointsX", [])
+            pointsY = geometry.get("pointsY", [])
+            print(f"setConnectionGeometry for connection python {crefA} -> {crefB} with pointsX: {pointsX} and pointsY: {pointsY}", flush=True)
+            connection = self.model.getConnection(crefA, crefB)
+            if connection is not None:
+                print(f"setConnectionGeometry for found connection python {crefA} -> {crefB} with pointsX: {pointsX} and pointsY: {pointsY}", flush=True)
+                connection.connectionGeometry = ConnectionGeometry(pointsX, pointsY)
+
+            return {"status": "ok", "method": method}
+
+
+        elif method == "addConnection":
+            print(f"addConnection args: {args}", flush=True)
+            crefA = CRef(*args["crefA"])
+            crefB = CRef(*args["crefB"])
+            print(f"addConnection crefs python: {crefA} , {crefB}", flush=True)
+            self.model.addConnection(crefA, crefB)
+            print(self.model.list(), flush=True)
+            return {"status": "ok", "method": method}
+
         # ---------- solver ----------
         elif method == "newSolver":
             self.model.newSolver(args)
@@ -364,6 +389,33 @@ class OMSServer:
 
         return info
 
+    def serializeConnectionGeometry(self, connection):
+      geometry = getattr(connection, "connectionGeometry", None)
+
+      if geometry is None:
+         return {
+              "pointsX": [],
+              "pointsY": []
+          }
+
+      return {
+          "pointsX": list(geometry.pointsX) if geometry.pointsX is not None else [],
+          "pointsY": list(geometry.pointsY) if geometry.pointsY is not None else []
+      }
+
+    def serializeConnections(self, system):
+        connection_json = []
+
+        for connection in getattr(system, "connections", []):
+            connection_json.append({
+                "conA": ".".join([str(connection.startElement), str(connection.startConnector)]),
+                "conB": ".".join([str(connection.endElement), str(connection.endConnector)]),
+                "type": "connection",
+                "geometry": self.serializeConnectionGeometry(connection)
+            })
+
+        return connection_json
+
     def serializeElement(self, element):
       node = {
           "name": str(element._name) if isinstance(element, System) else str(element.name),
@@ -381,6 +433,8 @@ class OMSServer:
 
       # SYSTEM → recurse into dict
       if isinstance(element, System):
+        node["connections"] = self.serializeConnections(element)
+
         for key, child in element.elements.items():
           node["elements"].append(self.serializeElement(child))
 

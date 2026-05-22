@@ -234,6 +234,11 @@ class SSD:
     subcref = self._validateCref(cref)
     return self.system.getConnector(subcref)
 
+  def getConnection(self, crefA: CRef, crefB: CRef):
+    subcrefA = self._validateCref(crefA)
+    subcrefB = self._validateCref(crefB)
+    return self.system.getConnection(subcrefA, subcrefB)
+
   def instantiate(self, resources: dict | None = None, tempdir: str | None = None ) -> InstantiatedModel:
     if self.system is None:
       raise ValueError("Variant doesn't contain a system")

@@ -364,6 +364,12 @@ class SSP:
 
     return self.activeVariant.getConnector(cref)
 
+  def getConnection(self, crefA: CRef, crefB: CRef):
+    if self.activeVariant is None:
+      raise ValueError("No active variant set in the SSP.")
+
+    return self.activeVariant.getConnection(crefA, crefB)
+
   def add(self, element):
     '''Adds an SSD or a list/iterable of SSDs to the SSP.'''
     if isinstance(element, SSD):
