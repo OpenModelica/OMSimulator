@@ -78,6 +78,34 @@ class OMSServer:
             ##print(self.model.list(), flush=True)
             return {"status": "ok", "method": method}
 
+        if method == "addSystem":
+            try:
+                cref_parts = list(args["cref"])
+
+                model_name = self.model.activeVariant.name
+                root_name = self.model.activeVariant.system.name
+
+                # OMEdit sends ["Root", "subsystem"] because it uses LibraryTreeItem nameStructure.
+                # Python SSP.addSystem expects ["test", "subsystem"].
+                if cref_parts and cref_parts[0] == root_name:
+                    cref_parts = [model_name] + cref_parts[1:]
+                elif cref_parts and cref_parts[0] != model_name:
+                    cref_parts = [model_name] + cref_parts
+
+                cref = CRef(*cref_parts)
+                print(f"addSystem python cref: {cref}", flush=True)
+
+                self.model.addSystem(cref)
+
+                return {"status": "ok", "method": method}
+
+            except Exception as e:
+                print(f"addSystem failed: {e}", flush=True)
+                return {
+                    "status": "failed",
+                    "method": method,
+                    "error": str(e)
+                }
         if method == "list":
             return {"status": "ok", "method": method}
 
@@ -159,27 +187,35 @@ class OMSServer:
             return {"status": "ok", "method": method, "elements": [json_elements]}
 
         elif method == "setElementGeometry":
-            cref = CRef(*args["cref"])
-            print(f"setElementGeometry Novak for cref: {cref} with geometry: {args['geometry']}", flush=True)
+            try:
+                cref = CRef(*args["cref"])
+                print(f"setElementGeometry for cref: {cref} with geometry: {args['geometry']}", flush=True)
 
-            element = self.model.getElement(cref)
-            if element is None:
-              return {"status": "failed", "method": method, "error": f"Element with cref {cref} not found"}
+                root_name = self.model.activeVariant.system.name
 
-            geometry = args["geometry"]
-            element.elementgeometry = ElementGeometry(
-                x1=geometry.get("x1", -10.0),
-                y1=geometry.get("y1", -10.0),
-                x2=geometry.get("x2", 10.0),
-                y2=geometry.get("y2", 10.0),
-                rotation=geometry.get("rotation", 0.0),
-                icon_source=geometry.get("iconSource"),
-                icon_rotation=geometry.get("iconRotation", 0.0),
-                icon_flip=geometry.get("iconFlip", False),
-                icon_fixed_aspect_ratio=geometry.get("iconFixedAspectRatio", False),
-            )
+                if cref.is_root() and str(cref.first()) == root_name:
+                    element = self.model.activeVariant.system
+                else:
+                    element = self.model.getElement(cref)
 
-            return {"status": "ok", "method": method}
+                geometry = args["geometry"]
+                element.elementgeometry = ElementGeometry(
+                    x1=geometry.get("x1", -10.0),
+                    y1=geometry.get("y1", -10.0),
+                    x2=geometry.get("x2", 10.0),
+                    y2=geometry.get("y2", 10.0),
+                    rotation=geometry.get("rotation", 0.0),
+                    icon_source=geometry.get("iconSource"),
+                    icon_rotation=geometry.get("iconRotation", 0.0),
+                    icon_flip=geometry.get("iconFlip", False),
+                    icon_fixed_aspect_ratio=geometry.get("iconFixedAspectRatio", False),
+                )
+
+                return {"status": "ok", "method": method}
+
+            except Exception as e:
+                print(f"setElementGeometry failed: {e}", flush=True)
+                return {"status": "failed", "method": method, "error": str(e)}
 
         elif method == "setConnectorGeometry":
             cref = CRef(*args["cref"])
@@ -417,29 +453,28 @@ class OMSServer:
         return connection_json
 
     def serializeElement(self, element):
-      node = {
-          "name": str(element._name) if isinstance(element, System) else str(element.name),
-          "type": "system" if isinstance(element, System) else "component",
-          "elements": []
-      }
+        node = {
+            "name": str(element._name) if isinstance(element, System) else str(element.name),
+            "type": "system" if isinstance(element, System) else "component",
+            "elements": []
+        }
 
-      node["connectors"] = self.serializeConnectors(element)
+        node["connectors"] = self.serializeConnectors(element)
 
-      if isinstance(element, Component):
-        node["geometry"] = self.serializeElementGeometry(element)
-        print(f"Serialized component {element.name} with geometry: {self.model.resources} , {element.name} , {element.fmuPath}", flush=True)
-        #self.getFMUInfo(element)
-        node["fmuInfo"] = self.getFMUInfo(element)
+        # Add geometry for both systems and components.
+        if isinstance(element, (System, Component)):
+            node["geometry"] = self.serializeElementGeometry(element)
 
-      # SYSTEM → recurse into dict
-      if isinstance(element, System):
-        node["connections"] = self.serializeConnections(element)
+        if isinstance(element, Component):
+            node["fmuInfo"] = self.getFMUInfo(element)
 
-        for key, child in element.elements.items():
-          node["elements"].append(self.serializeElement(child))
+        if isinstance(element, System):
+            node["connections"] = self.serializeConnections(element)
 
-      return node
+            for key, child in element.elements.items():
+                node["elements"].append(self.serializeElement(child))
 
+        return node
     # -----------------------------------
     # close
     # -----------------------------------

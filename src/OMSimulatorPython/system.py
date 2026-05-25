@@ -654,17 +654,23 @@ class System:
         raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component or a Connector")
 
   def getElement(self, cref: CRef):
-    print(f"Getting element for cref anand: {cref} in system '{self.name}'", flush=True)
-    first = cref.first()
-    print(f"Getting element for cref roger: {first} in system '{self.name}'", flush=True)
+    print(f"Getting element for cref: {cref} in system '{self.name}'", flush=True)
 
-    match self.elements.get(first):
-      case System():
-        return self.elements[first].getElement(cref.pop_first())
-      case Component():
-        return self.elements[first]
-      case _:
-        raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component or a Connector")
+    if cref is None:
+      return self
+
+    first = cref.first()
+    element = self.elements.get(first)
+
+    if isinstance(element, System):
+      if cref.is_root():
+        return element
+      return element.getElement(cref.pop_first())
+
+    if isinstance(element, Component):
+      return element
+
+    raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component")
 
   def mapParameter(self, cref: CRef, source: str, target: str):
     if cref is None:
