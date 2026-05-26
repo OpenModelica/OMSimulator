@@ -5,6 +5,7 @@ import sys
 sys.path.insert(0, "C:/OPENMODELICAGIT/OpenModelica/OMSimulator/install/lib")  # add the path to the OMSimulatorPython package
 
 import argparse
+import traceback
 import zmq
 from OMSimulator import SSP, CRef, System, Component, ComponentTable, Connector, Causality, SignalType
 from OMSimulator.elementgeometry import ElementGeometry
@@ -44,11 +45,17 @@ class OMSServer:
                         self.handle(cmd)
                     reply = {"status": "ack"}
                 else:
-                    reply = self.handle(msg)
+                    try:
+                        reply = self.handle(msg)
+                    except Exception as e:
+                        print(f"Unhandled exception in handle({msg.get('method', '?')}): {e}", flush=True)
+                        traceback.print_exc()
+                        reply = {"status": "failed", "method": msg.get("method", ""), "error": str(e)}
 
                 self._socket.send_json(reply)
 
                 if reply.get("status") == "shutdown":
+                    self.close()  # reply is sent — safe to close the REP socket now
                     break
 
         except KeyboardInterrupt:
@@ -64,6 +71,14 @@ class OMSServer:
 
         method = msg.get("method")
         args = msg.get("args", {})
+
+        try:
+            return self._dispatch(method, args)
+        except Exception as e:
+            traceback.print_exc()
+            return {"status": "failed", "method": method or "unknown", "error": str(e)}
+
+    def _dispatch(self, method, args):
 
         # ---------- new model ----------
         if method == "newModel":
@@ -300,9 +315,10 @@ class OMSServer:
 
         # ---------- shutdown ----------
         elif method == "shutdown":
-            return {"status": "shutdown"}
+          print("Shutdown command received, stopping server.", flush=True)
+          return {"status": "shutdown"}
 
-        return {"status": "failed", "method": method}
+        return {"status": "failed", "method": method, "error": f"Unknown method: {method!r}"}
 
     def serializeElementGeometry(self, element):
         geometry = getattr(element, "elementgeometry", None)
@@ -479,9 +495,12 @@ class OMSServer:
     # close
     # -----------------------------------
     def close(self):
-        print("OMS server shutting down", flush=True)
-        self._socket.close()
-        self._context.term()
+        if self._socket is not None and not self._socket.closed:
+            print("OMS server shutting down", flush=True)
+            self._socket.close()
+            self._context.term()
+            self._socket = None
+            self._context = None
 
 def _main():
   # parse command-line arguments
