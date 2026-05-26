@@ -121,20 +121,17 @@ class OMSGuiServer:
     # ---------- add component ----------
     if method == "addConnector":
       CAUSALITY_MAP = {
-          "parameter": Causality.parameter,
-          "input": Causality.input,
-          "output": Causality.output,
-          "calculatedParameter": Causality.calculatedParameter,
-          "local": Causality.local,
-          "independent": Causality.independent
+          "Parameter": Causality.parameter,
+          "Input": Causality.input,
+          "Output": Causality.output,
       }
 
       SIGNALTYPE_MAP = {
-          "real": SignalType.Real,
-          "integer": SignalType.Integer,
-          "boolean": SignalType.Boolean,
-          "string": SignalType.String,
-          "enum": SignalType.Enumeration,
+          "Real": SignalType.Real,
+          "Integer": SignalType.Integer,
+          "Boolean": SignalType.Boolean,
+          "String": SignalType.String,
+          "Enum": SignalType.Enumeration,
       }
       causality = CAUSALITY_MAP[args["causality"]]
       signal_type = SIGNALTYPE_MAP[args["type"]]
