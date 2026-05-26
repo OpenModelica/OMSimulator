@@ -654,8 +654,6 @@ class System:
         raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component or a Connector")
 
   def getElement(self, cref: CRef):
-    print(f"Getting element for cref: {cref} in system '{self.name}'", flush=True)
-
     if cref is None:
       return self
 
