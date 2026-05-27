@@ -101,6 +101,13 @@ class OMSGuiServer:
       self.model.export(args["file"])
       return {"status": "ok", "method": method}
 
+    # ---------- import ----------
+    if method == "importFile":
+      print("importing model from file", args, flush=True)
+      self.model = SSP(args["file"])
+      print("model imported, active variant:", self.model.activeVariant.name, flush=True)
+      return {"status": "ok", "method": method, "modelName": self.model.activeVariant.name}
+
     # ---------- add resource ----------
     if method == "addResource":
       self.model.addResource(args["source"], new_name=args["new_name"])
