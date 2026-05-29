@@ -36,6 +36,7 @@ set(OMSIMULATORLIB_SOURCES
       Connector.cpp
       CSVReader.cpp
       CSVWriter.cpp
+      DCPInfo.cpp
       DirectedGraph.cpp
       Element.cpp
       Flags.cpp

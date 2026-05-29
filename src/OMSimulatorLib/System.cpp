@@ -57,6 +57,8 @@
 #include <dcp/zip/DcpSlaveWriter.hpp>
 #include <dcp/logic/DcpManagerSlave.hpp>
 #include <dcp/driver/ethernet/udp/UdpDriver.hpp>
+#include <dcp/model/constant/DcpLogLevel.hpp>
+#include <dcp/helper/LogHelper.hpp>
 #include <dcp/log/OstreamLog.hpp>
 
 #include <regex>
@@ -83,6 +85,9 @@ oms::System::System(const oms::ComRef& cref, oms_system_enu_t type, oms::Model* 
 
 oms::System::~System()
 {
+  if (dcpThread.joinable())
+    dcpThread.join();
+
   for (const auto& connector : connectors)
     if (connector)
       delete connector;
@@ -1113,7 +1118,7 @@ oms::Connector* oms::System::getConnector(const oms::ComRef& cref)
     return subsystem->second->getConnector(tail);
 
   auto component = components.find(head);
-  if (component != components.end())
+  if (component != components.end()) 
     return component->second->getConnector(tail);
 
   for (auto& connector : connectors)
@@ -2803,7 +2808,7 @@ oms_status_enu_t oms::System::renameConnectors()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::System::startDcpSlave()
+oms_status_enu_t oms::System::configureDcpSlave()
 {
     std::string host = "127.0.0.1"; // TODO: Port should not be hard coded!
     port_t port = 8002; // TODO: Port should not be hard coded!
@@ -2859,6 +2864,8 @@ oms_status_enu_t oms::System::startDcpSlave()
       if(component1 && component1->getType() == oms_component_dcp) {
         if(connector2 && connector2->isOutput()) {
           std::shared_ptr<Output_t> causality = make_Output_ptr<float64_t>();
+          causality->Float64->start = std::make_shared<std::vector<float64_t>>();
+          causality->Float64->start->push_back(0.0);
           slaveDescription.Variables.push_back(make_Variable_output(connector2->getFullName(), valueReference_t(i), causality));
           dcpOutputValueReferences.insert(std::make_pair(connector2->getFullName(), valueReference_t(i)));
           ++i;
@@ -2876,6 +2883,8 @@ oms_status_enu_t oms::System::startDcpSlave()
       else if(component2 && component2->getType() == oms_component_dcp) {
         if(connector1 && connector1->isOutput()) {
           std::shared_ptr<Output_t> causality = make_Output_ptr<float64_t>();
+          causality->Float64->start = std::make_shared<std::vector<float64_t>>();
+          causality->Float64->start->push_back(0.0);
           slaveDescription.Variables.push_back(make_Variable_output(connector1->getFullName(), valueReference_t(i), causality));
           dcpOutputValueReferences.insert(std::make_pair(connector1->getFullName(), valueReference_t(i)));
           ++i;
@@ -2912,19 +2921,33 @@ oms_status_enu_t oms::System::startDcpSlave()
     dcpManager->setTimeResListener<SYNC>(           std::bind(&dcpSetTimeRes, this, std::placeholders::_1, std::placeholders::_2));
     dcpManager->setStopCallback<SYNC>(              std::bind(&dcpStop, this));
 
-    //For some reason we get linker errors when adding the log listener. Should be fixed later.
+    dcpManager->addLogListener([this](auto&& arg) {
+    dcpLog.logOstream(std::forward<decltype(arg)>(arg));
+});
+
     //dcpManager->addLogListener(std::bind(&OstreamLog::logOstream, dcpLog, std::placeholders::_1));
     dcpManager->setGenerateLogString(true);
-
-    dcpManager->start();
 
     return oms_status_enu_t();
 }
 
+oms_status_enu_t oms::System::startDcpSlave()
+{
+  if (dcpThread.joinable())
+    dcpThread.join();
+
+  dcpThread = std::thread([this]() {
+    dcpManager->start();
+  });
+
+  return oms_status_ok;
+}
+
 void oms::System::dcpConfigure()
 {
-  for(const auto input : dcpInputValueReferences)
+  for(const auto input : dcpInputValueReferences) {
     dcpInputs.insert(std::make_pair(input.first, dcpManager->getInput<double*>(input.second)));
+  }
   
   for(const auto output : dcpOutputValueReferences)
     dcpOutputs.insert(std::make_pair(output.first, dcpManager->getOutput<double*>(output.second)));
@@ -2937,25 +2960,36 @@ void oms::System::dcpInitialize()
 
 void oms::System::dcpDoStep(uint64_t steps)
 {
-  //Read inputs
-  for(const auto input : dcpInputs)
-    this->setReal(input.first, *(input.second));
+  //Read inputs from DCP pointers
+  for(const auto input : dcpInputs) {
+    ComRef cref = input.first;
+    cref.pop_front();
+    cref.pop_front();
+    this->setReal(cref, *(input.second));
+  }
 
   //Take some steps
-  this->stepUntil(steps*dcpTimeStep);
+  dcpTime += steps*dcpTimeStep;
+  this->stepUntil(dcpTime);
 
-  //Write outputs
-  for(const auto output : dcpOutputs)
-    this->setReal(output.first, *(output.second));
+  //Write outputs to DCP pointers
+  for(const auto output : dcpOutputs) {
+    ComRef cref = output.first;
+    cref.pop_front();
+    cref.pop_front();
+    double value;
+    this->getReal(cref,  value);
+    *(output.second) = value;
+  }
 }
 
 void oms::System::dcpSetTimeRes(const uint32_t numerator, const uint32_t denominator)
 {
+
   //Implement later if needed
 }
 
 void oms::System::dcpStop()
 {
-  dcpDriver->getDcpDriver().stopReceiving();
-  dcpDriver->getDcpDriver().disconnect();
+  //Nothing to do
 }

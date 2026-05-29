@@ -36,7 +36,9 @@
 #include "Model.h"
 
 #include "Component.h"
+#include "Connection.h"
 #include "CSVWriter.h"
+#include "ComponentDCP.h"
 #include "Flags.h"
 #include "MATWriter.h"
 #include "OMSFileSystem.h"
@@ -51,12 +53,18 @@
 #include <algorithm> /* std::unique and std::find are defined here */
 #include <fstream>  //Only for debug output, can remove later
 
-//#include "dcp/xml/DcpSlaveDescriptionWriter.hpp"
 #include <dcp/xml/DcpSlaveDescriptionElements.hpp>
 #include <dcp/model/constant/DcpLogLevel.hpp>
+#include <dcp/helper/LogHelper.hpp>
+#include <dcp/model/pdu/DcpPduFactory.hpp>
+#include <dcp/xml/DcpSlaveDescriptionReader.hpp>
+#include <dcp/driver/ethernet/udp/UdpDriver.hpp>
+#include <dcp/logic/DcpManagerMaster.hpp>
+#include <dcp/log/OstreamLog.hpp>
+#include <dcp/zip/DcpSlaveReader.hpp>
 
 oms::Model::Model(const oms::ComRef& cref, const std::string& tempDir)
-  : cref(cref), tempDir(tempDir), resultFilename(std::string(cref) + "_res.mat")
+  : cref(cref), tempDir(tempDir), resultFilename(std::string(cref) + "_res.mat"), dcpLog(std::cout)
 {
   if (!Flags::SuppressPath())
     logInfo("New model \"" + std::string(cref) + "\" with corresponding temp directory \"" + tempDir + "\"");
@@ -1272,8 +1280,6 @@ oms_status_enu_t oms::Model::initialize()
 
 oms_status_enu_t oms::Model::simulate()
 {
-  logInfo("Test print (logInfo)");
-
   clock.tic();
   if (!validState(oms_modelState_simulation))
   {
@@ -1291,23 +1297,56 @@ oms_status_enu_t oms::Model::simulate()
 
   //Loop over system components and check if any of them is a DCP component. If yes, start a DCP simulation where the system is wrapped as a DCP slave.
   bool dcpComponentDetected = false;
-  std::vector<oms::Component*> dcpComponents;
+  std::vector<oms::ComponentDCP*> dcpComponentsList;
 
   for (const auto& component : system->getComponents())
   {
     if (component.second->getType() == oms_component_dcp)
     {      
       dcpComponentDetected = true;
-      dcpComponents.push_back(component.second);
+      dcpComponentsList.push_back(dynamic_cast<oms::ComponentDCP*>(component.second));
     }
   }
 
   if(dcpComponentDetected) {
+
     //Start a DCP slave instance for the system
-    system->startDcpSlave();
+    system->configureDcpSlave();
+
+    this->configureDcpMaster();
+
+    for(const auto dcpComponent : dcpComponentsList)
+    {
+      if (oms_status_ok != addDcpSlave(dcpComponent))
+      {
+        clock.toc();
+        return logError("Failed to add DCP slave for component: " + std::string(dcpComponent->getFullCref()));
+      }
+    }
+
+    for(const auto dcpConnection : system->getDcpConnections())
+    {
+      if(nullptr == dcpConnection)
+      {
+        continue; //Null-terminated
+      }
+
+      if (oms_status_ok != addDcpConnection(dcpConnection))
+      {
+        clock.toc();
+        return logError("Failed to add DCP connection: " + std::string(dcpConnection->getSignalA() + " -> " + dcpConnection->getSignalB()));
+      }
+    }
 
     //Start a DCP master instance to connect to the slave and run the simulation
-    //this->startDcpMaster();
+
+    logInfo("Running a DCP simulation...");
+
+    system->startDcpSlave();  //Separate thread
+
+    this->startDcpMaster(); 
+
+    return oms_status_ok;
   }
 
   //This should be in an else branch, but for testing purposes we will run a normal simulation 
@@ -1410,6 +1449,168 @@ oms_status_enu_t oms::Model::reset()
 
   modelState = oms_modelState_instantiated;
   return oms_status_ok;
+}
+
+oms_status_enu_t oms::Model::configureDcpMaster()
+{
+  std::string host = "127.0.0.1"; // TODO: Port should not be hard coded!
+  port_t port = 8000; // TODO: Port should not be hard coded!
+  std::string internalSystemFile = "OMSimulatorSystem_slave_description.dcp"; 
+
+  dcpDriver = new UdpDriver(host, port);
+
+  std::shared_ptr<SlaveDescription_t> slaveDescription = getSlaveDescriptionFromDcpFile(1, 0, internalSystemFile.c_str());
+  dcpInternalSystemSlaveDescription = slaveDescription;
+  dcpSlaveDescriptions.push_back(slaveDescription);
+  dcpManager = new DcpManagerMaster(dcpDriver->getDcpDriver());
+  uint8_t *netInfo = new uint8_t[6];
+  *((uint16_t *) netInfo) = *slaveDescription->TransportProtocols.UDP_IPv4->Control->port;
+  *((uint32_t *) (netInfo + 2)) = asio::ip::address_v4::from_string(*slaveDescription->TransportProtocols.UDP_IPv4->Control->host).to_ulong();
+  dcpDriver->getDcpDriver().setSlaveNetworkInformation(1, netInfo);
+  delete[] netInfo;
+
+  dcpManager->setAckReceivedListener<SYNC>(
+          std::bind(&oms::Model::dcpReceiveAck, this, std::placeholders::_1, std::placeholders::_2));
+
+  dcpManager->setNAckReceivedListener<SYNC>(
+          std::bind(&oms::Model::dcpReceiveNAck, this, std::placeholders::_1, std::placeholders::_2,
+                    std::placeholders::_3));
+
+  dcpManager->setStateChangedNotificationReceivedListener<SYNC>(
+          std::bind(&oms::Model::dcpReceiveStateChangedNotification, this, std::placeholders::_1,
+                    std::placeholders::_2));
+
+  //DCP log listener disabled for now due to unresolved linking issues
+  dcpManager->addLogListener(std::bind(&OstreamLog::logOstream, dcpLog, std::placeholders::_1));
+  dcpManager->setGenerateLogString(true);
+
+  dcpSlaveCount = 1;
+    
+  return oms_status_enu_t();
+}
+
+oms_status_enu_t oms::Model::addDcpSlave(ComponentDCP *component)
+{
+  const std::string &slaveDescriptionFile = component->getDCPInfo()->getPath();
+
+  ++dcpSlaveCount;
+  std::shared_ptr<SlaveDescription_t> slaveDescription = getSlaveDescriptionFromDcpFile(1, 0, slaveDescriptionFile.c_str()); 
+  if (!slaveDescription)
+    return logError("Failed to read slave description file: " + slaveDescriptionFile);
+
+  uint8_t *netInfo = new uint8_t[6];
+  *((uint16_t *) netInfo) = *slaveDescription->TransportProtocols.UDP_IPv4->Control->port;
+  *((uint32_t *) (netInfo + 2)) = asio::ip::address_v4::from_string(*slaveDescription->TransportProtocols.UDP_IPv4->Control->host).to_ulong();
+  dcpDriver->getDcpDriver().setSlaveNetworkInformation(u_char(dcpSlaveCount), netInfo);
+  delete[] netInfo;
+  
+  dcpComponents.insert(std::make_pair(component, dcpSlaveCount));
+  dcpComponentToSlaveDescriptionMap.insert(std::make_pair(component, slaveDescription));
+  dcpSlaveDescriptions.push_back(slaveDescription);
+
+  return oms_status_enu_t();
+}
+
+oms_status_enu_t oms::Model::addDcpConnection(oms::Connection *connection)
+{
+  oms::Connector* connector1 = system->getConnector(connection->getSignalA());
+  oms::Connector* connector2 = system->getConnector(connection->getSignalB());
+  
+
+  oms::Component* component1 = (system->getComponent(connector1->getOwner().back()));
+  oms::Component* component2 = (system->getComponent(connector2->getOwner().back()));
+
+  DcpConnection dcpConnection;
+  if (oms_component_dcp == component1->getType()) {
+    dcpConnection.fromServer = dcpComponents[dynamic_cast<oms::ComponentDCP*>(component1)];
+    std::shared_ptr<SlaveDescription_t> slaveDescription = dcpComponentToSlaveDescriptionMap[dynamic_cast<oms::ComponentDCP*>(component1)];
+    bool foundVr = false;
+    for(const auto variable : slaveDescription->Variables) {
+      if (variable.name == connector1->getName())
+      {
+        dcpConnection.fromVr = variable.valueReference;
+        foundVr = true;
+        break;
+      }
+    }
+    if (!foundVr) {
+      return oms_status_error;
+    }
+  }
+  else {
+    dcpConnection.fromServer = 1; // 1 is the internal system
+    bool foundVr = false;
+    for(const auto variable : dcpInternalSystemSlaveDescription->Variables) {
+      if (variable.name == connector1->getFullName())
+      {
+        dcpConnection.fromVr = variable.valueReference;
+        foundVr = true;
+        break;
+      }
+    }
+    if (!foundVr) {
+      return oms_status_error;
+    }
+  }
+
+  if (oms_component_dcp == component2->getType()) {
+    dcpConnection.toServers.push_back(dcpComponents[dynamic_cast<oms::ComponentDCP*>(component2)]);
+    std::shared_ptr<SlaveDescription_t> slaveDescription = dcpComponentToSlaveDescriptionMap[dynamic_cast<oms::ComponentDCP*>(component2)];
+    bool foundVr = false;
+    for(const auto variable : slaveDescription->Variables) {
+      if (variable.name == connector2->getName())
+      {
+        dcpConnection.toVrs.push_back(variable.valueReference);
+        foundVr = true;
+        break;
+      }
+    }
+    if (!foundVr) {
+      return oms_status_error;
+    }
+  }
+  else {
+    dcpConnection.toServers.push_back(1); // 1 is the internal system
+    bool foundVr = false;
+    for(const auto variable : dcpInternalSystemSlaveDescription->Variables) {
+      if (variable.name == connector2->getFullName())
+      {
+        dcpConnection.toVrs.push_back(variable.valueReference);
+        foundVr = true;
+        break;
+      }
+    }
+    if (!foundVr) {
+      return oms_status_error;
+    }
+  }
+
+  dcpConnections.push_back(dcpConnection);
+
+  return oms_status_enu_t();
+}
+
+oms_status_enu_t oms::Model::startDcpMaster()
+{
+  dcpComStep = 0.001; // TODO: Should not be hard-coded
+
+  std::thread b(&DcpManagerMaster::start, dcpManager);
+
+  std::chrono::seconds dura(1);
+  std::this_thread::sleep_for(dura);
+  DcpOpMode mode = DcpOpMode::NRT;  //Todo: Support real-time mode as well
+
+  //dcpManager->STC_register(u_char(1), DcpState::ALIVE, convertToUUID(dcpInternalSystemSlaveDescription->uuid), mode, 1, 0);
+
+  int i=1;
+  for(const auto &desc : dcpSlaveDescriptions) {
+    dcpManager->STC_register(u_char(i), DcpState::ALIVE, convertToUUID(desc->uuid), mode, 1, 0);
+    ++i;
+  }
+
+  b.join();
+
+  return oms_status_enu_t();
 }
 
 oms_status_enu_t oms::Model::setLoggingInterval(double loggingInterval)
@@ -1653,4 +1854,191 @@ oms_status_enu_t oms::Model::importSignalFilter(const std::string& filename, con
   }
 
   return oms_status_ok;
+}
+
+void oms::Model::dcpReceiveAck(uint8_t sender, uint16_t pduSeqId) {
+    (void)pduSeqId;
+    dcpReceivedAcks[sender]++;
+    if (dcpReceivedAcks[sender] == dcpNumOfCmd[sender]) {
+        dcpManager->STC_prepare(sender, DcpState::CONFIGURATION);
+    }
+}
+
+void oms::Model::dcpReceiveNAck(uint8_t sender, uint16_t pduSeqId, DcpError errorCode) {
+    (void)sender;
+    (void)pduSeqId;
+    (void)errorCode;
+    std::exit(1);
+}
+
+void oms::Model::dcpDataReceived(uint16_t dataId, size_t length, uint8_t payload[])
+{
+    (void)dataId;
+    (void)length;
+    (void)payload;
+}
+
+void oms::Model::dcpReceiveStateChangedNotification(uint8_t sender, DcpState state) {
+  switch (state) {
+    case DcpState::CONFIGURATION:
+      dcpConfiguration();
+      break;
+    case DcpState::CONFIGURED:
+      if (dcpIntializationRuns < dcpMaxInitRuns) {
+        dcpInitialize();
+
+      } else {
+        dcpRun(DcpState::CONFIGURED, sender);
+      }
+      break;
+    case DcpState::SYNCHRONIZED:
+      dcpRun(DcpState::SYNCHRONIZED, sender);
+      break;
+
+    case DcpState::PREPARED:
+      dcpConfigure();
+      break;
+
+    case DcpState::INITIALIZED:
+      dcpSendOutputs(DcpState::INITIALIZED, sender);
+      break;
+
+    case DcpState::RUNNING: {
+      if(dcpTime > dcpStopTime) {
+        dcpStop();
+      }
+      else {
+        dcpDoStep();
+      }
+      break;
+    }
+    case DcpState::COMPUTED: {
+        dcpSendOutputs(DcpState::COMPUTED, sender);
+        break;
+    }
+    case DcpState::STOPPED:
+      dcpDeregister(sender);
+      break;
+    case DcpState::ALIVE:
+      dcpSlavesDeregistered++;
+      if(dcpSlavesDeregistered == dcpSlaveDescriptions.size()) {
+        //simulation finished
+        logInfo("DCP simulation finishsed!");
+        std::exit(0);
+      }
+      break;
+  }
+}
+
+void oms::Model::dcpInitialize()
+{
+  dcpSlavesWaitingForInitialize++;
+    if(dcpSlavesWaitingForInitialize < dcpSlaveDescriptions.size()) {
+        return;
+    }
+    for(size_t i=0; i<dcpSlaveDescriptions.size(); ++i) {
+        dcpManager->STC_initialize(u_char(i), DcpState::CONFIGURED);
+    }
+    dcpIntializationRuns++;
+}
+
+void oms::Model::dcpConfiguration()
+{
+  dcpSlavesWaitingForConfiguration++;
+    if(dcpSlavesWaitingForConfiguration < dcpSlaveDescriptions.size()) {
+        return;
+    }
+    //Count received acks so that we know when all configuration messages are acknowledged
+    for(size_t i=1; i<=dcpSlaveDescriptions.size(); ++i) {
+        dcpReceivedAcks[dcpId_t(i)] = 0;
+        dcpNumOfCmd[dcpId_t(i)] = 0;
+
+        dcpManager->CFG_time_res(uint8_t(i), 1, uint32_t(std::floor(1.0/dcpComStep)));
+        dcpNumOfCmd[dcpId_t(i)]++;
+    }
+
+    uint16_t port = 60001;
+    for(size_t i=0; i<dcpConnections.size(); ++i) {
+        uint16_t dataId = uint16_t(i+1);
+        uint8_t fromServerId = uint8_t(dcpConnections[i].fromServer);
+				dcpManager->CFG_scope(fromServerId, dataId, DcpScope::Initialization_Run_NonRealTime);
+				dcpManager->CFG_output(fromServerId, dataId, 0, dcpConnections[i].fromVr);
+				dcpManager->CFG_steps(fromServerId, dataId, 1);
+        dcpNumOfCmd[fromServerId] += 3;
+
+        for(size_t j=0; j<dcpConnections[i].toServers.size(); ++j) {
+            uint8_t toServerId = uint8_t(dcpConnections[i].toServers[j]);
+						dcpManager->CFG_scope(toServerId, dataId, DcpScope::Initialization_Run_NonRealTime);
+						dcpManager->CFG_input(toServerId, dataId, 0, dcpConnections[i].toVrs[j], DcpDataType::float64);
+            //dcpManager->CFG_steps(toServerId, dataId, 1);
+            auto toDesc = dcpSlaveDescriptions[toServerId-1];
+            auto fromDesc = dcpSlaveDescriptions[fromServerId-1];
+
+						dcpManager->CFG_source_network_information_UDP(toServerId,
+																													 dataId, 
+																													 asio::ip::address_v4::from_string(*toDesc->TransportProtocols.UDP_IPv4->Control->host).to_ulong(), 
+																													 port);
+            dcpManager->CFG_target_network_information_UDP(fromServerId, 
+                                                           dataId, 
+																													 asio::ip::address_v4::from_string(*toDesc->TransportProtocols.UDP_IPv4->Control->host).to_ulong(), 
+																													 port);
+            dcpNumOfCmd[toServerId] += 3;
+            dcpNumOfCmd[fromServerId] += 1;
+        }
+        ++port;
+    }
+}
+
+void oms::Model::dcpConfigure()
+{
+    dcpSlavesWaitingForConfigure++;
+    if(dcpSlavesWaitingForConfigure < dcpSlaveDescriptions.size()) {
+        return;
+    }
+    for(size_t i=0; i<dcpSlaveDescriptions.size(); ++i) {
+        dcpManager->STC_configure(u_char(i+1), DcpState::PREPARED);
+    }
+}
+
+void oms::Model::dcpRun(DcpState currentState, uint8_t sender)
+{
+    std::time_t now = std::time(nullptr);
+    dcpManager->STC_run(sender, currentState, now + 2);
+}
+
+void oms::Model::dcpDoStep()
+{
+  dcpSlavesWaitingForStep++;
+    if(dcpSlavesWaitingForStep < dcpSlaveDescriptions.size()) {
+        return;
+    }
+    dcpSlavesWaitingForStep = 0;
+    for(size_t i=0; i<dcpSlaveDescriptions.size(); ++i) {
+        dcpManager->STC_do_step(u_char(i+1),DcpState::RUNNING,1);
+    }
+
+    dcpTime += dcpComStep;
+}
+
+void oms::Model::dcpStop()
+{
+  dcpSlavesStopped++;
+  if(dcpSlavesStopped < dcpSlaveDescriptions.size()) {
+      return;
+  }
+  std::chrono::seconds dura(1);
+  std::this_thread::sleep_for(dura);
+  for(size_t i=0; i<dcpSlaveDescriptions.size(); ++i) {
+      dcpManager->STC_stop(u_char(i+1), DcpState::RUNNING);
+  }
+}
+
+void oms::Model::dcpDeregister(uint8_t sender)
+{
+  dcpManager->STC_deregister(sender, DcpState::STOPPED);
+}
+
+void oms::Model::dcpSendOutputs(DcpState currentState, uint8_t sender)
+{
+  dcpManager->STC_send_outputs(sender, currentState);
 }

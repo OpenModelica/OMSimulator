@@ -40,7 +40,6 @@
 #include "SystemWC.h"
 #include "Scope.h"
 #include "dcp/zip/DcpSlaveReader.hpp"
-#include "dcp/log/OstreamLog.hpp"
 #include "dcp/logic/DcpManagerMaster.hpp"
 
 #include <fmi4c.h>
@@ -48,10 +47,11 @@
 #include <unordered_set>
 #include <cmath>
 #include <iostream>
+#include <memory>
 
 
 oms::ComponentDCP::ComponentDCP(const ComRef& cref, System* parentSystem, const std::string& dcpPath)
-    : oms::Component(cref, oms_component_dcp, parentSystem, dcpPath), fmuInfo(dcpPath)
+    : oms::Component(cref, oms_component_dcp, parentSystem, dcpPath), dcpInfo(dcpPath)
 {
 }
 
@@ -73,13 +73,8 @@ oms::Component* oms::ComponentDCP::NewComponent(const oms::ComRef& cref, oms::Sy
         return NULL;
     }
     // replaceComponent string will be used to avoid name conflicts when replacing a fmu with oms_replaceSubModel(), the default is ""
-
-    filesystem::path temp_root(parentSystem->getModel().getTempDirectory());
-    filesystem::path temp_temp = temp_root / "temp";
-    filesystem::path relDCPPath = parentSystem->copyResources() ? (filesystem::path("resources") / (parentSystem->getUniqueID() + "_" + replaceComponent + std::string(cref) + ".dcp")) : filesystem::path(dcpPath);
-    filesystem::path absDCPPath = temp_root / relDCPPath;
-
-    ComponentDCP* component = new ComponentDCP(cref, parentSystem, relDCPPath.generic_string());
+  
+    ComponentDCP* component = new ComponentDCP(cref, parentSystem, dcpPath);
 
     /* parse the modeldescription.xml at top level to get the GUID to check whether instance already exist
    * so we don't need to unpack the fmu, and also parse start values before instantiating fmu's
@@ -98,20 +93,15 @@ oms::Component* oms::ComponentDCP::NewComponent(const oms::ComRef& cref, oms::Sy
 
     component->values.parseSlaveDescription(dcpPath, guid_);
 
-    // update DCP info
-    // TODO: Is this needed? (dcp)
-    component->fmuInfo.update(oms_component_dcp, nullptr);
-
     // create a list of all variables using fmi4c variable structure
-    component->desc = getSlaveDescriptionFromDcpFile(1, 0, dcpPath).get();
+    component->dcpSlaveDescription = getSlaveDescriptionFromDcpFile(1, 0, dcpPath);
 
-    int numVars = component->desc->Variables.size();
+    int numVars = component->dcpSlaveDescription->Variables.size();
     component->allVariables.reserve(numVars);
     component->exportVariables.reserve(numVars);
     for (unsigned int i = 0; i < numVars; ++i)
     {
-        oms::Variable v(component->desc, i);
-         //logInfo("vars: " + std::string(v.getCref().c_str()));
+        oms::Variable v(component->dcpSlaveDescription, i);
          if (v.getIndex() != i)
          {
 

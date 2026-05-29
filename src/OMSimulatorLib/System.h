@@ -59,7 +59,7 @@
 
 class DcpManagerSlave;
 class UdpDriver;
-class OstreamLog;
+//class OstreamLog;
 
 namespace oms
 {
@@ -203,6 +203,7 @@ namespace oms
     Values& getValues() { return values; }
     std::map<std::string, filesystem::path> fmuGuid;
 
+    oms_status_enu_t configureDcpSlave();
     oms_status_enu_t startDcpSlave();
     void dcpConfigure();
     void dcpInitialize();
@@ -259,6 +260,8 @@ namespace oms
     std::vector<BusConnector*> busconnectors;
     std::vector<Connection*> connections;  ///< last element is always NULL
     std::vector<Connection*> dcpConnections; ///< dummy connections to be used for setting up a DCP simulation
+    std::thread dcpThread;
+
 
     bool loopsNeedUpdate = true;
     std::vector<AlgLoop> algLoops;  ///< vector of algebraic loop objects
@@ -267,7 +270,8 @@ namespace oms
     DcpManagerSlave *dcpManager;
     UdpDriver* dcpDriver;
     OstreamLog dcpLog;
-    double dcpTimeStep;
+    double dcpTime = 0; //TODO: Start time should not be hard-coded
+    double dcpTimeStep = 0.001; //TODO: Time step should not be hard-coded
     std::map<oms::ComRef, double*> dcpInputs;
     std::map<oms::ComRef, double*> dcpOutputs;
     std::map<oms::ComRef, valueReference_t> dcpInputValueReferences;

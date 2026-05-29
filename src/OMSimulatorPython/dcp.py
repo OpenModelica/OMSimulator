@@ -100,7 +100,6 @@ class DCP:
       if causality_element:
         causality_element = causality_element[0]
         causality = causality_element.tag.lower()
-        print("Causality: "+causality)
 
         # Find the first child (type node) and extract attributes
         type_element = causality_element.xpath('./*')  # Selects the first child element
