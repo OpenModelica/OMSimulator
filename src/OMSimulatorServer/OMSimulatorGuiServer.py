@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import sys
 
-sys.path.insert(0, "C:/OPENMODELICAGIT/OpenModelica/OMSimulator/install/lib")  # add the path to the OMSimulatorPython package
+sys.path.insert(0, "C:/OPENMODELICAGIT/OpenModelica/OMSimulator/install/lib")
 
 import argparse
 import traceback
@@ -16,22 +16,24 @@ class OMSGuiServer:
     self._context = zmq.Context()
     self._socket = self._context.socket(zmq.REP)
     self._socket.connect(endpoint)
-    # poller (non-blocking)
     self._poller = zmq.Poller()
     self._poller.register(self._socket, zmq.POLLIN)
-    self.model = None
-    self.inst = None
+
+    # Multiple SSP models can be open simultaneously.Keyed by model name (activeVariant.name)
+    self.models = {}  # model_name -> SSP
+
     print("OMS ZMQ Server started at", endpoint, flush=True)
 
+  # -----------------------------------
   # main loop
+  # -----------------------------------
   def run(self):
     try:
       while True:
-        socks = dict(self._poller.poll(500))  # 500 ms
+        socks = dict(self._poller.poll(500))
         if self._socket not in socks:
           continue
         msg = self._socket.recv_json()
-        ##batch support
         if "batch" in msg:
           for cmd in msg["batch"]:
             self.handle(cmd)
@@ -45,327 +47,326 @@ class OMSGuiServer:
             reply = {"status": "failed", "method": msg.get("method", ""), "error": str(e)}
         self._socket.send_json(reply)
         if reply.get("status") == "shutdown":
-          self.close()  # reply is sent — safe to close the REP socket now
+          self.close()
           break
     except KeyboardInterrupt:
       print("Ctrl+C received, shutting down...", flush=True)
     finally:
       self.close()
 
+  # -----------------------------------
   # dispatcher
+  # -----------------------------------
   def handle(self, msg):
     method = msg.get("method")
     args = msg.get("args", {})
+    model_name = msg.get("model")   # every command carries the target model name
     try:
-      return self._dispatch(method, args)
+      return self._dispatch(method, args, model_name)
     except Exception as e:
       traceback.print_exc()
       return {"status": "failed", "method": method or "unknown", "error": str(e)}
 
-  def _dispatch(self, method, args):
+  def _get_model(self, model_name):
+    """Return the SSP for model_name, or raise a descriptive error."""
+    model = self.models.get(model_name)
+    if model is None:
+      raise ValueError(f"Model '{model_name}' not found. Available: {list(self.models.keys())}")
+    return model
+
+  def _dispatch(self, method, args, model_name=None):
+    # All methods below require an existing model — look it up once.
+    model = self._get_model(model_name)
+
     # ---------- new model ----------
     if method == "newModel":
-      self.model = SSP()
-      ## set the model name and the system name to the same value
-      self.model.activeVariant.name = args.get("name", "default")
-      self.model.activeVariant.system.name = args.get("system_name", "default")
+      name = args.get("model", "default")
+      ssp = SSP()
+      ssp.activeVariant.name = name
+      ssp.activeVariant.system.name = args.get("system_name", "default")
+      self.models[name] = ssp
+      print(f"New model created: {name}", flush=True)
       return {"status": "ok", "method": method}
 
-    # --------- add system ----------
-    if method == "addSystem":
-      try:
-        cref_parts = list(args["cref"])
-        model_name = self.model.activeVariant.name
-        root_name = self.model.activeVariant.system.name
-        # OMEdit sends ["Root", "subsystem"] because it uses LibraryTreeItem nameStructure.
-        # Python SSP.addSystem expects ["test", "subsystem"].
-        if cref_parts and cref_parts[0] == root_name:
-            cref_parts = [model_name] + cref_parts[1:]
-        elif cref_parts and cref_parts[0] != model_name:
-            cref_parts = [model_name] + cref_parts
-        cref = CRef(*cref_parts)
-        self.model.addSystem(cref)
-        return {"status": "ok", "method": method}
-      except Exception as e:
-        print(f"addSystem failed: {e}", flush=True)
-        return {"status": "failed", "method": method, "error": str(e)}
-
-    # ---------- export snapshot ----------
-    if method == "exportSnapshot":
-      xml = self.model.activeVariant.export(filename = None)
-      return {"status": "ok", "method": method, "xml": xml}
-
-    # ---------- export ----------
-    if method == "export":
-      print("exporting model to file", args, flush=True)
-      self.model.export(args["file"])
-      return {"status": "ok", "method": method}
-
-    # ---------- import ----------
+    # ---------- import file ----------
     if method == "importFile":
       print("importing model from file", args, flush=True)
-      self.model = SSP(args["file"])
-      print("model imported, active variant:", self.model.activeVariant.name, flush=True)
-      return {"status": "ok", "method": method, "modelName": self.model.activeVariant.name}
+      ssp = SSP(args["file"])
+      name = ssp.activeVariant.name
+      self.models[name] = ssp
+      print("model imported, active variant:", name, flush=True)
+      return {"status": "ok", "method": method, "modelName": name}
 
-    # ---------- add resource ----------
-    if method == "addResource":
-      self.model.addResource(args["source"], new_name=args["new_name"])
+    # ---------- delete model ----------
+    if method == "deleteModel":
+      if model_name in self.models:
+        del self.models[model_name]
+      print(f"Model deleted: {model_name}", flush=True)
       return {"status": "ok", "method": method}
 
-    # ---------- stop time ----------
-    if method == "setStopTime":
-      self.model.activeVariant.stopTime = args["value"]
-      return {"status": "ok", "method": method}
-
-    # ---------- add component ----------
-    if method == "addComponent":
-      self.model.addResource(args["source"], new_name=args["new_name"])
-      cref = CRef(*args["cref"])
-      self.model.addComponent(cref, args["new_name"])
-      return {"status": "ok", "method": method}
-
-    # ---------- add component ----------
-    if method == "addConnector":
-      CAUSALITY_MAP = {
-          "Parameter": Causality.parameter,
-          "Input": Causality.input,
-          "Output": Causality.output,
-      }
-
-      SIGNALTYPE_MAP = {
-          "Real": SignalType.Real,
-          "Integer": SignalType.Integer,
-          "Boolean": SignalType.Boolean,
-          "String": SignalType.String,
-          "Enum": SignalType.Enumeration,
-      }
-      causality = CAUSALITY_MAP[args["causality"]]
-      signal_type = SIGNALTYPE_MAP[args["type"]]
-      cref = CRef(*args["cref"])
-      self.model.addConnector(cref, Connector(args["name"], causality, signal_type))
-      return {"status": "ok", "method": method}
-
-    # --------- getElements ----------
-    if method == "getElements":
-        json_elements = self.serializeElement(self.model.activeVariant.system)
-        return {"status": "ok", "method": method, "elements": [json_elements]}
-
-    # --------- setElementGeometry ----------
-    if method == "setElementGeometry":
-      try:
-        cref = CRef(*args["cref"])
-        root_name = self.model.activeVariant.system.name
-        if cref.is_root() and str(cref.first()) == root_name:
-          element = self.model.activeVariant.system
-        else:
-          element = self.model.getElement(cref)
-        geometry = args["geometry"]
-        element.elementgeometry = ElementGeometry(
-          x1=geometry.get("x1", -10.0),
-          y1=geometry.get("y1", -10.0),
-          x2=geometry.get("x2", 10.0),
-          y2=geometry.get("y2", 10.0),
-          rotation=geometry.get("rotation", 0.0),
-          icon_source=geometry.get("iconSource"),
-          icon_rotation=geometry.get("iconRotation", 0.0),
-          icon_flip=geometry.get("iconFlip", False),
-          icon_fixed_aspect_ratio=geometry.get("iconFixedAspectRatio", False),
-        )
-        return {"status": "ok", "method": method}
-      except Exception as e:
-          return {"status": "failed", "method": method, "error": str(e)}
-
-    # --------- setConnectorGeometry ----------
-    if method == "setConnectorGeometry":
-      cref = CRef(*args["cref"])
-      connector = self.model.getConnector(cref)
-      if connector is None:
-        return {"status": "failed", "method": method, "error": f"Connector with cref {cref} not found"}
-      geometry = args["geometry"]
-      connector.connectorGeometry = ConnectorGeometry(
-          x=geometry.get("x", 0.5),
-          y=geometry.get("y", 0.5)
-      )
-      return {"status": "ok", "method": method}
-
-    # --------- setConnectionGeometry ----------
-    if method == "setConnectionGeometry":
-        crefA = CRef(*args["crefA"])
-        crefB = CRef(*args["crefB"])
-        geometry = args["geometry"]
-        pointsX = geometry.get("pointsX", [])
-        pointsY = geometry.get("pointsY", [])
-        connection = self.model.getConnection(crefA, crefB)
-        if connection is not None:
-            connection.connectionGeometry = ConnectionGeometry(pointsX, pointsY)
-        return {"status": "ok", "method": method}
-
-    # --------- addConnection ----------
-    if method == "addConnection":
-        crefA = CRef(*args["crefA"])
-        crefB = CRef(*args["crefB"])
-        self.model.addConnection(crefA, crefB)
-        return {"status": "ok", "method": method}
-
-    # ---------- solver ----------
-    if method == "newSolver":
-        self.model.newSolver(args)
-        return {"status": "ok", "method": method}
-
-    if method == "setSolver":
-        cref = CRef(*args["cref"])
-        self.model.setSolver(cref, args["solver"])
-        return {"status": "ok", "method": method}
     # ---------- shutdown ----------
     if method == "shutdown":
       print("Shutdown command received, stopping server.", flush=True)
       return {"status": "shutdown"}
 
+    # --------- add system ----------
+    if method == "addSystem":
+      cref_parts = list(args["cref"])
+      root_name = model.activeVariant.system.name
+      # OMEdit sends ["Root", "subsystem"]; Python SSP expects ["modelName", "subsystem"]
+      if cref_parts and cref_parts[0] == root_name:
+        cref_parts = [model_name] + cref_parts[1:]
+      elif cref_parts and cref_parts[0] != model_name:
+        cref_parts = [model_name] + cref_parts
+      cref = CRef(*cref_parts)
+      model.addSystem(cref)
+      return {"status": "ok", "method": method}
+
+    # ---------- export snapshot ----------
+    if method == "exportSnapshot":
+      xml = model.activeVariant.export(filename=None)
+      return {"status": "ok", "method": method, "xml": xml}
+
+    # ---------- export to file ----------
+    if method == "export":
+      print("exporting model to file", args, flush=True)
+      model.export(args["file"])
+      return {"status": "ok", "method": method}
+
+    # ---------- add resource ----------
+    if method == "addResource":
+      model.addResource(args["source"], new_name=args["new_name"])
+      return {"status": "ok", "method": method}
+
+    # ---------- get experiment ----------
+    if method == "getExperiment":
+      return {
+        "status": "ok",
+        "method": method,
+        "startTime": model.activeVariant.startTime,
+        "stopTime": model.activeVariant.stopTime,
+        "resultFile": getattr(model.activeVariant.system, "resultFile", None) or "model_res.mat",
+        "bufferSize": 0
+      }
+
+    # ---------- get/set start time ----------
+    if method == "getStartTime":
+      return {"status": "ok", "method": method, "value": model.activeVariant.startTime}
+
+    if method == "setStartTime":
+      model.activeVariant.startTime = args["value"]
+      return {"status": "ok", "method": method}
+
+    # ---------- get/set stop time ----------
+    if method == "getStopTime":
+      return {"status": "ok", "method": method, "value": model.activeVariant.stopTime}
+
+    if method == "setStopTime":
+      model.activeVariant.stopTime = args["value"]
+      return {"status": "ok", "method": method}
+
+    # ---------- get/set result file ----------
+    if method == "getResultFile":
+      return {"status": "ok", "method": method, "file": getattr(model.activeVariant.system, "resultFile", None) or "model_res.mat"}
+
+    if method == "setResultFile":
+      model.activeVariant.system.resultFile = args.get("file", "model_res.mat")
+      return {"status": "ok", "method": method}
+
+    # ---------- add component ----------
+    if method == "addComponent":
+      model.addResource(args["source"], new_name=args["new_name"])
+      cref = CRef(*args["cref"])
+      model.addComponent(cref, args["new_name"])
+      return {"status": "ok", "method": method}
+
+    # ---------- add connector ----------
+    if method == "addConnector":
+      CAUSALITY_MAP = {
+        "Parameter": Causality.parameter,
+        "Input":     Causality.input,
+        "Output":    Causality.output,
+      }
+      SIGNALTYPE_MAP = {
+        "Real":    SignalType.Real,
+        "Integer": SignalType.Integer,
+        "Boolean": SignalType.Boolean,
+        "String":  SignalType.String,
+        "Enum":    SignalType.Enumeration,
+      }
+      causality   = CAUSALITY_MAP[args["causality"]]
+      signal_type = SIGNALTYPE_MAP[args["type"]]
+      cref = CRef(*args["cref"])
+      model.addConnector(cref, Connector(args["name"], causality, signal_type))
+      return {"status": "ok", "method": method}
+
+    # ---------- get elements ----------
+    if method == "getElements":
+      json_elements = self.serializeElement(model.activeVariant.system, model)
+      return {"status": "ok", "method": method, "elements": [json_elements]}
+
+    # ---------- set element geometry ----------
+    if method == "setElementGeometry":
+      cref = CRef(*args["cref"])
+      root_name = model.activeVariant.system.name
+      if cref.is_root() and str(cref.first()) == root_name:
+        element = model.activeVariant.system
+      else:
+        element = model.getElement(cref)
+      g = args["geometry"]
+      element.elementgeometry = ElementGeometry(
+        x1=g.get("x1", -10.0), y1=g.get("y1", -10.0),
+        x2=g.get("x2",  10.0), y2=g.get("y2",  10.0),
+        rotation=g.get("rotation", 0.0),
+        icon_source=g.get("iconSource"),
+        icon_rotation=g.get("iconRotation", 0.0),
+        icon_flip=g.get("iconFlip", False),
+        icon_fixed_aspect_ratio=g.get("iconFixedAspectRatio", False),
+      )
+      return {"status": "ok", "method": method}
+
+    # ---------- set connector geometry ----------
+    if method == "setConnectorGeometry":
+      cref = CRef(*args["cref"])
+      connector = model.getConnector(cref)
+      if connector is None:
+        return {"status": "failed", "method": method, "error": f"Connector '{cref}' not found"}
+      g = args["geometry"]
+      connector.connectorGeometry = ConnectorGeometry(x=g.get("x", 0.5), y=g.get("y", 0.5))
+      return {"status": "ok", "method": method}
+
+    # ---------- set connection geometry ----------
+    if method == "setConnectionGeometry":
+      crefA = CRef(*args["crefA"])
+      crefB = CRef(*args["crefB"])
+      g = args["geometry"]
+      connection = model.getConnection(crefA, crefB)
+      if connection is not None:
+        connection.connectionGeometry = ConnectionGeometry(g.get("pointsX", []), g.get("pointsY", []))
+      return {"status": "ok", "method": method}
+
+    # ---------- add connection ----------
+    if method == "addConnection":
+      crefA = CRef(*args["crefA"])
+      crefB = CRef(*args["crefB"])
+      model.addConnection(crefA, crefB)
+      return {"status": "ok", "method": method}
+
+    # ---------- solver ----------
+    if method == "setSolver":
+      cref = CRef(*args["cref"])
+      model.setSolver(cref, args["solver"])
+      return {"status": "ok", "method": method}
+
     return {"status": "failed", "method": method, "error": f"Unknown method: {method!r}"}
 
-  ## helper functions to serialize model elements to JSON for getElements response
+  # -----------------------------------
+  # serialization helpers
+  # -----------------------------------
   def serializeElementGeometry(self, element):
-    geometry = getattr(element, "elementgeometry", None)
-    if geometry is None:
-        return {
-            "x1": -10.0,
-            "y1": -10.0,
-            "x2": 10.0,
-            "y2": 10.0,
-            "rotation": 0.0,
-            "iconSource": None,
-            "iconRotation": 0.0,
-            "iconFlip": False,
-            "iconFixedAspectRatio": False,
-        }
+    g = getattr(element, "elementgeometry", None)
+    if g is None:
+      return {"x1": -10.0, "y1": -10.0, "x2": 10.0, "y2": 10.0,
+              "rotation": 0.0, "iconSource": None, "iconRotation": 0.0,
+              "iconFlip": False, "iconFixedAspectRatio": False}
     return {
-        "x1": geometry.x1 if geometry.x1 is not None else -10.0,
-        "y1": geometry.y1 if geometry.y1 is not None else -10.0,
-        "x2": geometry.x2 if geometry.x2 is not None else 10.0,
-        "y2": geometry.y2 if geometry.y2 is not None else 10.0,
-        "rotation": geometry.rotation if geometry.rotation is not None else 0.0,
-        "iconSource": geometry.icon_source,
-        "iconRotation": geometry.icon_rotation if geometry.icon_rotation is not None else 0.0,
-        "iconFlip": geometry.icon_flip if geometry.icon_flip is not None else False,
-        "iconFixedAspectRatio": geometry.icon_fixed_aspect_ratio if geometry.icon_fixed_aspect_ratio is not None else False,
+      "x1": g.x1 if g.x1 is not None else -10.0,
+      "y1": g.y1 if g.y1 is not None else -10.0,
+      "x2": g.x2 if g.x2 is not None else  10.0,
+      "y2": g.y2 if g.y2 is not None else  10.0,
+      "rotation":             g.rotation             if g.rotation             is not None else 0.0,
+      "iconSource":           g.icon_source,
+      "iconRotation":         g.icon_rotation         if g.icon_rotation         is not None else 0.0,
+      "iconFlip":             g.icon_flip             if g.icon_flip             is not None else False,
+      "iconFixedAspectRatio": g.icon_fixed_aspect_ratio if g.icon_fixed_aspect_ratio is not None else False,
     }
 
   def serializeConnectors(self, element):
-     raw_connectors = list(getattr(element, "connectors", []))
-     inputs = [
-         c for c in raw_connectors
-         if c.causality and c.causality.name.lower() == "input"
-     ]
-     outputs = [
-         c for c in raw_connectors
-         if c.causality and c.causality.name.lower() == "output"
-     ]
+    raw = list(getattr(element, "connectors", []))
+    inputs  = [c for c in raw if c.causality and c.causality.name.lower() == "input"]
+    outputs = [c for c in raw if c.causality and c.causality.name.lower() == "output"]
 
-     def default_y(index, count):
-         return float(index + 1) / float(count + 1)
+    def default_y(index, count):
+      return float(index + 1) / float(count + 1)
 
-     connector_json = []
-     for connector in raw_connectors:
-       causality = connector.causality.name.lower() if connector.causality else ""
-       signal_type = connector.signal_type.name.lower() if connector.signal_type else ""
-       geometry = getattr(connector, "connectorGeometry", None)
-       if geometry:
-         x = geometry.x if geometry.x is not None else 0.5
-         y = geometry.y if geometry.y is not None else 0.5
-       elif causality == "input":
-         x = 0.0
-         y = default_y(inputs.index(connector), len(inputs))
-       elif causality == "output":
-         x = 1.0
-         y = default_y(outputs.index(connector), len(outputs))
-       else:
-         x = 0.5
-         y = 0.5
-       connector_json.append({
-          "type": "connector",
-          "name": str(connector.name),
-          "causality": causality,
-          "signalType": signal_type,
-          "geometry": {
-              "x": x,
-              "y": y
-          }
-       })
-     return connector_json
+    result = []
+    for c in raw:
+      causality   = c.causality.name.lower()   if c.causality   else ""
+      signal_type = c.signal_type.name.lower() if c.signal_type else ""
+      geom = getattr(c, "connectorGeometry", None)
+      if geom:
+        x, y = (geom.x if geom.x is not None else 0.5), (geom.y if geom.y is not None else 0.5)
+      elif causality == "input":
+        x, y = 0.0, default_y(inputs.index(c), len(inputs))
+      elif causality == "output":
+        x, y = 1.0, default_y(outputs.index(c), len(outputs))
+      else:
+        x, y = 0.5, 0.5
+      result.append({
+        "type": "connector", "name": str(c.name),
+        "causality": causality, "signalType": signal_type,
+        "geometry": {"x": x, "y": y}
+      })
+    return result
 
-  def getFMUInfo(self, element):
-      fmu_inst = self.model.resources.get(element.fmuPath)
-      if not fmu_inst:
-          return {}
-      # Fields copied directly from FMU object
-      fields = [
-          "description",
-          "fmiVersion",
-          "generationTool",
-          "guid",
-          "generationDateAndTime",
-          "modelName",
-          # FMI capability flags
-          "canBeInstantiatedOnlyOncePerProcess",
-          "canGetAndSetFMUstate",
-          "canNotUseMemoryManagementFunctions",
-          "canSerializeFMUstate",
-          "completedIntegratorStepNotNeeded",
-          "needsExecutionTool",
-          "providesDirectionalDerivative",
-          "canInterpolateInputs",
-          "maxOutputDerivativeOrder",
-      ]
-      info = {field: getattr(fmu_inst, field, None)for field in fields}
-      # Custom / renamed fields
-      info["fmiKind"] = getattr(fmu_inst, "fmuType", None)
-      info["path"] = str(getattr(fmu_inst, "fmuPath", ""))
-      return info
+  def getFMUInfo(self, element, model):
+    fmu_inst = model.resources.get(element.fmuPath)
+    if not fmu_inst:
+      return {}
+    fields = [
+      "description", "fmiVersion", "generationTool", "guid",
+      "generationDateAndTime", "modelName",
+      "canBeInstantiatedOnlyOncePerProcess", "canGetAndSetFMUstate",
+      "canNotUseMemoryManagementFunctions", "canSerializeFMUstate",
+      "completedIntegratorStepNotNeeded", "needsExecutionTool",
+      "providesDirectionalDerivative", "canInterpolateInputs",
+      "maxOutputDerivativeOrder",
+    ]
+    info = {f: getattr(fmu_inst, f, None) for f in fields}
+    info["fmiKind"] = getattr(fmu_inst, "fmuType", None)
+    info["path"]    = str(getattr(fmu_inst, "fmuPath", ""))
+    return info
 
   def serializeConnectionGeometry(self, connection):
-    geometry = getattr(connection, "connectionGeometry", None)
-
-    if geometry is None:
-       return {
-            "pointsX": [],
-            "pointsY": []
-        }
+    g = getattr(connection, "connectionGeometry", None)
+    if g is None:
+      return {"pointsX": [], "pointsY": []}
     return {
-        "pointsX": list(geometry.pointsX) if geometry.pointsX is not None else [],
-        "pointsY": list(geometry.pointsY) if geometry.pointsY is not None else []
+      "pointsX": list(g.pointsX) if g.pointsX is not None else [],
+      "pointsY": list(g.pointsY) if g.pointsY is not None else [],
     }
 
   def serializeConnections(self, system):
-    connection_json = []
-    for connection in getattr(system, "connections", []):
-        connection_json.append({
-            "conA": ".".join([str(connection.startElement), str(connection.startConnector)]),
-            "conB": ".".join([str(connection.endElement), str(connection.endConnector)]),
-            "type": "connection",
-            "geometry": self.serializeConnectionGeometry(connection)
-        })
-    return connection_json
+    result = []
+    for conn in getattr(system, "connections", []):
+      result.append({
+        "conA": ".".join([str(conn.startElement), str(conn.startConnector)]),
+        "conB": ".".join([str(conn.endElement),   str(conn.endConnector)]),
+        "type": "connection",
+        "geometry": self.serializeConnectionGeometry(conn)
+      })
+    return result
 
-  def serializeElement(self, element):
+  def serializeElement(self, element, model):
     node = {
-        "name": str(element._name) if isinstance(element, System) else str(element.name),
-        "type": "system" if isinstance(element, System) else "component",
-        "elements": []
+      "name": str(element._name) if isinstance(element, System) else str(element.name),
+      "type": "system" if isinstance(element, System) else "component",
+      "elements": [],
+      "connectors": self.serializeConnectors(element),
     }
-    node["connectors"] = self.serializeConnectors(element)
-    # Add geometry for both systems and components.
     if isinstance(element, (System, Component)):
-        node["geometry"] = self.serializeElementGeometry(element)
+      node["geometry"] = self.serializeElementGeometry(element)
     if isinstance(element, Component):
-        node["fmuInfo"] = self.getFMUInfo(element)
+      node["fmuInfo"] = self.getFMUInfo(element, model)
     if isinstance(element, System):
-        node["connections"] = self.serializeConnections(element)
-        for key, child in element.elements.items():
-            node["elements"].append(self.serializeElement(child))
+      node["connections"] = self.serializeConnections(element)
+      for child in element.elements.values():
+        node["elements"].append(self.serializeElement(child, model))
     return node
 
+  # -----------------------------------
   # close
+  # -----------------------------------
   def close(self):
     if self._socket is not None and not self._socket.closed:
       print("OMS server shutting down", flush=True)
@@ -375,13 +376,11 @@ class OMSGuiServer:
       self._context = None
 
 def _main():
-  # parse command-line arguments
   parser = argparse.ArgumentParser(description='OMS-SERVER', allow_abbrev=False)
-  parser.add_argument('--endpoint-rep', default=None, help='define the endpoint used for the interactive simulation communication')
+  parser.add_argument('--endpoint-rep', default=None)
   args = parser.parse_args()
   server = OMSGuiServer(args.endpoint_rep)
   server.run()
-
 
 if __name__ == "__main__":
   _main()
