@@ -61,7 +61,7 @@ oms::Variable::Variable(fmiHandle* fmi4c, int index_, oms_component_enu_t compon
   }
 }
 
-oms::Variable::Variable(SlaveDescription_t *desc, int index)
+oms::Variable::Variable(std::shared_ptr<SlaveDescription_t> desc, int index)
 : dcp(true), fmi2(false), fmi3(false), index(index), componentType(oms_component_dcp)
 {
     configureDCPVariable(desc, index);
@@ -209,7 +209,7 @@ void oms::Variable::configureFMI3Variable(fmiHandle* fmi4c, int index_)
   }
 }
 
-void oms::Variable::configureDCPVariable(SlaveDescription_t *desc, int index)
+void oms::Variable::configureDCPVariable(std::shared_ptr<SlaveDescription_t> desc, int index)
 {
     this->index = index;
 

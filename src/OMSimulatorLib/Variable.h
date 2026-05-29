@@ -58,7 +58,7 @@ namespace oms
   {
   public:
     Variable(fmiHandle * fmi4c, int index, oms_component_enu_t componentType);
-    Variable(SlaveDescription_t *desc, int index);   //For DCP components, component type is implicit
+    Variable(std::shared_ptr<SlaveDescription_t> desc, int index);   //For DCP components, component type is implicit
     ~Variable();
 
     void markAsState(size_t der_index) { is_state = true; this->der_index = der_index; }
@@ -121,7 +121,7 @@ namespace oms
 
     void configureFMI2Variable(fmiHandle *fmi4c, int index);
     void configureFMI3Variable(fmiHandle *fmi4c, int index);
-    void configureDCPVariable(SlaveDescription_t *desc, int index);
+    void configureDCPVariable(std::shared_ptr<SlaveDescription_t> desc, int index);
 
     ComRef cref;
     std::string description;

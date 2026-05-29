@@ -36,6 +36,7 @@
 
 #include "Component.h"
 #include "ComRef.h"
+#include "DCPInfo.h"
 #include "ResultWriter.h"
 #include "Snapshot.h"
 #include "Values.h"
@@ -51,6 +52,8 @@
 #include <dcp/driver/ethernet/udp/UdpDriver.hpp>    //Must be included first because of include conflict with Asio and windows.h
 #include <dcp/logic/DcpManagerMaster.hpp>
 
+class SlaveDescription_t;
+
 namespace oms
 {
 class System;
@@ -62,7 +65,8 @@ public:
 
     static Component* NewComponent(const ComRef& cref, System* parentSystem, const std::string& dcpPath, std::string replaceComponent = "");
     static Component* NewComponent(const pugi::xml_node& node, System* parentSystem, const std::string& sspVersion, const Snapshot& snapshot, std::string variantName);
-    const FMUInfo* getFMUInfo() const {return &(this->fmuInfo);}
+    const DCPInfo* getDCPInfo() const {return &(this->dcpInfo);}
+    
 
     oms_status_enu_t addSignalsToResults(const char* regex);
     oms_status_enu_t exportToSSD(pugi::xml_node& node, Snapshot& snapshot, std::string variantName) const;
@@ -86,9 +90,8 @@ protected:
     ComponentDCP& operator=(ComponentDCP const& copy); ///< not implemented
 
 private:
-    FMUInfo fmuInfo;
-    SlaveDescription_t *desc;
-
+    DCPInfo dcpInfo;
+    std::shared_ptr<SlaveDescription_t> dcpSlaveDescription;
     std::vector<Variable> allVariables;
     std::vector<unsigned int> calculatedParameters;
     std::vector<unsigned int> derivatives;
