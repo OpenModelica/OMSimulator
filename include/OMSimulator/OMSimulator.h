@@ -146,6 +146,7 @@ OMSAPI oms_status_enu_t OMSCALL oms_setConnectorGeometry(const char* cref, const
 OMSAPI oms_status_enu_t OMSCALL oms_setConnectorNumericType(const char* cref, const oms_signal_numeric_type_enu_t numericType);
 OMSAPI oms_status_enu_t OMSCALL oms_setElementGeometry(const char* cref, const ssd_element_geometry_t* geometry);
 OMSAPI oms_status_enu_t OMSCALL oms_setFixedStepSize(const char* cref, double stepSize);
+OMSAPI oms_status_enu_t OMSCALL oms_setDcpPorts(const char* cref, int masterPort, int slavePort);
 OMSAPI oms_status_enu_t OMSCALL oms_setInteger(const char* cref, int value);
 OMSAPI oms_status_enu_t OMSCALL oms_setLogFile(const char* filename);
 OMSAPI void OMSCALL oms_setLoggingCallback(void (*cb)(oms_message_type_enu_t type, const char* message));

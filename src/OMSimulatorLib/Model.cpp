@@ -64,7 +64,7 @@
 #include <dcp/zip/DcpSlaveReader.hpp>
 
 oms::Model::Model(const oms::ComRef& cref, const std::string& tempDir)
-  : cref(cref), tempDir(tempDir), resultFilename(std::string(cref) + "_res.mat"), dcpLog(std::cout)
+  : cref(cref), tempDir(tempDir), resultFilename(std::string(cref) + "_res.mat"), dcpLog(std::cout), dcpMasterPort(8000), dcpSlavePort(8001)
 {
   if (!Flags::SuppressPath())
     logInfo("New model \"" + std::string(cref) + "\" with corresponding temp directory \"" + tempDir + "\"");
@@ -1309,7 +1309,7 @@ oms_status_enu_t oms::Model::simulate()
   if(dcpComponentDetected) {
 
     //Start a DCP slave instance for the system
-    system->configureDcpSlave();
+    system->configureDcpSlave(dcpSlavePort);
 
     this->configureDcpMaster();
 
@@ -1340,7 +1340,11 @@ oms_status_enu_t oms::Model::simulate()
 
     logInfo("Running a DCP simulation...");
 
-    system->startDcpSlave();  //Separate thread
+    oms_status_enu_t status = system->startDcpSlave();  //Separate thread
+
+    if(status != oms_status_ok) {
+      return status;
+    }
 
     this->startDcpMaster(); 
 
@@ -1451,11 +1455,10 @@ oms_status_enu_t oms::Model::reset()
 
 oms_status_enu_t oms::Model::configureDcpMaster()
 {
-  std::string host = "127.0.0.1"; // TODO: Port should not be hard coded!
-  port_t port = 8000; // TODO: Port should not be hard coded!
+  std::string host = "127.0.0.1"; 
   std::string internalSystemFile = "OMSimulatorSystem_slave_description.dcp"; 
 
-  dcpDriver = new UdpDriver(host, port);
+  dcpDriver = new UdpDriver(host, dcpMasterPort);
 
   std::shared_ptr<SlaveDescription_t> slaveDescription = getSlaveDescriptionFromDcpFile(1, 0, internalSystemFile.c_str());
   dcpInternalSystemSlaveDescription = slaveDescription;
@@ -1590,25 +1593,44 @@ oms_status_enu_t oms::Model::addDcpConnection(oms::Connection *connection)
 
 oms_status_enu_t oms::Model::startDcpMaster()
 {
-  dcpComStep = 0.001; // TODO: Should not be hard-coded
+  dcpComStep = system->getMaximumStepSize();
 
-  std::thread b(&DcpManagerMaster::start, dcpManager);
+  std::thread b(&Model::startDcpMasterThread, this);
 
   std::chrono::seconds dura(1);
   std::this_thread::sleep_for(dura);
   DcpOpMode mode = DcpOpMode::NRT;  //Todo: Support real-time mode as well
 
-  //dcpManager->STC_register(u_char(1), DcpState::ALIVE, convertToUUID(dcpInternalSystemSlaveDescription->uuid), mode, 1, 0);
-
-  int i=1;
-  for(const auto &desc : dcpSlaveDescriptions) {
-    dcpManager->STC_register(u_char(i), DcpState::ALIVE, convertToUUID(desc->uuid), mode, 1, 0);
-    ++i;
+  if(dcpMasterThreadReturnValue == oms_status_ok) {
+    int i=1;
+    for(const auto &desc : dcpSlaveDescriptions) {
+      dcpManager->STC_register(u_char(i), DcpState::ALIVE, convertToUUID(desc->uuid), mode, 1, 0);
+      ++i;
+    }
   }
 
   b.join();
 
+  return dcpMasterThreadReturnValue;
+}
+
+oms_status_enu_t oms::Model::setDcpPorts(int masterPort, int slavePort)
+{
+  this->dcpMasterPort = masterPort;
+  this->dcpSlavePort = slavePort;
   return oms_status_enu_t();
+}
+
+void oms::Model::startDcpMasterThread() 
+{
+  dcpMasterThreadReturnValue = oms_status_ok;
+  try {
+    dcpManager->start();
+  }
+  catch (std::exception& e) {
+    logError(e.what());
+    dcpMasterThreadReturnValue = oms_status_error;
+  }
 }
 
 oms_status_enu_t oms::Model::setLoggingInterval(double loggingInterval)

@@ -203,8 +203,9 @@ namespace oms
     Values& getValues() { return values; }
     std::map<std::string, filesystem::path> fmuGuid;
 
-    oms_status_enu_t configureDcpSlave();
+    oms_status_enu_t configureDcpSlave(port_t port);
     oms_status_enu_t startDcpSlave();
+    void startDcpSlaveThread();
     void dcpConfigure();
     void dcpInitialize();
     void dcpDoStep(uint64_t steps);
@@ -271,11 +272,12 @@ namespace oms
     UdpDriver* dcpDriver;
     OstreamLog dcpLog;
     double dcpTime = 0; //TODO: Start time should not be hard-coded
-    double dcpTimeStep = 0.001; //TODO: Time step should not be hard-coded
+    double dcpTimeStep = 0.001;
     std::map<oms::ComRef, double*> dcpInputs;
     std::map<oms::ComRef, double*> dcpOutputs;
     std::map<oms::ComRef, valueReference_t> dcpInputValueReferences;
     std::map<oms::ComRef, valueReference_t> dcpOutputValueReferences;
+    oms_status_enu_t dcpSlaveThreadReturnValue;
   };
 }
 
