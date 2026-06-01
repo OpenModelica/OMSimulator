@@ -1293,8 +1293,6 @@ oms_status_enu_t oms::Model::simulate()
     return logError("Model doesn't contain a system");
   }
 
-  // DCPTODO: If system contains DCP components, start a DCP simulation where the system is wrapped as a DCP slave.
-
   //Loop over system components and check if any of them is a DCP component. If yes, start a DCP simulation where the system is wrapped as a DCP slave.
   bool dcpComponentDetected = false;
   std::vector<oms::ComponentDCP*> dcpComponentsList;
