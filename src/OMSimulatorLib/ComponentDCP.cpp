@@ -339,18 +339,18 @@ oms_status_enu_t oms::ComponentDCP::updateSignals(ResultWriter &resultWriter)
 
 void oms::ComponentDCP::getFilteredSignals(std::vector<Connector> &filteredSignals) const
 {
-    // TODO: Implement (dcp)
+    // Not sure if needed?
 }
 
 oms::Variable *oms::ComponentDCP::getVariable(const ComRef &cref)
 {
-    // TODO: Implement (dcp)
+    // Not sure if needed?
     return nullptr;
 }
 
 oms_status_enu_t oms::ComponentDCP::initializeDependencyGraph_outputs()
 {
-    // TODO: Does this work? (dcp)
+    // Not sure if this is correct
 
     if (outputsGraph.getEdges().connections.size() > 0)
     {
