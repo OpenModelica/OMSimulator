@@ -133,7 +133,9 @@ namespace oms
     oms_status_enu_t configureDcpMaster();
     oms_status_enu_t addDcpSlave(ComponentDCP *component);
     oms_status_enu_t addDcpConnection(oms::Connection *connection);
+    void startDcpMasterThread();
     oms_status_enu_t startDcpMaster();
+    oms_status_enu_t setDcpPorts(int masterPort, int slavePort);
 
     oms_modelState_enu_t getModelState() const {return modelState;}
 
@@ -142,7 +144,7 @@ namespace oms
     oms_status_enu_t setStopTime(double value);
     double getStopTime() const {return stopTime;}
     double getTime() const;
-
+    
     oms_status_enu_t setLoggingInterval(double loggingInterval);
     double getLoggingInterval() const {return loggingInterval;}
     oms_status_enu_t setResultFile(const std::string& filename, int bufferSize);
@@ -214,6 +216,8 @@ namespace oms
 
     DcpManagerMaster *dcpManager;
     UdpDriver* dcpDriver;
+    port_t dcpMasterPort;
+    port_t dcpSlavePort;
     int dcpSlaveCount;
     std::map<ComponentDCP*, size_t> dcpComponents;
     std::shared_ptr<SlaveDescription_t> dcpInternalSystemSlaveDescription;
@@ -235,6 +239,8 @@ namespace oms
     size_t dcpSlavesStopped = 0;
     size_t dcpSlavesDeregistered = 0;
     uint8_t serversRunPastStopTime = 0;
+    oms_status_enu_t dcpMasterThreadReturnValue;
+
     
     void dcpInitialize();
     void dcpConfiguration();

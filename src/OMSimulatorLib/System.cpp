@@ -2800,11 +2800,10 @@ oms_status_enu_t oms::System::renameConnectors()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::System::configureDcpSlave()
+oms_status_enu_t oms::System::configureDcpSlave(port_t port)
 {
-    std::string host = "127.0.0.1"; // TODO: Port should not be hard coded!
-    port_t port = 8002; // TODO: Port should not be hard coded!
-    double dcpTimeStep = 0.001; // TODO: Time step should not be hard coded!
+    std::string host = "127.0.0.1"; 
+    dcpTimeStep = this->getMaximumStepSize();
     std::string targetFile = "OMSimulatorSystem_slave_description.dcp"; 
 
     dcpInputs.clear();
@@ -2929,10 +2928,25 @@ oms_status_enu_t oms::System::startDcpSlave()
     dcpThread.join();
 
   dcpThread = std::thread([this]() {
-    dcpManager->start();
+    startDcpSlaveThread();
   });
 
-  return oms_status_ok;
+  std::chrono::seconds dura(1);
+  std::this_thread::sleep_for(dura);
+
+  return dcpSlaveThreadReturnValue;
+}
+
+void oms::System::startDcpSlaveThread() 
+{
+  dcpSlaveThreadReturnValue = oms_status_ok;
+  try {
+    dcpManager->start();
+  }
+  catch (std::exception& e) {
+    logError(e.what());
+    dcpSlaveThreadReturnValue = oms_status_error;
+  }
 }
 
 void oms::System::dcpConfigure()
