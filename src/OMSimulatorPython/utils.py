@@ -114,6 +114,7 @@ def parseElements(node, resources = None):
       elements[name] = Component(name, source)
       elements[name].implementation = implementation
       elements[name].description = description
+      elements[name].fmu = resources.get(source)  # attach FMU for modeldescription start value fallback in getValue
       elements[name].connectors = Connector.importFromNode(component)
       elements[name].elementgeometry = ElementGeometry.importFromNode(component)
       parseParameterBindings(component, elements[name], resources)

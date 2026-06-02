@@ -298,6 +298,7 @@ class System:
         fmuType = inst._fmuType if inst else None
         component = Component(first, resource, fmuType, connectors, unitDefinitions, enumerationDefinitions)
         component.fmuType = inst.fmuType if inst else None
+        component.fmu = inst  # keep FMU reference for modeldescription start value fallback
         self.elements[first] = component
         return component
       elif isinstance(inst, ResultReader) or (inst is None and resource.endswith(".csv")):
@@ -642,14 +643,13 @@ class System:
     ## or allow non existing connectors to support parameter mapping throgh SSM inline or ssm file by checking if cref
     connector = self._connectorExists(first)
     if connector or cref.is_root():
-      self.value.getValue(cref)
-      return
+      return self.value.getValue(cref)
 
     match self.elements.get(first):
       case System():
-        self.elements[first].getValue(cref.pop_first())
+        return self.elements[first].getValue(cref.pop_first())
       case Component():
-        self.elements[first].getValue(cref.last())
+        return self.elements[first].getValue(cref.last())
       case _:
         raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component or a Connector")
 

@@ -54,6 +54,7 @@ class Component:
     self.parameterResources = []
     self.metaDataResources = []
     self.implementation = implementation
+    self.fmu = None  # set by addComponent when the FMU is loaded
 
   def addConnector(self, connector):
     if connector in self.connectors:
@@ -208,8 +209,20 @@ class Component:
     ## it is possible that the parameter is not defined as connector but only in the ssv file or ssm mapping, so we allow setting values without types
     self.value.setValue(cref, value, None, unit, description)
 
-  def getValue(self, cref:str):
-    return self.value.getValue(cref)
+  def getValue(self, cref: str):
+    # First check user-set values (SSV parameter bindings).
+    # Values.getValue returns (value, type, unit, description) tuple or None.
+    entry = self.value.getValue(cref)
+    if entry is not None:
+      return entry[0]
+    # Fall back to the default start value from modeldescription.xml.
+    # modelDescriptionStartValue is a raw string parsed from XML — returned as-is;
+    # the caller is responsible for converting to the target numeric type.
+    if self.fmu is not None:
+      for var in self.fmu.variables:
+        if str(var.name) == str(cref):
+          return var.modelDescriptionStartValue
+    return None
 
   def setSolver(self, name: str):
     self.solver = name

@@ -209,7 +209,7 @@ class SSD:
 
   def getValue(self, cref: CRef):
     subcref = self._validateCref(cref)
-    self.system.getValue(subcref)
+    return self.system.getValue(subcref)
 
   def getElement(self, cref: CRef):
     subcref = self._validateCref(cref)

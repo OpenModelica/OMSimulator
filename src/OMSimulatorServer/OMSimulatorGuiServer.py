@@ -75,12 +75,11 @@ class OMSGuiServer:
     return model
 
   def _dispatch(self, method, args, model_name=None):
-    # All methods below require an existing model — look it up once.
-    model = self._get_model(model_name)
 
     # ---------- new model ----------
+    # These methods don't require an existing model — handle before _get_model().
     if method == "newModel":
-      name = args.get("model", "default")
+      name = args.get("name", "default")
       ssp = SSP()
       ssp.activeVariant.name = name
       ssp.activeVariant.system.name = args.get("system_name", "default")
@@ -108,6 +107,9 @@ class OMSGuiServer:
     if method == "shutdown":
       print("Shutdown command received, stopping server.", flush=True)
       return {"status": "shutdown"}
+
+    # All methods below require an existing model — look it up once.
+    model = self._get_model(model_name)
 
     # --------- add system ----------
     if method == "addSystem":
@@ -148,6 +150,19 @@ class OMSGuiServer:
         "resultFile": getattr(model.activeVariant.system, "resultFile", None) or "model_res.mat",
         "bufferSize": 0
       }
+
+    # ---------- setValue ----------
+    if method == "setValue":
+      cref = CRef(*args["cref"])
+      model.setValue(cref, args["value"])
+      return {"status": "ok", "method": method}
+
+    # ---------- getValue ----------
+    if method == "getValue":
+      cref = CRef(*args["cref"])
+      value = model.getValue(cref)
+      print(f"getValue for '{cref}' returned: {value}", flush=True)
+      return {"status": "ok", "method": method, "value": value}
 
     # ---------- get/set start time ----------
     if method == "getStartTime":

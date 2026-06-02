@@ -325,7 +325,7 @@ class SSP:
       if fmu_inst and not fmu_inst.varExist(cref.last()):
         raise KeyError(f"Variable '{cref.last()}' does not exist in the variables list of component '{resource}'")
 
-    self.activeVariant.getValue(cref)
+    return self.activeVariant.getValue(cref)
 
   def getElement(self, cref: CRef):
     if self.activeVariant is None:
