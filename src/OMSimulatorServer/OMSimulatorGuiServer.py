@@ -162,11 +162,11 @@ class OMSGuiServer:
       cref = CRef(*args["cref"])
       value = model.getValue(cref)
       print(f"getValue for '{cref}' returned: {value}", flush=True)
-      return {"status": "ok", "method": method, "value": value}
+      return {"status": "ok", "method": method, "value": str(value)}
 
     # ---------- get/set start time ----------
     if method == "getStartTime":
-      return {"status": "ok", "method": method, "value": model.activeVariant.startTime}
+      return {"status": "ok", "method": method, "value": str(model.activeVariant.startTime)}
 
     if method == "setStartTime":
       model.activeVariant.startTime = args["value"]
@@ -174,7 +174,7 @@ class OMSGuiServer:
 
     # ---------- get/set stop time ----------
     if method == "getStopTime":
-      return {"status": "ok", "method": method, "value": model.activeVariant.stopTime}
+      return {"status": "ok", "method": method, "value": str(model.activeVariant.stopTime)}
 
     if method == "setStopTime":
       model.activeVariant.stopTime = args["value"]
@@ -186,6 +186,37 @@ class OMSGuiServer:
 
     if method == "setResultFile":
       model.activeVariant.system.resultFile = args.get("file", "model_res.mat")
+      return {"status": "ok", "method": method}
+
+    # ---------- getTolerance----------
+    if method == "getTolerance":
+      return {"status": "ok", "method": method, "value": str(model.activeVariant.tolerance)}
+
+    # ---------- setTolerance ----------
+    if method == "setTolerance":
+      model.activeVariant.tolerance = args["value"]
+      return {"status": "ok", "method": method}
+
+    ## ---------- get/set step size ----------
+    if method == "getVariableStepSize":
+      return {"status": "ok", "method": method, "initialStepSize": str(model.activeVariant.initialStepSize), "minimumStepSize": str(model.activeVariant.minimumStepSize), "maximumStepSize": str(model.activeVariant.maximumStepSize)}
+
+    if method == "setVariableStepSize":
+      model.activeVariant.initialStepSize = args["initialStepSize"]
+      model.activeVariant.minimumStepSize = args["minimumStepSize"]
+      model.activeVariant.maximumStepSize = args["maximumStepSize"]
+      return {"status": "ok", "method": method}
+
+    ## --------- get/set fixed step size ----------
+    if method == "getFixedStepSize":
+      return {"status": "ok", "method": method, "value": str(model.activeVariant.maximumStepSize)}
+
+    ## --------- set fixed step size (sets variable step size with equal initial, min, max) ----------
+    if method == "setFixedStepSize":
+      step_size = args["value"]
+      model.activeVariant.initialStepSize = step_size
+      model.activeVariant.minimumStepSize = step_size
+      model.activeVariant.maximumStepSize = step_size
       return {"status": "ok", "method": method}
 
     # ---------- add component ----------
@@ -267,7 +298,28 @@ class OMSGuiServer:
       model.addConnection(crefA, crefB)
       return {"status": "ok", "method": method}
 
-    # ---------- solver ----------
+    # ---------- solver settings ----------
+    if method == "getSolverSettings":
+      # Return all named solver configs and per-component assignments.
+      solvers = model.activeVariant.system.solvers  # list of dicts: {name, method, tolerance}
+      assignments = {}
+      for elem_name, element in model.activeVariant.system.elements.items():
+        if hasattr(element, 'solver') and element.solver:
+          assignments[str(elem_name)] = element.solver
+      print(f"getSolverSettings: solvers={solvers}, assignments={assignments}", flush=True)
+      return {"status": "ok", "method": method, "solvers": solvers, "assignments": assignments}
+
+    if method == "setSolverSettings":
+      # Replace all solver configs and re-apply component assignments.
+      model.activeVariant.system.solvers = []
+      for solver in args.get("solvers", []):
+        model.newSolver(solver)
+      for comp_name, solver_name in args.get("assignments", {}).items():
+        cref = CRef(model_name, comp_name)
+        model.setSolver(cref, solver_name)
+      return {"status": "ok", "method": method}
+
+    # ---------- component-level solver assignment ----------
     if method == "setSolver":
       cref = CRef(*args["cref"])
       model.setSolver(cref, args["solver"])

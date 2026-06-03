@@ -61,6 +61,10 @@ class SSD:
     self.system = System(name)
     self.startTime = 0.0
     self.stopTime = 1.0
+    self.initialStepSize = 1e-6
+    self.minimumStepSize = 1e-12
+    self.maximumStepSize = 1e-3
+    self.tolerance = 1e-4
     self.unitDefinitions = list()
     self.enumerationDefinitions = list()
 
