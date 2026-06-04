@@ -64,10 +64,10 @@ pipeline {
             stash name: 'docs', includes: "install/share/doc/**"
           }
         }
-        stage('linux64-focal') {
+        stage('linux64-jammy') {
           agent {
             docker {
-              image 'docker.openmodelica.org/build-deps:v1.22.2'
+              image 'ghcr.io/openmodelica/build-deps:v1.22.3'
               label 'linux'
               alwaysPull true
             }
@@ -77,10 +77,10 @@ pipeline {
           }
           steps {
             buildOMS()
-            sh '(cd install/ && tar czf "../OMSimulator-linux-focal-amd64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.tar.gz" *)'
+            sh '(cd install/ && tar czf "../OMSimulator-linux-jammy-amd64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.tar.gz" *)'
 
-            archiveArtifacts artifacts: 'OMSimulator-linux-focal-amd64-*.tar.gz', fingerprint: true
-            stash name: 'focal-amd64-zip', includes: "OMSimulator-linux-focal-amd64-*.tar.gz"
+            archiveArtifacts artifacts: 'OMSimulator-linux-jammy-amd64-*.tar.gz', fingerprint: true
+            stash name: 'jammy-amd64-zip', includes: "OMSimulator-linux-jammy-amd64-*.tar.gz"
           }
         }
         stage('linux64-asan') {
@@ -446,7 +446,7 @@ EXIT /b 1
           }
           steps {
             unstash name: 'amd64-zip'         // includes: "OMSimulator-linux-amd64-*.tar.gz"
-            unstash name: 'focal-amd64-zip'         // includes: "OMSimulator-linux-focal-amd64-*.tar.gz"
+            unstash name: 'jammy-amd64-zip'         // includes: "OMSimulator-linux-jammy-amd64-*.tar.gz"
             unstash name: 'mingw-ucrt64-zip'  // includes: "OMSimulator-mingw-ucrt64-*.zip"
             unstash name: 'win64-zip'         // includes: "OMSimulator-win64-*.zip"
             // unstash name: 'osx-zip'           // includes: "OMSimulator-osx-*.zip"
@@ -462,8 +462,8 @@ EXIT /b 1
                       remoteDirectory: "${DEPLOYMENT_PREFIX}linux-amd64/",
                       sourceFiles: 'OMSimulator-linux-amd64-*.tar.gz'),
                     sshTransfer(
-                      remoteDirectory: "${DEPLOYMENT_PREFIX}linux-focal-amd64/",
-                      sourceFiles: 'OMSimulator-linux-focal-amd64-*.tar.gz'),
+                      remoteDirectory: "${DEPLOYMENT_PREFIX}linux-jammy-amd64/",
+                      sourceFiles: 'OMSimulator-linux-jammy-amd64-*.tar.gz'),
                     sshTransfer(
                       remoteDirectory: "${DEPLOYMENT_PREFIX}win-mingw-ucrt64/",
                       sourceFiles: 'OMSimulator-mingw-ucrt64-*.zip'),
