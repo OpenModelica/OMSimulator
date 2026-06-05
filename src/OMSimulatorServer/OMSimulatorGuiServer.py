@@ -301,13 +301,23 @@ class OMSGuiServer:
     # ---------- solver settings ----------
     if method == "getSolverSettings":
       # Return all named solver configs and per-component assignments.
-      solvers = model.activeVariant.system.solvers  # list of dicts: {name, method, tolerance}
+      solver_list = []
+      for solver in model.activeVariant.system.solvers:
+        solver_dict = {}
+        for key, value in solver.items():
+          solver_dict[str(key)] = str(value)
+        solver_list.append(solver_dict)
+
       assignments = {}
       for elem_name, element in model.activeVariant.system.elements.items():
         if hasattr(element, 'solver') and element.solver:
-          assignments[str(elem_name)] = element.solver
-      print(f"getSolverSettings: solvers={solvers}, assignments={assignments}", flush=True)
-      return {"status": "ok", "method": method, "solvers": solvers, "assignments": assignments}
+          assignments[str(elem_name)] = str(element.solver)
+        if isinstance(element, System):
+          for comp_name, comp in element.elements.items():
+            if hasattr(comp, 'solver') and comp.solver:
+              assignments[str(comp_name)] = str(comp.solver)
+
+      return {"status": "ok", "method": method, "solvers": solver_list, "assignments": assignments}
 
     if method == "setSolverSettings":
       # Replace all solver configs and re-apply component assignments.
@@ -315,7 +325,8 @@ class OMSGuiServer:
       for solver in args.get("solvers", []):
         model.newSolver(solver)
       for comp_name, solver_name in args.get("assignments", {}).items():
-        cref = CRef(model_name, comp_name)
+        comp_ref = comp_name.split(".")[1:]  # assuming comp_name is like "subsystem.component"
+        cref = CRef(*comp_ref)
         model.setSolver(cref, solver_name)
       return {"status": "ok", "method": method}
 
