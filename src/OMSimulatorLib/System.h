@@ -55,6 +55,12 @@
 
 #include <ctpl_stl.h>
 
+#include <dcp/log/OstreamLog.hpp>
+
+class DcpManagerSlave;
+class UdpDriver;
+//class OstreamLog;
+
 namespace oms
 {
   class AlgLoop;
@@ -131,6 +137,7 @@ namespace oms
     std::map<ComRef, System*>& getSubSystems() {return subsystems;}
     std::map<ComRef, Component*>& getComponents() {return components;}
     std::vector<Connection*>& getConnections() {return connections;}
+    std::vector<Connection*>& getDcpConnections() {return dcpConnections;}
     oms_status_enu_t updateDependencyGraphs();
     const DirectedGraph& getInitialUnknownsGraph() {return initializationGraph;}
     const DirectedGraph& getOutputsGraph() {return eventGraph;}
@@ -196,6 +203,15 @@ namespace oms
     Values& getValues() { return values; }
     std::map<std::string, filesystem::path> fmuGuid;
 
+    oms_status_enu_t configureDcpSlave(port_t port);
+    oms_status_enu_t startDcpSlave();
+    void startDcpSlaveThread();
+    void dcpConfigure();
+    void dcpInitialize();
+    void dcpDoStep(uint64_t steps);
+    void dcpSetTimeRes(const uint32_t numerator, const uint32_t denominator);
+    void dcpStop();
+
   protected: // methods
     System(const ComRef& cref, oms_system_enu_t type, Model* parentModel, System* parentSystem, oms_solver_enu_t solverMethod);
 
@@ -244,10 +260,24 @@ namespace oms
     std::vector<oms_element_t*> subelements;  ///< last element is always NULL; don't free it
     std::vector<BusConnector*> busconnectors;
     std::vector<Connection*> connections;  ///< last element is always NULL
+    std::vector<Connection*> dcpConnections; ///< dummy connections to be used for setting up a DCP simulation
+    std::thread dcpThread;
+
 
     bool loopsNeedUpdate = true;
     std::vector<AlgLoop> algLoops;  ///< vector of algebraic loop objects
     std::string getFmiVersion(const std::string& path);
+
+    DcpManagerSlave *dcpManager;
+    UdpDriver* dcpDriver;
+    OstreamLog dcpLog;
+    double dcpTime = 0; //TODO: Start time should not be hard-coded
+    double dcpTimeStep = 0.001;
+    std::map<oms::ComRef, double*> dcpInputs;
+    std::map<oms::ComRef, double*> dcpOutputs;
+    std::map<oms::ComRef, valueReference_t> dcpInputValueReferences;
+    std::map<oms::ComRef, valueReference_t> dcpOutputValueReferences;
+    oms_status_enu_t dcpSlaveThreadReturnValue;
   };
 }
 

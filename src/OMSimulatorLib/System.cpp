@@ -38,6 +38,7 @@
 #include "Component.h"
 #include "ComponentFMUCS.h"
 #include "ComponentFMU3CS.h"
+#include "ComponentDCP.h"
 #include "ComponentFMUME.h"
 #include "ComponentFMU3ME.h"
 #include "ComponentTable.h"
@@ -49,19 +50,28 @@
 #include "SystemSC.h"
 #include "SystemSC3.h"
 #include "SystemWC.h"
+#include "Util.h"
 #include "Variable.h"
 #include "miniunz.h"
+
+#include <dcp/zip/DcpSlaveWriter.hpp>
+#include <dcp/logic/DcpManagerSlave.hpp>
+#include <dcp/driver/ethernet/udp/UdpDriver.hpp>
+#include <dcp/model/constant/DcpLogLevel.hpp>
+#include <dcp/helper/LogHelper.hpp>
+#include <dcp/log/OstreamLog.hpp>
 
 #include <regex>
 
 oms::System::System(const oms::ComRef& cref, oms_system_enu_t type, oms::Model* parentModel, oms::System* parentSystem, oms_solver_enu_t solverMethod)
-  : element(oms_element_system, cref), cref(cref), type(type), parentModel(parentModel), parentSystem(parentSystem), solverMethod(solverMethod)
+  : element(oms_element_system, cref), cref(cref), type(type), parentModel(parentModel), parentSystem(parentSystem), solverMethod(solverMethod), dcpLog(std::cout)
 {
   minimumStepSize = Flags::MinimumStepSize();
   maximumStepSize = Flags::MaximumStepSize();
   initialStepSize = Flags::InitialStepSize();
 
   connections.push_back(NULL);
+  dcpConnections.push_back(NULL);
 
   connectors.push_back(NULL);
   element.setConnectors(&connectors[0]);
@@ -75,6 +85,9 @@ oms::System::System(const oms::ComRef& cref, oms_system_enu_t type, oms::Model* 
 
 oms::System::~System()
 {
+  if (dcpThread.joinable())
+    dcpThread.join();
+
   for (const auto& connector : connectors)
     if (connector)
       delete connector;
@@ -318,6 +331,8 @@ oms_status_enu_t oms::System::addSubModel(const oms::ComRef& cref, const std::st
 
     if (extension == ".fmu" && oms_system_wc == type && fmiVersion == "2.0")
       component = ComponentFMUCS::NewComponent(cref, this, path_.string());
+    else if (extension == ".dcp")
+      component = ComponentDCP::NewComponent(cref, this, path_.string());
     else if (extension == ".fmu" && oms_system_wc == type && fmiVersion == "3.0")
       component = ComponentFMU3CS::NewComponent(cref, this, path_.string());
     else if (extension == ".fmu" && oms_system_sc == type && fmiVersion == "2.0")
@@ -327,7 +342,7 @@ oms_status_enu_t oms::System::addSubModel(const oms::ComRef& cref, const std::st
     else if (extension == ".csv" || extension == ".mat")
       component = ComponentTable::NewComponent(cref, this, path_.string());
     else
-      return logError("supported sub-model formats are \".fmu\", \".csv\", \".mat\"");
+      return logError("supported sub-model formats are \".fmu\", \".dcp\", \".csv\", \".mat\"");
 
     if (!component)
       return oms_status_error;
@@ -1103,7 +1118,7 @@ oms::Connector* oms::System::getConnector(const oms::ComRef& cref)
     return subsystem->second->getConnector(tail);
 
   auto component = components.find(head);
-  if (component != components.end())
+  if (component != components.end()) 
     return component->second->getConnector(tail);
 
   for (auto& connector : connectors)
@@ -1229,9 +1244,19 @@ oms_status_enu_t oms::System::addConnection(const oms::ComRef& crefA, const oms:
   {
     return logError("Unit mismatch in connection: " + std::string(crefA) + " -> " + std::string(crefB));
   }
-  // connection are checked in the python side, directly add the connection
-  connections.back() = new oms::Connection(crefA, crefB, suppressUnitConversion);
-  connections.push_back(NULL);
+
+  auto componentB = getComponent(headB);
+  if ((componentA && oms_component_dcp == componentA->getType()) || (componentB && oms_component_dcp == componentB->getType())) 
+  {
+    //DCP connections should not be used by OMSimulator solver for data exchange, only for setting up the DCP simulation.
+    dcpConnections.back() = new oms::Connection(crefA, crefB, suppressUnitConversion);   
+    dcpConnections.push_back(NULL);
+  } 
+  else {
+    // connection are checked in the python side, directly add the connection
+    connections.back() = new oms::Connection(crefA, crefB, suppressUnitConversion);
+    connections.push_back(NULL);
+  }
 
   return oms_status_ok;
 }
@@ -2781,4 +2806,204 @@ oms_status_enu_t oms::System::renameConnectors()
   }
 
   return oms_status_ok;
+}
+
+oms_status_enu_t oms::System::configureDcpSlave(port_t port)
+{
+    std::string host = "127.0.0.1"; 
+    dcpTimeStep = this->getMaximumStepSize();
+    std::string targetFile = "OMSimulatorSystem_slave_description.dcp"; 
+
+    dcpInputs.clear();
+    dcpOutputs.clear();
+
+    SlaveDescription_t slaveDescription = make_SlaveDescription(1, 0, "OMSimulatorSystem", generateUuid().c_str());
+    slaveDescription.OpMode.HardRealTime = make_HardRealTime_ptr();
+    slaveDescription.OpMode.SoftRealTime = make_SoftRealTime_ptr();
+    slaveDescription.OpMode.NonRealTime = make_NonRealTime_ptr();
+    Resolution_t resolution = make_Resolution();
+    resolution.numerator = 1;
+    resolution.denominator = denominator_t(1.0/dcpTimeStep); // TODO: Time step should not be hard coded!
+    resolution.fixed = false;
+
+    slaveDescription.TimeRes.resolutions.push_back(resolution);
+    slaveDescription.TransportProtocols.UDP_IPv4 = make_UDP_ptr();
+    slaveDescription.TransportProtocols.UDP_IPv4->Control = make_Control_ptr(host, port);
+    slaveDescription.TransportProtocols.UDP_IPv4->DAT_input_output = make_DAT_ptr();
+    slaveDescription.TransportProtocols.UDP_IPv4->DAT_input_output->availablePortRanges.push_back(make_AvailablePortRange(2048, 65535));
+    slaveDescription.TransportProtocols.UDP_IPv4->DAT_parameter = make_DAT_ptr();
+    slaveDescription.TransportProtocols.UDP_IPv4->DAT_parameter->availablePortRanges.push_back(make_AvailablePortRange(2048, 65535));
+    slaveDescription.CapabilityFlags.canAcceptConfigPdus = true;
+    slaveDescription.CapabilityFlags.canHandleReset = false;
+    slaveDescription.CapabilityFlags.canHandleVariableSteps = false;
+    slaveDescription.CapabilityFlags.canMonitorHeartbeat = false;
+    slaveDescription.CapabilityFlags.canProvideLogOnRequest = true;
+    slaveDescription.CapabilityFlags.canProvideLogOnNotification = true;
+
+    int i = 0;
+    for(const auto& connection : this->getDcpConnections()) {
+      if(NULL == connection) {  
+        break;  //Vector is null terminated, break the loop
+      }
+
+      //Get pointers to the connectors of the comnnection
+      oms::Connector* connector1 = this->getConnector(connection->getSignalA());
+      oms::Connector* connector2 = this->getConnector(connection->getSignalB());
+      if(!connector1) {
+        logError("Connector 1 not found for signal: " + std::string(connection->getSignalA()));
+        continue;
+      }
+      if(!connector2) {
+        logError("Connector 2 not found for signal: " + std::string(connection->getSignalB()));
+        continue;
+      }
+
+      oms::Component* component1 = this->getComponent(connector1->getOwner().back());
+      oms::Component* component2 = this->getComponent(connector2->getOwner().back());
+      if(component1 && component1->getType() == oms_component_dcp) {
+        if(connector2 && connector2->isOutput()) {
+          std::shared_ptr<Output_t> causality = make_Output_ptr<float64_t>();
+          causality->Float64->start = std::make_shared<std::vector<float64_t>>();
+          causality->Float64->start->push_back(0.0);
+          slaveDescription.Variables.push_back(make_Variable_output(connector2->getFullName(), valueReference_t(i), causality));
+          dcpOutputValueReferences.insert(std::make_pair(connector2->getFullName(), valueReference_t(i)));
+          ++i;
+        }
+        else if(connector2 && connector2->isInput()) {
+          std::shared_ptr<CommonCausality_t> causality = make_CommonCausality_ptr<float64_t>();
+          causality->Float64->start = std::make_shared<std::vector<float64_t>>();
+          causality->Float64->start->push_back(0.0);
+          slaveDescription.Variables.push_back(make_Variable_input(connector2->getFullName(), valueReference_t(i), causality));
+          dcpInputValueReferences.insert(std::make_pair(connector2->getFullName(), valueReference_t(i)));
+          
+          ++i;
+        }
+      }
+      else if(component2 && component2->getType() == oms_component_dcp) {
+        if(connector1 && connector1->isOutput()) {
+          std::shared_ptr<Output_t> causality = make_Output_ptr<float64_t>();
+          causality->Float64->start = std::make_shared<std::vector<float64_t>>();
+          causality->Float64->start->push_back(0.0);
+          slaveDescription.Variables.push_back(make_Variable_output(connector1->getFullName(), valueReference_t(i), causality));
+          dcpOutputValueReferences.insert(std::make_pair(connector1->getFullName(), valueReference_t(i)));
+          ++i;
+        }
+        else if(connector1 && connector1->isInput()) {
+          std::shared_ptr<CommonCausality_t> causality = make_CommonCausality_ptr<float64_t>();
+          causality->Float64->start = std::make_shared<std::vector<float64_t>>();
+          causality->Float64->start->push_back(0.0);
+          slaveDescription.Variables.push_back(make_Variable_input(connector1->getFullName(), valueReference_t(i), causality));
+          dcpInputValueReferences.insert(std::make_pair(connector1->getFullName(), valueReference_t(i)));
+          ++i;
+        }
+      }
+    }
+
+    slaveDescription.Log = make_Log_ptr();
+    slaveDescription.Log->categories.push_back(make_Category(1, "DCP_SERVER"));
+    slaveDescription.Log->templates.push_back(make_Template(
+          1, 1, (uint8_t) DcpLogLevel::LVL_INFORMATION, "[Time = %float64]: output = %float64"));
+
+    writeDcpSlaveFile(std::make_shared<SlaveDescription_t>(slaveDescription), targetFile);
+
+    //Create UDP driver
+    dcpDriver = new UdpDriver(host, uint16_t(port));
+
+    //Create server DCP manager
+    dcpManager = new DcpManagerSlave(slaveDescription, dcpDriver->getDcpDriver());
+    dcpManager->setInitializeCallback<SYNC>(        std::bind(&dcpInitialize, this));
+    dcpManager->setConfigureCallback<SYNC>(         std::bind(&dcpConfigure, this));
+    dcpManager->setSynchronizingStepCallback<SYNC>( std::bind(&dcpDoStep, this, std::placeholders::_1));
+    dcpManager->setSynchronizedStepCallback<SYNC>(  std::bind(&dcpDoStep, this, std::placeholders::_1));
+    dcpManager->setRunningStepCallback<SYNC>(       std::bind(&dcpDoStep, this, std::placeholders::_1));
+    dcpManager->setRunningNRTStepCallback<SYNC>(    std::bind(&dcpDoStep, this, std::placeholders::_1));
+    dcpManager->setTimeResListener<SYNC>(           std::bind(&dcpSetTimeRes, this, std::placeholders::_1, std::placeholders::_2));
+    dcpManager->setStopCallback<SYNC>(              std::bind(&dcpStop, this));
+
+    dcpManager->addLogListener([this](auto&& arg) {
+    dcpLog.logOstream(std::forward<decltype(arg)>(arg));
+});
+
+    //dcpManager->addLogListener(std::bind(&OstreamLog::logOstream, dcpLog, std::placeholders::_1));
+    dcpManager->setGenerateLogString(true);
+
+    return oms_status_enu_t();
+}
+
+oms_status_enu_t oms::System::startDcpSlave()
+{
+  if (dcpThread.joinable())
+    dcpThread.join();
+
+  dcpThread = std::thread([this]() {
+    startDcpSlaveThread();
+  });
+
+  std::chrono::seconds dura(1);
+  std::this_thread::sleep_for(dura);
+
+  return dcpSlaveThreadReturnValue;
+}
+
+void oms::System::startDcpSlaveThread() 
+{
+  dcpSlaveThreadReturnValue = oms_status_ok;
+  try {
+    dcpManager->start();
+  }
+  catch (std::exception& e) {
+    logError(e.what());
+    dcpSlaveThreadReturnValue = oms_status_error;
+  }
+}
+
+void oms::System::dcpConfigure()
+{
+  for(const auto input : dcpInputValueReferences) {
+    dcpInputs.insert(std::make_pair(input.first, dcpManager->getInput<double*>(input.second)));
+  }
+  
+  for(const auto output : dcpOutputValueReferences)
+    dcpOutputs.insert(std::make_pair(output.first, dcpManager->getOutput<double*>(output.second)));
+}
+
+void oms::System::dcpInitialize()
+{
+  //Should already have been done
+}
+
+void oms::System::dcpDoStep(uint64_t steps)
+{
+  //Read inputs from DCP pointers
+  for(const auto input : dcpInputs) {
+    ComRef cref = input.first;
+    cref.pop_front();
+    cref.pop_front();
+    this->setReal(cref, *(input.second));
+  }
+
+  //Take some steps
+  dcpTime += steps*dcpTimeStep;
+  this->stepUntil(dcpTime);
+
+  //Write outputs to DCP pointers
+  for(const auto output : dcpOutputs) {
+    ComRef cref = output.first;
+    cref.pop_front();
+    cref.pop_front();
+    double value;
+    this->getReal(cref,  value);
+    *(output.second) = value;
+  }
+}
+
+void oms::System::dcpSetTimeRes(const uint32_t numerator, const uint32_t denominator)
+{
+
+  //Implement later if needed
+}
+
+void oms::System::dcpStop()
+{
+  //Nothing to do
 }

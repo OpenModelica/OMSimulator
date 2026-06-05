@@ -105,7 +105,8 @@ typedef enum {
 typedef enum {
   oms_component_none,
   oms_component_fmu,      ///< FMU
-  oms_component_fmu3,     ///< FMU3
+  oms_component_fmu3,      ///< FMU3
+  oms_component_dcp,      ///< DCP
   oms_component_table,    ///< lookup table
   oms_component_external  ///< external model
 } oms_component_enu_t;
@@ -514,6 +515,77 @@ typedef struct {
    */
   unsigned int maxOutputDerivativeOrder;
 } oms_fmu_info_t;
+
+typedef struct {
+  /**
+   * The DCP major version that was used to generate the DCPX file
+   * and accompanying DCP slave.
+   */
+  int dcpMajorVersion;
+  /**
+   * The DCP minor version that was used to generate the DCPX file
+   * and accompanying DCP slave.
+   */
+  int dcpMinorVersion;
+  /**
+   * The name of the complete DCP slave.
+   */
+  char* dcpSlaveName;
+  /**
+   * The universally unique identifier is a string that is used to uniquely
+   * identify a DCP slave in a global environment. The uuid acts as
+   * a fingerprint of relevant information. Typically, the uuid is assigned
+   * when the DCP slave description file is generated. It is used
+   * for verification during the registration process of a DCP slave.
+   */
+  char* uuid;
+  /**
+   * Optional string that contains a brief description of the complete
+   *DCP slave.
+   */
+  char* description;
+  /**
+   * Optional string that contains name and organization of the DCP
+   * slave author.
+   */
+  char* author;
+  /** 
+   * Optional development version number of the DCP slave.
+   */
+  char* version;
+  /**
+   * Optional information on the intellectual property copyright for this
+   * DCP slave.
+   */
+  char* copyright;
+  /**
+   * Optional information on the intellectual property licensing for this
+   * DCP slave.
+   */
+  char* license;
+  /**
+   * Optional information about the tool the DCPX file was generated
+   * with.
+   */
+  char* generationTool;
+  /**
+   * Optional date and time when the DCPX file was generated. The
+   * format is a subset of “xs:dateTime” and should be: “YYYY-MMDDThh:
+   * mm:ssZ" (with one “T” between date and time; “Z” characterizes
+   * the Zulu time zone, in other words Greenwich meantime).
+   */
+  char* generationDateAndTime;
+  /**
+   * Defines whether the variable names in Variables/Variable/name
+   * and in TypeDefinitions/SimpleType/name follow a particular 
+   * convention.
+   */
+  int variableNamingConvention;
+  /**
+   * Absolute path to the DCP file.
+   */
+  char* path;
+} oms_dcp_info_t;
 
 /*
  *  FMU default experiment settings from modeldescription.xml
