@@ -288,6 +288,12 @@ class SSP:
 
     self.activeVariant.addConnection(cref1, cref2)
 
+  def deleteConnection(self, cref1: CRef, cref2: CRef):
+    if self.activeVariant is None:
+      raise ValueError("No active variant set in the SSP.")
+
+    self.activeVariant.deleteConnection(cref1, cref2)
+
   def _getComponentResourcePath(self, cref: CRef):
     return self.activeVariant._getComponentResourcePath(cref)
 

@@ -151,6 +151,12 @@ class OMSGuiServer:
         "bufferSize": 0
       }
 
+    # ---------- delete ----------
+    if method == "delete":
+      cref = CRef(*args["cref"])
+      model.delete(cref)
+      return {"status": "ok", "method": method}
+
     # ---------- setValue ----------
     if method == "setValue":
       cref = CRef(*args["cref"])
@@ -296,6 +302,13 @@ class OMSGuiServer:
       crefA = CRef(*args["crefA"])
       crefB = CRef(*args["crefB"])
       model.addConnection(crefA, crefB)
+      return {"status": "ok", "method": method}
+
+    # ---------- delete connection ----------
+    if method == "deleteConnection":
+      crefA = CRef(*args["crefA"])
+      crefB = CRef(*args["crefB"])
+      model.deleteConnection(crefA, crefB)
       return {"status": "ok", "method": method}
 
     # ---------- solver settings ----------

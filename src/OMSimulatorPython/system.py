@@ -544,6 +544,20 @@ class System:
       # Add the connections to top level system
       self.addConnection(start_element, start_connector, end_element, end_connector)
 
+  def _deleteConnection(self, crefA: CRef, crefB: CRef) -> None:
+    """Deletes a connection from the system."""
+    startElement, startConnector = self.split_cref(crefA)
+    endElement, endConnector = self.split_cref(crefB)
+
+    for connection in self.connections[:]:
+      if (connection.startElement == str(startElement) and connection.startConnector == str(startConnector) and connection.endElement == str(endElement) and connection.endConnector == str(endConnector)):
+        self.connections.remove(connection)
+        return
+
+    for key, element in self.elements.items():
+      if isinstance(element, System):
+        self.elements[key]._deleteConnection(crefA.pop_first(), crefB.pop_first())
+
   def isConnectorAlreadyConnected(self, startElement : str, startConnector : str, endElement : str, endConnector : str):
     """Check if a connection is valid in the system."""
     for conn in self.connections:
