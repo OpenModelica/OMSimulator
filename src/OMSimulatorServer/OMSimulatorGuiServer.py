@@ -153,8 +153,13 @@ class OMSGuiServer:
 
     # ---------- delete ----------
     if method == "delete":
-      cref = CRef(*args["cref"])
-      model.delete(cref)
+      cref_parts = list(args["cref"])
+      # Empty cref means the top-level model itself should be deleted.
+      if not cref_parts:
+        del self.models[model_name]
+      else:
+        cref = CRef(*cref_parts)
+        model.delete(cref)
       return {"status": "ok", "method": method}
 
     # ---------- setValue ----------
