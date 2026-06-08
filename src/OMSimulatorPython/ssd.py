@@ -291,10 +291,11 @@ class SSD:
       generationDateAndTime=datetime.now().isoformat()
     )
 
-    self.system.export(root)
+    if self.system is not None:
+      self.system.export(root)
+      self._exportEnumerationDefinitions(root)
+      self._exportUnitDefinitions(root)
 
-    self._exportEnumerationDefinitions(root)
-    self._exportUnitDefinitions(root)
     self._exportDefaultExperiment(root)
 
     xml_content = ET.tostring(root, encoding="utf-8", xml_declaration=True, pretty_print=True).decode("utf-8")
