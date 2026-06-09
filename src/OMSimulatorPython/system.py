@@ -180,6 +180,8 @@ class System:
     match self.elements.get(first):
       case System():
         return self.elements[first].getConnector(cref.pop_first())
+      case Component():
+        return self.elements[first].getConnector(cref.pop_first())
 
   def split_cref(self, cref: CRef):
     head = cref.first()

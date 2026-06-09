@@ -61,6 +61,12 @@ class Component:
       raise ValueError(f"Connector '{connector.name}' already exists in {self.name}")
     self.connectors.append(connector)
 
+  def getConnector(self, cref: CRef):
+    for connector in self.connectors:
+      if connector.name == cref:
+        return connector
+    return None
+
   def deleteConnector(self, cref: CRef):
     for i, connector in enumerate(self.connectors):
       if connector.name == cref:
