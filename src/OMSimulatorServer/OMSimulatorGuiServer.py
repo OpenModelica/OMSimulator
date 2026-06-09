@@ -7,6 +7,7 @@ import argparse
 import traceback
 import zmq
 from OMSimulator import SSP, CRef, System, Component, ComponentTable, Connector, Causality, SignalType
+from OMSimulator.ssd import SSD
 from OMSimulator.elementgeometry import ElementGeometry
 from OMSimulator.connector import ConnectorGeometry
 from OMSimulator.connection import ConnectionGeometry
@@ -128,6 +129,26 @@ class OMSGuiServer:
     if method == "exportSnapshot":
       xml = model.activeVariant.export(filename=None)
       return {"status": "ok", "method": method, "xml": xml}
+
+    # ---------- import snapshot ----------
+    if method == "importSnapshot":
+      snapshot_xml = args.get("snapshot", "")
+      # Parse the snapshot XML into a new SSD, reusing existing resources (FMUs).
+      new_ssd = SSD.importFromString(snapshot_xml, model.resources)
+      new_name = new_ssd.name
+      # Root system name — mirrors OMS2's new_root_cref return so C++ can build
+      # the correct newEditedCref when the root system is renamed in the text editor.
+      new_root_cref = new_ssd.system.name if new_ssd.system is not None else ""
+      old_name = model.activeVariantName
+      # Replace the variant in the SSP variants dict.
+      del model.variants[old_name]
+      model.variants[new_name] = new_ssd
+      model._activeVariantName = new_name
+      # If the top-level model name changed, re-key self.models.
+      if new_name != model_name:
+        self.models[new_name] = self.models.pop(model_name)
+      #print(f"importSnapshot: '{model_name}' -> '{new_name}' (root: '{new_root_cref}')", flush=True)
+      return {"status": "ok", "method": method, "modelName": new_name, "rootCref": new_root_cref}
 
     # ---------- export to file ----------
     if method == "export":
