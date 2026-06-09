@@ -94,7 +94,6 @@ class OMSGuiServer:
       ssp = SSP(args["file"])
       name = ssp.activeVariant.name
       self.models[name] = ssp
-      print("model imported, active variant:", name, flush=True)
       return {"status": "ok", "method": method, "modelName": name}
 
     # ---------- delete model ----------
@@ -107,6 +106,7 @@ class OMSGuiServer:
     # ---------- shutdown ----------
     if method == "shutdown":
       print("Shutdown command received, stopping server.", flush=True)
+      self.models.clear()
       return {"status": "shutdown"}
 
     # All methods below require an existing model — look it up once.
@@ -161,17 +161,6 @@ class OMSGuiServer:
       model.addResource(args["source"], new_name=args["new_name"])
       return {"status": "ok", "method": method}
 
-    # ---------- get experiment ----------
-    if method == "getExperiment":
-      return {
-        "status": "ok",
-        "method": method,
-        "startTime": model.activeVariant.startTime,
-        "stopTime": model.activeVariant.stopTime,
-        "resultFile": getattr(model.activeVariant.system, "resultFile", None) or "model_res.mat",
-        "bufferSize": 0
-      }
-
     # ---------- delete ----------
     if method == "delete":
       cref_parts = list(args["cref"])
@@ -193,7 +182,6 @@ class OMSGuiServer:
     if method == "getValue":
       cref = CRef(*args["cref"])
       value = model.getValue(cref)
-      print(f"getValue for '{cref}' returned: {value}", flush=True)
       return {"status": "ok", "method": method, "value": str(value)}
 
     # ---------- get/set start time ----------
@@ -495,7 +483,7 @@ class OMSGuiServer:
       self._context = None
 
 def _main():
-  parser = argparse.ArgumentParser(description='OMS-SERVER', allow_abbrev=False)
+  parser = argparse.ArgumentParser(description='OMS-GUI-SERVER', allow_abbrev=False)
   parser.add_argument('--endpoint-rep', default=None)
   args = parser.parse_args()
   server = OMSGuiServer(args.endpoint_rep)
