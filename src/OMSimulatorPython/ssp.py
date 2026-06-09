@@ -174,6 +174,11 @@ class SSP:
       raise ValueError("No active variant set in the SSP.")
     self.activeVariant.delete(cref)
 
+  def rename(self, cref: CRef, new_name: CRef):
+    if self.activeVariant is None:
+      raise ValueError("No active variant set in the SSP.")
+    self.activeVariant.rename(cref, new_name)
+
   def newSolver(self, options: dict):
     if self.activeVariant is None:
       raise ValueError("No active variant set in the SSP.")

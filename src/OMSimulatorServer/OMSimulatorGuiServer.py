@@ -357,6 +357,22 @@ class OMSGuiServer:
         model.setSolver(cref, solver_name)
       return {"status": "ok", "method": method}
 
+    # ---------- rename ----------
+    if method == "rename":
+      cref_parts = list(args.get("cref", []))
+      new_name   = args["newName"]
+      if not cref_parts:
+        # Top-level model rename: re-key self.models and update the SSD name.
+        if new_name != model_name:
+          model.activeVariant.name = new_name
+          model._activeVariantName = new_name
+          model.variants[new_name] = model.variants.pop(model_name)
+          self.models[new_name] = self.models.pop(model_name)
+      else:
+        # Component/subsystem rename — delegate to the SSP API.
+        model.rename(CRef(*cref_parts), CRef(new_name))
+      return {"status": "ok", "method": method}
+
     # ---------- component-level solver assignment ----------
     if method == "setSolver":
       cref = CRef(*args["cref"])

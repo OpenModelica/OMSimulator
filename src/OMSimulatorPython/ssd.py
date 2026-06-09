@@ -150,6 +150,14 @@ class SSD:
       return
     return self.system.delete(subcref)
 
+  def rename(self, cref: CRef, new_name: CRef):
+    subcref = self._validateCref(cref)
+    if subcref is None:
+      # Renaming the root system itself.
+      self.system.name = str(new_name)
+      return
+    self.system.rename(subcref, new_name)
+
   def addSSVReference(self, cref: CRef, resource1: str, resource2: str | None = None):
     subcref = self._validateCref(cref)
     self.system.addSSVReference(subcref, resource1, resource2)

@@ -569,11 +569,19 @@ class System:
 
   def _findConnector(self, element_name, connector_name):
     """Returns (owner_string, causality) or (None, None) if not found."""
-    connectors = (
-        self.connectors  # System level
-        if not element_name else
-        self.elements[CRef(element_name)].connectors  # Element level
-    )
+    if not element_name:
+      connectors = self.connectors  # System level
+    else:
+      key = CRef(element_name)
+      if key not in self.elements:
+        known = [str(k) for k in self.elements.keys()]
+        raise ValueError(
+          f"Component '{element_name}' not found in system '{self.name}'. "
+          f"Known elements: {known}. "
+          f"If you renamed a component, make sure to update all connection "
+          f"references (startElement/endElement) in <ssd:Connection> too."
+        )
+      connectors = self.elements[key].connectors  # Element level
     for con in connectors:
       if str(con.name) == str(connector_name):
         owner_str = "System" if not element_name else "Element"
@@ -604,6 +612,39 @@ class System:
       if connector.name == cref:
         return connector
     return None
+
+  def rename(self, cref: CRef, new_name: CRef):
+    """Renames a component or subsystem identified by cref to new_name."""
+    first = cref.first()
+    match self.elements.get(first):
+      case System() | Component():
+        if cref.is_root():
+          # cref points directly at the element to rename — do it here.
+          self.renameComponent(first, new_name)
+        else:
+          # Recurse into the subsystem.
+          self.elements[first].rename(cref.pop_first(), new_name)
+      case _:
+        raise ValueError(f"Element '{first}' not found in system '{self.name}'")
+
+  def renameComponent(self, old_name: CRef, new_name: CRef):
+    """Renames a component/subsystem and updates all connection references in this system."""
+    if old_name not in self.elements:
+      raise ValueError(f"Component '{old_name}' not found in system '{self.name}'")
+    if new_name in self.elements:
+      raise ValueError(f"Component '{new_name}' already exists in system '{self.name}'")
+    # Re-key the elements dict
+    element = self.elements.pop(old_name)
+    element.name = new_name
+    self.elements[new_name] = element
+    # Update all connection start/end element references
+    old_str = str(old_name)
+    new_str = str(new_name)
+    for connection in self.connections:
+      if str(connection.startElement) == old_str:
+        connection.startElement = new_str
+      if str(connection.endElement) == old_str:
+        connection.endElement = new_str
 
   def _deleteConnector(self, cref: CRef) -> bool:
     """Delete connector if it exists."""
