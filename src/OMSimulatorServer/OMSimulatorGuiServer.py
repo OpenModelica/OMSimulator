@@ -114,7 +114,11 @@ class OMSGuiServer:
     if method == "newModel":
       name = args.get("name", "default")
       ssp = SSP()
-      ssp.activeVariant.name = name
+      # SSP() always creates a variant keyed as "default" — re-key it to the requested name.
+      ssd = ssp.variants.pop("default")
+      ssd.name = name
+      ssp.variants[name] = ssd
+      ssp._activeVariantName = name
       ssp.activeVariant.system.name = args.get("system_name", "default")
       self.models[name] = ssp
       print(f"New model created: {name}", flush=True)
@@ -392,12 +396,14 @@ class OMSGuiServer:
     # ---------- rename ----------
     if method == "rename":
       cref_parts = list(args.get("cref", []))
+      print(f"rename: model='{model_name}', cref_parts={cref_parts}, new_name='{args.get('newName')}'", flush=True)
       new_name   = args["newName"]
       if not cref_parts:
         # Top-level model rename: re-key self.models and update the SSD name.
         if new_name != model_name:
           model.activeVariant.name = new_name
           model._activeVariantName = new_name
+          print(f"check variants: {model.variants.keys()}", flush=True)
           model.variants[new_name] = model.variants.pop(model_name)
           self.models[new_name] = self.models.pop(model_name)
       else:
