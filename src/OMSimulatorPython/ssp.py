@@ -429,7 +429,6 @@ class SSP:
   def export(self, filename: str):
     '''Exports the SSP to file'''
     logger.debug(f"Exporting SSP to {filename} using temp directory: {self.temp_dir}")
-    print(f"Exporting SSP to {filename} using temp directory: {self.temp_dir}", flush=True)
     exported_count = 0
     for ssd in self.variants.values():
       if ssd.dirty:
