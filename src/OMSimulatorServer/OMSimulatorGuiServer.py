@@ -118,7 +118,7 @@ class OMSGuiServer:
       ssd = ssp.variants.pop("default")
       ssd.name = name
       ssp.variants[name] = ssd
-      ssp._activeVariantName = name
+      ssp.activeVariantName = name
       ssp.activeVariant.system.name = args.get("system_name", "default")
       self.models[name] = ssp
       print(f"New model created: {name}", flush=True)

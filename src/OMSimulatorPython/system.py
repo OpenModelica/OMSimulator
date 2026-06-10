@@ -945,8 +945,9 @@ class System:
       for connector in self.connectors:
         connector.exportToSSD(connectors_node)
 
-      if self.elementgeometry:
-        self.elementgeometry.exportToSSD(node)
+    ## export element geometry if available for system, subsystem and components
+    if self.elementgeometry:
+      self.elementgeometry.exportToSSD(node)
 
     ## export top level parameter bindings
     self.value.exportToSSD(node, self.parameterMapping)
