@@ -245,6 +245,10 @@ class OMSGuiServer:
       model.activeVariant.bufferSize = args.get("bufferSize", 10)
       return {"status": "ok", "method": method}
 
+    if method == "setLoggingInterval":
+      model.activeVariant.loggingInterval = args.get("loggingInterval", 0.0)
+      return {"status": "ok", "method": method}
+
     # ---------- getTolerance----------
     if method == "getTolerance":
       return {"status": "ok", "method": method, "value": str(model.activeVariant.tolerance)}
