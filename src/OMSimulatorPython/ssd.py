@@ -61,6 +61,10 @@ class SSD:
     self.system = System(name)
     self.startTime = 0.0
     self.stopTime = 1.0
+    self.resultFile = self._name + "_res.mat"
+    self.loggingInterval = 0.0
+    self.bufferSize = 10
+    ## default solver settings
     self.initialStepSize = 1e-6
     self.minimumStepSize = 1e-12
     self.maximumStepSize = 1e-3
@@ -340,3 +344,5 @@ class SSD:
     default_experiment = ET.SubElement(node, namespace.tag("ssd", "DefaultExperiment"))
     default_experiment.set("startTime", str(self.startTime))
     default_experiment.set("stopTime", str(self.stopTime))
+    simulation_info = { "resultFile": self.resultFile, "loggingInterval": str(self.loggingInterval), "bufferSize": str(self.bufferSize)}
+    utils.exportSimulationInformation(default_experiment, [simulation_info])

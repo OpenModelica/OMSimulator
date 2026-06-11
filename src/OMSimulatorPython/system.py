@@ -150,7 +150,7 @@ class System:
       utils.parseParameterBindings(node, system, resources)
       utils.parseMetaData(node, system, resources)
       system.elements = utils.parseElements(node, resources)
-      system.solvers = utils.parseAnnotations(node)
+      system.solvers = utils.parseSimulationInformation(node)
       Connection.importFromNode(node, system)
       return system
 
@@ -993,6 +993,6 @@ class System:
 
     ## export ssd annotations
     if self.solvers:
-      utils.exportAnnotations(node, self.solvers)
+      utils.exportSimulationInformation(node, self.solvers)
 
     return node
