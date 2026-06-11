@@ -238,10 +238,11 @@ class OMSGuiServer:
 
     # ---------- get/set result file ----------
     if method == "getResultFile":
-      return {"status": "ok", "method": method, "file": getattr(model.activeVariant.system, "resultFile", None) or "model_res.mat"}
+      return {"status": "ok", "method": method, "fileName": model.activeVariant.system.resultFile, "bufferSize": str(model.activeVariant.system.bufferSize)}
 
     if method == "setResultFile":
-      model.activeVariant.system.resultFile = args.get("file", "model_res.mat")
+      model.activeVariant.system.resultFile = args.get("fileName", "model_res.mat")
+      model.activeVariant.system.bufferSize = args.get("bufferSize", 1)
       return {"status": "ok", "method": method}
 
     # ---------- getTolerance----------

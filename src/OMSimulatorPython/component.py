@@ -205,7 +205,7 @@ class Component:
     ## export Annotations
     if self.solver:
       from OMSimulator import utils
-      utils.exportAnnotations(component_node, self.solver)
+      utils.exportSimulationInformation(component_node, self.solver)
 
   def setValue(self, cref:str, value, unit=None, description = None):
     for connector in self.connectors:
