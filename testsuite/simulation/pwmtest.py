@@ -92,9 +92,9 @@ instantiated_model.delete()
 ## |-- |-- startTime: 0.000000
 ## |-- |-- stopTime: 1.000000
 ##
-## info:    maximum step size for 'model.root': 0.001000
+## info:    maximum step size for 'model.root.oms_me_solver': 0.001000
 ## info:    Result file: pwm_res.mat (bufferSize=1)
-## info:    Final Statistics for 'model.root':
-##          NumSteps = 0 NumRhsEvals  = 0 NumLinSolvSetups = 0
-##          NumNonlinSolvIters = 0 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
+## info:    Final Statistics for 'model.root.oms_me_solver':
+##          NumSteps = 4327 NumRhsEvals  = 6387 NumLinSolvSetups = 1470
+##          NumNonlinSolvIters = 6386 NumNonlinSolvConvFails = 0 NumErrTestFails = 480
 ## endResult
