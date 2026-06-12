@@ -65,6 +65,7 @@ def _system_type_label(system_type: SystemType) -> str:
 class InstantiatedModel:
   _suppress_path_set = False # Class variable to track if suppressPath has been set
   def __init__(self, json_description, system: System, resources: dict):
+    #print(f"info: Instantiating model with JSON description:\n{json_description}", flush=True)
     config = json.loads(json_description)
     self.modelName = "model" ## create random name, but we cannot commits test as jenkins will gerate new model name
     self.apiCall = []
@@ -241,6 +242,9 @@ class InstantiatedModel:
     ## set start and stop time from ssp
     self.setStartTime(float(config["simulation settings"]['start time']))
     self.setStopTime(float(config["simulation settings"]['stop time']))
+    ## set result file name from ssp
+    self.setResultFile(config["simulation settings"]['result file'], int(config["simulation settings"]['buffer size']))
+    self.setLoggingInterval(float(config["simulation settings"]['logging interval']))
 
   def setStartValuesFromElements(self, elements, systemName):
     for key, element in elements.items():
@@ -546,8 +550,8 @@ class InstantiatedModel:
     if status != Status.ok:
       raise RuntimeError(f"Failed to step until {stopTime}: {status}")
 
-  def setResultFile(self, filename: str):
-    status = Capi.setResultFile("model", filename)
+  def setResultFile(self, filename: str, bufferSize: int = 10):
+    status = Capi.setResultFile("model", filename, bufferSize)
     if status !=Status.ok:
       raise RuntimeError(f"Failed to setResultFile {filename}: {status}")
 

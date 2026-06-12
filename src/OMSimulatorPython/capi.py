@@ -295,7 +295,7 @@ class capi:
     status = self.obj.oms_setSolver(cref.encode(), solver)
     return Status(status)
 
-  def setResultFile(self, cref, filename, bufferSize=1) -> Status:
+  def setResultFile(self, cref, filename, bufferSize=10) -> Status:
     '''Set the result file for a model or system.
     The bufferSize specifies how many values are buffered before writing to the file.'''
     status = self.obj.oms_setResultFile(cref.encode(), filename.encode(), bufferSize)
@@ -319,7 +319,7 @@ class capi:
   def getStopTime(self, cref):
     stopTime = ctypes.c_double()
     status = self.obj.oms_getStopTime(cref.encode(), ctypes.byref(stopTime))
-    return [stopTime.value, status]
+    return [stopTime.value, Status(status)]
 
   def getTime(self, cref):
     time = ctypes.c_double()
