@@ -811,6 +811,17 @@ class System:
           raise ValueError(f"Solver '{solver}' not found in solver list.")
       data["simulation units"].append(unit)
 
+    # Validate: at most one WC-method solver unit is allowed (nested WC under WC is not supported)
+    _WC_METHODS = {"oms_ma", "oms_mav", "oms_mav2"}
+    wc_units = [u for u in data["simulation units"] if u.get("solver", {}).get("method") in _WC_METHODS]
+    if len(wc_units) > 1:
+      wc_names = [u["solver"]["name"] for u in wc_units]
+      raise ValueError(
+        f"Multiple WC solver units found: {wc_names}. "
+        f"Nested WC systems are not supported. All CS FMUs without an explicit solver "
+        f"share one WC unit automatically."
+      )
+
     # Add top-level simulation metadata
     data["result file"] = "simulation_result.csv"
     data["simulation settings"] = {
@@ -845,6 +856,25 @@ class System:
                   "tolerance": 1e-4
               })
           element.solver = solver_name
+        ## default CS FMUs with no solver to oms_ma
+        elif element.solver is None:
+          solver_name = "oms_ma_default"
+          if not any(s.get("name") == solver_name for s in self.solvers):
+            self.solvers.append({
+                  "name": solver_name,
+                  "method": "oms_ma"
+              })
+          element.solver = solver_name
+        ## CS FMUs must not use SC solvers (cvode/euler)
+        elif fmuType == "cs":
+          _SC_METHODS = {"cvode", "euler"}
+          assigned_solver = next((s for s in self.solvers if s.get("name") == element.solver), None)
+          if assigned_solver and assigned_solver.get("method") in _SC_METHODS:
+            raise ValueError(
+              f"CS FMU '{element.name}' is assigned solver '{element.solver}' "
+              f"with method '{assigned_solver.get('method')}', but CS FMUs can only use "
+              f"WC master algorithms (oms_ma, oms_mav, oms_mav2)."
+            )
 
         ## add connectors info for the component in the json, this is needed for propagating connector geomtery to capi
         connector_info = []
@@ -883,6 +913,15 @@ class System:
 
         componentSolver[str(element.name)] = element.solver
       elif isinstance(element, ComponentTable):
+        ## default tables with no solver to oms_ma
+        if element.solver is None:
+          solver_name = "oms_ma_default"
+          if not any(s.get("name") == solver_name for s in self.solvers):
+            self.solvers.append({
+                  "name": solver_name,
+                  "method": "oms_ma"
+              })
+          element.solver = solver_name
         ## add connectors info for the component in the json, this is needed for propagating connector geomtery to capi
         connector_info = []
         for connector in element.connectors:

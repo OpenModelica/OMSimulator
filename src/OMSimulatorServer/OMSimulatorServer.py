@@ -165,7 +165,7 @@ class Server:
     self.pub_msg('status', {'progress': 0})
 
     inst_model = self._model.instantiate()
-    inst_model.setResultFile(self._model.resultFile)
+    inst_model.setResultFile(self._model.activeVariant.resultFile)
 
     time_ = float(inst_model.getTime())
     startTime = float(self._model.activeVariant.startTime)
@@ -231,6 +231,7 @@ def _main():
 
   if args.temp:
     Capi.setTempDirectory(args.temp)
+  print(f"starting simulation: {args}", flush=True)
 
   server = Server(args.model, args.result_file, args.interactive, args.endpoint_pub, args.endpoint_rep)
   # run simulation thread
