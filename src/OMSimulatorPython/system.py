@@ -884,33 +884,12 @@ class System:
               "causality": connector.causality.name if connector.causality else None,
               "type": connector.signal_type.name if connector.signal_type else None,
           })
-          ## add connector geometry if available
-          if connector.connectorGeometry:
-            connector_info[-1]["geometry"] = {
-                "x": connector.connectorGeometry.x if connector.connectorGeometry else None,
-                "y": connector.connectorGeometry.y if connector.connectorGeometry else None
-            }
         solver_groups[element.solver].append({
             "name": [self.name] + ([systemName] if systemName else []) + [str(element.name)],
             "type": fmuType,
             "path": str(Path(tempdir, str(element.fmuPath))) if tempdir is not None else str(element.fmuPath),
             "connectors": connector_info
         })
-        ## add element geometry if available, this is needed for propagating element geometry to capi
-        if element.elementgeometry:
-          element_geometry = {
-              "x1": element.elementgeometry.x1,
-              "y1": element.elementgeometry.y1,
-              "x2": element.elementgeometry.x2,
-              "y2": element.elementgeometry.y2,
-              "rotation": element.elementgeometry.rotation,
-              "iconSource": element.elementgeometry.icon_source,
-              "iconRotation": element.elementgeometry.icon_rotation,
-              "iconFlip": element.elementgeometry.icon_flip,
-              "iconFixedAspectRatio": element.elementgeometry.icon_fixed_aspect_ratio
-          }
-          solver_groups[element.solver][-1]["element geometry"] = element_geometry
-
         componentSolver[str(element.name)] = element.solver
       elif isinstance(element, ComponentTable):
         ## default tables with no solver to oms_ma
@@ -966,13 +945,6 @@ class System:
           "factor": connection.linearTransformation.factor,
           "offset": connection.linearTransformation.offset
         }
-      ## add connection geometry if available
-      if connection.connectionGeometry:
-        connection_info["connection geometry"] = {
-          "pointsX": connection.connectionGeometry.pointsX,
-          "pointsY": connection.connectionGeometry.pointsY
-        }
-
       solver_connections[solver].append(connection_info)
 
   def export(self, root):

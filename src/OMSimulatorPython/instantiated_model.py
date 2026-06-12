@@ -187,23 +187,6 @@ class InstantiatedModel:
                 raise RuntimeError(f"Failed to set connector geometry for {connector_path}: {status}")
               self.apiCall.append(f'oms_setConnectorGeometry("{connector_path}", {x}, {y})')
 
-        ## parse element geometry for the component if exist and set it to capi after adding the component, this is needed for proper mapping of element geometry
-        if "element geometry" in comp:
-          geometry = comp["element geometry"]
-          x1 = geometry.get("x1", 0.0)
-          y1 = geometry.get("y1", 0.0)
-          x2 = geometry.get("x2", 0.0)
-          y2 = geometry.get("y2", 0.0)
-          rotation = geometry.get("rotation")
-          iconSource = geometry.get("iconSource", b"")
-          iconRotation = geometry.get("iconRotation", 0.0)
-          iconFlip = geometry.get("iconFlip", False)
-          iconFixedAspectRatio = geometry.get("iconFixedAspectRatio", False)
-          status = Capi.setElementGeometry(comp_path, x1, y1, x2, y2, rotation, iconSource, iconRotation, iconFlip, iconFixedAspectRatio)
-          if status != Status.ok:
-            raise RuntimeError(f"Failed to set element geometry for {comp_path}: {status}")
-          self.apiCall.append(f'oms_setElementGeometry("{comp_path}", {x1}, {y1}, {x2}, {y2}, {rotation}, "{iconSource}", {iconRotation}, {iconFlip}, {iconFixedAspectRatio})')
-
         if not export_name in self.mappedCrefs:
           self.mappedCrefs[export_name] = comp_path
           self.mappedCrefs[".".join(comp["name"][:-1])] = solver_path # map parent system too for connector lookup
@@ -214,7 +197,7 @@ class InstantiatedModel:
       unit_solver_paths.append(solver_path)
 
     # Add connectors for the root system and all subsystems in one recursive pass.
-    # This replaces per-unit listofsystems tracking and deduplication entirely.
+    # This replaces per-unit listofsystems tracking and duplication entirely.
     self._addConnectorsRecursive(self.system, self.system.name)
 
     # Step 2: Add all connections (mappedCrefs is now fully populated)
@@ -242,14 +225,6 @@ class InstantiatedModel:
           status = Capi.setConnectionLinearTransformation(start, end, float(factor), float(offset))
           if status != Status.ok:
             raise RuntimeError(f"Failed to set connection linear transformation: {status}")
-        ## add connection geometry if exist
-        if "connection geometry" in connection:
-          pointsX = connection["connection geometry"]["pointsX"]
-          pointsY = connection["connection geometry"]["pointsY"]
-          self.apiCall.append(f'oms_setConnectionGeometry("{start}", "{end}", {pointsX}, {pointsY})')
-          status = Capi.setConnectionGeometry(start, end, pointsX, pointsY)
-          if status != Status.ok:
-            raise RuntimeError(f"Failed to set connection geometry: {status}")
 
     ## set start values
     self.setStartValues(self.system.value, self.system.name, self.system.parameterMapping)
@@ -425,14 +400,6 @@ class InstantiatedModel:
         status = Capi.setConnectorNumericType(connector_path, connector.numericType.value)
         if status != Status.ok:
           raise RuntimeError(f"Failed to set connector numeric type for {connector_path}: {status}")
-      ## set connector geometry if exist
-      if connector.connectorGeometry:
-        x = connector.connectorGeometry.x
-        y = connector.connectorGeometry.y
-        self.apiCall.append(f'oms_setConnectorGeometry("{connector_path}", {x}, {y})')
-        status = Capi.setConnectorGeometry(connector_path, x, y)
-        if status != Status.ok:
-          raise RuntimeError(f"Failed to set connector geometry for {connector_path}: {status}")
 
       export_name = systemName
       if not connector_name in self.mappedCrefs:
