@@ -53,12 +53,12 @@ instantiated_model.delete()
 
 ## Result:
 ## Loading FMI version 3...
-## info:    Result file: Resource-cs.mat (bufferSize=1)
+## info:    Result file: Resource-cs.mat (bufferSize=10)
 ## info:    Resource.y: 97
 ## Loading FMI version 3...
 ## info:    model doesn't contain any continuous state
 ## info:    maximum step size for 'model.root': 0.001000
-## info:    Result file: Resource-me.mat (bufferSize=1)
+## info:    Result file: Resource-me.mat (bufferSize=10)
 ## info:    Resource.y: 97
 ## info:    Final Statistics for 'model.root':
 ##          NumSteps = 10001 NumRhsEvals  = 10002 NumLinSolvSetups = 501

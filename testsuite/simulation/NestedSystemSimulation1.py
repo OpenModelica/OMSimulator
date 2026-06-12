@@ -164,7 +164,7 @@ instantiated_model.delete()
 ## info:    default.sub-system1.Gain1.u: 0.0
 ## info:    default.sub-system1.Gain1.y: 0.0
 ## info:    default.sub-system1.Add1.u1: 0.0
-## info:    Result file: NestedSystemSimulation1_res.mat (bufferSize=1)
+## info:    Result file: NestedSystemSimulation1_res.mat (bufferSize=10)
 ## info: After simulation:
 ## info:    default.input1: 3.0
 ## info:    default.param1: 0.0

@@ -45,6 +45,7 @@ model2 = SSP('SimpleSimulation3.ssp')
 model2.list()
 print("", flush=True)
 instantiated_model = model2.instantiate() ## internally generate the json file and also set the model state like virgin,
+print(instantiated_model.dumpApiCalls(), flush=True)
 instantiated_model.setValue(CRef('default', 'Add1', 'u1'), 0.0)
 instantiated_model.setValue(CRef('default', 'Add1', 'u2'), 0.0)
 instantiated_model.setValue(CRef('default', 'Add2', 'u1'), 0.0)
@@ -120,7 +121,7 @@ instantiated_model.delete()
 ## info:    model doesn't contain any continuous state
 ## info:    maximum step size for 'model.root.solver2': 0.001000
 ## info:    model doesn't contain any continuous state
-## info:    Result file: SimpleSimulation3_res.mat (bufferSize=1)
+## info:    Result file: SimpleSimulation3_res.mat (bufferSize=10)
 ## info:    Final Statistics for 'model.root.solver2':
 ##          NumSteps = 1001 NumRhsEvals  = 1002 NumLinSolvSetups = 51
 ##          NumNonlinSolvIters = 1001 NumNonlinSolvConvFails = 0 NumErrTestFails = 0

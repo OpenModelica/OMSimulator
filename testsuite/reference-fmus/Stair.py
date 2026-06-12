@@ -62,12 +62,12 @@ else:
 
 
 ## Result:
-## info:    Result file: Stair-cs.mat (bufferSize=1)
+## info:    Result file: Stair-cs.mat (bufferSize=10)
 ## info:    fmi2_doStep discarded for FMU "model.root.Stair"
 ## signal counter is equal
 ## info:    model doesn't contain any continuous state
 ## info:    maximum step size for 'model.root': 0.200000
-## info:    Result file: Stair-me.mat (bufferSize=1)
+## info:    Result file: Stair-me.mat (bufferSize=10)
 ## info:    Simulation terminated by FMU model.root.Stair at time 9.000000
 ## info:    Final Statistics for 'model.root':
 ##          NumSteps = 0 NumRhsEvals  = 0 NumLinSolvSetups = 0

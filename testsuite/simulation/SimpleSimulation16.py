@@ -99,7 +99,7 @@ instantiated.delete()
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
 ##
-## info:    Result file: SimpleSimulation16_res.mat (bufferSize=1)
+## info:    Result file: SimpleSimulation16_res.mat (bufferSize=10)
 ## default.Sine.y            : -2.4492127076447545e-16
 ## default.sub-system.u      : -2.4492127076447545e-16
 ## default.sub-system.Add2.u1: -2.4492127076447545e-16

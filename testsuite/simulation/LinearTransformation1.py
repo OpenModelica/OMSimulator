@@ -61,7 +61,7 @@ instantiated_model.delete()
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
 ##
-## info:    Result file: LinearTransformation1_res.mat (bufferSize=1)
+## info:    Result file: LinearTransformation1_res.mat (bufferSize=10)
 ## info: After simulation:
 ## info:    default.Gain1.y: 0.0
 ## info:    default.Add1.u1: 3.0

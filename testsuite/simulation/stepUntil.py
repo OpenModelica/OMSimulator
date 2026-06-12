@@ -32,7 +32,7 @@ fmu.terminate()
 fmu.delete()
 
 ## Result:
-## info:    Result file: Sine_res.mat (bufferSize=1)
+## info:    Result file: Sine_res.mat (bufferSize=10)
 ## info:    time: 0.1, y: 0.5877852522924735
 ## info:    time: 0.2, y: 0.9510565162951539
 ## info:    time: 0.3, y: 0.9510565162951532

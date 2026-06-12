@@ -72,12 +72,12 @@ else:
 
 ## Result:
 ## Loading FMI version 3...
-## info:    Result file: BouncingBall-cs.mat (bufferSize=1)
+## info:    Result file: BouncingBall-cs.mat (bufferSize=10)
 ## signal h is equal
 ## signal v is equal
 ## Loading FMI version 3...
 ## info:    maximum step size for 'model.root': 0.001000
-## info:    Result file: BouncingBall-me.mat (bufferSize=1)
+## info:    Result file: BouncingBall-me.mat (bufferSize=10)
 ## info:    Final Statistics for 'model.root':
 ##          NumSteps = 503 NumRhsEvals  = 504 NumLinSolvSetups = 27
 ##          NumNonlinSolvIters = 503 NumNonlinSolvConvFails = 0 NumErrTestFails = 0

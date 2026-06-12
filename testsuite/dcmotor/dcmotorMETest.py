@@ -44,7 +44,7 @@ instantiated_model.delete()
 ## warning: [fmi2Warning] emachine_model/: fmi2SetupExperiment: tolerance control not supported for fmuType fmi2ModelExchange, setting toleranceDefined to fmi2False
 ## warning: [fmi2Warning] edrive_mass/: fmi2SetupExperiment: tolerance control not supported for fmuType fmi2ModelExchange, setting toleranceDefined to fmi2False
 ## info:    maximum step size for 'model.root': 0.001000
-## info:    Result file: dc_motor_me_res.mat (bufferSize=1)
+## info:    Result file: dc_motor_me_res.mat (bufferSize=10)
 ## info:    Final Statistics for 'model.root':
 ##          NumSteps = 10001 NumRhsEvals  = 10002 NumLinSolvSetups = 501
 ##          NumNonlinSolvIters = 10001 NumNonlinSolvConvFails = 0 NumErrTestFails = 0

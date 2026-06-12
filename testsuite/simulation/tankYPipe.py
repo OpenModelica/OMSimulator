@@ -96,5 +96,5 @@ instantiated_model.delete()
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
 ##
-## info:    Result file: tankYpipe_rest.mat (bufferSize=1)
+## info:    Result file: tankYpipe_rest.mat (bufferSize=10)
 ## endResult

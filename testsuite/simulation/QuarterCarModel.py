@@ -51,5 +51,5 @@ instantiated_model.delete()
 
 
 ## Result:
-## info:    Result file: QuarterCarModel.DisplacementDisplacement_res.mat (bufferSize=1)
+## info:    Result file: QuarterCarModel.DisplacementDisplacement_res.mat (bufferSize=10)
 ## endResult

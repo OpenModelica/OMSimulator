@@ -51,7 +51,7 @@ instantiated.delete()
 ##            model.root.ecs_hw
 ##            model.root.consumer
 ##            model.root.adaption
-## info:    Result file: acvs_res.csv (bufferSize=1)
+## info:    Result file: acvs_res.csv (bufferSize=10)
 ## info:    2 warnings
 ## info:    0 errors
 ## endResult

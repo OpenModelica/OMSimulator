@@ -46,7 +46,7 @@ fmu.delete()
 ## info:    k: 5.0
 ## info:    u: 10.0
 ## info:    y: 50.0
-## info:    Result file: Gain_res.mat (bufferSize=1)
+## info:    Result file: Gain_res.mat (bufferSize=10)
 ## info: After Simulation:
 ## info:    k: 5.0
 ## info:    u: 10.0

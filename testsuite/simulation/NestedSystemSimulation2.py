@@ -189,7 +189,7 @@ instantiated_model.delete()
 ## info:    model doesn't contain any continuous state
 ## info:    maximum step size for 'model.root.solver2': 0.001000
 ## info:    model doesn't contain any continuous state
-## info:    Result file: NestedSystemSimulation2_res.mat (bufferSize=1)
+## info:    Result file: NestedSystemSimulation2_res.mat (bufferSize=10)
 ## info: After simulation:
 ## info:    default.input1: 3.0
 ## info:    default.param1: 0.0

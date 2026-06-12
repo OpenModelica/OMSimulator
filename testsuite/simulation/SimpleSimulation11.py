@@ -191,7 +191,7 @@ instantiated_model.delete()
 ## info:    default.sub-system.Gain2.y: 0.0
 ## info:    model doesn't contain any continuous state
 ## info:    maximum step size for 'model.root.solver2': 0.001000
-## info:    Result file: SimpleSimulation11_res.mat (bufferSize=1)
+## info:    Result file: SimpleSimulation11_res.mat (bufferSize=10)
 ## info: After simulation:
 ## info:    default.param1 : 200.0
 ## info:    default.input1 : 300.0
