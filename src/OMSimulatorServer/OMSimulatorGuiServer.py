@@ -32,8 +32,6 @@
 #
 # See the full OSMC Public License conditions for more details.
 
-import sys
-sys.path.insert(0, "C:/OPENMODELICAGIT/OpenModelica/OMSimulator/install/lib")
 
 import argparse
 import traceback
@@ -44,6 +42,7 @@ from OMSimulator.elementgeometry import ElementGeometry
 from OMSimulator.connector import ConnectorGeometry
 from OMSimulator.connection import ConnectionGeometry
 
+'''OMSimulator GUI Server for modelling SSP files interactively from OMEdit.'''
 class OMSGuiServer:
   def __init__(self, endpoint):
     self._context = zmq.Context()
@@ -54,8 +53,6 @@ class OMSGuiServer:
 
     # Multiple SSP models can be open simultaneously.Keyed by model name (activeVariant.name)
     self.models = {}  # model_name -> SSP
-
-    print("OMS ZMQ Server started at", endpoint, flush=True)
 
   # -----------------------------------
   # main loop
@@ -121,12 +118,10 @@ class OMSGuiServer:
       ssp.activeVariantName = name
       ssp.activeVariant.system.name = args.get("system_name", "default")
       self.models[name] = ssp
-      print(f"New model created: {name}", flush=True)
       return {"status": "ok", "method": method}
 
     # ---------- import file ----------
     if method == "importFile":
-      print("importing model from file", args, flush=True)
       ssp = SSP(args["file"])
       name = ssp.activeVariant.name
       self.models[name] = ssp
@@ -136,12 +131,10 @@ class OMSGuiServer:
     if method == "deleteModel":
       if model_name in self.models:
         del self.models[model_name]
-      print(f"Model deleted: {model_name}", flush=True)
       return {"status": "ok", "method": method}
 
     # ---------- shutdown ----------
     if method == "shutdown":
-      print("Shutdown command received, stopping server.", flush=True)
       self.models.clear()
       return {"status": "shutdown"}
 
@@ -188,7 +181,6 @@ class OMSGuiServer:
 
     # ---------- export to file ----------
     if method == "export":
-      print("exporting model to file", args, flush=True)
       model.export(args["file"])
       return {"status": "ok", "method": method}
 
@@ -401,14 +393,12 @@ class OMSGuiServer:
     # ---------- rename ----------
     if method == "rename":
       cref_parts = list(args.get("cref", []))
-      print(f"rename: model='{model_name}', cref_parts={cref_parts}, new_name='{args.get('newName')}'", flush=True)
       new_name   = args["newName"]
       if not cref_parts:
         # Top-level model rename: re-key self.models and update the SSD name.
         if new_name != model_name:
           model.activeVariant.name = new_name
           model._activeVariantName = new_name
-          print(f"check variants: {model.variants.keys()}", flush=True)
           model.variants[new_name] = model.variants.pop(model_name)
           self.models[new_name] = self.models.pop(model_name)
       else:

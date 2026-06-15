@@ -37,11 +37,9 @@
 import argparse
 import json
 import math
-import sys
 import threading
 import time
 
-sys.path.insert(0, "C:/OPENMODELICAGIT/OpenModelica/OMSimulator/install/lib")
 
 from OMSimulator import SSP, CRef, Capi
 import zmq
