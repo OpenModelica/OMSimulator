@@ -10,9 +10,10 @@ from OMSimulator import SSP, Settings, CRef
 Settings.suppressPath = True
 
 model = SSP('../resources/PWMTest.ssp')
-# solver2 = {'name' : 'solver2',  'method': 'cvode', 'tolerance': 1e-4}
-# model.newSolver(solver2)
-# model.setSolver(CRef('Root', 'SCSystem', 'circuit'), 'solver2')
+solver2 = {'name' : 'solver2',  'method': 'cvode', 'tolerance': 1e-4}
+model.newSolver(solver2)
+model.setSolver(CRef('Root', 'SCSystem', 'circuit'), 'solver2')
+model.setSolver(CRef('Root', 'pulse'), 'solver2')
 
 model.list()
 print("", flush=True)
@@ -57,6 +58,8 @@ instantiated_model.delete()
 ## |-- |-- |-- |-- |-- |-- |-- |-- (resistor.useHeatPort, Causality.calculatedParameter, SignalType.Boolean, None, 'None')
 ## |-- |-- |-- |-- |-- |-- |-- ElementGeometry:
 ## |-- |-- |-- |-- |-- |-- |-- |-- (x1:-17.96226, y1:-12.64151, x2:2.03774, y2:7.35849, rotation:0.0, icon_source:None, icon_rotation:0.0, icon_flip:False, icon_fixed_aspect_ratio:False)
+## |-- |-- |-- |-- |-- |-- |-- Solver Settings:
+## |-- |-- |-- |-- |-- |-- |-- |-- name: solver2
 ## |-- |-- |-- |-- |-- Connections:
 ## |-- |-- |-- |-- |-- |-- .u -> circuit.u
 ## |-- |-- |-- |-- |-- |-- |-- ConnectionGeometry: (pointsX: [-37.5, -37.5], pointsY: [-2.0, -3.0])
@@ -80,11 +83,14 @@ instantiated_model.delete()
 ## |-- |-- |-- |-- |-- |-- (Real offset, 0.0, None, 'None')
 ## |-- |-- |-- |-- |-- |-- (Real amplitude, 220.0, None, 'None')
 ## |-- |-- |-- |-- |-- |-- (Integer nperiod, -1, None, 'None')
+## |-- |-- |-- |-- |-- Solver Settings:
+## |-- |-- |-- |-- |-- |-- name: solver2
 ## |-- |-- |-- Connections:
 ## |-- |-- |-- |-- pulse.y -> SCSystem.u
 ## |-- |-- |-- |-- |-- ConnectionGeometry: (pointsX: [3.0], pointsY: [0.0])
 ## |-- |-- |-- Solver Settings:
 ## |-- |-- |-- |-- ()
+## |-- |-- |-- |-- (name=solver2, method=cvode, tolerance=0.0001)
 ## |-- UnitDefinitions:
 ## |-- |-- Unit: s
 ## |-- |-- |-- BaseUnit: s: 1
@@ -92,9 +98,9 @@ instantiated_model.delete()
 ## |-- |-- startTime: 0.000000
 ## |-- |-- stopTime: 1.000000
 ##
-## info:    maximum step size for 'model.root.oms_me_solver': 0.001000
+## info:    maximum step size for 'model.root': 0.001000
 ## info:    Result file: pwm_res.mat (bufferSize=10)
-## info:    Final Statistics for 'model.root.oms_me_solver':
-##          NumSteps = 4327 NumRhsEvals  = 6387 NumLinSolvSetups = 1470
-##          NumNonlinSolvIters = 6386 NumNonlinSolvConvFails = 0 NumErrTestFails = 480
+## info:    Final Statistics for 'model.root':
+##          NumSteps = 0 NumRhsEvals  = 0 NumLinSolvSetups = 0
+##          NumNonlinSolvIters = 0 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
 ## endResult
