@@ -229,7 +229,6 @@ def _main():
 
   if args.temp:
     Capi.setTempDirectory(args.temp)
-  print(f"starting simulation: {args}", flush=True)
 
   server = Server(args.model, args.result_file, args.interactive, args.endpoint_pub, args.endpoint_rep)
   # run simulation thread
