@@ -106,6 +106,11 @@ class OMSGuiServer:
 
   def _dispatch(self, method, args, model_name=None):
 
+    # ---------- getVersion ----------
+    if method == "getVersion":
+      import OMSimulator as oms
+      return {"status": "ok", "method": method, "version": "OMSimulator-" + oms.__version__}
+
     # ---------- new model ----------
     # These methods don't require an existing model — handle before _get_model().
     if method == "newModel":
