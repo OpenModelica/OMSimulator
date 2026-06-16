@@ -222,6 +222,8 @@ def _main():
   parser.add_argument('--option', default='', nargs='+', help='defines optional command line options')
   parser.add_argument('--result-file', default=None, help='defines the result file')
   parser.add_argument('--temp', default=None, help='defines the temp directory')
+  parser.add_argument('--log-file', default=None, help='defines the log file')
+  parser.add_argument('--working-directory', default=None, help='defines the working directory')
   args = parser.parse_args()
 
   Capi.setCommandLineOption(' '.join(list(map((lambda x: x[1:-1]), args.option))))
@@ -229,6 +231,10 @@ def _main():
 
   if args.temp:
     Capi.setTempDirectory(args.temp)
+  if args.log_file:
+    Capi.setLogFile(args.log_file)
+  if args.working_directory:
+    Capi.setWorkingDirectory(args.working_directory)
 
   server = Server(args.model, args.result_file, args.interactive, args.endpoint_pub, args.endpoint_rep)
   # run simulation thread

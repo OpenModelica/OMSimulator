@@ -142,6 +142,8 @@ class capi:
     self.obj.oms_setVariableStepSize.restype = ctypes.c_int
     self.obj.oms_setLogFile.argtypes = [ctypes.c_char_p]
     self.obj.oms_setLogFile.restype = ctypes.c_int
+    self.obj.oms_setWorkingDirectory.argtypes = [ctypes.c_char_p]
+    self.obj.oms_setWorkingDirectory.restype = ctypes.c_int
     self.obj.oms_setLoggingInterval.argtypes = [ctypes.c_char_p, ctypes.c_double]
     self.obj.oms_setLoggingInterval.restype = ctypes.c_int
     self.obj.oms_setLoggingLevel.argtypes = [ctypes.c_int]
@@ -354,6 +356,10 @@ class capi:
 
   def setLogFile(self, filename):
     status = self.obj.oms_setLogFile(filename.encode())
+    return Status(status)
+
+  def setWorkingDirectory(self, newWorkingDir):
+    status = self.obj.oms_setWorkingDirectory(newWorkingDir.encode())
     return Status(status)
 
   def setLoggingInterval(self, cref, loggingInterval):
