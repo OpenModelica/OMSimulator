@@ -274,7 +274,9 @@ class OMSGuiServer:
 
     # ---------- add component ----------
     if method == "addComponent":
-      model.addResource(args["source"], new_name=args["new_name"])
+      ## add resources only if not already present, to avoid unnecessary copying of FMUs when the same one is instantiated multiple times.
+      if model.resources.get(args["new_name"]) is None:
+        model.addResource(args["source"], new_name=args["new_name"])
       cref = CRef(*args["cref"])
       model.addComponent(cref, args["new_name"])
       return {"status": "ok", "method": method}
