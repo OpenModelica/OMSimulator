@@ -563,9 +563,8 @@ class System:
   def isConnectorAlreadyConnected(self, startElement : str, startConnector : str, endElement : str, endConnector : str):
     """Check if a connection is valid in the system."""
     for conn in self.connections:
-      if (conn.startElement == startElement and conn.startConnector == startConnector and
-          conn.endElement == endElement and conn.endConnector == endConnector):
-        raise ValueError(f"Connection from '{startElement}.{startConnector}' to '{endElement}.{endConnector}' already exists")
+      if (conn.endElement == str(endElement) and conn.endConnector == str(endConnector)):
+        raise ValueError(f"Connector '{conn.endElement}.{conn.endConnector}' is already connected to {conn.startElement}.{conn.startConnector}'")
 
   def _findConnector(self, element_name, connector_name):
     """Returns (owner_string, causality) or (None, None) if not found."""
