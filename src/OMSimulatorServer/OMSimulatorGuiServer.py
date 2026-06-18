@@ -513,7 +513,7 @@ class OMSGuiServer:
       return
     node = {
       "name": str(element._name) if isinstance(element, System) else str(element.name),
-      "type": "system" if isinstance(element, System) else ("componentTable" if isinstance(element, ComponentTable) else "component"),
+      "type": "system" if isinstance(element, System) else ("componenttable" if isinstance(element, ComponentTable) else "component"),
       "elements": [],
       "connectors": self.serializeConnectors(element),
     }

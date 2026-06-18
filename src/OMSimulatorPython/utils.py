@@ -133,6 +133,7 @@ def parseElements(node, resources = None):
     elif (comp_type == "application/table" or comp_type == "text/csv"):
       elements[name] = ComponentTable(name, source)
       elements[name].connectors = Connector.importFromNode(component)
+      elements[name].elementgeometry = ElementGeometry.importFromNode(component)
 
   return elements
 
