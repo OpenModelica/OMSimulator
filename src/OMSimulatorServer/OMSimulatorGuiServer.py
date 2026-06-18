@@ -109,7 +109,7 @@ class OMSGuiServer:
     # ---------- getVersion ----------
     if method == "getVersion":
       import OMSimulator as oms
-      return {"status": "ok", "method": method, "version": "OMSimulator-" + oms.__version__}
+      return {"status": "ok", "method": method, "version": "OMSimulator v" + oms.__version__}
 
     # ---------- new model ----------
     # These methods don't require an existing model — handle before _get_model().
@@ -513,14 +513,16 @@ class OMSGuiServer:
       return
     node = {
       "name": str(element._name) if isinstance(element, System) else str(element.name),
-      "type": "system" if isinstance(element, System) else "component",
+      "type": "system" if isinstance(element, System) else ("componentTable" if isinstance(element, ComponentTable) else "component"),
       "elements": [],
       "connectors": self.serializeConnectors(element),
     }
-    if isinstance(element, (System, Component)):
+    if isinstance(element, (System, Component, ComponentTable)):
       node["geometry"] = self.serializeElementGeometry(element)
     if isinstance(element, Component):
       node["fmuInfo"] = self.getFMUInfo(element, model)
+    if isinstance(element, ComponentTable):
+      node["filePath"] = str(element.filePath)
     if isinstance(element, System):
       node["connections"] = self.serializeConnections(element)
       for child in element.elements.values():

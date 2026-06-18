@@ -670,6 +670,8 @@ class System:
     match element:
       case Component():
         return (element.fmuPath, element)
+      case ComponentTable():
+        return (element.filePath, element)
       case System():
         return element._getComponentResourcePath(cref.pop_first())
       case _:
@@ -721,7 +723,7 @@ class System:
         return element
       return element.getElement(cref.pop_first())
 
-    if isinstance(element, Component):
+    if isinstance(element, (Component, ComponentTable)):
       return element
 
     raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component")
