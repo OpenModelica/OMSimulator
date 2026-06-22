@@ -54,7 +54,7 @@ class SystemType(Enum):
   sc3 = 3
 
 # Solver methods that produce a WC system; all others produce SC.
-_WC_SOLVER_METHODS = {"oms_ma", "oms-ma", "oms_mav", "oms_mav2"}
+_WC_SOLVER_METHODS = {"oms_ma", "oms_mav", "oms_mav2"}
 
 def _system_type_for_method(method: str) -> SystemType:
   return SystemType.wc if method in _WC_SOLVER_METHODS else SystemType.sc

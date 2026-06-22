@@ -615,6 +615,11 @@ class System:
   def rename(self, cref: CRef, new_name: CRef):
     """Renames a component or subsystem identified by cref to new_name."""
     first = cref.first()
+    ## Check if the cref is a top level system or subsystemconnector
+    connector = self._connectorExists(first)
+    if connector is not None:
+      return self.renameConnector(connector, new_name)
+
     match self.elements.get(first):
       case System() | Component():
         if cref.is_root():
@@ -625,6 +630,17 @@ class System:
           self.elements[first].rename(cref.pop_first(), new_name)
       case _:
         raise ValueError(f"Element '{first}' not found in system '{self.name}'")
+
+  def renameConnector(self, connector: Connector, new_name: CRef):
+    """Renames a connector identified by cref to new_name."""
+    ## Check if the cref is a top level system connector
+    old_str = str(connector.name)
+    connector.name = new_name
+    for connection in self.connections:
+      if str(connection.startConnector) == old_str:
+        connection.startConnector = new_name
+      if str(connection.endConnector) == old_str:
+        connection.endConnector = new_name
 
   def renameComponent(self, old_name: CRef, new_name: CRef):
     """Renames a component/subsystem and updates all connection references in this system."""
