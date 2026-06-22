@@ -636,11 +636,16 @@ class System:
     ## Check if the cref is a top level system connector
     old_str = str(connector.name)
     connector.name = new_name
+    ## rename all connection references to this connector in the system and subsystems
     for connection in self.connections:
       if str(connection.startConnector) == old_str:
         connection.startConnector = new_name
       if str(connection.endConnector) == old_str:
         connection.endConnector = new_name
+    ## rename start values associated with connector
+    for key in list(self.value.start_values.keys()):
+      if str(key) == old_str:
+        self.value.start_values[new_name] = self.value.start_values.pop(key)
 
   def renameComponent(self, old_name: CRef, new_name: CRef):
     """Renames a component/subsystem and updates all connection references in this system."""
