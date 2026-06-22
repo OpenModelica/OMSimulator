@@ -46,7 +46,7 @@ class Values:
     self.start_values[name] = (value, type, unit, description)
 
   def getValue(self, name):
-    return self.start_values.get(name)
+    return self.start_values.get(name)[0] if name in self.start_values else None
 
   def empty(self) -> bool:
     return not self.start_values
