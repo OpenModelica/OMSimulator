@@ -671,6 +671,10 @@ class System:
     for i, connector in enumerate(self.connectors):
       if connector.name == cref:
         self.deleteAllConnection(cref)
+        ## delete start values associated with connector
+        for key in list(self.value.start_values.keys()):
+          if str(key) == str(cref):
+            del self.value.start_values[key]
         del self.connectors[i]
         return True
     return False
