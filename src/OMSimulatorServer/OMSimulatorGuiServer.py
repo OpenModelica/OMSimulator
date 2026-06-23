@@ -129,6 +129,9 @@ class OMSGuiServer:
     if method == "importFile":
       ssp = SSP(args["file"])
       name = ssp.activeVariant.name
+      if name in self.models:
+        return {"status": "fail", "method": method, "modelName": name,
+                "error": f"Model '{name}' is already loaded."}
       self.models[name] = ssp
       return {"status": "ok", "method": method, "modelName": name}
 
