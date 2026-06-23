@@ -146,6 +146,10 @@ class SSD:
     subcref = self._validateCref(cref)
     return self.system.addComponent(subcref, resource, inst)
 
+  def replaceComponent(self, cref: CRef, resource: str, inst : FMU | None = None, dryRun: bool = False):
+    subcref = self._validateCref(cref)
+    return self.system.replaceComponent(subcref, resource, inst, dryRun)
+
   def delete(self, cref: CRef):
     subcref = self._validateCref(cref)
     if subcref is None:

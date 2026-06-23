@@ -169,6 +169,17 @@ class SSP:
 
     return self.activeVariant.addComponent(cref, resource, inst=fmu_inst)
 
+  def replaceComponent(self, cref: CRef, resource: str, dryRun: bool = False):
+    if self.activeVariant is None:
+      raise ValueError("No active variant set in the SSP.")
+
+    ## look up in the resource if exist and then use that instance
+    fmu_inst = None
+    if resource in self.resources:
+      fmu_inst = self.resources[resource]
+
+    return self.activeVariant.replaceComponent(cref, resource, inst=fmu_inst, dryRun=dryRun)
+
   def delete(self, cref: CRef):
     if self.activeVariant is None:
       raise ValueError("No active variant set in the SSP.")

@@ -286,6 +286,15 @@ class OMSGuiServer:
       model.addComponent(cref, args["new_name"])
       return {"status": "ok", "method": method}
 
+    # ---------- replace component ----------
+    if method == "replaceComponent":
+      dry_run = args.get("dryRun", False)
+      if model.resources.get(args["new_name"]) is None:
+        model.addResource(args["source"], new_name=args["new_name"])
+      cref = CRef(*args["cref"])
+      warnings = model.replaceComponent(cref, args["new_name"], dryRun=dry_run)
+      return {"status": "ok", "method": method, "warnings": warnings or []}
+
     # ---------- add connector ----------
     if method == "addConnector":
       CAUSALITY_MAP = {

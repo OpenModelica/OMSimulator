@@ -311,6 +311,118 @@ class System:
         raise TypeError( f"Unknown component instance for '{first}' in '{self.name}'. "
                  f"Please add the component from the top-level model.")
 
+  def replaceComponent(self, cref: CRef, resource: str, inst=None, dryRun: bool = False):
+    first = cref.first()
+
+    # recurse into subsystem before any type checks
+    if not cref.is_root():
+      if first not in self.elements:
+        raise ValueError(f"System '{first}' not found in '{self.name}'")
+      return self.elements[first].replaceComponent(cref.pop_first(), resource, inst, dryRun)
+
+    # check component must exist at this level
+    old_component = self.elements.get(first)
+    if old_component is None:
+      raise ValueError(f"Component '{first}' not found in '{self.name}'")
+
+    if not isinstance(old_component, (Component, ComponentTable)):
+      raise ValueError(f"Element '{first}' is not a replaceable component")
+
+    import copy
+    snapshot = copy.deepcopy(self) if dryRun else None
+
+    warnings = []
+    # create replacement component — FMU or CSV/table
+    if isinstance(inst, ResultReader) or (inst is None and resource.endswith(".csv")):
+      new_component = ComponentTable(first, resource, inst.connectors if inst else [])
+    else:
+      new_component = Component(first, resource, inst._fmuType, inst.makeConnectors(), inst._unitDefinitions, inst._enumerationDefinitions)
+      new_component.fmu = inst
+      new_component.fmuType = inst.fmuType
+
+    # preserve OMEdit geometry
+    new_component.elementgeometry = copy.deepcopy(old_component.elementgeometry)
+    # preserve values and resources
+    new_component.value = copy.deepcopy(old_component.value)
+    new_component.parameterMapping = copy.deepcopy(old_component.parameterMapping)
+    new_component.parameterResources = copy.deepcopy(old_component.parameterResources)
+    new_component.metaDataResources = copy.deepcopy(old_component.metaDataResources)
+    new_component.solver = old_component.solver
+
+    # connector lookup
+    old_connectors = {str(c.name): c for c in old_component.connectors}
+    new_connectors = {str(c.name): c for c in new_component.connectors}
+
+    # validate existing connections
+    connections_to_remove = []
+    for connection in self.connections:
+      connector_name = None
+      if str(connection.startElement) == str(first):
+        connector_name = str(connection.startConnector)
+      elif str(connection.endElement) == str(first):
+        connector_name = str(connection.endConnector)
+      else:
+        continue
+      old_connector = old_connectors.get(connector_name)
+      new_connector = new_connectors.get(connector_name)
+      conn_str = f"{connection.startElement}.{connection.startConnector} ==> {connection.endElement}.{connection.endConnector}"
+
+      # connector removed
+      if new_connector is None:
+        warnings.append(
+          f"deleting connection \"{conn_str}\", as signal \"{connector_name}\" couldn't be resolved "
+          f"to any signal in the replaced submodel \"{resource}\"")
+        connections_to_remove.append(connection)
+        continue
+
+      # causality changed
+      if (old_connector is not None
+        and old_connector.causality is not None
+        and new_connector.causality is not None
+        and old_connector.causality != new_connector.causality):
+        warnings.append(
+          f"deleting connection \"{conn_str}\", as signal \"{connector_name}\" causality changed "
+          f"in the replaced submodel \"{resource}\"")
+        connections_to_remove.append(connection)
+        continue
+
+      # signal type changed
+      if (old_connector is not None
+        and old_connector.signal_type is not None
+        and new_connector.signal_type is not None
+        and old_connector.signal_type != new_connector.signal_type):
+        warnings.append(
+          f"deleting connection \"{conn_str}\", as signal \"{connector_name}\" type changed "
+          f"in the replaced submodel \"{resource}\"")
+        connections_to_remove.append(connection)
+
+    # remove invalid connections
+    for connection in connections_to_remove:
+      if connection in self.connections:
+        self.connections.remove(connection)
+
+    # cleanup start values (FMU only — ComponentTable has no variables)
+    if inst is not None and hasattr(inst, "variables"):
+      valid_variables = {str(variable.name) for variable in inst.variables}
+      for parameter_name in list(new_component.value.start_values.keys()):
+        if str(parameter_name) not in valid_variables:
+          del new_component.value.start_values[parameter_name]
+          warnings.append(
+            f"deleting start value \"{first}.{parameter_name}\" in \"inline\" resources, "
+            f"because the identifier couldn't be resolved to any system signal in the replacing model"
+          )
+    # replace component
+    self.elements[first] = new_component
+
+    # rollback for dry run
+    if dryRun:
+      self.__dict__.clear()
+      self.__dict__.update(snapshot.__dict__)
+      return warnings
+
+    del old_component
+    return warnings
+
   def addSSVReference(self, cref: CRef, resource1: str, resource2: str | None = None):
     ## top level system
     if cref is None:
