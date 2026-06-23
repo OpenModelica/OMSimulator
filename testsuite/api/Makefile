@@ -24,6 +24,7 @@ NewSSP2.py \
 NewSSP3.py \
 ResultReader.py \
 rename1.py \
+ReplaceComponent1.py \
 setMappingSSM1.py \
 setMappingSSM2.py \
 setMappingSSM3.py \
