@@ -55,8 +55,8 @@ An existing SSP file (``.ssp``) can be opened from ``File -> Open Model/Library`
 If a model with the same name is already loaded, an error is reported and the
 file is not loaded again.
 
-Add System
-----------
+Add System and Sub-Systems
+--------------------------
 
 A root system is always created together with the model. Additional subsystems
 can be added inside the root system via ``SSP -> Add System``.
@@ -97,11 +97,33 @@ A dialog then opens to set the name for the new sub-model.
 Replace SubModel
 ----------------
 
-An existing sub-model can be replaced with a different FMU via
-``SSP -> Replace SubModel``. Before committing the replacement a dry-run
-is performed: OMEdit checks for interface changes (added, removed, or
-modified connectors and parameters) and shows a warning if any are detected,
-so the user can review the impact before accepting.
+An existing sub-model can be replaced with a different FMU by right-clicking
+on the component in the diagram view and selecting ``Replace SubModel`` from
+the context menu.
+
+.. figure :: images/omedit_replace_submodel.png
+
+  OMEdit: Replace SubModel Dialog.
+
+A file browser opens to select the new FMU. The replacement is performed in
+two steps:
+
+1. **Dry run** (``dryRun=true``) — OMEdit first performs a dry run without
+   making any changes to the model. It checks for interface differences between
+   the old and new FMU, such as added, removed, or modified connectors and
+   parameters. If any changes are detected, they are reported in the Messages
+   Browser and a warning dialog is shown. The model remains unchanged at this
+   stage, allowing the user to review the impact before deciding to proceed.
+
+2. **Replacement** (``dryRun=false``) — If the user confirms, the replacement
+   is carried out and all detected interface changes are applied to the model.
+   Existing connections to removed or renamed connectors are dropped, and new
+   connectors are available for connecting.
+
+.. figure :: images/omedit_replace_submodel_contextmenu.png
+
+  OMEdit: Replace SubModel context menu.
+
 
 
 Simulation Setup
