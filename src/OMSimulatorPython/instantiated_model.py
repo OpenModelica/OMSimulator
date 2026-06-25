@@ -46,7 +46,9 @@ class SolverType(Enum):
   '''Enumeration for solver method to map with c api.'''
   euler = 2
   cvode = 3
-
+  oms_ma = 6
+  oms_mav = 7
+  oms_mav2 = 8
 class SystemType(Enum):
   '''Enumeration for system type to map with c api.'''
   wc = 1
