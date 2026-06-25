@@ -38,7 +38,7 @@ model2 = SSP()
 model2.addResource('../resources/Stair.fmu', new_name='resources/Stair.fmu')
 
 model2.addComponent(CRef('default', 'Stair'), 'resources/Stair.fmu')
-solver2 = {'name' : 'solver2',  'method': 'cvode', 'tolerance': 1e-5, 'stepSize': 0.2}
+solver2 = {'name' : 'solver2',  'method': 'cvode', 'relativeTolerance': 1e-5, 'maximumStepSize': 0.2}
 model2.newSolver(solver2)
 model2.setSolver(CRef('default', 'Stair'), 'solver2')
 

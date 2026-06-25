@@ -21,7 +21,7 @@ model.addComponent(CRef('default', 'edrive_mass'), 'resources/edrive_mass.fmu')
 model.addComponent(CRef('default', 'emachine_model'), 'resources/emachine_model.fmu')
 model.addComponent(CRef('default', 'stimuli_model'), 'resources/stimuli_model.fmu')
 
-solver1 = {'name' : 'solver1',  'method': 'cvode', 'tolerance': 1e-4}
+solver1 = {'name' : 'solver1',  'method': 'cvode', 'relativeTolerance': 1e-4}
 model.newSolver(solver1)
 
 model.setSolver(CRef('default', 'edrive_mass'), 'solver1')

@@ -42,7 +42,7 @@ model2 = SSP()
 model2.addResource('../resources/BouncingBall.fmu', new_name='resources/BouncingBall.fmu')
 model2.addComponent(CRef('default', 'BouncingBall'), 'resources/BouncingBall.fmu')
 
-solver2 = {'name' : 'solver2',  'method': 'cvode', 'tolerance': 1e-5}
+solver2 = {'name' : 'solver2',  'method': 'cvode', 'relativeTolerance': 1e-5}
 model2.newSolver(solver2)
 model2.setSolver(CRef('default', 'BouncingBall'), 'solver2')
 
