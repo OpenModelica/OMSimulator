@@ -942,8 +942,11 @@ class System:
           unit["solver"] = {
             "name": solver,
             "method": solver_config.get("method"),
-            "tolerance": solver_config.get("tolerance"),
-            "stepSize": solver_config.get("stepSize")
+            "relativeTolerance": solver_config.get("relativeTolerance"),
+            "initialStepSize": solver_config.get("initialStepSize"),
+            "minimumStepSize": solver_config.get("minimumStepSize"),
+            "maximumStepSize": solver_config.get("maximumStepSize"),
+            "fixedStepSize": solver_config.get("fixedStepSize")
         }
         else:
           raise ValueError(f"Solver '{solver}' not found in solver list.")
@@ -992,7 +995,6 @@ class System:
             self.solvers.append({
                   "name": solver_name,
                   "method": "cvode",
-                  "tolerance": 1e-4
               })
           element.solver = solver_name
         ## default CS FMUs with no solver to oms_ma

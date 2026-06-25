@@ -134,28 +134,44 @@ class InstantiatedModel:
       else:
         solver_path = f"{self.modelName}.root"
 
-      ## set solver method and tolerance if provided
+      ## set solver method and settings if provided
       if solver:
-        tolerance = solver.get("tolerance")
-        stepSize = solver.get("stepSize")
-        ## TODO handle other solver settings like max step size, min step size, max order, etc.
-        if method in ("cvode", "euler"):
+        if method in ("cvode", "euler", "oms_ma", "oms_mav", "oms_mav2"):
           status = Capi.setSolver(solver_path, SolverType[method].value)
           if status != Status.ok:
             raise RuntimeError(f"Failed to set solver: {status}")
           self.apiCall.append(f'oms_setSolver("{solver_path}", "{method}")')
 
-        if tolerance is not None:
-          status = Capi.setTolerance(solver_path, float(tolerance))
+        relativeTolerance = solver.get("relativeTolerance")
+        if relativeTolerance is not None:
+          status = Capi.setTolerance(solver_path, float(relativeTolerance))
           if status != Status.ok:
             raise RuntimeError(f"Failed to set tolerance: {status}")
-          self.apiCall.append(f'oms_setTolerance("{solver_path}", {float(tolerance)})')
+          self.apiCall.append(f'oms_setTolerance("{solver_path}", {float(relativeTolerance)})')
 
-        if stepSize is not None:
-          status = Capi.setFixedStepSize(solver_path, float(stepSize))
-          if status != Status.ok:
-            raise RuntimeError(f"Failed to set step size: {status}")
-          self.apiCall.append(f'oms_setFixedStepSize("{solver_path}", {float(stepSize)})')
+        # variable-step solvers: initialStepSize, minimumStepSize, maximumStepSize
+        if method in ("cvode", "oms_mav", "oms_mav2"):
+          initialStepSize = solver.get("initialStepSize")
+          minimumStepSize = solver.get("minimumStepSize")
+          maximumStepSize = solver.get("maximumStepSize")
+          if any(v is not None for v in (initialStepSize, minimumStepSize, maximumStepSize)):
+            initialStepSize = float(initialStepSize) if initialStepSize is not None else 1e-6
+            minimumStepSize = float(minimumStepSize) if minimumStepSize is not None else 1e-12
+            maximumStepSize = float(maximumStepSize) if maximumStepSize is not None else 0.001
+            status = Capi.setVariableStepSize(solver_path, initialStepSize, minimumStepSize, maximumStepSize)
+            if status != Status.ok:
+              raise RuntimeError(f"Failed to set variable step size: {status}")
+            self.apiCall.append(f'oms_setVariableStepSize("{solver_path}", {initialStepSize}, {minimumStepSize}, {maximumStepSize})')
+
+        # fixed-step solvers: fixedStepSize
+        if method in ("oms_ma", "euler"):
+          fixedStepSize = solver.get("fixedStepSize")
+          if fixedStepSize is not None:
+            status = Capi.setFixedStepSize(solver_path, float(fixedStepSize))
+            if status != Status.ok:
+              raise RuntimeError(f"Failed to set fixed step size: {status}")
+            self.apiCall.append(f'oms_setFixedStepSize("{solver_path}", {float(fixedStepSize)})')
+
 
       ## add components
       for comp in unit["components"]:
