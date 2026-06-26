@@ -216,11 +216,9 @@ class Component:
     self.value.setValue(cref, value, None, unit, description)
 
   def getValue(self, cref: str):
-    # First check user-set values (SSV parameter bindings).
-    # Values.getValue returns (value, type, unit, description) tuple or None.
     entry = self.value.getValue(cref)
     if entry is not None:
-      return entry[0]
+      return entry
     # Fall back to the default start value from modeldescription.xml.
     # modelDescriptionStartValue is a raw string parsed from XML — returned as-is;
     # the caller is responsible for converting to the target numeric type.
