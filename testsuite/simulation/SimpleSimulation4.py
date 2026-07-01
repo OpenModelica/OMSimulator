@@ -47,7 +47,7 @@ instantiated_model.delete()
 ## info: After instantiation:
 ## info:    default.CauerLowPassAnalog.R1.T: 300.15
 ## info:    default.CauerLowPassAnalog.C1.C: 1.072
-## info:    Result file: SimpleSimulation4_res.mat (bufferSize=1)
+## info:    Result file: SimpleSimulation4_res.mat (bufferSize=10)
 ## info: After Simulation:
 ## info:    default.CauerLowPassAnalog.R1.T: 300.15
 ## info:    default.CauerLowPassAnalog.C1.C: 1.072

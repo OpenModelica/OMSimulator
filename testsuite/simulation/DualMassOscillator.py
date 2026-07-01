@@ -52,7 +52,7 @@ instantiated_model.terminate()
 instantiated_model.delete()
 
 ## Result:
-## info:    Result file: DualMassOscillator_res.mat (bufferSize=1)
+## info:    Result file: DualMassOscillator_res.mat (bufferSize=10)
 ## info:    Initialization
 ## info:      default.system1.x1: 0.0
 ## info:      default.system2.x2: 0.5

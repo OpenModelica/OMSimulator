@@ -34,6 +34,7 @@ from pathlib import Path
 from lxml import etree as ET
 from OMSimulator.cref import CRef
 from OMSimulator.connector import Connector
+from OMSimulator.elementgeometry import ElementGeometry
 from OMSimulator.variable import Causality, SignalType
 from OMSimulator import namespace
 from OMSimulator.capi import Capi
@@ -62,6 +63,8 @@ class ComponentTable:
     self.filePath = filePath
     self.connectors = connectors
     self._solver = None
+    self.elementgeometry = None
+
 
   @property
   def solver(self):
@@ -81,6 +84,11 @@ class ComponentTable:
       for connector in self.connectors:
         connector.list(prefix=prefix + " |--")
 
+    ## list component element geometry
+    if self.elementgeometry:
+      print(f"{prefix} ElementGeometry:")
+      self.elementgeometry.list(prefix=prefix + " |--")
+
   def exportToSSD(self, node):
     component_node = ET.SubElement(node, namespace.tag("ssd", "Component"))
     component_node.set("name", str(self.name))
@@ -92,3 +100,7 @@ class ComponentTable:
       ## export component connectors
       for connector in self.connectors:
         connector.exportToSSD(connectors_node)
+
+    ## export component element geometry
+    if self.elementgeometry:
+      self.elementgeometry.exportToSSD(component_node)

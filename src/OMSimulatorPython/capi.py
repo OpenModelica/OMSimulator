@@ -44,33 +44,6 @@ class Status(Enum):
   fatal = 4
   pending = 5
 
-## C structure for connection geometry to properly pass the data from Python to C API
-class ssd_connection_geometry_t(ctypes.Structure):
-  _fields_ = [
-    ("pointsX", ctypes.POINTER(ctypes.c_double)),
-    ("pointsY", ctypes.POINTER(ctypes.c_double)),
-    ("n", ctypes.c_uint)
-  ]
-## C structure for connector geometry to properly pass the data from Python to C API
-class ssd_connector_geometry_t(ctypes.Structure):
-  _fields_ = [
-    ("x", ctypes.c_double),
-    ("y", ctypes.c_double)
-  ]
-## C structure for element geometry to properly pass the data from Python to C API
-class ssd_element_geometry_t(ctypes.Structure):
-  _fields_ = [
-    ("x1", ctypes.c_double),
-    ("y1", ctypes.c_double),
-    ("x2", ctypes.c_double),
-    ("y2", ctypes.c_double),
-    ("rotation", ctypes.c_double),
-    ("iconSource", ctypes.c_char_p),
-    ("iconRotation", ctypes.c_double),
-    ("iconFlip", ctypes.c_bool),
-    ("iconFixedAspectRatio", ctypes.c_bool),
-  ]
-
 class capi:
   def __init__(self):
     dirname = os.path.dirname(__file__)
@@ -103,6 +76,8 @@ class capi:
     self.obj.oms_compareSimulationResults.restype = ctypes.c_int
     self.obj.oms_delete.argtypes = [ctypes.c_char_p]
     self.obj.oms_delete.restype = ctypes.c_int
+    self.obj.oms_doStep.argtypes = [ctypes.c_char_p]
+    self.obj.oms_doStep.restype = ctypes.c_int
     self.obj.oms_getVersion.argtypes = None
     self.obj.oms_getVersion.restype = ctypes.c_char_p
     self.obj.oms_getBoolean.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_bool)]
@@ -111,6 +86,12 @@ class capi:
     self.obj.oms_getInteger.restype = ctypes.c_int
     self.obj.oms_getReal.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_double)]
     self.obj.oms_getReal.restype = ctypes.c_int
+    self.obj.oms_getTime.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_double)]
+    self.obj.oms_getTime.restype = ctypes.c_int
+    self.obj.oms_getStartTime.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_double)]
+    self.obj.oms_getStartTime.restype = ctypes.c_int
+    self.obj.oms_getStopTime.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_double)]
+    self.obj.oms_getStopTime.restype = ctypes.c_int
     self.obj.oms_getString.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_char_p)]
     self.obj.oms_getString.restype = ctypes.c_int
     self.obj.oms_getVariableType.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_int)]
@@ -129,14 +110,8 @@ class capi:
     self.obj.oms_setCommandLineOption.restype = ctypes.c_int
     self.obj.oms_setConnectionLinearTransformation.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_double, ctypes.c_double]
     self.obj.oms_setConnectionLinearTransformation.restype = ctypes.c_int
-    self.obj.oms_setConnectionGeometry.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.POINTER(ssd_connection_geometry_t)]
-    self.obj.oms_setConnectionGeometry.restype = ctypes.c_int
-    self.obj.oms_setConnectorGeometry.argtypes = [ctypes.c_char_p, ctypes.POINTER(ssd_connector_geometry_t)]
-    self.obj.oms_setConnectorGeometry.restype = ctypes.c_int
     self.obj.oms_setConnectorNumericType.argtypes = [ctypes.c_char_p, ctypes.c_int]
     self.obj.oms_setConnectorNumericType.restype = ctypes.c_int
-    self.obj.oms_setElementGeometry.argtypes = [ctypes.c_char_p, ctypes.POINTER(ssd_element_geometry_t)]
-    self.obj.oms_setElementGeometry.restype = ctypes.c_int
     self.obj.oms_setTempDirectory.argtypes = [ctypes.c_char_p]
     self.obj.oms_setTempDirectory.restype = ctypes.c_int
     self.obj.oms_setExportName.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
@@ -167,6 +142,8 @@ class capi:
     self.obj.oms_setVariableStepSize.restype = ctypes.c_int
     self.obj.oms_setLogFile.argtypes = [ctypes.c_char_p]
     self.obj.oms_setLogFile.restype = ctypes.c_int
+    self.obj.oms_setWorkingDirectory.argtypes = [ctypes.c_char_p]
+    self.obj.oms_setWorkingDirectory.restype = ctypes.c_int
     self.obj.oms_setLoggingInterval.argtypes = [ctypes.c_char_p, ctypes.c_double]
     self.obj.oms_setLoggingInterval.restype = ctypes.c_int
     self.obj.oms_setLoggingLevel.argtypes = [ctypes.c_int]
@@ -207,6 +184,10 @@ class capi:
 
   def delete(self, cref):
     status = self.obj.oms_delete(cref.encode())
+    return Status(status)
+
+  def doStep(self, cref):
+    status = self.obj.oms_doStep(cref.encode())
     return Status(status)
 
   def getVersion(self):
@@ -270,38 +251,10 @@ class capi:
     status = self.obj.oms_setConnectionLinearTransformation(crefA.encode(), crefB.encode(), factor, offset)
     return Status(status)
 
-  def setConnectionGeometry(self, crefA, crefB, pointsX, pointsY):
-    '''Set the connection geometry for a connection between two connectors.
-    The connection geometry is defined by a list of points (pointsX, pointsY) that define the path of the connection in the diagram.'''
-    n = len(pointsX)
-    if n != len(pointsY):
-      raise ValueError("pointsX and pointsY must have the same length")
-    geometry = ssd_connection_geometry_t(
-      (ctypes.c_double * n)(*pointsX),
-      (ctypes.c_double * n)(*pointsY),
-      n
-    )
-    status = self.obj.oms_setConnectionGeometry(crefA.encode(), crefB.encode(), ctypes.byref(geometry))
-    return Status(status)
-
-  def setConnectorGeometry(self, cref, x, y):
-    '''Set the connector geometry for a connector.
-    The connector geometry is defined by a point (x, y) that defines the position of the connector in the diagram.'''
-    geometry = ssd_connector_geometry_t(x, y)
-    status = self.obj.oms_setConnectorGeometry(cref.encode(), ctypes.byref(geometry))
-    return Status(status)
-
   def setConnectorNumericType(self, cref, numericType):
     '''Set the numeric type for a connector.
     This is used to specify the numeric type of the connector, which is important for FMI3 connectors that can have different numeric types (e.g., float32, float64, int32, int64).'''
     status = self.obj.oms_setConnectorNumericType(cref.encode(), numericType)
-    return Status(status)
-
-  def setElementGeometry(self, cref, x1, y1, x2, y2, rotation=0.0, iconSource=b"", iconRotation=0.0, iconFlip=False, iconFixedAspectRatio=False):
-    '''Set the element geometry for a model or system.
-    The element geometry is defined by a bounding box (x1, y1, x2, y2) that defines the position and size of the element in the diagram, as well as optional rotation and icon information.'''
-    geometry = ssd_element_geometry_t(x1, y1, x2, y2, rotation, iconSource, iconRotation, iconFlip, iconFixedAspectRatio)
-    status = self.obj.oms_setElementGeometry(cref.encode(), ctypes.byref(geometry))
     return Status(status)
 
   def setTempDirectory(self, newTempDir):
@@ -344,7 +297,7 @@ class capi:
     status = self.obj.oms_setSolver(cref.encode(), solver)
     return Status(status)
 
-  def setResultFile(self, cref, filename, bufferSize=1) -> Status:
+  def setResultFile(self, cref, filename, bufferSize=10) -> Status:
     '''Set the result file for a model or system.
     The bufferSize specifies how many values are buffered before writing to the file.'''
     status = self.obj.oms_setResultFile(cref.encode(), filename.encode(), bufferSize)
@@ -359,6 +312,21 @@ class capi:
     '''Set the stop time for the simulation.'''
     status = self.obj.oms_setStopTime(cref.encode(), stopTime)
     return Status(status)
+
+  def getStartTime(self, cref):
+    startTime = ctypes.c_double()
+    status = self.obj.oms_getStartTime(cref.encode(), ctypes.byref(startTime))
+    return [startTime.value, Status(status)]
+
+  def getStopTime(self, cref):
+    stopTime = ctypes.c_double()
+    status = self.obj.oms_getStopTime(cref.encode(), ctypes.byref(stopTime))
+    return [stopTime.value, Status(status)]
+
+  def getTime(self, cref):
+    time = ctypes.c_double()
+    status = self.obj.oms_getTime(cref.encode(), ctypes.byref(time))
+    return [time.value, Status(status)]
 
   def setTolerance(self, cref, relativeTolerance) -> Status:
     '''Set the relative and absolute tolerance for the simulation.'''
@@ -388,6 +356,10 @@ class capi:
 
   def setLogFile(self, filename):
     status = self.obj.oms_setLogFile(filename.encode())
+    return Status(status)
+
+  def setWorkingDirectory(self, newWorkingDir):
+    status = self.obj.oms_setWorkingDirectory(newWorkingDir.encode())
     return Status(status)
 
   def setLoggingInterval(self, cref, loggingInterval):

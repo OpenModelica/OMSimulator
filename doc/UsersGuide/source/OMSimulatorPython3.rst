@@ -158,6 +158,8 @@ The following example demonstrates how to
 
 .. include:: api/oms3/initialize.rst
 
+.. include:: api/oms3/setSolver.rst
+
 .. include:: api/oms3/simulate.rst
 
 .. include:: api/oms3/terminate.rst

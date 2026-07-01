@@ -40,6 +40,8 @@ from OMSimulator.capi import Capi
 from OMSimulator.connection import Connection
 from OMSimulator.connector import Connector
 from OMSimulator.cref import CRef
+from OMSimulator.component import Component
+from OMSimulator.componenttable import ComponentTable
 from OMSimulator.fmu import FMU
 from OMSimulator.settings import Settings
 from OMSimulator.ssd import SSD
@@ -57,6 +59,8 @@ __all__ = [
     'Connection',
     'Connector',
     'CRef',
+    'Component',
+    'ComponentTable',
     'FMU',
     'Float32',
     'Float64',

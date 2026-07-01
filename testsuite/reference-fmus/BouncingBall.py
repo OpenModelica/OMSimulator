@@ -42,7 +42,7 @@ model2 = SSP()
 model2.addResource('../resources/BouncingBall.fmu', new_name='resources/BouncingBall.fmu')
 model2.addComponent(CRef('default', 'BouncingBall'), 'resources/BouncingBall.fmu')
 
-solver2 = {'name' : 'solver2',  'method': 'cvode', 'tolerance': 1e-5}
+solver2 = {'name' : 'solver2',  'method': 'cvode', 'relativeTolerance': 1e-5}
 model2.newSolver(solver2)
 model2.setSolver(CRef('default', 'BouncingBall'), 'solver2')
 
@@ -70,11 +70,11 @@ else:
 
 
 ## Result:
-## info:    Result file: BouncingBall-cs.mat (bufferSize=1)
+## info:    Result file: BouncingBall-cs.mat (bufferSize=10)
 ## signal h is equal
 ## signal v is equal
 ## info:    maximum step size for 'model.root': 0.001000
-## info:    Result file: BouncingBall-me.mat (bufferSize=1)
+## info:    Result file: BouncingBall-me.mat (bufferSize=10)
 ## info:    Final Statistics for 'model.root':
 ##          NumSteps = 503 NumRhsEvals  = 504 NumLinSolvSetups = 27
 ##          NumNonlinSolvIters = 503 NumNonlinSolvConvFails = 0 NumErrTestFails = 0

@@ -72,7 +72,7 @@ instantiated_model.delete()
 
 
 ## Result:
-## info:    Result file: Feedthrough-cs.mat (bufferSize=1)
+## info:    Result file: Feedthrough-cs.mat (bufferSize=10)
 ## info:    Parameter default.Feedthrough.String_parameter will not be stored in the result file, because the signal type is not supported
 ## info:    Feedthrough.Boolean_output: True
 ## info:    Feedthrough.Enumeration_output: 2
@@ -81,7 +81,7 @@ instantiated_model.delete()
 ## info:    Feedthrough.Int32_output: 5
 ## info:    model doesn't contain any continuous state
 ## info:    maximum step size for 'model.root': 0.001000
-## info:    Result file: Feedthrough-me.mat (bufferSize=1)
+## info:    Result file: Feedthrough-me.mat (bufferSize=10)
 ## info:    Parameter default.Feedthrough.String_parameter will not be stored in the result file, because the signal type is not supported
 ## info:    Feedthrough.Boolean_output: True
 ## info:    Feedthrough.Enumeration_output: 2

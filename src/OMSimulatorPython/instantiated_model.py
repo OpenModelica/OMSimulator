@@ -46,16 +46,28 @@ class SolverType(Enum):
   '''Enumeration for solver method to map with c api.'''
   euler = 2
   cvode = 3
-
+  oms_ma = 6
+  oms_mav = 7
+  oms_mav2 = 8
 class SystemType(Enum):
   '''Enumeration for system type to map with c api.'''
   wc = 1
   sc = 2
   sc3 = 3
 
+# Solver methods that produce a WC system; all others produce SC.
+_WC_SOLVER_METHODS = {"oms_ma", "oms_mav", "oms_mav2"}
+
+def _system_type_for_method(method: str) -> SystemType:
+  return SystemType.wc if method in _WC_SOLVER_METHODS else SystemType.sc
+
+def _system_type_label(system_type: SystemType) -> str:
+  return "oms_system_wc" if system_type == SystemType.wc else "oms_system_sc"
+
 class InstantiatedModel:
   _suppress_path_set = False # Class variable to track if suppressPath has been set
   def __init__(self, json_description, system: System, resources: dict):
+    #print(f"info: Instantiating model with JSON description:\n{json_description}", flush=True)
     config = json.loads(json_description)
     self.modelName = "model" ## create random name, but we cannot commits test as jenkins will gerate new model name
     self.apiCall = []
@@ -81,65 +93,91 @@ class InstantiatedModel:
     self.apiCall.append(f'oms_newModel("{self.modelName}")')
 
     # Extract all simulation units
+    # processElements guarantees every unit has a solver (CS=oms_ma, ME=cvode by default).
     sim_units = config.get("simulation units", [])
-    # Count the number of unique solvers for determining system type (WC/SC)
-    solver_units = [unit for unit in sim_units if "solver" in unit]
-    num_solvers = len(solver_units)
+    num_units = len(sim_units)
+    # print(f"Number of simulation units: {num_units}", flush=True)
 
-    # --- Add systems depending on number of solvers ---
-    if num_solvers == 1:
-      # Only one solver unit → SC system directly under root
-      status = Capi.addSystem(f"{self.modelName}.root", SystemType.sc.value)  # 2 = oms_system_sc
-      if status != Status.ok:
-        raise RuntimeError(f"Failed to create root SC system: {status}")
-      self.apiCall.append(f'oms_addSystem("{self.modelName}.root", "oms_system_sc")')
+    # --- Determine root system type ---
+    # Single unit : root takes that solver's own type (WC or SC directly, no wrapper).
+    # Multiple units : always WC root so each solver unit becomes a subsystem.
+    if num_units == 1:
+      root_type = _system_type_for_method(sim_units[0].get("solver", {}).get("method", ""))
     else:
-      # Multiple solver units or zero solvers top-level WC system
-      status = Capi.addSystem(f"{self.modelName}.root", SystemType.wc.value)  # 1 = oms_system_wc
-      if status != Status.ok:
-        raise RuntimeError(f"Failed to create root WC system: {status}")
-      self.apiCall.append(f'oms_addSystem("{self.modelName}.root", "oms_system_wc")')
+      root_type = SystemType.wc
 
-    # Iterate over simulation units
+    root_label = _system_type_label(root_type)
+    status = Capi.addSystem(f"{self.modelName}.root", root_type.value)
+    export_name = f"{self.system.name}"  # Use the system's name as the export name for the root system
+    if export_name not in self.mappedCrefs:
+      self.mappedCrefs[export_name] = f"{self.modelName}.root"
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to create root system: {status}")
+    self.apiCall.append(f'oms_addSystem("{self.modelName}.root", "{root_label}")')
+
+    # Step 1: Create subsystems, add all components, populate mappedCrefs
+    # We must add every component before processing any connections, because a
+    # connection in one simulation unit may reference a component that lives in a
+    # different unit (cross-unit connection at the WC root level).
+
+    unit_solver_paths = []  # parallel list: solver_path for each sim_unit
     for unit in sim_units:
-      ## check if unit has solver as key
-      solvername = "None"
-      solver = unit.get("solver")
-      if num_solvers > 1  and solver:
-        solvername = unit["solver"]['name']
+      solver = unit.get("solver", {})
+      method = solver.get("method", "")
+      # WC-method units (oms_ma etc.) cannot be nested under a WC root —
+      # their components go directly into model.root.
+      # SC-method units (cvode, euler) get their own named subsystem.
+      if num_units > 1 and method not in _WC_SOLVER_METHODS:
+        solvername = solver['name']
         solver_path = f"{self.modelName}.root.{solvername}"
-        self.apiCall.append(f'oms_addSystem("{solver_path}", "oms_system_sc")')
-        status = Capi.addSystem(f"model.root.{solvername}", SystemType.sc.value)  # 2 = oms_system_sc
+        sub_type = _system_type_for_method(method)
+        sub_label = _system_type_label(sub_type)
+        self.apiCall.append(f'oms_addSystem("{solver_path}", "{sub_label}")')
+        status = Capi.addSystem(f"model.root.{solvername}", sub_type.value)
         if status != Status.ok:
           raise RuntimeError(f"Failed to add oms_addSystem: {status}")
       else:
         solver_path = f"{self.modelName}.root"
 
-      ## set solver method and tolerance if provided
+      ## set solver method and settings if provided
       if solver:
-        method = solver.get("method")
-        tolerance = solver.get("tolerance")
-        stepSize = solver.get("stepSize")
-
-        if method in ("cvode", "euler"):
-          status = Capi.setSolver(solver_path, SolverType[method].value)  # 3=cvode, 2=euler
+        if method in ("cvode", "euler", "oms_ma", "oms_mav", "oms_mav2"):
+          status = Capi.setSolver(solver_path, SolverType[method].value)
           if status != Status.ok:
             raise RuntimeError(f"Failed to set solver: {status}")
           self.apiCall.append(f'oms_setSolver("{solver_path}", "{method}")')
 
-        if tolerance is not None:
-          status = Capi.setTolerance(solver_path, float(tolerance))
+        relativeTolerance = solver.get("relativeTolerance")
+        if relativeTolerance is not None:
+          status = Capi.setTolerance(solver_path, float(relativeTolerance))
           if status != Status.ok:
             raise RuntimeError(f"Failed to set tolerance: {status}")
-          self.apiCall.append(f'oms_setTolerance("{solver_path}", {float(tolerance)})')
+          self.apiCall.append(f'oms_setTolerance("{solver_path}", {float(relativeTolerance)})')
 
-        if stepSize is not None:
-          status = Capi.setFixedStepSize(solver_path, float(stepSize))
-          if status != Status.ok:
-            raise RuntimeError(f"Failed to set step size: {status}")
-          self.apiCall.append(f'oms_setFixedStepSize("{solver_path}", {float(stepSize)})')
+        # variable-step solvers: initialStepSize, minimumStepSize, maximumStepSize
+        if method in ("cvode", "oms_mav", "oms_mav2"):
+          initialStepSize = solver.get("initialStepSize")
+          minimumStepSize = solver.get("minimumStepSize")
+          maximumStepSize = solver.get("maximumStepSize")
+          if any(v is not None for v in (initialStepSize, minimumStepSize, maximumStepSize)):
+            initialStepSize = float(initialStepSize) if initialStepSize is not None else 1e-6
+            minimumStepSize = float(minimumStepSize) if minimumStepSize is not None else 1e-12
+            maximumStepSize = float(maximumStepSize) if maximumStepSize is not None else 0.001
+            status = Capi.setVariableStepSize(solver_path, initialStepSize, minimumStepSize, maximumStepSize)
+            if status != Status.ok:
+              raise RuntimeError(f"Failed to set variable step size: {status}")
+            self.apiCall.append(f'oms_setVariableStepSize("{solver_path}", {initialStepSize}, {minimumStepSize}, {maximumStepSize})')
 
-      listofsystems = []
+        # fixed-step solvers: fixedStepSize
+        if method in ("oms_ma", "euler"):
+          fixedStepSize = solver.get("fixedStepSize")
+          if fixedStepSize is not None:
+            status = Capi.setFixedStepSize(solver_path, float(fixedStepSize))
+            if status != Status.ok:
+              raise RuntimeError(f"Failed to set fixed step size: {status}")
+            self.apiCall.append(f'oms_setFixedStepSize("{solver_path}", {float(fixedStepSize)})')
+
+
       ## add components
       for comp in unit["components"]:
         if len(comp["name"]) <= 2:
@@ -148,15 +186,11 @@ class InstantiatedModel:
           ## add prefix to nested systems to avoid name conflicts while flattening the system during instantiation, e.g. sub-system1_Add1, sub-system1_Gain1
           comp_name = f"{comp['name'][-2]}_{comp['name'][-1]}"
           comp_path = ".".join([solver_path] + [comp_name])
-        currentSystem = ".".join(comp["name"][:-1])
-        if currentSystem not in listofsystems:
-          listofsystems.append(currentSystem)
         self.apiCall.append(f'oms_addSubModel("{comp_path}", "{comp["path"]}")')
         status = Capi.addSubModel(comp_path, comp["path"])
         if status != Status.ok:
           raise RuntimeError(f"Failed to add oms_addSubModel: {status}")
         export_name = ".".join(comp["name"])
-        #print(f"Setting export name for {comp_path} to {export_name}")
 
         ## parse connector geometry for the component if exist and set it to capi after adding the component, this is needed for proper mapping of connector geometry
         if "connectors" in comp:
@@ -175,23 +209,6 @@ class InstantiatedModel:
                 raise RuntimeError(f"Failed to set connector geometry for {connector_path}: {status}")
               self.apiCall.append(f'oms_setConnectorGeometry("{connector_path}", {x}, {y})')
 
-        ## parse element geometry for the component if exist and set it to capi after adding the component, this is needed for proper mapping of element geometry
-        if "element geometry" in comp:
-          geometry = comp["element geometry"]
-          x1 = geometry.get("x1", 0.0)
-          y1 = geometry.get("y1", 0.0)
-          x2 = geometry.get("x2", 0.0)
-          y2 = geometry.get("y2", 0.0)
-          rotation = geometry.get("rotation")
-          iconSource = geometry.get("iconSource", b"")
-          iconRotation = geometry.get("iconRotation", 0.0)
-          iconFlip = geometry.get("iconFlip", False)
-          iconFixedAspectRatio = geometry.get("iconFixedAspectRatio", False)
-          status = Capi.setElementGeometry(comp_path, x1, y1, x2, y2, rotation, iconSource, iconRotation, iconFlip, iconFixedAspectRatio)
-          if status != Status.ok:
-            raise RuntimeError(f"Failed to set element geometry for {comp_path}: {status}")
-          self.apiCall.append(f'oms_setElementGeometry("{comp_path}", {x1}, {y1}, {x2}, {y2}, {rotation}, "{iconSource}", {iconRotation}, {iconFlip}, {iconFixedAspectRatio})')
-
         if not export_name in self.mappedCrefs:
           self.mappedCrefs[export_name] = comp_path
           self.mappedCrefs[".".join(comp["name"][:-1])] = solver_path # map parent system too for connector lookup
@@ -199,15 +216,14 @@ class InstantiatedModel:
         if status != Status.ok:
           raise RuntimeError(f"Failed to set export name: {status}")
 
-      ## add top level system connectors before adding connections
-      for current_system in listofsystems:
-        ## top level connectors:
-        if current_system == self.system.name:
-          self._addConnector(self.system.connectors, self.system.name)
-        ## add top sub-system level connectors mapped with currentSystem
-        self.addConnectorFromElements(self.system.elements, current_system)
+      unit_solver_paths.append(solver_path)
 
-      ## add connections
+    # Add connectors for the root system and all subsystems in one recursive pass.
+    # This replaces per-unit listofsystems tracking and duplication entirely.
+    self._addConnectorsRecursive(self.system, self.system.name)
+
+    # Step 2: Add all connections (mappedCrefs is now fully populated)
+    for unit in sim_units:
       for connection in unit["connections"]:
         start_element = ".".join(connection['start element'] + [connection['start connector']])
         end_element = ".".join(connection['end element'] + [connection['end connector']])
@@ -231,14 +247,6 @@ class InstantiatedModel:
           status = Capi.setConnectionLinearTransformation(start, end, float(factor), float(offset))
           if status != Status.ok:
             raise RuntimeError(f"Failed to set connection linear transformation: {status}")
-        ## add connection geometry if exist
-        if "connection geometry" in connection:
-          pointsX = connection["connection geometry"]["pointsX"]
-          pointsY = connection["connection geometry"]["pointsY"]
-          self.apiCall.append(f'oms_setConnectionGeometry("{start}", "{end}", {pointsX}, {pointsY})')
-          status = Capi.setConnectionGeometry(start, end, pointsX, pointsY)
-          if status != Status.ok:
-            raise RuntimeError(f"Failed to set connection geometry: {status}")
 
     ## set start values
     self.setStartValues(self.system.value, self.system.name, self.system.parameterMapping)
@@ -255,6 +263,9 @@ class InstantiatedModel:
     ## set start and stop time from ssp
     self.setStartTime(float(config["simulation settings"]['start time']))
     self.setStopTime(float(config["simulation settings"]['stop time']))
+    ## set result file name from ssp
+    self.setResultFile(config["simulation settings"]['result file'], int(config["simulation settings"]['buffer size']))
+    self.setLoggingInterval(float(config["simulation settings"]['logging interval']))
 
   def setStartValuesFromElements(self, elements, systemName):
     for key, element in elements.items():
@@ -382,6 +393,24 @@ class InstantiatedModel:
       case _:
         raise TypeError(f"Unsupported type: {type}")
 
+  def _addConnectorsRecursive(self, system: System, system_name: str):
+    """Walk the system tree and add connectors for every system/subsystem
+    that was actually instantiated (i.e. present in mappedCrefs)."""
+    if system_name not in self.mappedCrefs:
+      # connector-only subsystems (no FMU components) are not added during Step 1;
+      # derive their OMS path from the parent so their connectors can be flattened there.
+      parent_name = system_name.rsplit(".", 1)[0] if "." in system_name else None
+      if parent_name and parent_name in self.mappedCrefs:
+        self.mappedCrefs[system_name] = self.mappedCrefs[parent_name]
+      else:
+        return
+    if system.connectors:
+      self._addConnector(system.connectors, system_name)
+    for element in system.elements.values():
+      if isinstance(element, System):
+        child_name = f"{system_name}.{element.name}"
+        self._addConnectorsRecursive(element, child_name)
+
   def _addConnector(self, connectors, systemName):
     for connector in connectors:
       connector_name =".".join([systemName]+[str(connector.name)])
@@ -402,14 +431,6 @@ class InstantiatedModel:
         status = Capi.setConnectorNumericType(connector_path, connector.numericType.value)
         if status != Status.ok:
           raise RuntimeError(f"Failed to set connector numeric type for {connector_path}: {status}")
-      ## set connector geometry if exist
-      if connector.connectorGeometry:
-        x = connector.connectorGeometry.x
-        y = connector.connectorGeometry.y
-        self.apiCall.append(f'oms_setConnectorGeometry("{connector_path}", {x}, {y})')
-        status = Capi.setConnectorGeometry(connector_path, x, y)
-        if status != Status.ok:
-          raise RuntimeError(f"Failed to set connector geometry for {connector_path}: {status}")
 
       export_name = systemName
       if not connector_name in self.mappedCrefs:
@@ -420,17 +441,6 @@ class InstantiatedModel:
       status = Capi.setAliasName(connector_path, str(connector.name))  # Set alias name for connector
       if status != Status.ok:
         raise RuntimeError(f"Failed to set alias name: {status}")
-
-  def addConnectorFromElements(self, elements, currentSystem):
-    ## add connectors mapped with currentSystem
-    for key, element in elements.items():
-      connector_path = ".".join([self.system.name, str(element.name)])
-      if currentSystem == connector_path:
-        self._addConnector(element.connectors, connector_path)
-
-      ## recurse into subsystem
-      if isinstance(element, System):
-        self.addConnectorFromElements(element.elements, currentSystem)
 
   def dumpApiCalls(self):
     """Returns the generated API calls as a string."""
@@ -567,8 +577,8 @@ class InstantiatedModel:
     if status != Status.ok:
       raise RuntimeError(f"Failed to step until {stopTime}: {status}")
 
-  def setResultFile(self, filename: str):
-    status = Capi.setResultFile("model", filename)
+  def setResultFile(self, filename: str, bufferSize: int = 10):
+    status = Capi.setResultFile("model", filename, bufferSize)
     if status !=Status.ok:
       raise RuntimeError(f"Failed to setResultFile {filename}: {status}")
 
@@ -576,6 +586,30 @@ class InstantiatedModel:
     status = Capi.setStartTime(self.modelName, startTime)
     if status != Status.ok:
       raise RuntimeError(f"Failed to set start time: {status}")
+
+  def getStartTime(self) -> float:
+    startTime, status = Capi.getStartTime(self.modelName)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to get start time: {status}")
+    return startTime
+
+  def getStopTime(self) -> float:
+    stopTime, status = Capi.getStopTime(self.modelName)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to get stop time: {status}")
+    return stopTime
+
+  def getTime(self) -> float:
+    time, status = Capi.getTime(self.modelName)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to get time: {status}")
+    return time
+
+
+  def doStep(self):
+    status = Capi.doStep(self.modelName)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to do step: {status}")
 
   def setStopTime(self, stopTime: float):
     if self.fmuInstantitated is False:

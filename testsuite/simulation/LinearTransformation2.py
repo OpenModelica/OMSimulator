@@ -73,7 +73,7 @@ instantiated_model.delete()
 ##
 ## info:    model doesn't contain any continuous state
 ## info:    maximum step size for 'model.root': 0.001000
-## info:    Result file: LinearTransformation2_res.mat (bufferSize=1)
+## info:    Result file: LinearTransformation2_res.mat (bufferSize=10)
 ## info: After simulation:
 ## info:    default.Gain1.y: 0.0
 ## info:    default.Add1.u1: 3.0

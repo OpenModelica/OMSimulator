@@ -195,7 +195,7 @@ instantiated_model.delete()
 ##            model.root.consumer_B
 ##            model.root.consumer_A
 ##            model.root.cockpit
-## info:    Result file: AircraftVehicleDemonstrator_res.mat (bufferSize=1)
+## info:    Result file: AircraftVehicleDemonstrator_res.mat (bufferSize=10)
 ## info:    6 warnings
 ## info:    0 errors
 ## endResult

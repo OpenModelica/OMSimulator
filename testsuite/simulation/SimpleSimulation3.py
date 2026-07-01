@@ -120,7 +120,7 @@ instantiated_model.delete()
 ## info:    model doesn't contain any continuous state
 ## info:    maximum step size for 'model.root.solver2': 0.001000
 ## info:    model doesn't contain any continuous state
-## info:    Result file: SimpleSimulation3_res.mat (bufferSize=1)
+## info:    Result file: SimpleSimulation3_res.mat (bufferSize=10)
 ## info:    Final Statistics for 'model.root.solver2':
 ##          NumSteps = 1001 NumRhsEvals  = 1002 NumLinSolvSetups = 51
 ##          NumNonlinSolvIters = 1001 NumNonlinSolvConvFails = 0 NumErrTestFails = 0

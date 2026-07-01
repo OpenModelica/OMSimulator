@@ -60,7 +60,7 @@ instantiated_model.delete()
 ## |-- |-- stopTime: 1.0
 ##
 ## Loading FMI version 3...
-## info:    Result file: FMI3_SimpleSimulation1_res.mat (bufferSize=1)
+## info:    Result file: FMI3_SimpleSimulation1_res.mat (bufferSize=10)
 ## info: After simulation:
 ## info:    default.BouncingBall.g: -9.81
 ## info:    default.BouncingBall.e: 0.7

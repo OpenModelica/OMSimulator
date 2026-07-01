@@ -59,6 +59,17 @@ class FMU:
     self._generationTool = None
     self._generationDateAndTime = None
     self._variableNamingConvention = None
+
+    self.canBeInstantiatedOnlyOncePerProcess = False
+    self.canGetAndSetFMUstate = False
+    self.canNotUseMemoryManagementFunctions = False
+    self.canSerializeFMUstate = False
+    self.completedIntegratorStepNotNeeded = False
+    self.needsExecutionTool = False
+    self.providesDirectionalDerivative = False
+    self.canInterpolateInputs = False
+    self.maxOutputDerivativeOrder = 0
+
     self._variables = []
     self._states = []
     self._unitDefinitions = []
@@ -72,6 +83,10 @@ class FMU:
   @property
   def fmiVersion(self):
     return self._fmiVersion
+
+  @property
+  def fmuPath(self):
+    return self._fmu_path
 
   @property
   def modelName(self):
@@ -110,6 +125,18 @@ class FMU:
   def states(self):
     return self._states
 
+  def _get_bool(self, element, attr, default=False):
+    value = element.get(attr)
+    if value is None:
+        return default
+    return value.lower() == "true"
+
+  def _get_int(self, element, attr, default=0):
+      value = element.get(attr)
+      if value is None:
+          return default
+      return int(value)
+
   def _load_model_description(self):
     '''Extract and parse the modelDescription.xml from the FMU zip archive.'''
     if not self._fmu_path.exists():
@@ -136,8 +163,11 @@ class FMU:
           self._generationDateAndTime = model_description.get('generationDateAndTime')
           self._variableNamingConvention = model_description.get('variableNamingConvention')
 
-          has_me = model_description.find('.//{*}ModelExchange') is not None
-          has_cs = model_description.find('.//{*}CoSimulation') is not None
+          me = model_description.find('.//{*}ModelExchange')
+          cs = model_description.find('.//{*}CoSimulation')
+
+          has_me = me is not None
+          has_cs = cs is not None
 
           if has_me and has_cs:
             self._fmuType = 'me_cs'
@@ -145,6 +175,28 @@ class FMU:
             self._fmuType = 'me'
           elif has_cs:
             self._fmuType = 'cs'
+
+          ## CoSimulation attributes
+          if cs is not None:
+            self.canBeInstantiatedOnlyOncePerProcess = self._get_bool(cs, "canBeInstantiatedOnlyOncePerProcess")
+            self.canGetAndSetFMUstate = self._get_bool(cs, "canGetAndSetFMUstate")
+            self.canNotUseMemoryManagementFunctions = self._get_bool(cs, "canNotUseMemoryManagementFunctions")
+            self.canSerializeFMUstate = self._get_bool(cs, "canSerializeFMUstate")
+            self.completedIntegratorStepNotNeeded = False
+            self.needsExecutionTool = self._get_bool(cs, "needsExecutionTool")
+            self.providesDirectionalDerivative = self._get_bool(cs, "providesDirectionalDerivative")
+            self.canInterpolateInputs = self._get_bool(cs, "canInterpolateInputs")
+            self.maxOutputDerivativeOrder = self._get_int(cs, "maxOutputDerivativeOrder")
+
+          ## ModelExchange attributes
+          if me is not None:
+            self.canBeInstantiatedOnlyOncePerProcess = self._get_bool(me, "canBeInstantiatedOnlyOncePerProcess")
+            self.canGetAndSetFMUstate = self._get_bool(me, "canGetAndSetFMUstate")
+            self.canNotUseMemoryManagementFunctions = self._get_bool(me, "canNotUseMemoryManagementFunctions")
+            self.canSerializeFMUstate = self._get_bool(me, "canSerializeFMUstate")
+            self.completedIntegratorStepNotNeeded = self._get_bool(me, "completedIntegratorStepNotNeeded")
+            self.needsExecutionTool = self._get_bool(me, "needsExecutionTool")
+            self.providesDirectionalDerivative = self._get_bool(me, "providesDirectionalDerivative")
 
           # Parse default experiment settings
           self._parse_default_experiment(model_description)

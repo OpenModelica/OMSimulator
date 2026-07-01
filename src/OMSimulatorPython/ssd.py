@@ -36,6 +36,7 @@ from pathlib import Path
 from lxml import etree as ET
 from OMSimulator import capi
 from OMSimulator.cref import CRef
+from OMSimulator.connector import Connector
 from OMSimulator.fmu import FMU
 from OMSimulator.settings import suppress_path_to_str
 from OMSimulator.system import System
@@ -60,6 +61,14 @@ class SSD:
     self.system = System(name)
     self.startTime = 0.0
     self.stopTime = 1.0
+    self.resultFile = self._name + "_res.mat"
+    self.loggingInterval = 0.0
+    self.bufferSize = 10
+    ## default solver settings
+    self.initialStepSize = 1e-6
+    self.minimumStepSize = 1e-12
+    self.maximumStepSize = 1e-3
+    self.tolerance = 1e-4
     self.unitDefinitions = list()
     self.enumerationDefinitions = list()
 
@@ -137,6 +146,10 @@ class SSD:
     subcref = self._validateCref(cref)
     return self.system.addComponent(subcref, resource, inst)
 
+  def replaceComponent(self, cref: CRef, resource: str, inst : FMU | None = None, dryRun: bool = False):
+    subcref = self._validateCref(cref)
+    return self.system.replaceComponent(subcref, resource, inst, dryRun)
+
   def delete(self, cref: CRef):
     subcref = self._validateCref(cref)
     if subcref is None:
@@ -144,6 +157,14 @@ class SSD:
       self.system = None
       return
     return self.system.delete(subcref)
+
+  def rename(self, cref: CRef, new_name: CRef):
+    subcref = self._validateCref(cref)
+    if subcref is None:
+      # Renaming the root system itself.
+      self.system.name = str(new_name)
+      return
+    self.system.rename(subcref, new_name)
 
   def addSSVReference(self, cref: CRef, resource1: str, resource2: str | None = None):
     subcref = self._validateCref(cref)
@@ -191,6 +212,12 @@ class SSD:
     #logger.debug(f"Adding connection from {subcref1} to {subcref2}")
     self.system._addConnection(subcref1, subcref2)
 
+  def deleteConnection(self, cref1: CRef, cref2: CRef):
+    subcref1 = self._validateCref(cref1)
+    subcref2 = self._validateCref(cref2)
+    #logger.debug(f"Deleting connection from {subcref1} to {subcref2}")
+    self.system._deleteConnection(subcref1, subcref2)
+
   def newSolver(self, options: dict):
     self.system.solvers.append(options)
 
@@ -208,7 +235,11 @@ class SSD:
 
   def getValue(self, cref: CRef):
     subcref = self._validateCref(cref)
-    self.system.getValue(subcref)
+    return self.system.getValue(subcref)
+
+  def getElement(self, cref: CRef):
+    subcref = self._validateCref(cref)
+    return self.system.getElement(subcref)
 
   def mapParameter(self, cref: CRef, source: str, target: str):
     '''Maps a parameter from source to target in the system.'''
@@ -221,10 +252,24 @@ class SSD:
 
     self.system.addSystem(cref.pop_first(first=self._name))
 
+  def addConnector(self, cref: CRef, connector: Connector):
+    subcref = self._validateCref(cref)
+    self.system.addConnectorHelper(subcref, connector)
+
+  def getConnector(self, cref: CRef):
+    subcref = self._validateCref(cref)
+    return self.system.getConnector(subcref)
+
+  def getConnection(self, crefA: CRef, crefB: CRef):
+    subcrefA = self._validateCref(crefA)
+    subcrefB = self._validateCref(crefB)
+    return self.system.getConnection(subcrefA, subcrefB)
+
   def instantiate(self, resources: dict | None = None, tempdir: str | None = None ) -> InstantiatedModel:
     if self.system is None:
       raise ValueError("Variant doesn't contain a system")
-    json_desc = self.system.generateJson(resources, tempdir, self.startTime, self.stopTime)
+    simulation_info = {"startTime": self.startTime, "stopTime": self.stopTime, "resultFile": self.resultFile, "loggingInterval": self.loggingInterval, "bufferSize": self.bufferSize}
+    json_desc = self.system.generateJson(resources, tempdir, simulation_info)
     return InstantiatedModel(json_desc, self.system, resources)
 
   def list(self, prefix=""):
@@ -263,10 +308,11 @@ class SSD:
       generationDateAndTime=datetime.now().isoformat()
     )
 
-    self.system.export(root)
+    if self.system is not None:
+      self.system.export(root)
+      self._exportEnumerationDefinitions(root)
+      self._exportUnitDefinitions(root)
 
-    self._exportEnumerationDefinitions(root)
-    self._exportUnitDefinitions(root)
     self._exportDefaultExperiment(root)
 
     xml_content = ET.tostring(root, encoding="utf-8", xml_declaration=True, pretty_print=True).decode("utf-8")
@@ -303,3 +349,5 @@ class SSD:
     default_experiment = ET.SubElement(node, namespace.tag("ssd", "DefaultExperiment"))
     default_experiment.set("startTime", str(self.startTime))
     default_experiment.set("stopTime", str(self.stopTime))
+    simulation_info = { "resultFile": self.resultFile, "loggingInterval": str(self.loggingInterval), "bufferSize": str(self.bufferSize)}
+    utils.exportSimulationInformation(default_experiment, [simulation_info])

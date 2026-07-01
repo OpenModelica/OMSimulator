@@ -56,7 +56,7 @@ instantiated_model.delete()
 ## info:    default.Gain1.u: 6.0
 ## info:    default.Gain1.y: 12.0
 ## info:    default.Add1.u1: 0.0
-## info:    Result file: SimpleSimulation5_res.mat (bufferSize=1)
+## info:    Result file: SimpleSimulation5_res.mat (bufferSize=10)
 ## info: After simulation:
 ## info:    default.Gain1.k: 2.0
 ## info:    default.Gain1.u: 6.0

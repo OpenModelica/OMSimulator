@@ -65,7 +65,7 @@ instantiated_model.terminate()
 instantiated_model.delete()
 
 ## Result:
-## info:    Result file: embrace2_res.mat (bufferSize=1)
+## info:    Result file: embrace2_res.mat (bufferSize=10)
 ## info:    Initialize:
 ## info:      embrace.root.ECS_HW.coolinPackAir.looptype:  2
 ## info:      embrace.root.ECS_HW.eCS.MaxCoolPower.k    :  5.0

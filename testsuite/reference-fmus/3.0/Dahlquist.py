@@ -62,11 +62,11 @@ else:
 
 ## Result:
 ## Loading FMI version 3...
-## info:    Result file: Dahlquist-cs.mat (bufferSize=1)
+## info:    Result file: Dahlquist-cs.mat (bufferSize=10)
 ## signal x is equal
 ## Loading FMI version 3...
 ## info:    maximum step size for 'model.root': 0.001000
-## info:    Result file: Dahlquist-me.mat (bufferSize=1)
+## info:    Result file: Dahlquist-me.mat (bufferSize=10)
 ## info:    Final Statistics for 'model.root':
 ##          NumSteps = 10001 NumRhsEvals  = 10002 NumLinSolvSetups = 501
 ##          NumNonlinSolvIters = 10001 NumNonlinSolvConvFails = 0 NumErrTestFails = 0

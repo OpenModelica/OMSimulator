@@ -71,5 +71,5 @@ instantiated_model.delete()
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
 ##
-## info:    Result file: SimpleSimulation2_res.mat (bufferSize=1)
+## info:    Result file: SimpleSimulation2_res.mat (bufferSize=10)
 ## endResult

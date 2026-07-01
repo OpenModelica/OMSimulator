@@ -197,8 +197,8 @@ instantiated_model.delete()
 ## info:    default.sub-system.Gain2.u: 0.0
 ## info:    default.sub-system.Gain2.y: 0.0
 ## info:    model doesn't contain any continuous state
-## info:    maximum step size for 'model.root': 0.001000
-## info:    Result file: SimpleSimulation10_res.mat (bufferSize=1)
+## info:    maximum step size for 'model.root.solver2': 0.001000
+## info:    Result file: SimpleSimulation10_res.mat (bufferSize=10)
 ## info: After simulation:
 ## info:    default.param1 : 200.0
 ## info:    default.input1 : 300.0
@@ -210,7 +210,7 @@ instantiated_model.delete()
 ## info:    default.sub-system.Gain2.k: 500.0
 ## info:    default.sub-system.Gain2.u: 400.0
 ## info:    default.sub-system.Gain2.y: 200000.0
-## info:    Final Statistics for 'model.root':
+## info:    Final Statistics for 'model.root.solver2':
 ##          NumSteps = 1001 NumRhsEvals  = 1002 NumLinSolvSetups = 51
 ##          NumNonlinSolvIters = 1001 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
 ## endResult

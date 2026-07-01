@@ -61,7 +61,12 @@ def parseDefaultExperiment(node, root):
     return
   root.startTime = default_experiment.get("startTime")
   root.stopTime = default_experiment.get("stopTime")
-  ##TODO parse ssd:annotation
+  simulation_info = parseSimulationInformation(default_experiment)
+  if simulation_info:
+    for info in simulation_info:
+      root.resultFile = info.get("resultFile", root.resultFile)
+      root.loggingInterval = info.get("loggingInterval", root.loggingInterval)
+      root.bufferSize = info.get("bufferSize", root.bufferSize)
 
 
 def parseElements(node, resources = None):
@@ -87,10 +92,10 @@ def parseElements(node, resources = None):
     parseParameterBindings(system, elements[name], resources)
     ## check for meta tag
     parseMetaData(system, elements[name], resources)
-    solvers = parseAnnotations(system)
-    if solvers:
-      for solver in solvers:
-        elements[name].solver = solver.get("name")
+    simulationInformation = parseSimulationInformation(system)
+    if simulationInformation:
+      for info in simulationInformation:
+        elements[name].solver = info.get("name")
     elements[name].elements = parseElements(system, resources)  # recursively parse nested elements in the sub-system
     Connection.importFromNode(system, elements[name]) # parse connections for the sub-system
 
@@ -114,18 +119,21 @@ def parseElements(node, resources = None):
       elements[name] = Component(name, source)
       elements[name].implementation = implementation
       elements[name].description = description
+      if resources is not None:
+        elements[name].fmu = resources.get(source)  # attach FMU for modeldescription start value fallback in getValue
       elements[name].connectors = Connector.importFromNode(component)
       elements[name].elementgeometry = ElementGeometry.importFromNode(component)
       parseParameterBindings(component, elements[name], resources)
       ## check for meta tag
       parseMetaData(component, elements[name], resources)
-      solvers = parseAnnotations(component)
-      if solvers:
-        for solver in solvers:
-          elements[name].solver = solver.get("name")
+      simulationInformation = parseSimulationInformation(component)
+      if simulationInformation:
+        for info in simulationInformation:
+          elements[name].solver = info.get("name")
     elif (comp_type == "application/table" or comp_type == "text/csv"):
       elements[name] = ComponentTable(name, source)
       elements[name].connectors = Connector.importFromNode(component)
+      elements[name].elementgeometry = ElementGeometry.importFromNode(component)
 
   return elements
 
@@ -243,28 +251,28 @@ def validateSSP(root, filename : str, schema_file : str):
     # warn the user instead of raising an exception
     warnings.warn(message, UserWarning)
 
-def exportAnnotations(node, solvers):
-  """Export annotations to the XML node"""
+def exportSimulationInformation(node, simulationInformation):
+  """Export simulation information annotations to the XML node"""
   ssd_annotation_node = ET.SubElement(node, namespace.tag("ssd", "Annotations"))
   annotation_node = ET.SubElement(ssd_annotation_node, namespace.tag("ssc", "Annotation"))
   annotation_node.set("type", "org.openmodelica")
   oms_annotation_node = ET.SubElement(annotation_node, namespace.tag("oms", "Annotations"))
-  if (isinstance(solvers, list)):
-    for solver in solvers:
+  if (isinstance(simulationInformation, list)):
+    for info in simulationInformation:
       oms_simulationInformation_node = ET.SubElement(oms_annotation_node, namespace.tag("oms", "SimulationInformation"))
-      for key, value in solver.items():
+      for key, value in info.items():
         oms_simulationInformation_node.set(key, str(value))
   else:
     oms_simulationInformation_node = ET.SubElement(oms_annotation_node, namespace.tag("oms", "SimulationInformation"))
-    oms_simulationInformation_node.set("name", solvers)
+    oms_simulationInformation_node.set("name", simulationInformation)
 
-def parseAnnotations(node):
+def parseSimulationInformation(node):
   """Extract and print system annotations"""
   annotations_node = node.find("ssd:Annotations", namespaces=namespace.ns)
   if annotations_node is None:
     return []
 
-  solvers = []
+  simulationInformation = []
   for annotation in annotations_node.findall("ssc:Annotation", namespaces=namespace.ns):
     type = annotation.get("type")
     if type == "org.openmodelica":
@@ -272,6 +280,6 @@ def parseAnnotations(node):
       if oms_annotation is not None:
         oms_simulationInformation = oms_annotation.findall("oms:SimulationInformation", namespaces=namespace.ns)
         for sim in oms_simulationInformation:
-          solvers.append(sim.attrib)
+          simulationInformation.append(sim.attrib)
 
-  return solvers
+  return simulationInformation

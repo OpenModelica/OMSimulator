@@ -54,11 +54,18 @@ class Component:
     self.parameterResources = []
     self.metaDataResources = []
     self.implementation = implementation
+    self.fmu = None  # set by addComponent when the FMU is loaded
 
   def addConnector(self, connector):
     if connector in self.connectors:
       raise ValueError(f"Connector '{connector.name}' already exists in {self.name}")
     self.connectors.append(connector)
+
+  def getConnector(self, cref: CRef):
+    for connector in self.connectors:
+      if connector.name == cref:
+        return connector
+    return None
 
   def deleteConnector(self, cref: CRef):
     for i, connector in enumerate(self.connectors):
@@ -198,7 +205,7 @@ class Component:
     ## export Annotations
     if self.solver:
       from OMSimulator import utils
-      utils.exportAnnotations(component_node, self.solver)
+      utils.exportSimulationInformation(component_node, self.solver)
 
   def setValue(self, cref:str, value, unit=None, description = None):
     for connector in self.connectors:
@@ -208,8 +215,18 @@ class Component:
     ## it is possible that the parameter is not defined as connector but only in the ssv file or ssm mapping, so we allow setting values without types
     self.value.setValue(cref, value, None, unit, description)
 
-  def getValue(self, cref:str):
-    return self.value.getValue(cref)
+  def getValue(self, cref: str):
+    entry = self.value.getValue(cref)
+    if entry is not None:
+      return entry
+    # Fall back to the default start value from modeldescription.xml.
+    # modelDescriptionStartValue is a raw string parsed from XML — returned as-is;
+    # the caller is responsible for converting to the target numeric type.
+    if self.fmu is not None:
+      for var in self.fmu.variables:
+        if str(var.name) == str(cref):
+          return var.modelDescriptionStartValue
+    return None
 
   def setSolver(self, name: str):
     self.solver = name

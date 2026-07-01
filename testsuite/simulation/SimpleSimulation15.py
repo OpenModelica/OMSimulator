@@ -59,7 +59,7 @@ instantiated_model.terminate()
 instantiated_model.delete()
 
 ## Result:
-## info:    Result file: SimpleSimulation15_res.mat (bufferSize=1)
+## info:    Result file: SimpleSimulation15_res.mat (bufferSize=10)
 ## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
 ## |--   resources/Add.fmu

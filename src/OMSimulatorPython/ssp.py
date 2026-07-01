@@ -43,6 +43,7 @@ from OMSimulator.settings import suppress_path_to_str
 from OMSimulator.ssv import SSV
 from OMSimulator.ssm import SSM
 from OMSimulator.componenttable import ResultReader
+from OMSimulator.connector import Connector
 
 from OMSimulator import SSD, CRef, namespace
 from lxml import etree as ET
@@ -168,10 +169,26 @@ class SSP:
 
     return self.activeVariant.addComponent(cref, resource, inst=fmu_inst)
 
+  def replaceComponent(self, cref: CRef, resource: str, dryRun: bool = False):
+    if self.activeVariant is None:
+      raise ValueError("No active variant set in the SSP.")
+
+    ## look up in the resource if exist and then use that instance
+    fmu_inst = None
+    if resource in self.resources:
+      fmu_inst = self.resources[resource]
+
+    return self.activeVariant.replaceComponent(cref, resource, inst=fmu_inst, dryRun=dryRun)
+
   def delete(self, cref: CRef):
     if self.activeVariant is None:
       raise ValueError("No active variant set in the SSP.")
     self.activeVariant.delete(cref)
+
+  def rename(self, cref: CRef, new_name: CRef):
+    if self.activeVariant is None:
+      raise ValueError("No active variant set in the SSP.")
+    self.activeVariant.rename(cref, new_name)
 
   def newSolver(self, options: dict):
     if self.activeVariant is None:
@@ -287,6 +304,12 @@ class SSP:
 
     self.activeVariant.addConnection(cref1, cref2)
 
+  def deleteConnection(self, cref1: CRef, cref2: CRef):
+    if self.activeVariant is None:
+      raise ValueError("No active variant set in the SSP.")
+
+    self.activeVariant.deleteConnection(cref1, cref2)
+
   def _getComponentResourcePath(self, cref: CRef):
     return self.activeVariant._getComponentResourcePath(cref)
 
@@ -324,7 +347,12 @@ class SSP:
       if fmu_inst and not fmu_inst.varExist(cref.last()):
         raise KeyError(f"Variable '{cref.last()}' does not exist in the variables list of component '{resource}'")
 
-    self.activeVariant.getValue(cref)
+    return self.activeVariant.getValue(cref)
+
+  def getElement(self, cref: CRef):
+    if self.activeVariant is None:
+      raise ValueError("No active variant set in the SSP.")
+    return self.activeVariant.getElement(cref)
 
   def mapParameter(self, cref: CRef, source: str, target: str):
     """Maps a parameter from source to target in the active variant."""
@@ -345,6 +373,24 @@ class SSP:
       raise ValueError("No active variant set in the SSP.")
 
     self.activeVariant.addSystem(cref)
+
+  def addConnector(self, cref: CRef, connector: Connector):
+    if self.activeVariant is None:
+      raise ValueError("No active variant set in the SSP.")
+
+    self.activeVariant.addConnector(cref, connector)
+
+  def getConnector(self, cref: CRef):
+    if self.activeVariant is None:
+      raise ValueError("No active variant set in the SSP.")
+
+    return self.activeVariant.getConnector(cref)
+
+  def getConnection(self, crefA: CRef, crefB: CRef):
+    if self.activeVariant is None:
+      raise ValueError("No active variant set in the SSP.")
+
+    return self.activeVariant.getConnection(crefA, crefB)
 
   def add(self, element):
     '''Adds an SSD or a list/iterable of SSDs to the SSP.'''
@@ -394,7 +440,6 @@ class SSP:
   def export(self, filename: str):
     '''Exports the SSP to file'''
     logger.debug(f"Exporting SSP to {filename} using temp directory: {self.temp_dir}")
-
     exported_count = 0
     for ssd in self.variants.values():
       if ssd.dirty:

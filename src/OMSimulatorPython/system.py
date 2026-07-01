@@ -44,6 +44,7 @@ from OMSimulator.elementgeometry import ElementGeometry
 from OMSimulator.fmu import FMU
 from OMSimulator.ssm import SSM
 from OMSimulator.values import Values
+from OMSimulator.variable import Causality, SignalType
 
 from OMSimulator import Capi, CRef, namespace, utils
 
@@ -149,13 +150,67 @@ class System:
       utils.parseParameterBindings(node, system, resources)
       utils.parseMetaData(node, system, resources)
       system.elements = utils.parseElements(node, resources)
-      system.solvers = utils.parseAnnotations(node)
+      system.solvers = utils.parseSimulationInformation(node)
       Connection.importFromNode(node, system)
       return system
 
     except ET.ParseError as e:
       logger.error(f"Error parsing System: {e}")
       raise
+
+  def addConnectorHelper(self, cref: CRef, connector: Connector):
+    if cref is None:
+      self.addConnector(connector)
+      return
+
+    first = cref.first()
+
+    match self.elements.get(first):
+      case System():
+        self.elements[first].addConnectorHelper(cref.pop_first(), connector)
+
+  def getConnector(self, cref: CRef):
+    first = cref.first()
+    ## Check if the cref is a top level system connector
+    ## or allow non existing connectors to support parameter mapping throgh SSM inline or ssm file by checking if cref
+    connector = self._connectorExists(first)
+    if connector is not None:
+      return connector
+
+    match self.elements.get(first):
+      case System():
+        return self.elements[first].getConnector(cref.pop_first())
+      case Component():
+        return self.elements[first].getConnector(cref.pop_first())
+
+  def split_cref(self, cref: CRef):
+    head = cref.first()
+    tail = cref.pop_first()
+
+    # connector-only cref like ".input"
+    if tail is None:
+      return "", str(head)
+
+    return (head, tail)
+
+  def getConnection(self, crefA: CRef, crefB: CRef):
+    (headA, tailA) = self.split_cref(crefA)
+    (headB, tailB) = self.split_cref(crefB)
+
+    for connection in self.connections:
+      if (str(connection.startElement) == str(headA) and str(connection.startConnector) == str(tailA)) and (str(connection.endElement) == str(headB) and str(connection.endConnector) == str(tailB)):
+        return connection
+      if (str(connection.startElement) == str(headB) and str(connection.startConnector) == str(tailB)) and (str(connection.endElement) == str(headA) and str(connection.endConnector) == str(tailA)):
+        return connection
+
+    ## recurse into subsystems to find the connection
+    for element in self.elements.values():
+      if isinstance(element, System):
+        connection = element.getConnection(crefA.pop_first(), crefB.pop_first())
+        if connection:
+          return connection
+
+    return None
 
   def addConnector(self, connector):
     if connector in self.connectors:
@@ -245,6 +300,7 @@ class System:
         fmuType = inst._fmuType if inst else None
         component = Component(first, resource, fmuType, connectors, unitDefinitions, enumerationDefinitions)
         component.fmuType = inst.fmuType if inst else None
+        component.fmu = inst  # keep FMU reference for modeldescription start value fallback
         self.elements[first] = component
         return component
       elif isinstance(inst, ResultReader) or (inst is None and resource.endswith(".csv")):
@@ -254,6 +310,118 @@ class System:
       else:
         raise TypeError( f"Unknown component instance for '{first}' in '{self.name}'. "
                  f"Please add the component from the top-level model.")
+
+  def replaceComponent(self, cref: CRef, resource: str, inst=None, dryRun: bool = False):
+    first = cref.first()
+
+    # recurse into subsystem before any type checks
+    if not cref.is_root():
+      if first not in self.elements:
+        raise ValueError(f"System '{first}' not found in '{self.name}'")
+      return self.elements[first].replaceComponent(cref.pop_first(), resource, inst, dryRun)
+
+    # check component must exist at this level
+    old_component = self.elements.get(first)
+    if old_component is None:
+      raise ValueError(f"Component '{first}' not found in '{self.name}'")
+
+    if not isinstance(old_component, (Component, ComponentTable)):
+      raise ValueError(f"Element '{first}' is not a replaceable component")
+
+    import copy
+    snapshot = copy.deepcopy(self) if dryRun else None
+
+    warnings = []
+    # create replacement component — FMU or CSV/table
+    if isinstance(inst, ResultReader) or (inst is None and resource.endswith(".csv")):
+      new_component = ComponentTable(first, resource, inst.connectors if inst else [])
+    else:
+      new_component = Component(first, resource, inst._fmuType, inst.makeConnectors(), inst._unitDefinitions, inst._enumerationDefinitions)
+      new_component.fmu = inst
+      new_component.fmuType = inst.fmuType
+
+    # preserve OMEdit geometry
+    new_component.elementgeometry = copy.deepcopy(old_component.elementgeometry)
+    # preserve values and resources
+    new_component.value = copy.deepcopy(old_component.value)
+    new_component.parameterMapping = copy.deepcopy(old_component.parameterMapping)
+    new_component.parameterResources = copy.deepcopy(old_component.parameterResources)
+    new_component.metaDataResources = copy.deepcopy(old_component.metaDataResources)
+    new_component.solver = old_component.solver
+
+    # connector lookup
+    old_connectors = {str(c.name): c for c in old_component.connectors}
+    new_connectors = {str(c.name): c for c in new_component.connectors}
+
+    # validate existing connections
+    connections_to_remove = []
+    for connection in self.connections:
+      connector_name = None
+      if str(connection.startElement) == str(first):
+        connector_name = str(connection.startConnector)
+      elif str(connection.endElement) == str(first):
+        connector_name = str(connection.endConnector)
+      else:
+        continue
+      old_connector = old_connectors.get(connector_name)
+      new_connector = new_connectors.get(connector_name)
+      conn_str = f"{connection.startElement}.{connection.startConnector} ==> {connection.endElement}.{connection.endConnector}"
+
+      # connector removed
+      if new_connector is None:
+        warnings.append(
+          f"deleting connection \"{conn_str}\", as signal \"{connector_name}\" couldn't be resolved "
+          f"to any signal in the replaced submodel \"{resource}\"")
+        connections_to_remove.append(connection)
+        continue
+
+      # causality changed
+      if (old_connector is not None
+        and old_connector.causality is not None
+        and new_connector.causality is not None
+        and old_connector.causality != new_connector.causality):
+        warnings.append(
+          f"deleting connection \"{conn_str}\", as signal \"{connector_name}\" causality changed "
+          f"in the replaced submodel \"{resource}\"")
+        connections_to_remove.append(connection)
+        continue
+
+      # signal type changed
+      if (old_connector is not None
+        and old_connector.signal_type is not None
+        and new_connector.signal_type is not None
+        and old_connector.signal_type != new_connector.signal_type):
+        warnings.append(
+          f"deleting connection \"{conn_str}\", as signal \"{connector_name}\" type changed "
+          f"in the replaced submodel \"{resource}\"")
+        connections_to_remove.append(connection)
+
+    # remove invalid connections
+    for connection in connections_to_remove:
+      if connection in self.connections:
+        self.connections.remove(connection)
+
+    # cleanup start values (FMU only — ComponentTable has no variables)
+    if inst is not None and hasattr(inst, "variables"):
+      valid_variables = {str(variable.name) for variable in inst.variables}
+      for parameter_name in list(new_component.value.start_values.keys()):
+        if str(parameter_name) not in valid_variables:
+          del new_component.value.start_values[parameter_name]
+          warnings.append(
+            f"deleting start value \"{first}.{parameter_name}\" in \"inline\" resources, "
+            f"because the identifier couldn't be resolved to any system signal in the replacing model"
+          )
+    # replace component
+    self.elements[first] = new_component
+
+    # rollback for dry run
+    if dryRun:
+      self.__dict__.clear()
+      self.__dict__.update(snapshot.__dict__)
+      return warnings
+
+    del old_component
+    return warnings
 
   def addSSVReference(self, cref: CRef, resource1: str, resource2: str | None = None):
     ## top level system
@@ -490,20 +658,41 @@ class System:
       # Add the connections to top level system
       self.addConnection(start_element, start_connector, end_element, end_connector)
 
+  def _deleteConnection(self, crefA: CRef, crefB: CRef) -> None:
+    """Deletes a connection from the system."""
+    startElement, startConnector = self.split_cref(crefA)
+    endElement, endConnector = self.split_cref(crefB)
+
+    for connection in self.connections[:]:
+      if (connection.startElement == str(startElement) and connection.startConnector == str(startConnector) and connection.endElement == str(endElement) and connection.endConnector == str(endConnector)):
+        self.connections.remove(connection)
+        return
+
+    for key, element in self.elements.items():
+      if isinstance(element, System):
+        self.elements[key]._deleteConnection(crefA.pop_first(), crefB.pop_first())
+
   def isConnectorAlreadyConnected(self, startElement : str, startConnector : str, endElement : str, endConnector : str):
     """Check if a connection is valid in the system."""
     for conn in self.connections:
-      if (conn.startElement == startElement and conn.startConnector == startConnector and
-          conn.endElement == endElement and conn.endConnector == endConnector):
-        raise ValueError(f"Connection from '{startElement}.{startConnector}' to '{endElement}.{endConnector}' already exists")
+      if (conn.endElement == str(endElement) and conn.endConnector == str(endConnector)):
+        raise ValueError(f"Connector '{conn.endElement}.{conn.endConnector}' is already connected to {conn.startElement}.{conn.startConnector}'")
 
   def _findConnector(self, element_name, connector_name):
     """Returns (owner_string, causality) or (None, None) if not found."""
-    connectors = (
-        self.connectors  # System level
-        if not element_name else
-        self.elements[CRef(element_name)].connectors  # Element level
-    )
+    if not element_name:
+      connectors = self.connectors  # System level
+    else:
+      key = CRef(element_name)
+      if key not in self.elements:
+        known = [str(k) for k in self.elements.keys()]
+        raise ValueError(
+          f"Component '{element_name}' not found in system '{self.name}'. "
+          f"Known elements: {known}. "
+          f"If you renamed a component, make sure to update all connection "
+          f"references (startElement/endElement) in <ssd:Connection> too."
+        )
+      connectors = self.elements[key].connectors  # Element level
     for con in connectors:
       if str(con.name) == str(connector_name):
         owner_str = "System" if not element_name else "Element"
@@ -535,11 +724,69 @@ class System:
         return connector
     return None
 
+  def rename(self, cref: CRef, new_name: CRef):
+    """Renames a component or subsystem identified by cref to new_name."""
+    first = cref.first()
+    ## Check if the cref is a top level system or subsystemconnector
+    connector = self._connectorExists(first)
+    if connector is not None:
+      return self.renameConnector(connector, new_name)
+
+    match self.elements.get(first):
+      case System() | Component():
+        if cref.is_root():
+          # cref points directly at the element to rename — do it here.
+          self.renameComponent(first, new_name)
+        else:
+          # Recurse into the subsystem.
+          self.elements[first].rename(cref.pop_first(), new_name)
+      case _:
+        raise ValueError(f"Element '{first}' not found in system '{self.name}'")
+
+  def renameConnector(self, connector: Connector, new_name: CRef):
+    """Renames a connector identified by cref to new_name."""
+    ## Check if the cref is a top level system connector
+    old_str = str(connector.name)
+    connector.name = new_name
+    ## rename all connection references to this connector in the system and subsystems
+    for connection in self.connections:
+      if str(connection.startConnector) == old_str:
+        connection.startConnector = new_name
+      if str(connection.endConnector) == old_str:
+        connection.endConnector = new_name
+    ## rename start values associated with connector
+    for key in list(self.value.start_values.keys()):
+      if str(key) == old_str:
+        self.value.start_values[new_name] = self.value.start_values.pop(key)
+
+  def renameComponent(self, old_name: CRef, new_name: CRef):
+    """Renames a component/subsystem and updates all connection references in this system."""
+    if old_name not in self.elements:
+      raise ValueError(f"Component '{old_name}' not found in system '{self.name}'")
+    if new_name in self.elements:
+      raise ValueError(f"Component '{new_name}' already exists in system '{self.name}'")
+    # Re-key the elements dict
+    element = self.elements.pop(old_name)
+    element.name = new_name
+    self.elements[new_name] = element
+    # Update all connection start/end element references
+    old_str = str(old_name)
+    new_str = str(new_name)
+    for connection in self.connections:
+      if str(connection.startElement) == old_str:
+        connection.startElement = new_str
+      if str(connection.endElement) == old_str:
+        connection.endElement = new_str
+
   def _deleteConnector(self, cref: CRef) -> bool:
     """Delete connector if it exists."""
     for i, connector in enumerate(self.connectors):
       if connector.name == cref:
         self.deleteAllConnection(cref)
+        ## delete start values associated with connector
+        for key in list(self.value.start_values.keys()):
+          if str(key) == str(cref):
+            del self.value.start_values[key]
         del self.connectors[i]
         return True
     return False
@@ -560,6 +807,8 @@ class System:
     match element:
       case Component():
         return (element.fmuPath, element)
+      case ComponentTable():
+        return (element.filePath, element)
       case System():
         return element._getComponentResourcePath(cref.pop_first())
       case _:
@@ -589,16 +838,32 @@ class System:
     ## or allow non existing connectors to support parameter mapping throgh SSM inline or ssm file by checking if cref
     connector = self._connectorExists(first)
     if connector or cref.is_root():
-      self.value.getValue(cref)
-      return
+      return self.value.getValue(cref)
 
     match self.elements.get(first):
       case System():
-        self.elements[first].getValue(cref.pop_first())
+        return self.elements[first].getValue(cref.pop_first())
       case Component():
-        self.elements[first].getValue(cref.last())
+        return self.elements[first].getValue(cref.last())
       case _:
         raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component or a Connector")
+
+  def getElement(self, cref: CRef):
+    if cref is None:
+      return self
+
+    first = cref.first()
+    element = self.elements.get(first)
+
+    if isinstance(element, System):
+      if cref.is_root():
+        return element
+      return element.getElement(cref.pop_first())
+
+    if isinstance(element, (Component, ComponentTable)):
+      return element
+
+    raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component")
 
   def mapParameter(self, cref: CRef, source: str, target: str):
     if cref is None:
@@ -648,7 +913,7 @@ class System:
         raise ValueError(f"Component '{first}' not found in {self.name}")
       self.elements[first].setSolver(name)
 
-  def generateJson(self, resources: dict | None = None, tempdir : str | None = None, startTime = None, stopTime = None) -> str:
+  def generateJson(self, resources: dict | None = None, tempdir : str | None = None, simulation_info: dict | None = None) -> str:
     """Instantiates the system and its components."""
     data = {
         "simulation units": []
@@ -677,19 +942,34 @@ class System:
           unit["solver"] = {
             "name": solver,
             "method": solver_config.get("method"),
-            "tolerance": solver_config.get("tolerance"),
-            "stepSize": solver_config.get("stepSize")
+            "relativeTolerance": solver_config.get("relativeTolerance"),
+            "initialStepSize": solver_config.get("initialStepSize"),
+            "minimumStepSize": solver_config.get("minimumStepSize"),
+            "maximumStepSize": solver_config.get("maximumStepSize"),
+            "fixedStepSize": solver_config.get("fixedStepSize")
         }
         else:
           raise ValueError(f"Solver '{solver}' not found in solver list.")
       data["simulation units"].append(unit)
 
+    # Validate: at most one WC-method solver unit is allowed (nested WC under WC is not supported)
+    _WC_METHODS = {"oms_ma", "oms_mav", "oms_mav2"}
+    wc_units = [u for u in data["simulation units"] if u.get("solver", {}).get("method") in _WC_METHODS]
+    if len(wc_units) > 1:
+      wc_names = [u["solver"]["name"] for u in wc_units]
+      raise ValueError(
+        f"Multiple WC solver units found: {wc_names}. "
+        f"Nested WC systems are not supported. All CS FMUs without an explicit solver "
+        f"share one WC unit automatically."
+      )
+
     # Add top-level simulation metadata
-    data["result file"] = "simulation_result.csv"
     data["simulation settings"] = {
-        "start time": startTime,
-        "stop time": stopTime,
-        "tolerance": 1e-6
+        "start time": simulation_info.get("startTime"),
+        "stop time": simulation_info.get("stopTime"),
+        "result file": simulation_info.get("resultFile"),
+        "logging interval": simulation_info.get("loggingInterval"),
+        "buffer size": simulation_info.get("bufferSize")
     }
 
     # Dump JSON
@@ -715,9 +995,27 @@ class System:
             self.solvers.append({
                   "name": solver_name,
                   "method": "cvode",
-                  "tolerance": 1e-4
               })
           element.solver = solver_name
+        ## default CS FMUs with no solver to oms_ma
+        elif element.solver is None:
+          solver_name = "oms_ma_default"
+          if not any(s.get("name") == solver_name for s in self.solvers):
+            self.solvers.append({
+                  "name": solver_name,
+                  "method": "oms_ma"
+              })
+          element.solver = solver_name
+        ## CS FMUs must not use SC solvers (cvode/euler)
+        elif fmuType == "cs":
+          _SC_METHODS = {"cvode", "euler"}
+          assigned_solver = next((s for s in self.solvers if s.get("name") == element.solver), None)
+          if assigned_solver and assigned_solver.get("method") in _SC_METHODS:
+            raise ValueError(
+              f"CS FMU '{element.name}' is assigned solver '{element.solver}' "
+              f"with method '{assigned_solver.get('method')}', but CS FMUs can only use "
+              f"WC master algorithms (oms_ma, oms_mav, oms_mav2)."
+            )
 
         ## add connectors info for the component in the json, this is needed for propagating connector geomtery to capi
         connector_info = []
@@ -727,35 +1025,23 @@ class System:
               "causality": connector.causality.name if connector.causality else None,
               "type": connector.signal_type.name if connector.signal_type else None,
           })
-          ## add connector geometry if available
-          if connector.connectorGeometry:
-            connector_info[-1]["geometry"] = {
-                "x": connector.connectorGeometry.x if connector.connectorGeometry else None,
-                "y": connector.connectorGeometry.y if connector.connectorGeometry else None
-            }
         solver_groups[element.solver].append({
             "name": [self.name] + ([systemName] if systemName else []) + [str(element.name)],
             "type": fmuType,
             "path": str(Path(tempdir, str(element.fmuPath))) if tempdir is not None else str(element.fmuPath),
             "connectors": connector_info
         })
-        ## add element geometry if available, this is needed for propagating element geometry to capi
-        if element.elementgeometry:
-          element_geometry = {
-              "x1": element.elementgeometry.x1,
-              "y1": element.elementgeometry.y1,
-              "x2": element.elementgeometry.x2,
-              "y2": element.elementgeometry.y2,
-              "rotation": element.elementgeometry.rotation,
-              "iconSource": element.elementgeometry.icon_source,
-              "iconRotation": element.elementgeometry.icon_rotation,
-              "iconFlip": element.elementgeometry.icon_flip,
-              "iconFixedAspectRatio": element.elementgeometry.icon_fixed_aspect_ratio
-          }
-          solver_groups[element.solver][-1]["element geometry"] = element_geometry
-
         componentSolver[str(element.name)] = element.solver
       elif isinstance(element, ComponentTable):
+        ## default tables with no solver to oms_ma
+        if element.solver is None:
+          solver_name = "oms_ma_default"
+          if not any(s.get("name") == solver_name for s in self.solvers):
+            self.solvers.append({
+                  "name": solver_name,
+                  "method": "oms_ma"
+              })
+          element.solver = solver_name
         ## add connectors info for the component in the json, this is needed for propagating connector geomtery to capi
         connector_info = []
         for connector in element.connectors:
@@ -800,13 +1086,6 @@ class System:
           "factor": connection.linearTransformation.factor,
           "offset": connection.linearTransformation.offset
         }
-      ## add connection geometry if available
-      if connection.connectionGeometry:
-        connection_info["connection geometry"] = {
-          "pointsX": connection.connectionGeometry.pointsX,
-          "pointsY": connection.connectionGeometry.pointsY
-        }
-
       solver_connections[solver].append(connection_info)
 
   def export(self, root):
@@ -818,8 +1097,9 @@ class System:
       for connector in self.connectors:
         connector.exportToSSD(connectors_node)
 
-      if self.elementgeometry:
-        self.elementgeometry.exportToSSD(node)
+    ## export element geometry if available for system, subsystem and components
+    if self.elementgeometry:
+      self.elementgeometry.exportToSSD(node)
 
     ## export top level parameter bindings
     self.value.exportToSSD(node, self.parameterMapping)
@@ -865,6 +1145,6 @@ class System:
 
     ## export ssd annotations
     if self.solvers:
-      utils.exportAnnotations(node, self.solvers)
+      utils.exportSimulationInformation(node, self.solvers)
 
     return node

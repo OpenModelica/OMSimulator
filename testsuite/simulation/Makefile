@@ -28,6 +28,8 @@ SimpleSimulation12.py \
 SimpleSimulation13.py \
 SimpleSimulation14.py \
 SimpleSimulation15.py \
+SimpleSimulation16.py \
+SimpleSimulation17.py \
 stepUntil.py \
 FMI3_SimpleSimulation1.py \
 FMI3_SimpleSimulation2.py \

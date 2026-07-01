@@ -73,12 +73,12 @@ else:
 
 ## Result:
 ## Loading FMI version 3...
-## info:    Result file: VanDerPol-cs.mat (bufferSize=1)
+## info:    Result file: VanDerPol-cs.mat (bufferSize=10)
 ## signal x0 is equal
 ## signal x1 is equal
 ## Loading FMI version 3...
 ## info:    maximum step size for 'model.root': 0.001000
-## info:    Result file: VanDerPol-me.mat (bufferSize=1)
+## info:    Result file: VanDerPol-me.mat (bufferSize=10)
 ## info:    Final Statistics for 'model.root':
 ##          NumSteps = 20002 NumRhsEvals  = 20004 NumLinSolvSetups = 1002
 ##          NumNonlinSolvIters = 20003 NumNonlinSolvConvFails = 0 NumErrTestFails = 0

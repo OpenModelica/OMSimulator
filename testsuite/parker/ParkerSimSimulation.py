@@ -30,7 +30,7 @@ instantiated_model.delete()
 ## info:    Alg. loop (size 13/57)
 ##            model.root.valve_model
 ##            model.root.interface_model
-## info:    Result file: parker_simulation_res.mat (bufferSize=1)
+## info:    Result file: parker_simulation_res.mat (bufferSize=10)
 ## Setting hidden to 1
 ## Setting hidden to 1
 ## Setting hidden to 1
