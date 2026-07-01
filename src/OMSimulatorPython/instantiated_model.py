@@ -108,6 +108,9 @@ class InstantiatedModel:
 
     root_label = _system_type_label(root_type)
     status = Capi.addSystem(f"{self.modelName}.root", root_type.value)
+    export_name = f"{self.system.name}"  # Use the system's name as the export name for the root system
+    if export_name not in self.mappedCrefs:
+      self.mappedCrefs[export_name] = f"{self.modelName}.root"
     if status != Status.ok:
       raise RuntimeError(f"Failed to create root system: {status}")
     self.apiCall.append(f'oms_addSystem("{self.modelName}.root", "{root_label}")')
@@ -394,7 +397,13 @@ class InstantiatedModel:
     """Walk the system tree and add connectors for every system/subsystem
     that was actually instantiated (i.e. present in mappedCrefs)."""
     if system_name not in self.mappedCrefs:
-      return
+      # connector-only subsystems (no FMU components) are not added during Step 1;
+      # derive their OMS path from the parent so their connectors can be flattened there.
+      parent_name = system_name.rsplit(".", 1)[0] if "." in system_name else None
+      if parent_name and parent_name in self.mappedCrefs:
+        self.mappedCrefs[system_name] = self.mappedCrefs[parent_name]
+      else:
+        return
     if system.connectors:
       self._addConnector(system.connectors, system_name)
     for element in system.elements.values():

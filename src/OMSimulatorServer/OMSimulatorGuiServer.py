@@ -119,6 +119,7 @@ class OMSGuiServer:
       # SSP() always creates a variant keyed as "default" — re-key it to the requested name.
       ssd = ssp.variants.pop("default")
       ssd.name = name
+      ssd.resultFile = name + "_res.mat"
       ssp.variants[name] = ssd
       ssp.activeVariantName = name
       ssp.activeVariant.system.name = args.get("system_name", "default")
