@@ -27,6 +27,8 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/capi.py" "${CMAKE_CURRENT_BINARY_DIR
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/OMSimulatorPython3.in" "${CMAKE_CURRENT_BINARY_DIR}/OMSimulatorPython3" @ONLY)
 
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/__init__.py"
+              "${CMAKE_CURRENT_SOURCE_DIR}/__main__.py"
+              "${CMAKE_CURRENT_SOURCE_DIR}/cli.py"
               "${CMAKE_CURRENT_BINARY_DIR}/capi.py"
               "${CMAKE_CURRENT_SOURCE_DIR}/component.py"
               "${CMAKE_CURRENT_SOURCE_DIR}/componenttable.py"
