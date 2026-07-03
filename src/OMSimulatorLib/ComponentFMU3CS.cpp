@@ -688,7 +688,7 @@ oms_status_enu_t oms::ComponentFMU3CS::instantiate()
   time = getModel().getStartTime();
 
   double relativeTolerance = 0.0;
-  dynamic_cast<SystemWC*>(getParentSystem())->getTolerance(&relativeTolerance);
+  getParentSystem()->getTolerance(&relativeTolerance);
 
   fmi3Status status_ = fmi3_enterInitializationMode(fmu, fmi3False, relativeTolerance, time, fmi3False, getModel().getStopTime());
 
@@ -882,7 +882,7 @@ oms_status_enu_t oms::ComponentFMU3CS::reset()
   // enterInitialization
   time = getModel().getStartTime();
   double relativeTolerance = 0.0;
-  dynamic_cast<SystemWC*>(getParentSystem())->getTolerance(&relativeTolerance);
+  getParentSystem()->getTolerance(&relativeTolerance);
 
   fmi3Status status_ = fmi3_enterInitializationMode(fmu, fmi3False, relativeTolerance, time, fmi3True, getModel().getStopTime());
   if (fmi3OK != fmistatus) return logError_FMUCall("fmi3_enterInitializationMode", this);

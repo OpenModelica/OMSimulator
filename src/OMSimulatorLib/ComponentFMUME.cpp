@@ -48,7 +48,7 @@
 #include <regex>
 #include <unordered_set>
 #include <cmath>
-
+#include <iostream>
 oms::ComponentFMUME::ComponentFMUME(const ComRef& cref, System* parentSystem, const std::string& fmuPath)
   : oms::Component(cref, oms_component_fmu, parentSystem, fmuPath), fmuInfo(fmuPath)
 {
@@ -704,7 +704,8 @@ oms_status_enu_t oms::ComponentFMUME::instantiate()
   // enterInitialization
   const double& startTime = getModel().getStartTime();
   double relativeTolerance = 0.0;
-  dynamic_cast<SystemSC*>(getParentSystem())->getTolerance(&relativeTolerance);
+  getParentSystem()->getTolerance(&relativeTolerance);
+
   fmi2Status status = fmi2_setupExperiment(fmu, fmi2True, relativeTolerance, startTime, fmi2False, 1.0);
   if (fmi2OK != status) return logError_FMUCall("fmi2_setupExperiment", this);
 
@@ -929,7 +930,7 @@ oms_status_enu_t oms::ComponentFMUME::reset()
   // enterInitialization
   const double& startTime = getModel().getStartTime();
   double relativeTolerance = 0.0;
-  dynamic_cast<SystemSC*>(getParentSystem())->getTolerance(&relativeTolerance);
+  getParentSystem()->getTolerance(&relativeTolerance);
   fmistatus = fmi2_setupExperiment(fmu, fmi2True, relativeTolerance, startTime, fmi2False, 1.0);
   if (fmi2OK != fmistatus) return logError_FMUCall("fmi2_setupExperiment", this);
 
