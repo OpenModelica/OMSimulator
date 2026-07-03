@@ -6,7 +6,7 @@ SCRIPTPATH=$(dirname "$SCRIPT")
 OMS_LIB_DIR="${SCRIPTPATH}/../@CMAKE_INSTALL_LIBDIR@"
 
 # Add the oms install lib directory to PYTHONPATH.
-if [ -z "$PYTHONPATH" ]; then export PYTHONPATH="${OMS_LIB_DIR}"; else export PYTHONPATH="${OMS_LIB_DIR}":$PYTHONPATH; fi
+if [ -z "$PYTHONPATH" ]; then export PYTHONPATH="${OMS_LIB_DIR}:${OMS_LIB_DIR}/omc"; else export PYTHONPATH="${OMS_LIB_DIR}:${OMS_LIB_DIR}/omc":$PYTHONPATH; fi
 
 # On Linux, add the oms install LIB dir to LD_LIBRARY_PATH. That is where the shard lib is installed to.
 # On Windows, add the oms install BIN dir to PATH. That is where the dll is installed to.
