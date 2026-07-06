@@ -546,6 +546,25 @@ oms_status_enu_t oms::SystemSC3::reset()
     solverData.cvode.mem = nullptr;
   }
 
+  // Free arrays allocated by initialize() and clear the per-FMU tracking
+  // vectors it populated, so a subsequent initialize() call starts fresh
+  // instead of appending duplicate entries for every FMU (which corrupts
+  // solver setup and causes lifecycle calls like enterContinuousTimeMode()
+  // to be issued twice for the same FMU).
+  for (double* ptr : states) free(ptr);
+  for (double* ptr : states_der) free(ptr);
+  for (double* ptr : states_nominal) free(ptr);
+  for (double* ptr : event_indicators) free(ptr);
+  for (double* ptr : event_indicators_prev) free(ptr);
+  fmus.clear();
+  nStates.clear();
+  nEventIndicators.clear();
+  states.clear();
+  states_der.clear();
+  states_nominal.clear();
+  event_indicators.clear();
+  event_indicators_prev.clear();
+
   return oms_status_ok;
 }
 

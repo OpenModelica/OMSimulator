@@ -106,6 +106,8 @@ class capi:
     self.obj.oms_newModel.restype = ctypes.c_int
     self.obj.oms_removeSignalsFromResults.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms_removeSignalsFromResults.restype = ctypes.c_int
+    self.obj.oms_reset.argtypes = [ctypes.c_char_p]
+    self.obj.oms_reset.restype = ctypes.c_int
     self.obj.oms_setCommandLineOption.argtypes = [ctypes.c_char_p]
     self.obj.oms_setCommandLineOption.restype = ctypes.c_int
     self.obj.oms_setConnectionLinearTransformation.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_double, ctypes.c_double]
@@ -377,6 +379,11 @@ class capi:
 
   def removeSignalsFromResults(self, cref, regex):
     status = self.obj.oms_removeSignalsFromResults(cref.encode(), regex.encode())
+    return Status(status)
+
+  def reset(self, cref) -> Status:
+    '''Reset the model to the state right after instantiation, discarding initialization/simulation progress.'''
+    status = self.obj.oms_reset(cref.encode())
     return Status(status)
 
 Capi = capi()
