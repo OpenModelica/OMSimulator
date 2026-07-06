@@ -46,6 +46,7 @@
 #include "ResultWriter.h"
 #include "SignalDerivative.h"
 #include "Snapshot.h"
+#include "Variable.h"
 #include "OMSimulator/Types.h"
 #include "Values.h"
 
@@ -79,6 +80,14 @@ namespace oms
     virtual oms_status_enu_t terminate() = 0;
     virtual oms_status_enu_t updateSignals(ResultWriter& resultWriter) = 0;
     virtual Variable* getVariable(const ComRef& cref) = 0;
+    virtual oms_status_enu_t getVariableType(const ComRef& cref, oms_signal_type_enu_t& type)
+    {
+      Variable* var = getVariable(cref);
+      if (!var)
+        return oms_status_error;
+      type = var->getType();
+      return oms_status_ok;
+    }
 
     virtual bool getCanGetAndSetState() { return false; }
     virtual const FMUInfo* getFMUInfo() const { return nullptr; }
