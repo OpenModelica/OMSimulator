@@ -212,8 +212,8 @@ instantiated_model.delete()
 ## info:    maximum step size for 'model.root': 0.001000
 ## info:    Result file: dc_motor_res.mat (bufferSize=10)
 ## info:    Final Statistics for 'model.root':
-##          NumSteps = 10663 NumRhsEvals  = 10833 NumLinSolvSetups = 606
-##          NumNonlinSolvIters = 10832 NumNonlinSolvConvFails = 0 NumErrTestFails = 26
+##          NumSteps = 10030 NumRhsEvals  = 10044 NumLinSolvSetups = 511
+##          NumNonlinSolvIters = 10043 NumNonlinSolvConvFails = 0 NumErrTestFails = 1
 ## info:    3 warnings
 ## info:    0 errors
 ## endResult
