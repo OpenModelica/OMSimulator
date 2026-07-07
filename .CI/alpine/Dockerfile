@@ -1,4 +1,17 @@
-# We need gcc 8 for filesystem support
-FROM alpine:3.12
+FROM alpine:3.24
 
-RUN apk add -U libtool automake g++ git cmake make readline-dev musl-dev util-linux linux-headers libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev mesa-dev
+RUN apk add -U \
+  automake \
+  cmake \
+  g++ \
+  git \
+  libtool \
+  libxcursor-dev \
+  libxi-dev mesa-dev \
+  libxinerama-dev \
+  libxrandr-dev \
+  linux-headers \
+  make \
+  musl-dev \
+  readline-dev \
+  util-linux
