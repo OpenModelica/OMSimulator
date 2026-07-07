@@ -230,6 +230,9 @@ oms_status_enu_t oms::Connector::exportToSSD(pugi::xml_node &root) const
   case oms_causality_calculatedParameter:
     node.append_attribute("kind") = "calculatedParameter";
     break;
+  case oms_causality_bidir:
+  case oms_causality_undefined:
+    break;
   }
   switch (this->type)
   {
