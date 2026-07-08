@@ -133,7 +133,7 @@ public:
           ImGui::TableNextColumn();
           oms_modelState_enu_t modelState = oms_modelState_error;
           oms_getModelState(model.name.c_str(), &modelState);
-          ImGui::Text(modelStateToString(modelState));
+          ImGui::Text("%s", modelStateToString(modelState));
         }
         ImGui::EndTable();
       }

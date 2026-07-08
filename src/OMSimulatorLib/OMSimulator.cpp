@@ -1071,13 +1071,13 @@ oms_status_enu_t oms_extractFMIKind(const char* filename, oms_fmi_kind_enu_t* ki
   // get default experiment settings if exists
   if (node.child("DefaultExperiment"))
   {
-    if (node.child("DefaultExperiment").attribute("startTime").as_string() != "")
+    if (node.child("DefaultExperiment").attribute("startTime").as_string()[0] != '\0')
       defaultExperiment->startTime = node.child("DefaultExperiment").attribute("startTime").as_double();
-    if (node.child("DefaultExperiment").attribute("stopTime").as_string() != "")
+    if (node.child("DefaultExperiment").attribute("stopTime").as_string()[0] != '\0')
       defaultExperiment->stopTime = node.child("DefaultExperiment").attribute("stopTime").as_double();
-    if (node.child("DefaultExperiment").attribute("tolerance").as_string() != "")
+    if (node.child("DefaultExperiment").attribute("tolerance").as_string()[0] != '\0')
       defaultExperiment->tolerance = node.child("DefaultExperiment").attribute("tolerance").as_double();
-    if (node.child("DefaultExperiment").attribute("stepSize").as_string() != "")
+    if (node.child("DefaultExperiment").attribute("stepSize").as_string()[0] != '\0')
       defaultExperiment->stepSize = node.child("DefaultExperiment").attribute("stepSize").as_double();
   }
 

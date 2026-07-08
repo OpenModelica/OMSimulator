@@ -425,7 +425,7 @@ oms_status_enu_t oms::Scope::loadSnapshot(const oms::ComRef& cref, const char* s
     *newCref = NULL;
 
   pugi::xml_document doc;
-  pugi::xml_parse_result result = doc.load(snapshot);
+  pugi::xml_parse_result result = doc.load_string(snapshot);
   if (!result)
     return logError("loading snapshot failed (" + std::string(result.description()) + ")");
 
