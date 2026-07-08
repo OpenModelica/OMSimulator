@@ -122,10 +122,11 @@ pipeline {
         }
         stage('alpine') {
           agent {
-            dockerfile {
-              additionalBuildArgs '--pull'
-              dir '.CI/alpine'
+            docker {
+              image 'docker.openmodelica.org/build-deps:alpine-3.24-omsimulator'
               label 'linux'
+              alwaysPull true
+              args "--mount type=volume,source=runtest-omsimulator-cache-linux64,target=/cache/runtest"
             }
           }
           steps {
