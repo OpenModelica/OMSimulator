@@ -28,18 +28,55 @@ pipeline {
     }
     stage('build-in-parallel') {
       parallel {
-        stage('linux64') {
+        stage('linux64-resolute-asan') {
+          stages {
+            stage('build-asan') {
+              agent {
+                docker {
+                  image 'docker.openmodelica.org/build-deps:ubuntu-26.04-omsimulator'
+                  label 'linux'
+                  alwaysPull true
+                  args "--mount type=volume,source=runtest-omsimulator-cache-linux64,target=/cache/runtest"
+                }
+              }
+              environment {
+                RUNTESTDB = "/cache/runtest/"
+                HOME = "/tmp/"
+              }
+              steps {
+                buildOMS('-DASAN=ON')
+                stash name: 'asan', includes: "install/**"
+              }
+            }
+            stage('test-asan') {
+              agent {
+                docker {
+                  image 'docker.openmodelica.org/build-deps:ubuntu-26.04-omsimulator'
+                  label 'linux'
+                  alwaysPull true
+                  args "--mount type=volume,source=runtest-omsimulator-cache-linux64-asan,target=/cache/runtest " +
+                       "--cap-add SYS_PTRACE --privileged " + // Needed for ASAN
+                       "--oom-kill-disable -m 1024m --memory-swap 1024m" // Needed for ASAN
+                }
+              }
+              environment {
+                RUNTESTDB = "/cache/runtest/"
+                ASAN = "ON"
+              }
+              steps {
+                unstash name: 'asan'
+                partest()
+                junit 'testsuite/partest/result.xml'
+              }
+            }
+          }
+        }
+        stage('linux64-noble') {
           agent {
-            dockerfile {
-              additionalBuildArgs '--pull'
-              dir '.CI/cache'
-              /* The cache Dockerfile makes /cache/runtest, etc world writable
-               * This is necessary because we run the docker image as a user and need to
-               * be able to have a global caching of the omlibrary parts and the runtest database.
-               * Note that the database is stored in a volume on a per-node basis, so the first time
-               * the tests run on a particular node, they might execute slightly slower
-               */
+            docker {
+              image 'docker.openmodelica.org/build-deps:ubuntu-24.04-omsimulator'
               label 'linux'
+              alwaysPull true
               args "--mount type=volume,source=runtest-omsimulator-cache-linux64,target=/cache/runtest"
             }
           }
@@ -67,7 +104,7 @@ pipeline {
         stage('linux64-jammy') {
           agent {
             docker {
-              image 'ghcr.io/openmodelica/build-deps:v1.22.3'
+              image 'docker.openmodelica.org/build-deps:ubuntu-22.04-omsimulator'
               label 'linux'
               alwaysPull true
             }
@@ -81,62 +118,6 @@ pipeline {
 
             archiveArtifacts artifacts: 'OMSimulator-linux-jammy-amd64-*.tar.gz', fingerprint: true
             stash name: 'jammy-amd64-zip', includes: "OMSimulator-linux-jammy-amd64-*.tar.gz"
-          }
-        }
-        stage('linux64-asan') {
-          stages {
-            stage('build-asan') {
-              agent {
-                dockerfile {
-                  additionalBuildArgs '--pull'
-                  dir '.CI/cache'
-                  /* The cache Dockerfile makes /cache/runtest, etc world writable
-                  * This is necessary because we run the docker image as a user and need to
-                  * be able to have a global caching of the omlibrary parts and the runtest database.
-                  * Note that the database is stored in a volume on a per-node basis, so the first time
-                  * the tests run on a particular node, they might execute slightly slower
-                  */
-                  label 'linux'
-                  args "--mount type=volume,source=runtest-omsimulator-cache-linux64,target=/cache/runtest"
-                }
-              }
-              environment {
-                RUNTESTDB = "/cache/runtest/"
-                ASAN = "ON"
-                HOME = "/tmp/"
-              }
-              steps {
-                buildOMS()
-                stash name: 'asan', includes: "install/**"
-              }
-            }
-            stage('test-asan') {
-              agent {
-                dockerfile {
-                  additionalBuildArgs '--pull'
-                  dir '.CI/cache'
-                  /* The cache Dockerfile makes /cache/runtest, etc world writable
-                   * This is necessary because we run the docker image as a user and need to
-                   * be able to have a global caching of the omlibrary parts and the runtest database.
-                   * Note that the database is stored in a volume on a per-node basis, so the first time
-                   * the tests run on a particular node, they might execute slightly slower
-                   */
-                  label 'linux'
-                  args "--mount type=volume,source=runtest-omsimulator-cache-linux64-asan,target=/cache/runtest " +
-                       "--cap-add SYS_PTRACE --privileged " + // Needed for ASAN
-                       "--oom-kill-disable -m 1024m --memory-swap 1024m" // Needed for ASAN
-                }
-              }
-              environment {
-                RUNTESTDB = "/cache/runtest/"
-                ASAN = "ON"
-              }
-              steps {
-                unstash name: 'asan'
-                partest()
-                junit 'testsuite/partest/result.xml'
-              }
-            }
           }
         }
         stage('alpine') {
@@ -180,10 +161,6 @@ pipeline {
               }
             }
             stage('test-M1') {
-              /* when {
-                beforeAgent true
-                expression { return false }
-              } */
               agent {
                 label 'M1'
               }
@@ -446,7 +423,7 @@ EXIT /b 1
           }
           steps {
             unstash name: 'amd64-zip'         // includes: "OMSimulator-linux-amd64-*.tar.gz"
-            unstash name: 'jammy-amd64-zip'         // includes: "OMSimulator-linux-jammy-amd64-*.tar.gz"
+            unstash name: 'jammy-amd64-zip'   // includes: "OMSimulator-linux-jammy-amd64-*.tar.gz"
             unstash name: 'mingw-ucrt64-zip'  // includes: "OMSimulator-mingw-ucrt64-*.zip"
             unstash name: 'win64-zip'         // includes: "OMSimulator-win64-*.zip"
             // unstash name: 'osx-zip'           // includes: "OMSimulator-osx-*.zip"
@@ -541,7 +518,7 @@ def isMac() {
   return false
 }
 
-void buildOMS() {
+void buildOMS(extraCMakeArgs='') {
   if (isWindows()) {
     bat ("""
      If Defined LOCALAPPDATA (echo LOCALAPPDATA: %LOCALAPPDATA%) Else (Set "LOCALAPPDATA=C:\\Users\\OpenModelica\\AppData\\Local")
@@ -553,7 +530,7 @@ void buildOMS() {
      echo cd \${MSYS_WORKSPACE}
      echo export MAKETHREADS=-j%NUMBER_OF_PROCESSORS%
      echo set -ex
-     echo cmake -S . -B build/ -G "MSYS Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/ -DOMS_ENABLE_TESTSUITE:BOOL=ON
+     echo cmake -S . -B build/ -G "MSYS Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/ -DOMS_ENABLE_TESTSUITE:BOOL=ON ${extraCMakeArgs}
      echo cmake --build build/ --parallel %NUMBER_OF_PROCESSORS% --target install -v
      ) > buildOMSimulatorWindows.sh
 
@@ -568,12 +545,12 @@ void buildOMS() {
     def nproc = numPhysicalCPU()
     sh "git fetch --tags"
     if (isMac()) {
-      sh('''#!/bin/zsh -l
-       cmake -S . -B build/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/ -DOMS_ENABLE_TESTSUITE:BOOL=ON
+      sh("""#!/bin/zsh -l
+       cmake -S . -B build/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/ -DOMS_ENABLE_TESTSUITE:BOOL=ON ${extraCMakeArgs}
        cmake --build build/ --parallel ${nproc} --target install -v
-       ''')
+       """)
     } else {
-      sh "cmake -S . -B build/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/ -DOMS_ENABLE_TESTSUITE:BOOL=ON ${env.ASAN ? '-DASAN=ON': ''}"
+      sh "cmake -S . -B build/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/ -DOMS_ENABLE_TESTSUITE:BOOL=ON ${extraCMakeArgs}"
       sh "cmake --build build/ --parallel ${nproc} --target install -v"
     }
   }

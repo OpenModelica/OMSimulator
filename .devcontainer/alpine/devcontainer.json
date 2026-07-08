@@ -1,0 +1,33 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/alpine
+{
+  "name": "alpine",
+
+  // Alpine (musl) build container, mirroring the Jenkins `alpine` stage
+  // (.CI/alpine). It has no default non-root user, so build a thin layer that
+  // creates one matching the host user (see Dockerfile).
+  "build": {
+    "dockerfile": "Dockerfile",
+    "args": {
+        // On Windows USERNAME is set, on Linux USER is set
+        // We hope only one is set
+        "USERNAME": "${localEnv:USER}${localEnv:USERNAME}"
+    }
+  },
+
+  // Additional VSCode extensions
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.cpptools-extension-pack",
+        "njpwerner.autodocstring",
+        "lextudio.restructuredtext",
+        "trond-snekvik.simple-rst",
+        "ms-python.python",
+        "ms-python.vscode-pylance"
+      ]
+    }
+  },
+
+  "remoteUser": "${localEnv:USER}${localEnv:USERNAME}"
+}
