@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command: rm -rf DualMassOscillator.ssp DualMassOscillator_res.mat
+## teardown_command: rm -rf DualMassOscillator2.ssp DualMassOscillator2_res.mat
 ## linux: yes
 ## ucrt64: yes
 ## win: yes
@@ -24,12 +24,19 @@ model.addConnection(CRef('default', 'system1', 'x1'), CRef('default', 'system2',
 model.addConnection(CRef('default', 'system1', 'v1'), CRef('default', 'system2', 'v1'))
 model.addConnection(CRef('default', 'system1', 'a1'), CRef('default', 'system2', 'a1'))
 
-model.export('DualMassOscillator.ssp')
+solver1 = {'name' : 'solver1',  'method': 'cvode', 'relativeTolerance': 1e-6, 'initialStepSize': 1e-12, 'minimumStepSize': 1e-12, 'maximumStepSize': 1e-3}
+model.newSolver(solver1)
 
-model2 = SSP('DualMassOscillator.ssp')
+model.setSolver(CRef('default', 'system1'), 'solver1')
+model.setSolver(CRef('default', 'system2'), 'solver1')
+
+
+model.export('DualMassOscillator2.ssp')
+
+model2 = SSP('DualMassOscillator2.ssp')
 
 instantiated_model = model2.instantiate() ## internally generate the json file and also set the model state like virgin,
-instantiated_model.setResultFile("DualMassOscillator_res.mat")
+instantiated_model.setResultFile("DualMassOscillator2_res.mat")
 instantiated_model.setStopTime(10)
 
 instantiated_model.setFixedStepSize(1e-4)
@@ -52,11 +59,15 @@ instantiated_model.terminate()
 instantiated_model.delete()
 
 ## Result:
-## info:    Result file: DualMassOscillator_res.mat (bufferSize=10)
+## info:    maximum step size for 'model.root': 0.000100
+## info:    Result file: DualMassOscillator2_res.mat (bufferSize=10)
+## info:    Final Statistics for 'model.root':
+##          NumSteps = 100001 NumRhsEvals  = 100002 NumLinSolvSetups = 5001
+##          NumNonlinSolvIters = 100001 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
 ## info:    Initialization
 ## info:      default.system1.x1: 0.0
 ## info:      default.system2.x2: 0.5
 ## info:    Simulation
-## info:      default.system1.x1: 0.051412690223479836
-## info:      default.system2.x2: 0.031858470461315964
+## info:      default.system1.x1: 0.05067159474969803
+## info:      default.system2.x2: 0.03142555558313003
 ## endResult

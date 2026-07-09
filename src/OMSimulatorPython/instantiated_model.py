@@ -567,6 +567,12 @@ class InstantiatedModel:
     if status != Status.ok:
       raise RuntimeError(f"Failed to initialize model: {status}")
 
+  def reset(self):
+    '''Reset the model to the state right after instantiation, discarding initialization/simulation progress.'''
+    status = Capi.reset(self.modelName)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to reset model: {status}")
+
   def simulate(self):
     status = Capi.simulate(self.modelName)
     if status != Status.ok:

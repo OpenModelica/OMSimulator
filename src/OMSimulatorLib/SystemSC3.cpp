@@ -51,10 +51,9 @@ int oms::cvode_rhs3(realtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
   SystemSC3* system = (SystemSC3*)user_data;
   oms_status_enu_t status;
-  fmi3Status fmistatus;
 
-  // update states in FMUs
-  for (size_t i=0, j_y=0, j_ydot=0; i < system->fmus.size(); ++i)
+  // set time and states in all FMUs for this residual evaluation
+  for (size_t i=0, j_y=0; i < system->fmus.size(); ++i)
   {
     system->fmus[i]->setTime(t);
 
@@ -67,8 +66,24 @@ int oms::cvode_rhs3(realtype t, N_Vector y, N_Vector ydot, void* user_data)
     // set states
     status = system->fmus[i]->setContinuousStates(system->states[i]);
     if (oms_status_ok != status) return status;
+  }
 
-    // get state derivatives
+  // Propagate connected outputs into inputs (e.g. algebraic feedthrough across
+  // FMU boundaries) so that the derivatives below see coupling inputs that are
+  // consistent with the current state guess, instead of the value left over
+  // from the last accepted step. Without this, tightly-coupled FMUs only get
+  // their coupling updated once per accepted step, which is an explicit
+  // one-step-delayed (Jacobi-style) coupling hidden inside what should be a
+  // fully implicit combined ODE solve, and can destabilize the integration.
+  status = system->updateInputs(system->simulationGraph);
+  if (oms_status_ok != status) return status;
+
+  // get state derivatives
+  for (size_t i=0, j_ydot=0; i < system->fmus.size(); ++i)
+  {
+    if (0 == system->nStates[i])
+      continue;
+
     status = system->fmus[i]->getDerivatives(system->states_der[i]);
     if (oms_status_ok != status) return status;
 
@@ -530,6 +545,25 @@ oms_status_enu_t oms::SystemSC3::reset()
     CVodeFree(&(solverData.cvode.mem));
     solverData.cvode.mem = nullptr;
   }
+
+  // Free arrays allocated by initialize() and clear the per-FMU tracking
+  // vectors it populated, so a subsequent initialize() call starts fresh
+  // instead of appending duplicate entries for every FMU (which corrupts
+  // solver setup and causes lifecycle calls like enterContinuousTimeMode()
+  // to be issued twice for the same FMU).
+  for (double* ptr : states) free(ptr);
+  for (double* ptr : states_der) free(ptr);
+  for (double* ptr : states_nominal) free(ptr);
+  for (double* ptr : event_indicators) free(ptr);
+  for (double* ptr : event_indicators_prev) free(ptr);
+  fmus.clear();
+  nStates.clear();
+  nEventIndicators.clear();
+  states.clear();
+  states_der.clear();
+  states_nominal.clear();
+  event_indicators.clear();
+  event_indicators_prev.clear();
 
   return oms_status_ok;
 }

@@ -62,17 +62,12 @@ class ComponentTable:
     self.name = name
     self.filePath = filePath
     self.connectors = connectors
-    self._solver = None
+    self.solver = None
     self.elementgeometry = None
 
 
-  @property
-  def solver(self):
-    return self._solver
-
-  @solver.setter
-  def solver(self, cref: str):
-    self._solver = cref
+  def setSolver(self, cref: str):
+    self.solver = cref
 
   def list(self, prefix=""):
     print(f"{prefix} Table: {self.name}")

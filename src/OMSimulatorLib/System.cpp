@@ -204,11 +204,7 @@ oms_status_enu_t oms::System::getVariableType(const ComRef& cref, oms_signal_typ
 
   auto component = components.find(head);
   if (component != components.end())
-  {
-    oms::Variable * var = component->second->getVariable(tail);
-    value = var->getType();
-    return oms_status_ok;
-  }
+    return component->second->getVariableType(tail, value);
 
   // check connectors
   for (auto& connector : connectors)
