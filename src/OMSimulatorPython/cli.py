@@ -67,7 +67,7 @@ def _runSSP(path: Path, args: argparse.Namespace) -> None:
     for w in caught:
       print(f"warning: {w.message}")
     if not caught:
-      _logInfo(f"{path.name}: conforms to the SSP-2.0 schema")
+      _logInfo(f"{path.name} conforms to the SSP-2.0 schema")
     return
 
   ssp = SSP(str(path))
@@ -83,7 +83,6 @@ def _runSSP(path: Path, args: argparse.Namespace) -> None:
   model.terminate()
   model.delete()
 
-
 def _logInfo(msg: str) -> None:
   '''Print a message using the "info: " style of the OMSimulator log output.'''
   lines = msg.split('\n')
@@ -91,13 +90,12 @@ def _logInfo(msg: str) -> None:
   for line in lines[1:]:
     print(f"     {line}")
 
-
 def _runFMU(path: Path, args: argparse.Namespace) -> None:
   fmu = FMU(str(path))  # parses modelDescription.xml and validates it against the FMI schema
 
   if args.validate:
     if fmu.valid:
-      _logInfo(f"{path.name}: conforms to the FMI-{fmu.fmiVersion} schema")
+      _logInfo(f"{path.name} conforms to the FMI-{fmu.fmiVersion} schema")
     return
 
   fmu.mode = args.mode
@@ -116,16 +114,19 @@ def _runFMU(path: Path, args: argparse.Namespace) -> None:
   if args.step_size is not None:
     fmu.setStepSize(args.step_size)
     exp['stepSize'] = args.step_size
+  if args.solver is not None:
+    fmu.setSolver(args.solver)
   fmu.setResultFile(args.result_file or f"{path.stem}_res.mat")
 
   kind_str = _FMU_KIND_STR.get(fmu.mode, fmu.mode)
   _logInfo(
     '*** FMU Simulation Info ***\n'
-    f'- model:     {fmu.modelName} ({kind_str})\n'
-    f'- startTime: {exp["startTime"]:.6f}\n'
-    f'- stopTime:  {exp["stopTime"]:.6f}\n'
-    f'- tolerance: {exp["tolerance"]:.6f}\n'
-    f'- stepSize:  {exp["stepSize"]:.6f}'
+    f'- model     : {fmu.modelName} ({kind_str})\n'
+    f'- fmiVersion: {fmu.fmiVersion}\n'
+    f'- startTime : {exp["startTime"]:.6f}\n'
+    f'- stopTime  : {exp["stopTime"]:.6f}\n'
+    f'- tolerance : {exp["tolerance"]:.6f}\n'
+    f'- stepSize  : {exp["stepSize"]:.6f}'
   )
 
   fmu.initialize()
@@ -133,12 +134,10 @@ def _runFMU(path: Path, args: argparse.Namespace) -> None:
   fmu.terminate()
   fmu.delete()
 
-
 _HANDLERS = {
   '.ssp': _runSSP,
   '.fmu': _runFMU,
 }
-
 
 def main(argv=None) -> int:
   parser = argparse.ArgumentParser(prog='OMSimulatorPython3', description=__doc__)
@@ -149,20 +148,19 @@ def main(argv=None) -> int:
   parser.add_argument('--tolerance', type=float, help='Override the solver tolerance (.fmu only)')
   parser.add_argument('--step-size', type=float, help='Override the (maximum) simulation step size (.fmu only)')
   parser.add_argument('--mode', choices=['cs', 'me'], help="Force 'cs' (co-simulation) or 'me' (model exchange) for FMUs that export both " "kinds (.fmu only)")
+  parser.add_argument('--solver', choices=['euler', 'cvode'], help='Set the ODE solver for model-exchange FMUs (.fmu, mode=me only)')
   parser.add_argument('--validate', action='store_true', help='Only validate the file against its schema; do not simulate')
   args = parser.parse_args(argv)
 
   handler = _HANDLERS.get(args.model.suffix.lower())
   if handler is None:
-    parser.error(f"Unsupported file type '{args.model.suffix}'. Expected a .ssp or .fmu file, "
-                 f"or run a .py driver script directly, e.g. 'OMSimulatorPython3 script.py'.")
+    parser.error(f"Unsupported file type '{args.model.suffix}'. Expected a .ssp or .fmu file, "f"or run a .py driver script directly, e.g. 'OMSimulatorPython3 script.py'.")
 
   if not args.model.is_file():
     parser.error(f"File not found: {args.model}")
 
   handler(args.model, args)
   return 0
-
 
 if __name__ == '__main__':
   sys.exit(main())

@@ -52,6 +52,14 @@ _FMU_KIND_STR = {
   'cs': 'co-simulation',
 }
 
+# ODE solver methods usable for model-exchange ('me'/sc) FMUs. Kept local to
+# avoid importing instantiated_model.py, which imports system.py, which
+# imports this module (circular import).
+_FMU_SOLVER = {
+  'euler': 2,
+  'cvode': 3,
+}
+
 class FMU:
   def __init__(self, fmu_path: Union[str, Path], instanceName: str = None):
     '''Initialize the FMU by loading modelDescription.xml from the FMU archive.'''
@@ -590,6 +598,19 @@ class FMU:
     status = Capi.setVariableStepSize(self.instanceName, 1e-6, 1e-12, stepSize)
     if status != Status.ok:
       raise RuntimeError(f"Failed to set variable step size: {status}")
+
+  def setSolver(self, method: str):
+    '''Set the ODE solver ('euler' or 'cvode'). Only applies to model-exchange FMUs.'''
+    if self.fmuInstantitated is False:
+      raise RuntimeError("FMU must be instantiated before setting the solver")
+    if method not in _FMU_SOLVER:
+      raise ValueError(f"Invalid solver '{method}': expected one of {sorted(_FMU_SOLVER)}")
+    if self.mode != 'me':
+      raise ValueError(f"Cannot set solver '{method}': '{self.instanceName}' is not a model-exchange FMU "
+                        f"({_FMU_KIND_STR.get(self.mode, self.mode)})")
+    status = Capi.setSolver(f"{self.instanceName}.root", _FMU_SOLVER[method])
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set solver: {status}")
 
   def getValue(self, cref: str):
     if self.fmuInstantitated is False:
