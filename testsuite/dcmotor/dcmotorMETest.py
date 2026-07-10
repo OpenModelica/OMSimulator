@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command: rm -rf dcmotor.ssp tmp-dcmotor/
+## teardown_command:
 ## linux: yes
 ## ucrt64: yes
 ## win: yes
