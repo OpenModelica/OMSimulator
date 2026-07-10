@@ -40,7 +40,7 @@ from lxml import etree as ET
 from OMSimulator.connector import Connector
 from OMSimulator.unit import Unit
 from OMSimulator.variable import Variable, SignalType
-from OMSimulator import namespace
+from OMSimulator import namespace, utils
 from OMSimulator.capi import Capi, Status
 from OMSimulator.cref import CRef
 from OMSimulator.enumeration import Enumeration
@@ -57,6 +57,7 @@ class FMU:
     '''Initialize the FMU by loading modelDescription.xml from the FMU archive.'''
     self._fmu_path = Path(fmu_path)
     self._fmiVersion = None
+    self._valid = None
     self._modelName = None
     self._fmuType = None
     self._guid = None
@@ -89,6 +90,10 @@ class FMU:
   @property
   def fmiVersion(self):
     return self._fmiVersion
+
+  @property
+  def valid(self):
+    return self._valid
 
   @property
   def fmuPath(self):
@@ -162,6 +167,7 @@ class FMU:
 
           # Parse modelName, guid, ...
           self._fmiVersion = model_description.get('fmiVersion')
+          self._valid = utils.validateFMU(model_description, str(self._fmu_path), self._fmiVersion)
           self._modelName = model_description.get('modelName')
           self._guid = model_description.get('guid')
           self._description = model_description.get('description')

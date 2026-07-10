@@ -42,10 +42,15 @@ without having to write a driver script. All simulation settings
 model itself; use --result-file/--start-time/--stop-time/--tolerance/
 --step-size to override them. For FMUs that export both model exchange
 and co-simulation, use --mode to pick which one to run.
+
+Files are validated against their schema (FMI for .fmu, SSP for .ssp)
+before simulation; pass --validate to only validate the file and skip
+simulation.
 '''
 
 import argparse
 import sys
+import warnings
 from pathlib import Path
 
 from OMSimulator import FMU, SSP
@@ -53,6 +58,18 @@ from OMSimulator.fmu import _FMU_KIND_STR
 
 
 def _runSSP(path: Path, args: argparse.Namespace) -> None:
+  if args.validate:
+    # SSP(...) already validates the SSD plus any embedded FMU/SSV/SSM resources
+    # against their schemas on construction, reporting failures via warnings.
+    with warnings.catch_warnings(record=True) as caught:
+      warnings.simplefilter('always')
+      SSP(str(path))
+    for w in caught:
+      print(f"warning: {w.message}")
+    if not caught:
+      _logInfo(f"{path.name}: conforms to the SSP-2.0 schema")
+    return
+
   ssp = SSP(str(path))
   model = ssp.instantiate()
 
@@ -68,15 +85,21 @@ def _runSSP(path: Path, args: argparse.Namespace) -> None:
 
 
 def _logInfo(msg: str) -> None:
-  '''Print a message using the "info:    " style of the OMSimulator log output.'''
+  '''Print a message using the "info: " style of the OMSimulator log output.'''
   lines = msg.split('\n')
-  print(f"info:    {lines[0]}")
+  print(f"info: {lines[0]}")
   for line in lines[1:]:
-    print(f"         {line}")
+    print(f"     {line}")
 
 
 def _runFMU(path: Path, args: argparse.Namespace) -> None:
-  fmu = FMU(str(path))
+  fmu = FMU(str(path))  # parses modelDescription.xml and validates it against the FMI schema
+
+  if args.validate:
+    if fmu.valid:
+      _logInfo(f"{path.name}: conforms to the FMI-{fmu.fmiVersion} schema")
+    return
+
   fmu.mode = args.mode
   fmu.instantiate()  # sets defaults from the FMU's DefaultExperiment
 
@@ -125,9 +148,8 @@ def main(argv=None) -> int:
   parser.add_argument('--stop-time', type=float, help='Override the simulation stop time')
   parser.add_argument('--tolerance', type=float, help='Override the solver tolerance (.fmu only)')
   parser.add_argument('--step-size', type=float, help='Override the (maximum) simulation step size (.fmu only)')
-  parser.add_argument('--mode', choices=['cs', 'me'],
-                       help="Force 'cs' (co-simulation) or 'me' (model exchange) for FMUs that export both "
-                            "kinds (.fmu only)")
+  parser.add_argument('--mode', choices=['cs', 'me'], help="Force 'cs' (co-simulation) or 'me' (model exchange) for FMUs that export both " "kinds (.fmu only)")
+  parser.add_argument('--validate', action='store_true', help='Only validate the file against its schema; do not simulate')
   args = parser.parse_args(argv)
 
   handler = _HANDLERS.get(args.model.suffix.lower())
