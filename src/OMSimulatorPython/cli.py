@@ -45,7 +45,9 @@ and co-simulation, use --mode to pick which one to run.
 
 Files are validated against their schema (FMI for .fmu, SSP for .ssp)
 before simulation; pass --validate to only validate the file and skip
-simulation.
+simulation e.g.:
+  OMSimulatorPython --validate test.ssp
+  OMSimulatorPython --validate model.fmu
 '''
 
 import argparse
