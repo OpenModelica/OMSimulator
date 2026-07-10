@@ -47,6 +47,11 @@ from OMSimulator.enumeration import Enumeration
 
 logger = logging.getLogger(__name__)
 
+_FMU_KIND_STR = {
+  'me': 'model exchange',
+  'cs': 'co-simulation',
+}
+
 class FMU:
   def __init__(self, fmu_path: Union[str, Path], instanceName: str = None):
     '''Initialize the FMU by loading modelDescription.xml from the FMU archive.'''
@@ -78,6 +83,7 @@ class FMU:
     self.apiCall = []
     self.instanceName = instanceName
     self.fmuInstantitated = False
+    self.mode = None
     self._load_model_description()
 
   @property
@@ -478,7 +484,27 @@ class FMU:
 
 
   def instantiate(self):
-    '''Instantiate the FMU for simulation.'''
+    '''Instantiate the FMU for simulation.
+
+    Set self.mode to 'me' (model exchange) or 'cs' (co-simulation) beforehand
+    to force a kind for FMUs that export both. Ignored if the FMU only
+    supports one kind, in which case self.mode must match that kind or a
+    ValueError is raised.
+    '''
+    if self.mode is not None and self.mode not in ('me', 'cs'):
+      raise ValueError(f"Invalid mode '{self.mode}': expected 'me' or 'cs'")
+
+    match self.fmuType:
+      case 'me_cs':
+        self.mode = self.mode or 'cs'
+      case 'cs' | 'me':
+        if self.mode is not None and self.mode != self.fmuType:
+          raise ValueError(f"FMU '{self.modelName}' does not support mode '{self.mode}' "
+                            f"({_FMU_KIND_STR[self.fmuType]} only)")
+        self.mode = self.fmuType
+      case _:
+        raise ValueError(f"Unsupported fmuType: {self.fmuType}")
+
     status = Capi.setCommandLineOption("--suppressPath=true")
     if status != Status.ok:
       raise RuntimeError(f"Failed to set command line option: {status}")
@@ -496,13 +522,7 @@ class FMU:
     self.apiCall.append(f'oms.newModel({self.instanceName})')
 
     ## add system type: wc (weakly coupled) or sc (strongly coupled)
-    match self.fmuType:
-      case 'me_cs' | 'cs':
-        system_type = 1  # wc
-      case 'me':
-        system_type = 2  # sc
-      case _:
-        raise ValueError(f"Unsupported fmuType: {self.fmuType}")
+    system_type = 1 if self.mode == 'cs' else 2  # 1=wc, 2=sc
     root_name = f"{self.instanceName}.root"
     status = Capi.addSystem(root_name, system_type)
     if status != Status.ok:
@@ -540,7 +560,6 @@ class FMU:
   def setStartTime(self, startTime: float):
     if self.fmuInstantitated is False:
       raise RuntimeError("FMU must be instantiated before setting start time")
-
     status = Capi.setStartTime(self.instanceName, startTime)
     if status != Status.ok:
       raise RuntimeError(f"Failed to set start time: {status}")
@@ -548,7 +567,6 @@ class FMU:
   def setStopTime(self, stopTime: float):
     if self.fmuInstantitated is False:
       raise RuntimeError("FMU must be instantiated before setting stop time")
-
     status = Capi.setStopTime(self.instanceName, stopTime)
     if status != Status.ok:
       raise RuntimeError(f"Failed to set stop time: {status}")
@@ -556,7 +574,6 @@ class FMU:
   def setTolerance(self, tolerance: float):
     if self.fmuInstantitated is False:
       raise RuntimeError("FMU must be instantiated before setting tolerance")
-
     status = Capi.setTolerance(self.instanceName, tolerance)
     if status != Status.ok:
       raise RuntimeError(f"Failed to set tolerance: {status}")
@@ -564,7 +581,6 @@ class FMU:
   def setStepSize(self, stepSize: float):
     if self.fmuInstantitated is False:
       raise RuntimeError("FMU must be instantiated before setting variable step size")
-
     status = Capi.setVariableStepSize(self.instanceName, 1e-6, 1e-12, stepSize)
     if status != Status.ok:
       raise RuntimeError(f"Failed to set variable step size: {status}")
