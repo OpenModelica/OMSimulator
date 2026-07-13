@@ -20,4 +20,13 @@ case "${detected_OS}" in
     ;;
 esac
 
-python3 $@
+# A ".py" argument is run as a driver script, as before. Anything else (e.g. a
+# .ssp or .fmu model file) is handed to the OMSimulator CLI module instead.
+case "$1" in
+  (*.py)
+    python3 "$@"
+    ;;
+  (*)
+    python3 -m OMSimulator "$@"
+    ;;
+esac

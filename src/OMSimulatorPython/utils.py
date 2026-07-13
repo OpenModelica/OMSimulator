@@ -241,15 +241,32 @@ def parseParameterBindingHelper(parameters):
           break  # Stop after first found type
     return parameterValues
 
-def validateSSP(root, filename : str, schema_file : str):
+def _validateAgainstSchema(root, filename: str, schema_dir: str, schema_file: str) -> bool:
   module_dir = Path(__file__).parent
-  schema = ET.XMLSchema(file=Path(module_dir, 'schema/ssp', schema_file))
-  if not schema.validate(root):
+  schema = ET.XMLSchema(file=Path(module_dir, 'schema', schema_dir, schema_file))
+  valid = schema.validate(root)
+  if not valid:
     message = f"Failed to validate {Path(filename).name} against schemafile {schema_file}"
     for entry in schema.error_log:
       message += "\n%s (line %d, column %d): %s" % (entry.level_name, entry.line, entry.column, entry.message)
     # warn the user instead of raising an exception
     warnings.warn(message, UserWarning)
+  return valid
+
+def validateSSP(root, filename : str, schema_file : str) -> bool:
+  return _validateAgainstSchema(root, filename, 'ssp', schema_file)
+
+_FMU_SCHEMA_BY_VERSION = {
+  '2.0': ('fmi2', 'fmi2ModelDescription.xsd'),
+  '3.0': ('fmi3', 'fmi3ModelDescription.xsd'),
+}
+
+def validateFMU(root, filename: str, fmiVersion: str) -> bool:
+  if fmiVersion not in _FMU_SCHEMA_BY_VERSION:
+    warnings.warn(f"Cannot validate {Path(filename).name}: unsupported FMI version '{fmiVersion}'", UserWarning)
+    return False
+  schema_dir, schema_file = _FMU_SCHEMA_BY_VERSION[fmiVersion]
+  return _validateAgainstSchema(root, filename, schema_dir, schema_file)
 
 def exportSimulationInformation(node, simulationInformation):
   """Export simulation information annotations to the XML node"""

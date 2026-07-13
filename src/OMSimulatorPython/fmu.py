@@ -40,18 +40,32 @@ from lxml import etree as ET
 from OMSimulator.connector import Connector
 from OMSimulator.unit import Unit
 from OMSimulator.variable import Variable, SignalType
-from OMSimulator import namespace
+from OMSimulator import namespace, utils
 from OMSimulator.capi import Capi, Status
 from OMSimulator.cref import CRef
 from OMSimulator.enumeration import Enumeration
 
 logger = logging.getLogger(__name__)
 
+_FMU_KIND_STR = {
+  'me': 'model exchange',
+  'cs': 'co-simulation',
+}
+
+# ODE solver methods usable for model-exchange ('me'/sc) FMUs. Kept local to
+# avoid importing instantiated_model.py, which imports system.py, which
+# imports this module (circular import).
+_FMU_SOLVER = {
+  'euler': 2,
+  'cvode': 3,
+}
+
 class FMU:
   def __init__(self, fmu_path: Union[str, Path], instanceName: str = None):
     '''Initialize the FMU by loading modelDescription.xml from the FMU archive.'''
     self._fmu_path = Path(fmu_path)
     self._fmiVersion = None
+    self._valid = None
     self._modelName = None
     self._fmuType = None
     self._guid = None
@@ -78,11 +92,16 @@ class FMU:
     self.apiCall = []
     self.instanceName = instanceName
     self.fmuInstantitated = False
+    self.mode = None
     self._load_model_description()
 
   @property
   def fmiVersion(self):
     return self._fmiVersion
+
+  @property
+  def valid(self):
+    return self._valid
 
   @property
   def fmuPath(self):
@@ -156,6 +175,7 @@ class FMU:
 
           # Parse modelName, guid, ...
           self._fmiVersion = model_description.get('fmiVersion')
+          self._valid = utils.validateFMU(model_description, str(self._fmu_path), self._fmiVersion)
           self._modelName = model_description.get('modelName')
           self._guid = model_description.get('guid')
           self._description = model_description.get('description')
@@ -478,7 +498,27 @@ class FMU:
 
 
   def instantiate(self):
-    '''Instantiate the FMU for simulation.'''
+    '''Instantiate the FMU for simulation.
+
+    Set self.mode to 'me' (model exchange) or 'cs' (co-simulation) beforehand
+    to force a kind for FMUs that export both. Ignored if the FMU only
+    supports one kind, in which case self.mode must match that kind or a
+    ValueError is raised.
+    '''
+    if self.mode is not None and self.mode not in ('me', 'cs'):
+      raise ValueError(f"Invalid mode '{self.mode}': expected 'me' or 'cs'")
+
+    match self.fmuType:
+      case 'me_cs':
+        self.mode = self.mode or 'cs'
+      case 'cs' | 'me':
+        if self.mode is not None and self.mode != self.fmuType:
+          raise ValueError(f"FMU '{self.modelName}' does not support mode '{self.mode}' "
+                            f"({_FMU_KIND_STR[self.fmuType]} only)")
+        self.mode = self.fmuType
+      case _:
+        raise ValueError(f"Unsupported fmuType: {self.fmuType}")
+
     status = Capi.setCommandLineOption("--suppressPath=true")
     if status != Status.ok:
       raise RuntimeError(f"Failed to set command line option: {status}")
@@ -496,13 +536,7 @@ class FMU:
     self.apiCall.append(f'oms.newModel({self.instanceName})')
 
     ## add system type: wc (weakly coupled) or sc (strongly coupled)
-    match self.fmuType:
-      case 'me_cs' | 'cs':
-        system_type = 1  # wc
-      case 'me':
-        system_type = 2  # sc
-      case _:
-        raise ValueError(f"Unsupported fmuType: {self.fmuType}")
+    system_type = 1 if self.mode == 'cs' else 2  # 1=wc, 2=sc
     root_name = f"{self.instanceName}.root"
     status = Capi.addSystem(root_name, system_type)
     if status != Status.ok:
@@ -540,7 +574,6 @@ class FMU:
   def setStartTime(self, startTime: float):
     if self.fmuInstantitated is False:
       raise RuntimeError("FMU must be instantiated before setting start time")
-
     status = Capi.setStartTime(self.instanceName, startTime)
     if status != Status.ok:
       raise RuntimeError(f"Failed to set start time: {status}")
@@ -548,7 +581,6 @@ class FMU:
   def setStopTime(self, stopTime: float):
     if self.fmuInstantitated is False:
       raise RuntimeError("FMU must be instantiated before setting stop time")
-
     status = Capi.setStopTime(self.instanceName, stopTime)
     if status != Status.ok:
       raise RuntimeError(f"Failed to set stop time: {status}")
@@ -556,7 +588,6 @@ class FMU:
   def setTolerance(self, tolerance: float):
     if self.fmuInstantitated is False:
       raise RuntimeError("FMU must be instantiated before setting tolerance")
-
     status = Capi.setTolerance(self.instanceName, tolerance)
     if status != Status.ok:
       raise RuntimeError(f"Failed to set tolerance: {status}")
@@ -564,10 +595,22 @@ class FMU:
   def setStepSize(self, stepSize: float):
     if self.fmuInstantitated is False:
       raise RuntimeError("FMU must be instantiated before setting variable step size")
-
     status = Capi.setVariableStepSize(self.instanceName, 1e-6, 1e-12, stepSize)
     if status != Status.ok:
       raise RuntimeError(f"Failed to set variable step size: {status}")
+
+  def setSolver(self, method: str):
+    '''Set the ODE solver ('euler' or 'cvode'). Only applies to model-exchange FMUs.'''
+    if self.fmuInstantitated is False:
+      raise RuntimeError("FMU must be instantiated before setting the solver")
+    if method not in _FMU_SOLVER:
+      raise ValueError(f"Invalid solver '{method}': expected one of {sorted(_FMU_SOLVER)}")
+    if self.mode != 'me':
+      raise ValueError(f"Cannot set solver '{method}': '{self.instanceName}' is not a model-exchange FMU "
+                        f"({_FMU_KIND_STR.get(self.mode, self.mode)})")
+    status = Capi.setSolver(f"{self.instanceName}.root", _FMU_SOLVER[method])
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set solver: {status}")
 
   def getValue(self, cref: str):
     if self.fmuInstantitated is False:
