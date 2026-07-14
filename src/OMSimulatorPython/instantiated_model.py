@@ -66,7 +66,7 @@ def _system_type_label(system_type: SystemType) -> str:
 
 class InstantiatedModel:
   _suppress_path_set = False # Class variable to track if suppressPath has been set
-  def __init__(self, json_description, system: System, resources: dict):
+  def __init__(self, json_description, system: System, resources: dict, stripRoot: bool = False):
     #print(f"info: Instantiating model with JSON description:\n{json_description}", flush=True)
     config = json.loads(json_description)
     self.modelName = "model" ## create random name, but we cannot commits test as jenkins will gerate new model name
@@ -82,6 +82,10 @@ class InstantiatedModel:
       if status != Status.ok:
         raise RuntimeError(f"Failed to set command line option: {status}")
       InstantiatedModel._suppress_path_set = True
+    if stripRoot:
+      status = Capi.setCommandLineOption("--stripRoot=true")
+      if status != Status.ok:
+        raise RuntimeError(f"Failed to set command line option: {status}")
     # Set the temporary directory
     status = Capi.setTempDirectory(tempfile.mkdtemp())
     if status != Status.ok:

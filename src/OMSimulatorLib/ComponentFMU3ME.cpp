@@ -1930,6 +1930,7 @@ oms_status_enu_t oms::ComponentFMU3ME::registerSignalsForResultFile(ResultWriter
 
     auto const &var = allVariables[i];
     std::string name;
+    bool exportNameUsed = !exportName.empty();
     // check for exportName, to be used in result file to map the variable to the correct signal in ssp
     if (!exportName.empty())
       name = std::string(ComRef(exportName) + var.getCref());
@@ -1943,17 +1944,17 @@ oms_status_enu_t oms::ComponentFMU3ME::registerSignalsForResultFile(ResultWriter
       if (var.isTypeReal())
       {
         getReal(var.getCref(), value.realValue);
-        resultFile.addParameter(name, description, SignalType_REAL, value);
+        resultFile.addParameter(name, description, SignalType_REAL, value, exportNameUsed);
       }
       else if (var.isTypeInteger())
       {
         getInteger(var.getCref(), value.intValue);
-        resultFile.addParameter(name, description, SignalType_INT, value);
+        resultFile.addParameter(name, description, SignalType_INT, value, exportNameUsed);
       }
       else if (var.isTypeBoolean())
       {
         getBoolean(var.getCref(), value.boolValue);
-        resultFile.addParameter(name, description, SignalType_BOOL, value);
+        resultFile.addParameter(name, description, SignalType_BOOL, value, exportNameUsed);
       }
       else
         logInfo("Parameter " + name + " will not be stored in the result file, because the signal type is not supported");
@@ -1962,19 +1963,19 @@ oms_status_enu_t oms::ComponentFMU3ME::registerSignalsForResultFile(ResultWriter
     {
       if (var.isTypeReal())
       {
-        unsigned int ID = resultFile.addSignal(name, description, SignalType_REAL);
+        unsigned int ID = resultFile.addSignal(name, description, SignalType_REAL, exportNameUsed);
         if (ID)
           resultFileMapping[ID] = i;
       }
       else if (var.isTypeInteger())
       {
-        unsigned int ID = resultFile.addSignal(name, description, SignalType_INT);
+        unsigned int ID = resultFile.addSignal(name, description, SignalType_INT, exportNameUsed);
         if (ID)
           resultFileMapping[ID] = i;
       }
       else if (var.isTypeBoolean())
       {
-        unsigned int ID = resultFile.addSignal(name, description, SignalType_BOOL);
+        unsigned int ID = resultFile.addSignal(name, description, SignalType_BOOL, exportNameUsed);
         if (ID)
           resultFileMapping[ID] = i;
       }

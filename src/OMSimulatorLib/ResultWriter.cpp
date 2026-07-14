@@ -51,7 +51,7 @@ oms::ResultWriter::~ResultWriter()
     delete[] data_2;
 }
 
-unsigned int oms::ResultWriter::addSignal(const ComRef& name, const std::string& description, SignalType_t type)
+unsigned int oms::ResultWriter::addSignal(const ComRef& name, const std::string& description, SignalType_t type, bool exportNameUsed)
 {
   Signal signal;
   signal.name = name;
@@ -61,9 +61,13 @@ unsigned int oms::ResultWriter::addSignal(const ComRef& name, const std::string&
   oms::Model* model = oms::Scope::GetInstance().getModel(name.front());
   if (Flags::StripRoot() || (model && model->isIsolatedFMUModel()))
   {
-    size_t stripCount = (model && model->isIsolatedFMUModel()) ? 3 : 2;
-    // never strip away the signal's own name, e.g. for FMUs already exported
-    // under a short name (see Component::setExportName)
+    // exportNameUsed: the caller already built `name` from a custom export name (see
+    // Component::setExportName), which already collapses "modelName.root" down to its
+    // own (shorter) representation. Only its one remaining outer layer needs stripping
+    // (e.g. an SSP variant name), not the usual model+root count, so that whatever
+    // comes after (e.g. a component name) survives.
+    size_t stripCount = exportNameUsed ? 1 : ((model && model->isIsolatedFMUModel()) ? 3 : 2);
+    // never strip away the signal's own name entirely, even for a shorter-than-usual cref
     for (size_t i = 0; i < stripCount; ++i)
     {
       ComRef remainder = signal.name;
@@ -81,7 +85,7 @@ unsigned int oms::ResultWriter::addSignal(const ComRef& name, const std::string&
   return (unsigned int) signals.size();
 }
 
-void oms::ResultWriter::addParameter(const ComRef& name, const std::string& description, SignalType_t type, SignalValue_t value)
+void oms::ResultWriter::addParameter(const ComRef& name, const std::string& description, SignalType_t type, SignalValue_t value, bool exportNameUsed)
 {
   Parameter parameter;
   parameter.signal.name = name;
@@ -92,9 +96,9 @@ void oms::ResultWriter::addParameter(const ComRef& name, const std::string& desc
   oms::Model* model = oms::Scope::GetInstance().getModel(name.front());
   if (Flags::StripRoot() || (model && model->isIsolatedFMUModel()))
   {
-    size_t stripCount = (model && model->isIsolatedFMUModel()) ? 3 : 2;
-    // never strip away the signal's own name, e.g. for FMUs already exported
-    // under a short name (see Component::setExportName)
+    // see addSignal() above for why exportNameUsed changes the strip count to 1
+    size_t stripCount = exportNameUsed ? 1 : ((model && model->isIsolatedFMUModel()) ? 3 : 2);
+    // never strip away the signal's own name entirely, even for a shorter-than-usual cref
     for (size_t i = 0; i < stripCount; ++i)
     {
       ComRef remainder = parameter.signal.name;

@@ -265,12 +265,12 @@ class SSD:
     subcrefB = self._validateCref(crefB)
     return self.system.getConnection(subcrefA, subcrefB)
 
-  def instantiate(self, resources: dict | None = None, tempdir: str | None = None ) -> InstantiatedModel:
+  def instantiate(self, resources: dict | None = None, tempdir: str | None = None, stripRoot: bool = False) -> InstantiatedModel:
     if self.system is None:
       raise ValueError("Variant doesn't contain a system")
     simulation_info = {"startTime": self.startTime, "stopTime": self.stopTime, "resultFile": self.resultFile, "loggingInterval": self.loggingInterval, "bufferSize": self.bufferSize}
     json_desc = self.system.generateJson(resources, tempdir, simulation_info)
-    return InstantiatedModel(json_desc, self.system, resources)
+    return InstantiatedModel(json_desc, self.system, resources, stripRoot)
 
   def list(self, prefix=""):
     '''Prints the SSD contents.'''
