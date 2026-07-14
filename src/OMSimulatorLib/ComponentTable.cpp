@@ -367,7 +367,8 @@ oms_status_enu_t oms::ComponentTable::registerSignalsForResultFile(ResultWriter&
 
     std::string name = std::string(getFullCref() + connectors[i]->getName());
     unsigned int ID = resultFile.addSignal(name, "lookup table", SignalType_REAL);
-    resultFileMapping[ID] = i;
+    if (ID)
+      resultFileMapping[ID] = i;
   }
 
   return oms_status_ok;

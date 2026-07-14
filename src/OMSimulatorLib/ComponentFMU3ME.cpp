@@ -1963,17 +1963,20 @@ oms_status_enu_t oms::ComponentFMU3ME::registerSignalsForResultFile(ResultWriter
       if (var.isTypeReal())
       {
         unsigned int ID = resultFile.addSignal(name, description, SignalType_REAL);
-        resultFileMapping[ID] = i;
+        if (ID)
+          resultFileMapping[ID] = i;
       }
       else if (var.isTypeInteger())
       {
         unsigned int ID = resultFile.addSignal(name, description, SignalType_INT);
-        resultFileMapping[ID] = i;
+        if (ID)
+          resultFileMapping[ID] = i;
       }
       else if (var.isTypeBoolean())
       {
         unsigned int ID = resultFile.addSignal(name, description, SignalType_BOOL);
-        resultFileMapping[ID] = i;
+        if (ID)
+          resultFileMapping[ID] = i;
       }
       else
         logInfo("Variable " + name + " will not be stored in the result file, because the signal type is not supported");

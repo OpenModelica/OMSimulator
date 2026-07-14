@@ -61,10 +61,17 @@ unsigned int oms::ResultWriter::addSignal(const ComRef& name, const std::string&
   oms::Model* model = oms::Scope::GetInstance().getModel(name.front());
   if (Flags::StripRoot() || (model && model->isIsolatedFMUModel()))
   {
-    signal.name.pop_front();
-    signal.name.pop_front();
-    if (model && model->isIsolatedFMUModel())
-      signal.name.pop_front();
+    size_t stripCount = (model && model->isIsolatedFMUModel()) ? 3 : 2;
+    // never strip away the signal's own name, e.g. for FMUs already exported
+    // under a short name (see Component::setExportName)
+    for (size_t i = 0; i < stripCount; ++i)
+    {
+      ComRef remainder = signal.name;
+      remainder.pop_front();
+      if (remainder.isEmpty())
+        break;
+      signal.name = remainder;
+    }
   }
 
   if (signal.name.isEmpty())
@@ -85,10 +92,17 @@ void oms::ResultWriter::addParameter(const ComRef& name, const std::string& desc
   oms::Model* model = oms::Scope::GetInstance().getModel(name.front());
   if (Flags::StripRoot() || (model && model->isIsolatedFMUModel()))
   {
-    parameter.signal.name.pop_front();
-    parameter.signal.name.pop_front();
-    if (model && model->isIsolatedFMUModel())
-      parameter.signal.name.pop_front();
+    size_t stripCount = (model && model->isIsolatedFMUModel()) ? 3 : 2;
+    // never strip away the signal's own name, e.g. for FMUs already exported
+    // under a short name (see Component::setExportName)
+    for (size_t i = 0; i < stripCount; ++i)
+    {
+      ComRef remainder = parameter.signal.name;
+      remainder.pop_front();
+      if (remainder.isEmpty())
+        break;
+      parameter.signal.name = remainder;
+    }
   }
 
   if (parameter.signal.name.isEmpty())

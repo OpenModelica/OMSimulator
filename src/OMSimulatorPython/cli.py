@@ -41,7 +41,8 @@ without having to write a driver script. All simulation settings
 (start/stop time, result file, tolerance, ...) are taken from the
 model itself; use --result-file/--start-time/--stop-time/--tolerance/
 --step-size to override them. For FMUs that export both model exchange
-and co-simulation, use --mode to pick which one to run.
+and co-simulation, use --mode to pick which one to run. Pass --stripRoot
+to drop the "model.root" prefix from exported signal names.
 
 Files are validated against their schema (FMI for .fmu, SSP for .ssp)
 before simulation; pass --validate to only validate the file and skip
@@ -88,9 +89,9 @@ def _runSSP(path: Path, args: argparse.Namespace) -> None:
 def _logInfo(msg: str) -> None:
   '''Print a message using the "info: " style of the OMSimulator log output.'''
   lines = msg.split('\n')
-  print(f"info: {lines[0]}")
+  print(f"info: {lines[0]}", flush=True)
   for line in lines[1:]:
-    print(f"     {line}")
+    print(f"     {line}", flush=True)
 
 def _runFMU(path: Path, args: argparse.Namespace) -> None:
   fmu = FMU(str(path))  # parses modelDescription.xml and validates it against the FMI schema
@@ -101,25 +102,21 @@ def _runFMU(path: Path, args: argparse.Namespace) -> None:
     return
 
   fmu.mode = args.mode
-  fmu.instantiate()  # sets defaults from the FMU's DefaultExperiment
+  fmu.stripRoot = args.stripRoot
+  # start/stop/tolerance/stepSize must be set before instantiate(): they need to reach
+  # the FMU's fmi2SetupExperiment call, not just the solver's own bookkeeping, otherwise
+  # the FMU's first recorded sample won't reflect the override (only later steps would).
+  fmu.startTime = args.start_time
+  fmu.stopTime = args.stop_time
+  fmu.tolerance = args.tolerance
+  fmu.stepSize = args.step_size
+  fmu.instantiate()  # applies the settings above (falling back to the FMU's DefaultExperiment)
 
-  exp = dict(fmu.defaultExperiment)
-  if args.start_time is not None:
-    fmu.setStartTime(args.start_time)
-    exp['startTime'] = args.start_time
-  if args.stop_time is not None:
-    fmu.setStopTime(args.stop_time)
-    exp['stopTime'] = args.stop_time
-  if args.tolerance is not None:
-    fmu.setTolerance(args.tolerance)
-    exp['tolerance'] = args.tolerance
-  if args.step_size is not None:
-    fmu.setStepSize(args.step_size)
-    exp['stepSize'] = args.step_size
   if args.solver is not None:
     fmu.setSolver(args.solver)
   fmu.setResultFile(args.result_file or f"{path.stem}_res.mat")
 
+  exp = fmu.appliedExperiment
   kind_str = _FMU_KIND_STR.get(fmu.mode, fmu.mode)
   _logInfo(
     '*** FMU Simulation Info ***\n'
@@ -151,6 +148,7 @@ def main(argv=None) -> int:
   parser.add_argument('--step-size', type=float, help='Override the (maximum) simulation step size (.fmu only)')
   parser.add_argument('--mode', choices=['cs', 'me'], help="Force 'cs' (co-simulation) or 'me' (model exchange) for FMUs that export both " "kinds (.fmu only)")
   parser.add_argument('--solver', choices=['euler', 'cvode'], help='Set the ODE solver for model-exchange FMUs (.fmu, mode=me only)')
+  parser.add_argument('--stripRoot', action='store_true', help='Remove the root system prefix from exported signal names (.fmu only)')
   parser.add_argument('--validate', action='store_true', help='Only validate the file against its schema; do not simulate')
   args = parser.parse_args(argv)
 

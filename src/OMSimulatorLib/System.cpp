@@ -2431,17 +2431,20 @@ oms_status_enu_t oms::System::registerSignalsForResultFile(ResultWriter& resultF
     if (oms_signal_type_real == connector->getType())
     {
       unsigned int ID = resultFile.addSignal(name, "connector", SignalType_REAL);
-      resultFileMapping[ID] = i;
+      if (ID)
+        resultFileMapping[ID] = i;
     }
     else if (oms_signal_type_integer == connector->getType())
     {
       unsigned int ID = resultFile.addSignal(name, "connector", SignalType_INT);
-      resultFileMapping[ID] = i;
+      if (ID)
+        resultFileMapping[ID] = i;
     }
     else if (oms_signal_type_boolean == connector->getType())
     {
       unsigned int ID = resultFile.addSignal(name, "connector", SignalType_BOOL);
-      resultFileMapping[ID] = i;
+      if (ID)
+        resultFileMapping[ID] = i;
     }
   }
 
