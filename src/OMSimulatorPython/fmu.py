@@ -94,7 +94,6 @@ class FMU:
     self.instanceName = instanceName
     self.fmuInstantitated = False
     self.mode = None
-    self.stripRoot = False
     # override the FMU's declared defaultExperiment; must be set before instantiate()
     # since they need to reach the FMU's fmi2SetupExperiment call, not just the
     # solver's own bookkeeping (setting them afterwards is too late for the FMU's
@@ -532,10 +531,6 @@ class FMU:
     status = Capi.setCommandLineOption("--suppressPath=true")
     if status != Status.ok:
       raise RuntimeError(f"Failed to set command line option: {status}")
-    if self.stripRoot:
-      status = Capi.setCommandLineOption("--stripRoot=true")
-      if status != Status.ok:
-        raise RuntimeError(f"Failed to set command line option: {status}")
 
     status = Capi.setTempDirectory(tempfile.mkdtemp())
     if status != Status.ok:

@@ -56,7 +56,8 @@ import sys
 import warnings
 from pathlib import Path
 
-from OMSimulator import FMU, SSP
+from OMSimulator import FMU, SSP, Capi
+from OMSimulator.capi import Status
 from OMSimulator.fmu import _FMU_KIND_STR
 
 
@@ -74,7 +75,7 @@ def _runSSP(path: Path, args: argparse.Namespace) -> None:
     return
 
   ssp = SSP(str(path))
-  model = ssp.instantiate(stripRoot=args.stripRoot)
+  model = ssp.instantiate()
 
   if args.stop_time is not None:
     model.setStopTime(args.stop_time)
@@ -102,7 +103,6 @@ def _runFMU(path: Path, args: argparse.Namespace) -> None:
     return
 
   fmu.mode = args.mode
-  fmu.stripRoot = args.stripRoot
   # start/stop/tolerance/stepSize must be set before instantiate(): they need to reach
   # the FMU's fmi2SetupExperiment call, not just the solver's own bookkeeping, otherwise
   # the FMU's first recorded sample won't reflect the override (only later steps would).
@@ -158,6 +158,13 @@ def main(argv=None) -> int:
 
   if not args.model.is_file():
     parser.error(f"File not found: {args.model}")
+
+  # --stripRoot is a global native flag; set it once here rather than threading it
+  # through FMU/SSP/SSD/InstantiatedModel. Just needs to happen before instantiate().
+  if args.stripRoot:
+    status = Capi.setCommandLineOption("--stripRoot=true")
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set --stripRoot: {status}")
 
   handler(args.model, args)
   return 0

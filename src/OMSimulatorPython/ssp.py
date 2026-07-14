@@ -432,10 +432,10 @@ class SSP:
     for ssd in self.variants.values():
       ssd.list("|--")
 
-  def instantiate(self, stripRoot: bool = False):
+  def instantiate(self):
     if self.activeVariant is None:
       raise ValueError("No active variant set in the SSP.")
-    return self.activeVariant.instantiate(self.resources, self.temp_dir, stripRoot)
+    return self.activeVariant.instantiate(self.resources, self.temp_dir)
 
   def export(self, filename: str):
     '''Exports the SSP to file'''
