@@ -99,6 +99,10 @@ The full list of command line arguments can also be printed at any time with:
      - ``euler`` | ``cvode``
      - Set the ODE solver for model-exchange FMUs (``.fmu``, requires
        ``--mode me``).
+   * - ``--stripRoot``
+     - —
+     - Remove the root system prefix from exported signal names (applies to
+       both ``.fmu`` and ``.ssp``).
    * - ``--validate``
      - ``.fmu`` | ``.ssp``
      - Only validate the file against its schema; do not simulate.
@@ -122,6 +126,10 @@ Examples
 
   # Override the stop time and result file of an SSP
   OMSimulatorPython3 model.ssp --stop-time 10 --result-file out.mat
+
+  # Drop the "model.root" prefix from exported signal names (.fmu or .ssp)
+  OMSimulatorPython3 model.fmu --stripRoot
+  OMSimulatorPython3 model.ssp --stripRoot
 
 Quick start Example
 -------------------
