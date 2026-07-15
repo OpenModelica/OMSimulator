@@ -124,8 +124,8 @@ def _runFMU(path: Path, args: argparse.Namespace) -> None:
     f'- fmiVersion: {fmu.fmiVersion}\n'
     f'- startTime : {exp["startTime"]:.6f}\n'
     f'- stopTime  : {exp["stopTime"]:.6f}\n'
-    f'- tolerance : {exp["tolerance"]:.6f}\n'
-    f'- stepSize  : {exp["stepSize"]:.6f}'
+    f'- tolerance : {exp["tolerance"]:.6g}\n'
+    f'- stepSize  : {exp["stepSize"]:.6g}'
   )
 
   fmu.initialize()
@@ -136,6 +136,13 @@ def _runFMU(path: Path, args: argparse.Namespace) -> None:
 _HANDLERS = {
   '.ssp': _runSSP,
   '.fmu': _runFMU,
+}
+
+# Boolean CLI flags that map 1:1 to a global native command line option (applies
+# process-wide, regardless of .fmu/.ssp). args attribute name -> native option string.
+_GLOBAL_FLAGS = {
+  'stripRoot': '--stripRoot=true',
+  'skipCSVHeader': '--skipCSVHeader=true',
 }
 
 def main(argv=None) -> int:
@@ -149,6 +156,7 @@ def main(argv=None) -> int:
   parser.add_argument('--mode', choices=['cs', 'me'], help="Force 'cs' (co-simulation) or 'me' (model exchange) for FMUs that export both " "kinds (.fmu only)")
   parser.add_argument('--solver', choices=['euler', 'cvode'], help='Set the ODE solver for model-exchange FMUs (.fmu, mode=me only)')
   parser.add_argument('--stripRoot', action='store_true', help='Remove the root system prefix from exported signal names')
+  parser.add_argument('--skipCSVHeader', action='store_true', help='Skip the CSV delimiter row in the header of .csv result files (already the default)')
   parser.add_argument('--validate', action='store_true', help='Only validate the file against its schema; do not simulate')
   args = parser.parse_args(argv)
 
@@ -159,12 +167,13 @@ def main(argv=None) -> int:
   if not args.model.is_file():
     parser.error(f"File not found: {args.model}")
 
-  # --stripRoot is a global native flag; set it once here rather than threading it
-  # through FMU/SSP/SSD/InstantiatedModel. Just needs to happen before instantiate().
-  if args.stripRoot:
-    status = Capi.setCommandLineOption("--stripRoot=true")
-    if status != Status.ok:
-      raise RuntimeError(f"Failed to set --stripRoot: {status}")
+  # Global native flags; set them once here rather than threading them through
+  # FMU/SSP/SSD/InstantiatedModel. Must happen before instantiate().
+  for flag_name, option in _GLOBAL_FLAGS.items():
+    if getattr(args, flag_name):
+      status = Capi.setCommandLineOption(option)
+      if status != Status.ok:
+        raise RuntimeError(f"Failed to set {option}: {status}")
 
   handler(args.model, args)
   return 0
