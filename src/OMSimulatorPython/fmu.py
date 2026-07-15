@@ -89,10 +89,19 @@ class FMU:
     self._unitDefinitions = []
     self._enumerationDefinitions = []
     self.defaultExperiment = {}
+    self.appliedExperiment = {}
     self.apiCall = []
     self.instanceName = instanceName
     self.fmuInstantitated = False
     self.mode = None
+    # override the FMU's declared defaultExperiment; must be set before instantiate()
+    # since they need to reach the FMU's fmi2SetupExperiment call, not just the
+    # solver's own bookkeeping (setting them afterwards is too late for the FMU's
+    # own initial/first-sample state)
+    self.startTime = None
+    self.stopTime = None
+    self.tolerance = None
+    self.stepSize = None
     self._load_model_description()
 
   @property
@@ -522,6 +531,7 @@ class FMU:
     status = Capi.setCommandLineOption("--suppressPath=true")
     if status != Status.ok:
       raise RuntimeError(f"Failed to set command line option: {status}")
+
     status = Capi.setTempDirectory(tempfile.mkdtemp())
     if status != Status.ok:
       raise RuntimeError(f"Failed to set temp directory: {status}")
@@ -556,20 +566,36 @@ class FMU:
     if status != Status.ok:
       raise RuntimeError(f"Failed to set export name: {status}")
 
+    # Apply simulation settings (defaults, overridden by self.startTime/stopTime/tolerance/
+    # stepSize if set) *before* Capi.instantiate(). The underlying FMU's fmi2SetupExperiment
+    # call happens inside Capi.instantiate() and reads the model's startTime at that exact
+    # moment; setting it afterwards only updates the solver's own bookkeeping, not the FMU's
+    # actual initial/first-sample state.
+    self.appliedExperiment = {
+      'startTime': self.startTime if self.startTime is not None else self.defaultExperiment.get('startTime'),
+      'stopTime': self.stopTime if self.stopTime is not None else self.defaultExperiment.get('stopTime'),
+      'tolerance': self.tolerance if self.tolerance is not None else self.defaultExperiment.get('tolerance'),
+      'stepSize': self.stepSize if self.stepSize is not None else self.defaultExperiment.get('stepSize'),
+    }
+    status = Capi.setStartTime(self.instanceName, self.appliedExperiment['startTime'])
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set start time: {status}")
+    status = Capi.setStopTime(self.instanceName, self.appliedExperiment['stopTime'])
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set stop time: {status}")
+    status = Capi.setTolerance(self.instanceName, self.appliedExperiment['tolerance'])
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set tolerance: {status}")
+    status = Capi.setVariableStepSize(self.instanceName, 1e-6, 1e-12, self.appliedExperiment['stepSize'])
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set variable step size: {status}")
+
     status = Capi.instantiate(self.instanceName)
     if status != Status.ok:
       raise RuntimeError(f"Failed to instantiate model: {status}")
     self.fmuInstantitated = True
 
-    self.setDefaultExperiment()
-
     self.apiCall.append(f'oms.instantiate("{self.instanceName}")')
-
-  def setDefaultExperiment(self):
-    self.setStartTime(self.defaultExperiment.get('startTime'))
-    self.setStopTime(self.defaultExperiment.get('stopTime'))
-    self.setTolerance(self.defaultExperiment.get('tolerance'))
-    self.setStepSize(self.defaultExperiment.get('stepSize'))
 
   def setStartTime(self, startTime: float):
     if self.fmuInstantitated is False:

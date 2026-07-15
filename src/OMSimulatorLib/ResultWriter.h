@@ -75,8 +75,8 @@ namespace oms
     ResultWriter(unsigned int bufferSize);
     virtual ~ResultWriter();
 
-    unsigned int addSignal(const ComRef& name, const std::string& description, SignalType_t type);
-    void addParameter(const ComRef& name, const std::string& description, SignalType_t type, SignalValue_t value);
+    unsigned int addSignal(const ComRef& name, const std::string& description, SignalType_t type, bool exportNameUsed = false);
+    void addParameter(const ComRef& name, const std::string& description, SignalType_t type, SignalValue_t value, bool exportNameUsed = false);
 
     bool create(const std::string& filename, double startTime, double stopTime);
     void close();
