@@ -41,9 +41,11 @@
 #include "OMSimulator/Types.h"
 #include "DirectedGraph.h"
 
+#include <sundials/sundials_context.h>  /* SUNContext */
+#include <sundials/sundials_logger.h>   /* SUNLogger */
 #include <kinsol/kinsol.h>
 #include <nvector/nvector_serial.h>
-#include <sunlinsol/sunlinsol_dense.h>       /* Default dense linear solver */
+#include <sunlinsol/sunlinsol_dense.h>  /* Default dense linear solver */
 
 namespace oms
 {
@@ -75,6 +77,7 @@ namespace oms
     N_Vector fTmp;          /* Vector used for tmp computations */
 
     /* kinsol internal data */
+    SUNContext sunctx;      /* SUNDIALS simulation context */
     void* kinsolMemory;
     void* user_data;
     int size;
@@ -87,8 +90,8 @@ namespace oms
     /* member function */
     static int nlsKinsolJac(N_Vector u, N_Vector fu, SUNMatrix J, void *user_data, N_Vector tmp1, N_Vector tmp2);
     static int nlsKinsolResiduals(N_Vector u, N_Vector fval, void *user_data);
-    static void sundialsErrorHandlerFunction(int error_code, const char *module, const char *function, char *msg, void *user_data);
-    static void sundialsInfoHandlerFunction(const char *module, const char *function, char *msg, void *user_data);
+    static void sundialsErrorHandlerFunction(int line, const char *func, const char *file, const char *msg,
+                                             SUNErrCode err_code, void *err_user_data, SUNContext sunctx);
   };
 
   class AlgLoop

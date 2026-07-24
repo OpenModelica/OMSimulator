@@ -70,49 +70,28 @@ inline bool checkFlag(int flag, std::string functionName)
  * @param msg         Error Message.
  * @param user_data   Pointer to user data. Unused.
  */
-void oms::KinsolSolver::sundialsErrorHandlerFunction(int errorCode, const char *module,
-                                                     const char *function, char *msg,
-                                                     void *user_data)
+void oms::KinsolSolver::sundialsErrorHandlerFunction(int line, const char *func_name,
+                                                     const char *file, const char *msg,
+                                                     SUNErrCode err_code,
+                                                     void *err_user_data, SUNContext sunctx)
 {
   KINSOL_USER_DATA* kinsolUserData;
   std::string systNum = "unknown";
-  std::string mod = module;
-  std::string func = function;
+  std::string mod = std::string(file) + ":" + std::to_string(line);
+  std::string func = func_name;
 
-  if (user_data != NULL)
+  if (err_user_data != NULL)
   {
-    kinsolUserData = (KINSOL_USER_DATA *)user_data;
+    kinsolUserData = (KINSOL_USER_DATA *)err_user_data;
     systNum = std::to_string(kinsolUserData->algLoopNumber);
   }
 
-  logError("SUNDIALS_ERROR: [system] " + systNum + " [module] " + mod + " | [function] " + func
-           + " | [error_code] " + std::to_string(errorCode) + "\n" + std::string(msg));
-}
-
-/**
- * @brief Info handler function given to KINSOL.
- *
- * Will only print information when debug loging is active.
- *
- * @param module      Name of the module reporting the information.
- * @param function    Name of the function reporting the information.
- * @param msg         Message.
- * @param user_data   Pointer to user data. Unused.
- */
-void oms::KinsolSolver::sundialsInfoHandlerFunction(const char *module, const char *function,
-                                                    char *msg, void *user_data)
-{
-  KINSOL_USER_DATA* kinsolUserData;
-  std::string systNum = "unknown";
-  std::string mod = module;
-  std::string func = function;
-
-  if (user_data != NULL) {
-    kinsolUserData = (KINSOL_USER_DATA *)user_data;
-    systNum = std::to_string(kinsolUserData->algLoopNumber);
-  }
-
-  logDebug("SUNDIALS_INFO: [system] " + systNum + " [module] " + mod + " | [function] " + func + "\n" + std::string(msg));
+  /* Package level codes (KIN_* and friends) are not SUNErrCodes, so SUNGetErrMsg()
+     only makes sense when SUNDIALS did not supply a message - same rule as
+     SUNDIALS' own default handler. */
+  logError("SUNDIALS_ERROR: [system] " + systNum + " [at] " + mod + " | [function] " + func
+           + " | [error_code] " + std::to_string(err_code)
+           + "\n" + std::string(msg ? msg : SUNGetErrMsg(err_code)));
 }
 
 /**
@@ -285,6 +264,8 @@ oms::KinsolSolver::~KinsolSolver()
   SUNMatDestroy(this->J);
   N_VDestroy_Serial(this->y);
 
+  SUNContext_Free(&(this->sunctx));
+
   delete((KINSOL_USER_DATA*)(this->user_data));
 }
 
@@ -299,23 +280,46 @@ oms::KinsolSolver::~KinsolSolver()
 oms::KinsolSolver* oms::KinsolSolver::NewKinsolSolver(const int algLoopNum, const unsigned int size, double relativeTolerance, const bool useDirectionalDerivative)
 {
   int flag;
-  int printLevel;
   KinsolSolver* kinsolSolver = new KinsolSolver();
 
   logDebug("Create new KinsolSolver object for algebraic loop number " + std::to_string(algLoopNum));
 
   kinsolSolver->size = size;
 
+  /* Create the SUNDIALS context every other SUNDIALS object is created with */
+  if (SUNContext_Create(SUN_COMM_NULL, &kinsolSolver->sunctx) != SUN_SUCCESS)
+  {
+    logError("SUNDIALS_ERROR: SUNContext_Create() failed");
+    return NULL;
+  }
+
+  /* Mute SUNDIALS' own logger: since SUNDIALS 7 package level messages go to
+     stderr/stdout by default, and we report solver failures ourselves. */
+  {
+    SUNLogger logger = NULL;
+    if (SUNContext_GetLogger(kinsolSolver->sunctx, &logger) == SUN_SUCCESS && logger != NULL)
+    {
+      SUNLogger_SetErrorFilename(logger, "");
+      SUNLogger_SetWarningFilename(logger, "");
+    }
+  }
+
   /* Allocate memory */
-  kinsolSolver->initialGuess = N_VNew_Serial(kinsolSolver->size);
-  kinsolSolver->uScale = N_VNew_Serial(kinsolSolver->size);
-  kinsolSolver->fScale = N_VNew_Serial(kinsolSolver->size);
-  kinsolSolver->fTmp = N_VNew_Serial(kinsolSolver->size);
-  kinsolSolver->y = N_VNew_Serial(kinsolSolver->size);
+  kinsolSolver->initialGuess = N_VNew_Serial(kinsolSolver->size, kinsolSolver->sunctx);
+  kinsolSolver->uScale = N_VNew_Serial(kinsolSolver->size, kinsolSolver->sunctx);
+  kinsolSolver->fScale = N_VNew_Serial(kinsolSolver->size, kinsolSolver->sunctx);
+  kinsolSolver->fTmp = N_VNew_Serial(kinsolSolver->size, kinsolSolver->sunctx);
+  kinsolSolver->y = N_VNew_Serial(kinsolSolver->size, kinsolSolver->sunctx);
+  if (!kinsolSolver->initialGuess || !kinsolSolver->uScale || !kinsolSolver->fScale
+      || !kinsolSolver->fTmp || !kinsolSolver->y)
+  {
+    logError("SUNDIALS_ERROR: N_VNew_Serial() failed");
+    return NULL;
+  }
   kinsolSolver->kinsolMemory = NULL;
 
   /* Create KINSOL memory block */
-  kinsolSolver->kinsolMemory = KINCreate();
+  kinsolSolver->kinsolMemory = KINCreate(kinsolSolver->sunctx);
   if (kinsolSolver->kinsolMemory == NULL)
   {
     logError("SUNDIALS_ERROR: KINCreate() failed");
@@ -327,34 +331,29 @@ oms::KinsolSolver* oms::KinsolSolver::NewKinsolSolver(const int algLoopNum, cons
   flag = KINSetUserData(kinsolSolver->kinsolMemory, kinsolSolver->user_data);
   if (!checkFlag(flag, "KINSetUserData")) return NULL;
 
-  /* Set error handler and print level */
-  if (logDebugEnabled())
-  {
-    logDebug("SUNDIALS KINSOL: Set print level to maximum.");
-    printLevel = 3;
-  }
-  else
-  {
-    printLevel = 0;
-  }
-  flag = KINSetPrintLevel(kinsolSolver->kinsolMemory, printLevel);
-  if (!checkFlag(flag, "KINSetPrintLevel")) return NULL;
-
-  flag = KINSetErrHandlerFn(kinsolSolver->kinsolMemory, sundialsErrorHandlerFunction, kinsolSolver->user_data);
-  if (!checkFlag(flag, "KINSetErrHandlerFn")) return NULL;
-
-  flag = KINSetInfoHandlerFn(kinsolSolver->kinsolMemory, sundialsInfoHandlerFunction, kinsolSolver->user_data);
-  if (!checkFlag(flag, "KINSetInfoHandlerFn")) return NULL;
+  /* Set error handler. KINSOL's progress output goes through the SUNLogger */
+  flag = SUNContext_PushErrHandler(kinsolSolver->sunctx, sundialsErrorHandlerFunction, kinsolSolver->user_data);
+  if (!checkFlag(flag, "SUNContext_PushErrHandler")) return NULL;
 
   /* Initialize KINSOL object */
   flag = KINInit(kinsolSolver->kinsolMemory, nlsKinsolResiduals, kinsolSolver->initialGuess);
   if (!checkFlag(flag, "KINInit")) return NULL;
 
   /* Create matrix object */
-  kinsolSolver->J = SUNDenseMatrix(kinsolSolver->size, kinsolSolver->size);
+  kinsolSolver->J = SUNDenseMatrix(kinsolSolver->size, kinsolSolver->size, kinsolSolver->sunctx);
+  if (kinsolSolver->J == NULL)
+  {
+    logError("SUNDIALS_ERROR: SUNDenseMatrix() failed");
+    return NULL;
+  }
 
   /* Create linear solver object */
-  kinsolSolver->linSol = SUNLinSol_Dense(kinsolSolver->y, kinsolSolver->J);
+  kinsolSolver->linSol = SUNLinSol_Dense(kinsolSolver->y, kinsolSolver->J, kinsolSolver->sunctx);
+  if (kinsolSolver->linSol == NULL)
+  {
+    logError("SUNDIALS_ERROR: SUNLinSol_Dense() failed");
+    return NULL;
+  }
 
   /* Set linear solver */
   flag = KINSetLinearSolver(kinsolSolver->kinsolMemory, kinsolSolver->linSol, kinsolSolver->J);

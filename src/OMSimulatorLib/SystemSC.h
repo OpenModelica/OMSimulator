@@ -40,18 +40,20 @@
 #include "System.h"
 #include "OMSimulator/Types.h"
 
-#include <cvode/cvode.h>                  /* prototypes for CVODE fcts., consts. */
-#include <nvector/nvector_serial.h>       /* serial N_Vector types, fcts., macros */
-#include <sunlinsol/sunlinsol_dense.h>    /* Default dense linear solver */
+#include <sundials/sundials_context.h>  /* SUNContext */
+#include <sundials/sundials_logger.h>   /* SUNLogger */
+#include <cvode/cvode.h>                /* prototypes for CVODE fcts., consts. */
+#include <nvector/nvector_serial.h>     /* serial N_Vector types, fcts., macros */
+#include <sunlinsol/sunlinsol_dense.h>  /* Default dense linear solver */
 
 namespace oms
 {
   class Model;
   class ComponentFMUME;
   class Component;
-  int cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data);
-  int cvode_rhs_algebraic(realtype t, N_Vector y, N_Vector ydot, void* user_data);
-  int cvode_roots(realtype t, N_Vector y, realtype *gout, void* user_data);
+  int cvode_rhs(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
+  int cvode_rhs_algebraic(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
+  int cvode_roots(sunrealtype t, N_Vector y, sunrealtype *gout, void* user_data);
 
   class SystemSC : public System
   {
@@ -110,6 +112,7 @@ namespace oms
 
     struct SolverDataCVODE_t
     {
+      SUNContext sunctx;      /* SUNDIALS simulation context */
       void *mem;
       N_Vector y;
       SUNLinearSolver linSol; /* linear solver object */
@@ -124,9 +127,9 @@ namespace oms
       SolverDataCVODE_t cvode;
     } solverData;
 
-    friend int oms::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data);
-    friend int oms::cvode_rhs_algebraic(realtype t, N_Vector y, N_Vector ydot, void* user_data);
-    friend int oms::cvode_roots(realtype t, N_Vector y, realtype *gout, void* user_data);
+    friend int oms::cvode_rhs(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
+    friend int oms::cvode_rhs_algebraic(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
+    friend int oms::cvode_roots(sunrealtype t, N_Vector y, sunrealtype *gout, void* user_data);
   };
 }
 
