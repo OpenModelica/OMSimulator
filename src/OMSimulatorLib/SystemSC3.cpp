@@ -361,6 +361,8 @@ oms_status_enu_t oms::SystemSC3::initialize()
       {
         SUNLogger_SetErrorFilename(logger, "");
         SUNLogger_SetWarningFilename(logger, "");
+        SUNLogger_SetInfoFilename(logger, "");
+        SUNLogger_SetDebugFilename(logger, "");
       }
     }
 
