@@ -293,14 +293,15 @@ oms::KinsolSolver* oms::KinsolSolver::NewKinsolSolver(const int algLoopNum, cons
     return NULL;
   }
 
-  /* Mute SUNDIALS' own logger: since SUNDIALS 7 package level messages go to
-     stderr/stdout by default, and we report solver failures ourselves. */
+  /* Mute SUNDIALS' own output, use OMSimulator's logger */
   {
     SUNLogger logger = NULL;
     if (SUNContext_GetLogger(kinsolSolver->sunctx, &logger) == SUN_SUCCESS && logger != NULL)
     {
       SUNLogger_SetErrorFilename(logger, "");
       SUNLogger_SetWarningFilename(logger, "");
+      SUNLogger_SetInfoFilename(logger, "");
+      SUNLogger_SetDebugFilename(logger, "");
     }
   }
 
