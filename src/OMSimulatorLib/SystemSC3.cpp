@@ -43,9 +43,23 @@
 #include "ssd/Tags.h"
 
 #include <algorithm>
+#include <cmath>
 #include <cstring>
+#include <limits>
 #include <sstream>
 #include <iostream>
+
+// Smallest interval CVODE is willing to integrate over. CVODE rejects any call
+// with |tout - tn| < 2*uround*max(|tn|,|tout|) and returns CV_TOO_CLOSE. Up to
+// SUNDIALS 5.4.0 that check was part of the initial step size heuristic (cvHin)
+// and therefore skipped whenever CVodeSetInitStep() was used, which OMSimulator
+// always does; since SUNDIALS 7.x it is checked unconditionally on the first
+// step after CVodeInit()/CVodeReInit(). Use a slightly larger margin than CVODE
+// so we never hand it an interval it refuses.
+static double cvodeTooCloseTolerance(double t1, double t2)
+{
+  return 10.0 * std::numeric_limits<double>::epsilon() * std::max(std::fabs(t1), std::fabs(t2));
+}
 
 int oms::cvode_rhs3(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
@@ -847,24 +861,40 @@ oms_status_enu_t oms::SystemSC3::doStepCVODE()
 
   while (time < end_time)
   {
-    logDebug("CVode: " + std::to_string(time) + " -> " + std::to_string(end_time));
-    for (size_t j=0, k=0; j < fmus.size(); ++j)
-      for (size_t i=0; i < nStates[j]; ++i, ++k)
-        NV_Ith_S(solverData.cvode.y, k) = states[j][i];
+    const fmi3Float64 tout = std::min(tnext, end_time);
 
-    flag = CVode(solverData.cvode.mem, std::min(tnext, end_time), solverData.cvode.y, &time, CV_NORMAL);
-
-    for (size_t i = 0, j=0; i < fmus.size(); ++i)
+    // An event that lands within a few ULPs of tout leaves an interval behind
+    // that is pure floating point noise. Snap to tout instead of asking CVODE
+    // to integrate it, which it would reject with CV_TOO_CLOSE.
+    if (tout - time <= cvodeTooCloseTolerance(time, tout))
     {
-      if (0 == nStates[i])
-        continue;
+      logDebug("CVode: skipping negligible interval " + std::to_string(time) + " -> " + std::to_string(tout));
+      time = tout;
+      if (time != tnext)
+        break; // nothing left to integrate for this step
+      flag = CV_SUCCESS; // the time event at tnext is handled below
+    }
+    else
+    {
+      logDebug("CVode: " + std::to_string(time) + " -> " + std::to_string(tout));
+      for (size_t j=0, k=0; j < fmus.size(); ++j)
+        for (size_t i=0; i < nStates[j]; ++i, ++k)
+          NV_Ith_S(solverData.cvode.y, k) = states[j][i];
 
-      for (size_t k = 0; k < nStates[i]; k++, j++)
-        states[i][k] = NV_Ith_S(solverData.cvode.y, j);
+      flag = CVode(solverData.cvode.mem, tout, solverData.cvode.y, &time, CV_NORMAL);
 
-      // set states
-      status = fmus[i]->setContinuousStates(states[i]);
-      if (oms_status_ok != status) return status;
+      for (size_t i = 0, j=0; i < fmus.size(); ++i)
+      {
+        if (0 == nStates[i])
+          continue;
+
+        for (size_t k = 0; k < nStates[i]; k++, j++)
+          states[i][k] = NV_Ith_S(solverData.cvode.y, j);
+
+        // set states
+        status = fmus[i]->setContinuousStates(states[i]);
+        if (oms_status_ok != status) return status;
+      }
     }
 
     if (flag == CV_ROOT_RETURN || time == tnext)
