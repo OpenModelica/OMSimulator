@@ -895,9 +895,7 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
     {
       logDebug("CVode: skipping negligible interval " + std::to_string(time) + " -> " + std::to_string(tout));
       time = tout;
-      if (time != tnext)
-        break; // nothing left to integrate for this step
-      flag = CV_SUCCESS; // the time event at tnext is handled below
+      flag = CV_SUCCESS; // handled below, either as a time event or as a completed step
     }
     else
     {
