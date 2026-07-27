@@ -14,7 +14,6 @@
 
 import sys
 import os
-import git
 import re
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -58,10 +57,21 @@ copyright = u'2017, Lennart Ochel'
 release = '?.?'
 version = '?.?'
 # The full version, including alpha/beta/rc tags.
-if os.path.exists('../../../.git'):
-  r = git.repo.Repo('../../..')
-  release = r.git.describe(["--tags", "--abbrev=7", "--match=v*.*", "--exclude=*-dev"]).replace('-', '.post', 1)
-  version = r.git.describe(["--tags", "--abbrev=7", "--match=v*.*", "--exclude=*-dev"]).replace('-', '.post', 1)
+# version.txt takes precedence over git, just like in the top level
+# CMakeLists.txt. It lets the CI resolve the version outside of the build
+# containers, which have no access to the git repository they were cloned from.
+_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+if os.path.exists(os.path.join(_root, 'version.txt')):
+  with open(os.path.join(_root, 'version.txt')) as f:
+    release = version = f.read().strip()
+elif os.path.exists(os.path.join(_root, '.git')):
+  try:
+    import git
+    r = git.repo.Repo(_root)
+    release = version = r.git.describe(["--tags", "--abbrev=7", "--match=v*.*", "--exclude=*-dev"]).replace('-', '.post', 1)
+  except Exception as e:
+    # Don't fail the whole documentation build just because git is unhappy.
+    print("Warning: Failed to get version from git: %s" % e, file=sys.stderr)
 
 open("releaselink.inc", "w").write("Version: %s" % version)
 

@@ -14,16 +14,37 @@ pipeline {
     string(name: 'RUNTESTS_FLAG', defaultValue: '', description: 'runtests.pl flag')
   }
   stages {
-    stage('check') {
-      when {
-        changeRequest()
-        beforeAgent true
-      }
-      agent {
-        label 'linux'
-      }
-      steps {
-        submoduleNoChange("3rdParty")
+    stage('pre-build') {
+      parallel {
+        stage('check') {
+          when {
+            changeRequest()
+            beforeAgent true
+          }
+          agent {
+            label 'linux'
+          }
+          steps {
+            submoduleNoChange("3rdParty")
+          }
+        }
+        stage('version') {
+          agent {
+            label 'linux'
+          }
+          steps {
+            script {
+              // The build containers have no access to the git reference repository
+              // (/var/lib/jenkins/gitcache/OMSimulator.git), so every git command run
+              // inside them fails. Resolve the version once here, outside of any
+              // container, and hand it to the builds via version.txt / env.OMS_VERSION.
+              sh 'git fetch --tags'
+              def version = sh(returnStdout: true, script: "git describe --tags --abbrev=7 --match='v*.*' --exclude='*-dev' | sed 's/-/.post/'").trim()
+              env.OMS_VERSION = version ?: 'unknown'
+            }
+            echo "OMSimulator version: ${env.OMS_VERSION}"
+          }
+        }
       }
     }
     stage('build-in-parallel') {
@@ -91,10 +112,10 @@ pipeline {
             partest()
             junit 'testsuite/partest/result.xml'
 
-            sh '(cd install/ && tar czf "../OMSimulator-linux-amd64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.tar.gz" *)'
+            sh "(cd install/ && tar czf '../OMSimulator-linux-amd64-${env.OMS_VERSION}.tar.gz' *)"
 
             sh 'cmake --build build/ --target install-docs'
-            sh '(cd install/share/doc && zip -r "../../../OMSimulator-doc-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *)'
+            sh "(cd install/share/doc && zip -r '../../../OMSimulator-doc-${env.OMS_VERSION}.zip' *)"
 
             archiveArtifacts artifacts: 'OMSimulator-doc*.zip,OMSimulator-linux-amd64-*.tar.gz', fingerprint: true
             stash name: 'amd64-zip', includes: "OMSimulator-linux-amd64-*.tar.gz"
@@ -114,7 +135,7 @@ pipeline {
           }
           steps {
             buildOMS()
-            sh '(cd install/ && tar czf "../OMSimulator-linux-jammy-amd64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.tar.gz" *)'
+            sh "(cd install/ && tar czf '../OMSimulator-linux-jammy-amd64-${env.OMS_VERSION}.tar.gz' *)"
 
             archiveArtifacts artifacts: 'OMSimulator-linux-jammy-amd64-*.tar.gz', fingerprint: true
             stash name: 'jammy-amd64-zip', includes: "OMSimulator-linux-jammy-amd64-*.tar.gz"
@@ -154,9 +175,7 @@ pipeline {
               }
               steps {
                 buildOMS()
-                sh '''
-                (cd install/ && zip -r "../OMSimulator-osx-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *)
-                '''
+                sh "(cd install/ && zip -r '../OMSimulator-osx-${env.OMS_VERSION}.zip' *)"
 
                 archiveArtifacts "OMSimulator-osx-*.zip"
                 stash name: 'osx-zip', includes: "OMSimulator-osx-*.zip"
@@ -202,7 +221,7 @@ pipeline {
                 set -x -e
                 export PATH="/c/Program Files/TortoiseSVN/bin/:/c/bin/jdk/bin:/c/bin/nsis/:\$PATH:/c/bin/git/bin:/c/Program Files/Git/bin"
                 cd "${env.WORKSPACE}/install/"
-                zip -r "../OMSimulator-mingw-ucrt64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed 's/-/.post/'`.zip" *
+                zip -r "../OMSimulator-mingw-ucrt64-${env.OMS_VERSION}.zip" *
                 """
 
                 bat """
@@ -285,11 +304,12 @@ EXIT /b 1
               }
               steps {
                 bat 'hostname'
+                writeVersionFile()
                 writeFile file: "buildZip.sh", text: """#!/bin/sh
 set -x -e
 export PATH="/c/Program Files/TortoiseSVN/bin/:/c/Program Files/Git/bin/:/c/bin/jdk/bin:/c/bin/nsis/:\$PATH:/c/bin/git/bin:/c/Program Files/Git/bin"
 cd "${env.WORKSPACE}/install/"
-zip -r "../OMSimulator-win64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed 's/-/.post/'`.zip" *
+zip -r "../OMSimulator-win64-${env.OMS_VERSION}.zip" *
 """
 
                 retry(2) { bat """
@@ -521,7 +541,20 @@ def isMac() {
   return false
 }
 
+/* Provide the version to CMake without running git.
+ * CMake prefers version.txt over `git describe`, which can't work inside the
+ * build containers because the git reference repository they were cloned from
+ * isn't visible there.
+ */
+void writeVersionFile() {
+  if (!env.OMS_VERSION) {
+    error("env.OMS_VERSION is not set, the 'version' stage has to run before building.")
+  }
+  writeFile file: 'version.txt', text: "${env.OMS_VERSION}\n"
+}
+
 void buildOMS(extraCMakeArgs='') {
+  writeVersionFile()
   if (isWindows()) {
     bat ("""
      If Defined LOCALAPPDATA (echo LOCALAPPDATA: %LOCALAPPDATA%) Else (Set "LOCALAPPDATA=C:\\Users\\OpenModelica\\AppData\\Local")
@@ -546,7 +579,6 @@ void buildOMS(extraCMakeArgs='') {
   } else {
     echo "running on node: ${env.NODE_NAME}"
     def nproc = numPhysicalCPU()
-    sh "git fetch --tags"
     if (isMac()) {
       sh("""#!/bin/zsh -l
        cmake -S . -B build/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/ -DOMS_ENABLE_TESTSUITE:BOOL=ON ${extraCMakeArgs}
