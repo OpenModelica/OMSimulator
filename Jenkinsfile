@@ -14,33 +14,37 @@ pipeline {
     string(name: 'RUNTESTS_FLAG', defaultValue: '', description: 'runtests.pl flag')
   }
   stages {
-    stage('check') {
-      when {
-        changeRequest()
-        beforeAgent true
-      }
-      agent {
-        label 'linux'
-      }
-      steps {
-        submoduleNoChange("3rdParty")
-      }
-    }
-    stage('version') {
-      agent {
-        label 'linux'
-      }
-      steps {
-        script {
-          // The build containers have no access to the git reference repository
-          // (/var/lib/jenkins/gitcache/OMSimulator.git), so every git command run
-          // inside them fails. Resolve the version once here, outside of any
-          // container, and hand it to the builds via version.txt / env.OMS_VERSION.
-          sh 'git fetch --tags'
-          def version = sh(returnStdout: true, script: "git describe --tags --abbrev=7 --match='v*.*' --exclude='*-dev' | sed 's/-/.post/'").trim()
-          env.OMS_VERSION = version ?: 'unknown'
+    stage('pre-build') {
+      parallel {
+        stage('check') {
+          when {
+            changeRequest()
+            beforeAgent true
+          }
+          agent {
+            label 'linux'
+          }
+          steps {
+            submoduleNoChange("3rdParty")
+          }
         }
-        echo "OMSimulator version: ${env.OMS_VERSION}"
+        stage('version') {
+          agent {
+            label 'linux'
+          }
+          steps {
+            script {
+              // The build containers have no access to the git reference repository
+              // (/var/lib/jenkins/gitcache/OMSimulator.git), so every git command run
+              // inside them fails. Resolve the version once here, outside of any
+              // container, and hand it to the builds via version.txt / env.OMS_VERSION.
+              sh 'git fetch --tags'
+              def version = sh(returnStdout: true, script: "git describe --tags --abbrev=7 --match='v*.*' --exclude='*-dev' | sed 's/-/.post/'").trim()
+              env.OMS_VERSION = version ?: 'unknown'
+            }
+            echo "OMSimulator version: ${env.OMS_VERSION}"
+          }
+        }
       }
     }
     stage('build-in-parallel') {
