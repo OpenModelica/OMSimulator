@@ -141,8 +141,8 @@ namespace oms
     Flag FlagInitialStepSize{"--initialStepSize", "", "", "1e-6", "Specify the initial step size", re_double, nullptr, false, false, false};
     Flag FlagInputExtrapolation{"--inputExtrapolation", "", "", "false", "Enable input extrapolation using derivative information", re_bool, nullptr, false, false, false};
     Flag FlagIntervals{"--intervals", "-i", "", "500", "Specify the number of communication points (arg > 1)", re_number, nullptr, false, false, false};
-    Flag FlagLogFile{"--logFile", "-l", "", "", "Specify the log file (stdout is used if no log file is specified)", re_default, nullptr, false, false, false};
-    Flag FlagLogLevel{"--logLevel", "", "", "0", "Set the log level (0: default, 1: debug, 2: debug+trace)", re_number, nullptr, false, false, false};
+    Flag FlagLogFile{"--logFile", "-l", "", "", "Specify the log file (stdout is used if no log file is specified)", re_default, Flags::LogFile, false, false, false};
+    Flag FlagLogLevel{"--logLevel", "", "", "0", "Set the log level (0: default, 1: debug, 2: debug+trace)", re_number, Flags::LogLevel, false, false, false};
     Flag FlagMasterAlgorithm{"--master", "", "", "ma", "Specify the master algorithm (ma)", re_default, nullptr, false, false, false};
     Flag FlagMaxEventIteration{"--maxEventIteration", "", "", "100", "Specify the maximum number of iterations for handling a single event", re_number, nullptr, false, false, false};
     Flag FlagMaxLoopIteration{"--maxLoopIteration", "", "", "10", "Specify the maximum number of iterations for solving algebraic loops between system-level components. Internal algebraic loops of components are not affected.", re_number, nullptr, false, false, false};
@@ -219,6 +219,8 @@ namespace oms
     static oms_status_enu_t ClearAllOptions(const std::string &value);
     static oms_status_enu_t Filename(const std::string &value);
     static oms_status_enu_t Help(const std::string &value);
+    static oms_status_enu_t LogFile(const std::string &value);
+    static oms_status_enu_t LogLevel(const std::string &value);
     static oms_status_enu_t Version(const std::string &value);
   };
 }
