@@ -72,5 +72,5 @@ for time, values in groups:
 ##   time=6: counter = 6 -> 7
 ##   time=7: counter = 7 -> 8
 ##   time=8: counter = 8 -> 9
-##   time=9: counter = 9 -> 10 -> 10
+##   time=9: counter = 9 -> 10
 ## endResult
