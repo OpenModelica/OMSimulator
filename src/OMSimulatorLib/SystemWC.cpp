@@ -493,8 +493,11 @@ oms_status_enu_t oms::SystemWC::doStep()
       bool emitted;
       if (isTopLevelSystem())
         getModel().emit(time, false, &emitted);
-      updateInputs(eventGraph);
-      if (isTopLevelSystem())
+      // updating the inputs is the only thing that can happen at a communication
+      // point of a co-simulation, so only then a rhs needs to be emitted
+      bool inputsChanged = false;
+      updateInputs(eventGraph, &inputsChanged);
+      if (isTopLevelSystem() && inputsChanged)
         getModel().emit(time, emitted);
 
       rollBackIt = 0;
@@ -624,8 +627,10 @@ oms_status_enu_t oms::SystemWC::doStep()
         bool emitted;
         if (isTopLevelSystem())
           getModel().emit(time, false, &emitted);
-        updateInputs(eventGraph);
-        if (isTopLevelSystem())
+        // see above: only a changed input introduces a discontinuity here
+        bool inputsChanged = false;
+        updateInputs(eventGraph, &inputsChanged);
+        if (isTopLevelSystem() && inputsChanged)
           getModel().emit(time, emitted);
       }
     }
@@ -823,11 +828,14 @@ oms_status_enu_t oms::SystemWC::getInputAndOutput(oms::DirectedGraph& graph, std
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::SystemWC::updateInputs(oms::DirectedGraph& graph)
+oms_status_enu_t oms::SystemWC::updateInputs(oms::DirectedGraph& graph, bool* changed)
 {
   CallClock callClock(clock);
   oms_status_enu_t status;
   int loopNum = 0;
+
+  if (changed)
+    *changed = false;
 
   // input := output
   const std::vector<scc_t>& sortedConnections = graph.getSortedConnections();
@@ -856,6 +864,14 @@ oms_status_enu_t oms::SystemWC::updateInputs(oms::DirectedGraph& graph)
         if (sortedConnections[i].linearTransformation.isSet)
           value = sortedConnections[i].linearTransformation.factor*value + sortedConnections[i].linearTransformation.offset;
 
+        // only worth asking as long as no other connection reported a change already
+        if (changed && !*changed)
+        {
+          double oldValue = 0.0;
+          if (oms_status_ok == getReal(graph.getNodes()[input].getName(), oldValue) && oldValue != value)
+            *changed = true;
+        }
+
         if (oms_status_ok != setReal(graph.getNodes()[input].getName(), value)) return oms_status_error;
 
         // derivatives
@@ -873,12 +889,28 @@ oms_status_enu_t oms::SystemWC::updateInputs(oms::DirectedGraph& graph)
       {
         int value = 0.0;
         if (oms_status_ok != getInteger(graph.getNodes()[output].getName(), value)) return oms_status_error;
+
+        if (changed && !*changed)
+        {
+          int oldValue = 0;
+          if (oms_status_ok == getInteger(graph.getNodes()[input].getName(), oldValue) && oldValue != value)
+            *changed = true;
+        }
+
         if (oms_status_ok != setInteger(graph.getNodes()[input].getName(), value)) return oms_status_error;
       }
       else if (graph.getNodes()[input].getType() == oms_signal_type_boolean)
       {
         bool value = 0.0;
         if (oms_status_ok != getBoolean(graph.getNodes()[output].getName(), value)) return oms_status_error;
+
+        if (changed && !*changed)
+        {
+          bool oldValue = false;
+          if (oms_status_ok == getBoolean(graph.getNodes()[input].getName(), oldValue) && oldValue != value)
+            *changed = true;
+        }
+
         if (oms_status_ok != setBoolean(graph.getNodes()[input].getName(), value)) return oms_status_error;
       }
       else
@@ -893,6 +925,10 @@ oms_status_enu_t oms::SystemWC::updateInputs(oms::DirectedGraph& graph)
         return status;
       }
       loopNum++;
+
+      // the loop solver sets the inputs itself, so assume it changed something
+      if (changed)
+        *changed = true;
     }
   }
   return oms_status_ok;
