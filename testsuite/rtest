@@ -74,7 +74,7 @@ $pager="cat";
 $diffcmd="diff -U 5 -w";
 $dwdiffcmd="dwdiff '-d()' -l -C 3 -c -L";
 $log="";
-$test_id = int(rand(9999));
+$test_id = $$ . "_" . int(rand(9999));
 my $username = ( $^O ne 'MSWin32' ? getpwuid($<) : undef )
           || getlogin()
           || $ENV{'USER'}
