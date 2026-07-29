@@ -1,12 +1,12 @@
-TEST = ../rtest -v
+TEST = ../../../rtest -v
 
 TESTFILES = \
-BouncingBall.py \
-Dahlquist.py \
-Feedthrough.py \
-Resource.py \
-Stair.py \
-VanDerPol.py \
+BouncingBall-me.py \
+Dahlquist-me.py \
+Feedthrough-me.py \
+Resource-me.py \
+Stair-me.py \
+VanDerPol-me.py \
 
 # Run make failingtest
 FAILINGTESTFILES = \

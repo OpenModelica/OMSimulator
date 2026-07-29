@@ -1,15 +1,17 @@
-TEST = ../rtest -v
+TEST = ../../../rtest -v
 
 TESTFILES = \
-connectFmi2AndFmi3.py \
-FeedthroughConnections.py \
-FeedthroughSetValue1.py \
-FeedthroughSetValue2.py \
+BouncingBall-cs.py \
+Dahlquist-cs.py \
+Feedthrough-cs.py \
+Resource-cs.py \
+Stair-cs.py \
+VanDerPol-cs.py \
 
 # Run make failingtest
 FAILINGTESTFILES = \
 
-# Dependency files that are not .lua or Makefile
+# Dependency files that are not .py or Makefile
 # Add them here or they will be cleaned.
 DEPENDENCIES = \
 *.py \

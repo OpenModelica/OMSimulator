@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command: rm -rf SimpleSimulation10.ssp SimpleSimulation10_res.mat parameters2.ssv
+## teardown_command: rm -rf SimpleSimulation10.ssp SimpleSimulation10_res.mat parameters2.ssv parameters3.ssv parameters4.ssv parameters5.ssv
 ## linux: yes
 ## ucrt64: yes
 ## win: yes

@@ -1,17 +1,17 @@
-TEST = ../../rtest -v
+TEST = ../../../rtest -v
 
 TESTFILES = \
-BouncingBall.py \
-VanDerPol.py \
-Stair.py \
-Feedthrough.py \
-Dahlquist.py \
-Resource.py \
+BouncingBall-me.py \
+Dahlquist-me.py \
+Feedthrough-me.py \
+Resource-me.py \
+Stair-me.py \
+VanDerPol-me.py \
 
 # Run make failingtest
 FAILINGTESTFILES = \
 
-# Dependency files that are not .lua or Makefile
+# Dependency files that are not .py or Makefile
 # Add them here or they will be cleaned.
 DEPENDENCIES = \
 *.py \
