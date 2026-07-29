@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command:
+## teardown_command: rm -rf Gain_res.mat
 ## linux: yes
 ## ucrt64: yes
 ## win: yes

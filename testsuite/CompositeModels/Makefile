@@ -1,4 +1,4 @@
-TEST = ../../rtest -v
+TEST = ../rtest -v
 
 TESTFILES = \
 connectFmi2AndFmi3.py \
