@@ -1,43 +1,23 @@
 ## status: correct
-## teardown_command: rm -rf Resource-cs3.mat Resource-me3.mat
+## teardown_command: rm -rf Resource-me3.mat
 ## linux: yes
 ## ucrt64: yes
 ## win: yes
 ## asan: no
 
-
 from OMSimulator import SSP, CRef, Settings
 Settings.suppressPath = True
 
 model = SSP()
-model.addResource('../../resources/Resource3.fmu', new_name='resources/Resource3.fmu')
+model.addResource('../../../resources/Resource3.fmu', new_name='resources/Resource3.fmu')
 
 model.addComponent(CRef('default', 'Resource'), 'resources/Resource3.fmu')
 
+solver = {'name' : 'solver',  'method': 'cvode', 'tolerance': 1e-4}
+model.newSolver(solver)
+model.setSolver(CRef('default', 'Resource'), 'solver')
+
 instantiated_model = model.instantiate()
-instantiated_model.setResultFile("Resource-cs3.mat")
-
-instantiated_model.setStopTime(10.0)
-instantiated_model.setTolerance(1e-5)
-
-instantiated_model.initialize()
-instantiated_model.simulate()
-
-print(f"info:    Resource.y: {instantiated_model.getValue(CRef('default', 'Resource', 'y'))}", flush=True)
-
-instantiated_model.terminate()
-instantiated_model.delete()
-
-model2 = SSP()
-model2.addResource('../../resources/Resource3.fmu', new_name='resources/Resource3.fmu')
-
-model2.addComponent(CRef('default', 'Resource'), 'resources/Resource3.fmu')
-
-solver2 = {'name' : 'solver2',  'method': 'cvode', 'tolerance': 1e-4}
-model2.newSolver(solver2)
-model2.setSolver(CRef('default', 'Resource'), 'solver2')
-
-instantiated_model = model2.instantiate()
 instantiated_model.setResultFile("Resource-me3.mat")
 
 instantiated_model.setStopTime(10.0)
@@ -52,9 +32,6 @@ instantiated_model.terminate()
 instantiated_model.delete()
 
 ## Result:
-## Loading FMI version 3...
-## info:    Result file: Resource-cs3.mat (bufferSize=10)
-## info:    Resource.y: 97
 ## Loading FMI version 3...
 ## info:    model doesn't contain any continuous state
 ## info:    maximum step size for 'model.root': 0.001000

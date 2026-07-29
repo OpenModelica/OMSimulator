@@ -2,7 +2,7 @@
 
 all: difftool resources test
 
-test: api.log parker.log AircraftVehicleDemonstrator.log CompositeModels.log dcmotor.log simulation.log reference-fmus.log reference-fmus3.log
+test: api.log parker.log AircraftVehicleDemonstrator.log CompositeModels.log dcmotor.log simulation.log reference-fmus-2-cs.log reference-fmus-2-me.log reference-fmus-3-cs.log reference-fmus-3-me.log
 
 partest: difftool resources
 	cd partest && time ./runtests.pl -nocolour -with-xml
@@ -37,10 +37,18 @@ simulation.log: difftool
 	@$(MAKE) -C simulation -f Makefile test > $@
 	@grep == simulation.log
 
-reference-fmus.log: difftool
-	@$(MAKE) -C reference-fmus -f Makefile test > $@
-	@grep == reference-fmus.log
+reference-fmus-2-cs.log: difftool
+	@$(MAKE) -C reference-fmus/2.0/cs -f Makefile test > $@
+	@grep == reference-fmus-2-cs.log
 
-reference-fmus3.log: difftool
-	@$(MAKE) -C reference-fmus/3.0 -f Makefile test > $@
-	@grep == reference-fmus3.log
+reference-fmus-2-me.log: difftool
+	@$(MAKE) -C reference-fmus/2.0/me -f Makefile test > $@
+	@grep == reference-fmus-2-me.log
+
+reference-fmus-3-cs.log: difftool
+	@$(MAKE) -C reference-fmus/3.0/cs -f Makefile test > $@
+	@grep == reference-fmus-3-cs.log
+
+reference-fmus-3-me.log: difftool
+	@$(MAKE) -C reference-fmus/3.0/me -f Makefile test > $@
+	@grep == reference-fmus-3-me.log
