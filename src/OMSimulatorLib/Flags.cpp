@@ -289,6 +289,16 @@ oms_status_enu_t oms::Flags::Help(const std::string &value)
   return oms_status_ok;
 }
 
+oms_status_enu_t oms::Flags::LogFile(const std::string &value)
+{
+  return oms::Log::SetLogFile(value);
+}
+
+oms_status_enu_t oms::Flags::LogLevel(const std::string &value)
+{
+  return oms::Log::SetLoggingLevel(std::stoi(value));
+}
+
 oms_status_enu_t oms::Flags::Version(const std::string &value)
 {
   std::cout << oms_getVersion() << std::endl;
