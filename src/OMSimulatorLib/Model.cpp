@@ -1408,10 +1408,10 @@ oms_status_enu_t oms::Model::emit(double time, bool force, bool* emitted)
     return oms_status_ok;
   if (!force && time < lastEmit + loggingInterval)
     return oms_status_ok;
-  if (time <= lastEmit)
+  if (!force && time <= lastEmit)
     return oms_status_ok;
 
-  // Skip rhs of events if --emitEvents=true
+  // Skip rhs of events unless --emitEvents=true
   if (!Flags::EmitEvents() && lastEmit == time)
     return oms_status_ok;
 
