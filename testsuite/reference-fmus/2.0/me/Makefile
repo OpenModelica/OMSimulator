@@ -6,6 +6,7 @@ Dahlquist-me.py \
 Feedthrough-me.py \
 Resource-me.py \
 Stair-me.py \
+Stair-me-events.py \
 VanDerPol-me.py \
 
 # Run make failingtest

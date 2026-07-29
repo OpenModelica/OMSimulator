@@ -44,9 +44,24 @@
 #include "ssd/Tags.h"
 
 #include <algorithm>
+#include <cmath>
 #include <cstring>
 #include <sstream>
 #include <iostream>
+
+namespace
+{
+  /// The output grid is accumulated in floating-point arithmetic, so a grid
+  /// point can end up a few ulp (Unit in the Last Place) away from an exact
+  /// event time. Both would be written to the result file, leaving a redundant
+  /// data point right next to the event, so let the event time win whenever the
+  /// two are that close.
+  void snapToEventTime(fmi2Real& endTime, fmi2Real eventTime)
+  {
+    if (fabs(endTime - eventTime) <= 1e-12 * (1.0 + fabs(endTime)))
+      endTime = eventTime;
+  }
+}
 
 int oms::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
@@ -595,7 +610,7 @@ oms_status_enu_t oms::SystemSC::doStepEuler()
   oms_status_enu_t status;
 
   // Step 1: Initialize state variables and time
-  const fmi2Real end_time = std::min(time + maximumStepSize, getModel().getStopTime());
+  fmi2Real end_time = std::min(time + maximumStepSize, getModel().getStopTime());
   const fmi2Real event_time_tolerance = 1e-4;
 
   logDebug("doStepEuler: " + std::to_string(time) + " -> " + std::to_string(end_time));
@@ -631,7 +646,6 @@ oms_status_enu_t oms::SystemSC::doStepEuler()
   }
 
   fmi2Real step_size_adjustment = maximumStepSize;
-  fmi2Real event_time = end_time;
   bool event_detected = false;
 
   fmi2Real tnext = end_time + 1.0;
@@ -648,6 +662,9 @@ oms_status_enu_t oms::SystemSC::doStepEuler()
       terminated = true;
     }
   }
+  snapToEventTime(end_time, tnext);
+
+  fmi2Real event_time = end_time;
 
   // Step 3: Main integration loop
   while (time < end_time && !terminated)
@@ -817,7 +834,7 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
   oms_status_enu_t status;
   int flag;
 
-  const fmi2Real end_time = std::min(time + maximumStepSize, getModel().getStopTime());
+  fmi2Real end_time = std::min(time + maximumStepSize, getModel().getStopTime());
 
   // find next time event
   fmi2Real tnext = end_time+1.0;
@@ -833,6 +850,7 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
       time = end_time;
     }
   }
+  snapToEventTime(end_time, tnext);
   logDebug("tnext: " + std::to_string(tnext));
 
   while (time < end_time)
