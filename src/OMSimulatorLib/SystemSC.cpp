@@ -44,9 +44,7 @@
 #include "ssd/Tags.h"
 
 #include <algorithm>
-#include <cmath>
 #include <cstring>
-#include <limits>
 #include <sstream>
 #include <iostream>
 
@@ -874,12 +872,14 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
 
   while (time < end_time)
   {
-    logDebug("CVode: " + std::to_string(time) + " -> " + std::to_string(end_time));
+    const fmi3Float64 tout = std::min(tnext, end_time);
+
+    logDebug("CVode: " + std::to_string(time) + " -> " + std::to_string(tout));
     for (size_t j=0, k=0; j < fmus.size(); ++j)
       for (size_t i=0; i < nStates[j]; ++i, ++k)
         NV_Ith_S(solverData.cvode.y, k) = states[j][i];
 
-    flag = CVode(solverData.cvode.mem, std::min(tnext, end_time), solverData.cvode.y, &time, CV_NORMAL);
+    flag = CVode(solverData.cvode.mem, tout, solverData.cvode.y, &time, CV_NORMAL);
 
     for (size_t i = 0, j=0; i < fmus.size(); ++i)
     {
