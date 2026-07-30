@@ -90,5 +90,6 @@ if(OMS_ENABLE_PIP)
 endif()
 
 if(OMS_ENABLE_TESTSUITE)
+  include(CTest)
   add_subdirectory(testsuite)
 endif()
