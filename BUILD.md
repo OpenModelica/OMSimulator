@@ -123,3 +123,41 @@ By default the testsuite is not enabled by the cmake build. To enable the testsu
 
    See [testsuite/README.md](testsuite/README.md) for running a subset of the tests and for
    updating the expected results.
+
+## Code Coverage
+
+Coverage of the OMSimulator C++ sources, measured by running the testsuite. Needs GCC or Clang
+and [gcovr](https://gcovr.com); 3rd party code is not instrumented.
+
+1. **Configure and install an instrumented build:**
+
+   ```bash
+   cmake -S . -B build/ -DOMS_ENABLE_TESTSUITE=ON -DOMS_ENABLE_COVERAGE=ON
+   cmake --build build/ --target install
+   ```
+
+   The instrumented sources are built without optimization, so this build is slower than a normal
+   one and should not be installed over a build you want to use for anything else.
+
+2. **Run the tests and write the report:**
+
+   ```bash
+   cmake --build build/ --target coverage
+   ```
+
+   This discards the counters of earlier runs, runs the whole testsuite and writes
+   `build/coverage/index.html` (browsable) and `build/coverage/coverage.xml` (Cobertura, for CI),
+   printing a summary. The `Code coverage` GitHub Actions workflow does the same on every pull
+   request, uploads the Cobertura report to [Codecov](https://codecov.io) and archives the HTML
+   report as the `coverage-html` artifact.
+
+   To report on a subset, run the tests yourself and skip the test run:
+
+   ```bash
+   cmake --build build/ --target coverage-reset
+   ctest --test-dir build/ -R api
+   cmake --build build/ --target coverage-report
+   ```
+
+   The counters are written into the build tree by the installed library, so it does not matter
+   from where the tests were started.
