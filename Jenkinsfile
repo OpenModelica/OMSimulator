@@ -303,7 +303,7 @@ zip -r "../OMSimulator-win64-${env.OMS_VERSION}.zip" *
 If Defined LOCALAPPDATA (echo LOCALAPPDATA: %LOCALAPPDATA%) Else (Set "LOCALAPPDATA=C:\\Users\\OpenModelica\\AppData\\Local")
 set PATH=C:\\OMDevUCRT\\bin\\cmake\\bin;%PATH%
 
-cmake -S . -B build/ -G "Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/ -DOMS_ENABLE_TESTSUITE:BOOL=ON
+cmake -S . -B build/ -G "Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 
 cmake --build build/ --config Release --parallel %NUMBER_OF_PROCESSORS% --target install -v
@@ -548,7 +548,7 @@ void buildOMS(extraCMakeArgs='') {
      echo cd \${MSYS_WORKSPACE}
      echo export MAKETHREADS=-j%NUMBER_OF_PROCESSORS%
      echo set -ex
-     echo cmake -S . -B build/ -G "MSYS Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/ -DOMS_ENABLE_TESTSUITE:BOOL=ON ${extraCMakeArgs}
+     echo cmake -S . -B build/ -G "MSYS Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/ ${extraCMakeArgs}
      echo cmake --build build/ --parallel %NUMBER_OF_PROCESSORS% --target install -v
      ) > buildOMSimulatorWindows.sh
 
@@ -563,11 +563,11 @@ void buildOMS(extraCMakeArgs='') {
     def nproc = numPhysicalCPU()
     if (isMac()) {
       sh("""#!/bin/zsh -l
-       cmake -S . -B build/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/ -DOMS_ENABLE_TESTSUITE:BOOL=ON ${extraCMakeArgs}
+       cmake -S . -B build/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/ ${extraCMakeArgs}
        cmake --build build/ --parallel ${nproc} --target install -v
        """)
     } else {
-      sh "cmake -S . -B build/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/ -DOMS_ENABLE_TESTSUITE:BOOL=ON ${extraCMakeArgs}"
+      sh "cmake -S . -B build/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/ ${extraCMakeArgs}"
       sh "cmake --build build/ --parallel ${nproc} --target install -v"
     }
   }
