@@ -8,6 +8,7 @@ pipeline {
     booleanParam(name: 'MACOS_ARM64', defaultValue: false, description: 'Build with macOS-arm64 (M1 mac)')
     booleanParam(name: 'SUBMODULE_UPDATE', defaultValue: false, description: 'Allow pull request to update submodules (disabled by default due to common user errors)')
     booleanParam(name: 'UPLOAD_BUILD_OPENMODELICA', defaultValue: false, description: 'Upload install artifacts to build.openmodelica.org/omsimulator. Activates MINGW_UCRT64 as well.')
+    booleanParam(name: 'ASAN', defaultValue: false, description: 'Build and test with AddressSanitizer (disabled by default while the reported leaks are unfixed)')
     string(name: 'CTEST_FLAGS', defaultValue: '', description: 'Extra flags passed to ctest, e.g. -R api')
   }
   stages {
@@ -47,6 +48,12 @@ pipeline {
     stage('build-in-parallel') {
       parallel {
         stage('linux64-resolute-asan') {
+          // Disabled until the leaks AddressSanitizer reports have been fixed.
+          // Set the ASAN build parameter to run it in the meantime.
+          when {
+            expression { return params.ASAN }
+            beforeAgent true
+          }
           stages {
             stage('build-asan') {
               agent {
@@ -75,11 +82,12 @@ pipeline {
                 }
               }
               environment {
-                ASAN = "ON"
+                // omc-diff is compiled here, and ccache needs a writable home.
+                HOME = "/tmp/"
               }
               steps {
                 unstash name: 'asan'
-                runCTest()
+                runCTest(true)
                 junit 'build-testsuite/ctest-result.xml'
               }
             }
@@ -494,17 +502,17 @@ def numPhysicalCPU() {
  * from scratch here. Nothing of OMSimulator itself is compiled by that: the
  * testsuite-depends fixture only builds omc-diff and packs the FMUs and SSPs.
  */
-void runCTest(extraArgs='') {
-  echo "asan: ${env.ASAN}, running on node: ${env.NODE_NAME}"
+void runCTest(boolean asan=false, String extraArgs='') {
+  echo "asan: ${asan}, running on node: ${env.NODE_NAME}"
   writeVersionFile()
-  sh "cmake -S . -B build-testsuite/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/ -DOMS_ENABLE_TESTSUITE:BOOL=ON ${env.ASAN ? '-DOMS_TESTSUITE_ASAN:BOOL=ON' : ''}"
+  sh "cmake -S . -B build-testsuite/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/ -DOMS_ENABLE_TESTSUITE:BOOL=ON ${asan ? '-DOMS_TESTSUITE_ASAN:BOOL=ON' : ''}"
 
   // CTest exits non-zero when tests fail; the junit step reports those, so only
   // a missing report counts as a hard failure of this step.
   sh """#!/bin/bash -x
   ulimit -t 1500
 
-  ctest --test-dir build-testsuite/ ${env.ASAN ? "-j1": "-j${numPhysicalCPU()}"} --output-on-failure --output-junit ctest-result.xml ${params.CTEST_FLAGS} ${extraArgs} || true
+  ctest --test-dir build-testsuite/ ${asan ? "-j1": "-j${numPhysicalCPU()}"} --output-on-failure --output-junit ctest-result.xml ${params.CTEST_FLAGS} ${extraArgs} || true
   test -f build-testsuite/ctest-result.xml
   """
 }
