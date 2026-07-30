@@ -83,10 +83,14 @@ def detect_platform() -> str:
 
 def simulator_executable(test_file: Path, bin_dir: Path) -> Path:
   """The OMSimulator front end used to run a test of this type."""
+  # Both "win" and "ucrt64" run the tests through a native Windows Python
+  # (subprocess uses CreateProcess, not a POSIX exec), which cannot run the
+  # shebang-based shell script directly, so both need the .bat/.exe wrapper.
+  windows = PLATFORM in ("win", "ucrt64")
   if test_file.suffix == ".py":
-    name = "OMSimulatorPython3.bat" if PLATFORM == "win" else "OMSimulatorPython3"
+    name = "OMSimulatorPython3.bat" if windows else "OMSimulatorPython3"
   else:
-    name = "OMSimulator.exe" if PLATFORM == "win" else "OMSimulator"
+    name = "OMSimulator.exe" if windows else "OMSimulator"
   return bin_dir / name
 
 
