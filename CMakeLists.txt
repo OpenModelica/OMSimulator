@@ -9,6 +9,7 @@ option(OMS_ENABLE_OMSimulator "Enable OMSimulator component" ON)
 option(OMS_ENABLE_OMSimulatorGui "Enable OMSimulator GUI component" OFF)
 option(OMS_ENABLE_PIP "Enable pip component" OFF)
 option(OMS_ENABLE_TESTSUITE "Enable the OMSimulator testsuite" OFF)
+option(OMS_ENABLE_COVERAGE "Instrument the OMSimulator C++ sources for code coverage" OFF)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/config.cmake/")
 
@@ -93,3 +94,6 @@ if(OMS_ENABLE_TESTSUITE)
   include(CTest)
   add_subdirectory(testsuite)
 endif()
+
+# Instruments the targets defined above, so it has to come last.
+include(OMSimulatorCoverage)

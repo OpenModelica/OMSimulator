@@ -1,0 +1,104 @@
+name: Code coverage
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+# A newer push to the same PR makes the running job pointless.
+concurrency:
+  group: coverage-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  coverage:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: recursive
+
+      # Everything else OMSimulator needs is vendored in 3rdParty/. flex is for
+      # omc-diff, which the testsuite compares result files with, and numpy for
+      # the CompositeModels tests that import it.
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake g++ flex python3 python3-numpy gcovr ccache
+
+      # Only 3rdParty benefits much: the instrumented sources are rebuilt at -O0
+      # anyway. It still takes the bulk of a cold build off the critical path.
+      - name: Restore ccache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ccache
+          key: ccache-coverage-${{ github.sha }}
+          restore-keys: ccache-coverage-
+
+      # Release keeps 3rdParty and the tests fast. The instrumented sources are
+      # still built at -O0: target_compile_options land after the build type's
+      # flags, so the -O0 from the coverage module wins.
+      - name: Configure
+        run: |
+          cmake -S . -B build/ \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX=install/ \
+            -DOMS_ENABLE_TESTSUITE:BOOL=ON \
+            -DOMS_ENABLE_COVERAGE:BOOL=ON \
+            -DCMAKE_C_COMPILER=gcc \
+            -DCMAKE_CXX_COMPILER=g++ \
+            -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+
+      # The testsuite runs against the install tree, so this has to be `install`.
+      - name: Build
+        run: cmake --build build/ --target install --parallel $(nproc)
+
+      - name: Discard stale counters
+        run: cmake --build build/ --target coverage-reset
+
+      # Failing tests still produce coverage worth reporting, so let the run
+      # continue and fail the job at the end instead.
+      - name: Run testsuite
+        id: tests
+        continue-on-error: true
+        run: |
+          ctest --test-dir build/ \
+            --parallel $(nproc) \
+            --output-on-failure \
+            --output-junit ctest-result.xml
+
+      - name: Generate coverage report
+        run: cmake --build build/ --target coverage-report
+
+      - name: Upload to Codecov
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: build/coverage/coverage.xml
+          flags: linux
+          name: linux-gcc
+          # Report only what the build produced, never a stray file found by a
+          # directory scan.
+          disable_search: true
+          fail_ci_if_error: true
+
+      - name: Archive HTML report
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          name: coverage-html
+          path: build/coverage/
+          retention-days: 14
+
+      - name: Fail if the testsuite failed
+        if: steps.tests.outcome == 'failure'
+        run: |
+          echo "The testsuite failed; the coverage above is still from this run."
+          exit 1
