@@ -1,2 +1,4 @@
 *.fail_log
 *.test_log
+*.mat
+*.csv

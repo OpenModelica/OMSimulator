@@ -71,7 +71,8 @@ namespace oms
     oms_status_enu_t getInputs(DirectedGraph& graph, std::vector<double>& inputs);
     oms_status_enu_t setInputsDer(oms::DirectedGraph& graph, const std::vector<double>& inputsDer);
     oms_status_enu_t getInputAndOutput(DirectedGraph& graph, std::vector<double>& inputVect,std::vector<double>& outputVect,std::map<ComRef, Component*> FMUcomponents);
-    oms_status_enu_t updateInputs(DirectedGraph& graph);
+    /// \param changed  optional, set to true if any input value actually changed
+    oms_status_enu_t updateInputs(DirectedGraph& graph, bool* changed = nullptr);
 
     oms_status_enu_t getRealOutputDerivative(const ComRef& cref, SignalDerivative& der);
     oms_status_enu_t setRealInputDerivative(const ComRef& cref, const SignalDerivative& der);
