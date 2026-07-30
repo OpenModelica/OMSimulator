@@ -59,7 +59,6 @@ set(OMSIMULATORLIB_SOURCES
       ssd/Tags.cpp
       System.cpp
       SystemSC.cpp
-      SystemSC3.cpp
       SystemWC.cpp
       Values.cpp
       Variable.cpp)
