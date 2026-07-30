@@ -26,9 +26,12 @@ leak:/usr/lib/cargo/bin/coreutils/
 # /usr/lib/python3.*/, which sit between OMSimulator and the interpreter.
 leak:bin/python3
 
-# The XML libraries lxml pulls in. The reports show these below python3 frames,
-# so the entry above already covers them; they are listed separately in case a
-# stack is truncated before the interpreter frames.
-leak:/dist-packages/lxml/
+# The XML libraries lxml pulls in. Locally the reports show these below python3
+# frames, so the entry above already covers them, but on Jenkins lxml is a wheel
+# with libxml2/libxslt statically linked into etree.*.so and the stacks stop at
+# that module, so it has to be matched on its own. The path fragment covers both
+# a distribution install (/usr/lib/python3.*/dist-packages/lxml/) and a wheel in
+# a virtualenv (/opt/venv/lib/python3.*/site-packages/lxml/).
+leak:packages/lxml/
 leak:libxml2.so
 leak:libxslt.so
