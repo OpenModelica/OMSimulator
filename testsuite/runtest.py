@@ -30,6 +30,9 @@ DEFAULT_EPSILON = "5e-5"
 
 SKIP_EXIT_CODE = 77
 
+# Leaks of the wrapper and the interpreter, ignored in AddressSanitizer runs.
+LSAN_SUPPRESSIONS = Path(__file__).resolve().parent / "lsan-suppressions.txt"
+
 # Metadata keys understood in the test file header, with their defaults.
 DEFAULT_INFO = {
     "status": "unknown",
@@ -214,6 +217,8 @@ def build_env(info, asan: bool) -> dict:
     # libasan has to be preloaded for the instrumented library to work.
     env["LD_PRELOAD"] = subprocess.check_output(
         ["gcc", "-print-file-name=libasan.so"]).decode().strip()
+    # Hide supressed leaks from Python wrapper and interpreter
+    env["LSAN_OPTIONS"] = "suppressions=%s:print_suppressions=0" % LSAN_SUPPRESSIONS
   for assignment in info["env"].split():
     if "=" in assignment:
       key, value = assignment.split("=", 1)

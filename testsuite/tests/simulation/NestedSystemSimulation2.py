@@ -3,6 +3,7 @@
 ## ucrt64: yes
 ## win: no
 ## mac: no
+## asan: yes
 
 from OMSimulator import SSP, CRef, Settings, Connector, Causality, SignalType
 

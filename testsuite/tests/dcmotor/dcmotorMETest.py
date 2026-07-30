@@ -3,6 +3,7 @@
 ## ucrt64: yes
 ## win: yes
 ## mac: yes
+## asan: yes
 
 ## This example test dc motors fmu's with ME solver
 

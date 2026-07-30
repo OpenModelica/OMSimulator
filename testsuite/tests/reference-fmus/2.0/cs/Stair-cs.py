@@ -2,7 +2,7 @@
 ## linux: yes
 ## ucrt64: yes
 ## win: yes
-## asan: no
+## asan: yes
 
 from OMSimulator import SSP, CRef, Settings, Capi
 Settings.suppressPath = True

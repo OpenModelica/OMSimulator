@@ -3,6 +3,7 @@
 ## ucrt64: no
 ## win: no
 ## mac: no
+## asan: yes
 
 from OMSimulator import SSP, Settings, CRef, Capi
 

@@ -3,6 +3,7 @@
 ## ucrt64: yes
 ## win: yes
 ## mac: yes
+## asan: yes
 
 
 from numpy import uint64

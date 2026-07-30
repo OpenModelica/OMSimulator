@@ -1,0 +1,34 @@
+# LeakSanitizer suppressions for the AddressSanitizer testsuite runs.
+#
+# Only OMSimulator itself is built with -fsanitize=address. The tests reach it
+# through the OMSimulatorPython3 shell wrapper and an uninstrumented python3,
+# into which libasan is preloaded (see build_env() in runtest.py). Everything
+# those processes allocate is therefore leak checked as well, and none of them
+# frees its state before exiting, so every ASAN test run ends in a leak report
+# that has nothing to do with OMSimulator. The entries below drop exactly the
+# modules seen in those reports.
+#
+# A suppression matches when its text occurs in the function name, the source
+# file or the module path of ANY frame of an allocation stack, not just the
+# allocating one. That is safe here only because the frame pointer based
+# unwinder ASAN uses by default stops at the first uninstrumented frame: a leak
+# allocated inside OMSimulator gets a stack of OMSimulator frames ending in
+# libffi, and never reaches the interpreter frames matched below. Do not set
+# ASAN_OPTIONS=fast_unwind_on_malloc=0 - the deeper stacks it produces run into
+# python3 frames and every real leak would be suppressed along with the noise.
+
+# The wrapper calls readlink, dirname and uname. On this distribution those are
+# uutils coreutils, which leaks ~43 kB in each of those short lived processes.
+leak:/usr/lib/cargo/bin/coreutils/
+
+# Interpreter state that CPython does not free at exit. Matches /usr/bin/python3
+# as well as a virtualenv one, but not the extension modules under
+# /usr/lib/python3.*/, which sit between OMSimulator and the interpreter.
+leak:bin/python3
+
+# The XML libraries lxml pulls in. The reports show these below python3 frames,
+# so the entry above already covers them; they are listed separately in case a
+# stack is truncated before the interpreter frames.
+leak:/dist-packages/lxml/
+leak:libxml2.so
+leak:libxslt.so
