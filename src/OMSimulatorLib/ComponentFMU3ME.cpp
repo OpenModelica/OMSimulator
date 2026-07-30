@@ -42,7 +42,6 @@
 #include "ssd/Tags.h"
 #include "System.h"
 #include "SystemSC.h"
-#include "SystemSC3.h"
 #include "Scope.h"
 
 #include <fmi4c.h>
