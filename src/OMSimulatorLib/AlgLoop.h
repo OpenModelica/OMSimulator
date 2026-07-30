@@ -36,6 +36,7 @@
 #ifndef _OMS_ALGLOOP_H_
 #define _OMS_ALGLOOP_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 #include "OMSimulator/Types.h"
@@ -65,24 +66,27 @@ namespace oms
     oms_status_enu_t kinsolSolve(System& syst, DirectedGraph& graph);
 
   private:
+    /* All members start out empty, so that the destructor can be run on an
+     * object NewKinsolSolver() gave up on half way through. */
+
     /* tolerances */
-    double fnormtol;        /* function tolerance */
+    double fnormtol = 0.0;  /* function tolerance */
 
     /* work arrays */
-    N_Vector initialGuess;
-    N_Vector uScale;        /* Scaling vector for u */
-    N_Vector fScale;        /* Scaling vector for f(u) */
-    N_Vector fTmp;          /* Vector used for tmp computations */
+    N_Vector initialGuess = nullptr;
+    N_Vector uScale = nullptr;        /* Scaling vector for u */
+    N_Vector fScale = nullptr;        /* Scaling vector for f(u) */
+    N_Vector fTmp = nullptr;          /* Vector used for tmp computations */
 
     /* kinsol internal data */
-    void* kinsolMemory;
-    void* user_data;
-    int size;
+    void* kinsolMemory = nullptr;
+    void* user_data = nullptr;
+    int size = 0;
 
     /* linear solver data */
-    SUNLinearSolver linSol; /* Linear solver object used by KINSOL */
-    N_Vector y;             /* Template for cloning vectors needed inside linear solver */
-    SUNMatrix J;            /* (Non-)Sparse matrix template for cloning matrices needed within linear solver */
+    SUNLinearSolver linSol = nullptr; /* Linear solver object used by KINSOL */
+    N_Vector y = nullptr;             /* Template for cloning vectors needed inside linear solver */
+    SUNMatrix J = nullptr;            /* (Non-)Sparse matrix template for cloning matrices needed within linear solver */
 
     /* member function */
     static int nlsKinsolJac(N_Vector u, N_Vector fu, SUNMatrix J, void *user_data, N_Vector tmp1, N_Vector tmp2);
@@ -105,7 +109,9 @@ namespace oms
     oms_alg_solver_enu_t algSolverMethod;
     oms_status_enu_t fixPointIteration(System& syst, DirectedGraph& graph);
 
-    KinsolSolver* kinsolData;
+    /* Owns the solver: an AlgLoop is created as a temporary and moved into
+     * System::algLoops, so the copy constructor has to stay deleted. */
+    std::unique_ptr<KinsolSolver> kinsolData;
 
     /* Loop data */
     const scc_t SCC;            ///< Strong connected components
