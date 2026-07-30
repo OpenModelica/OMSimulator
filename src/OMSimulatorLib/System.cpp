@@ -47,7 +47,6 @@
 #include "OMSString.h"
 #include "ssd/Tags.h"
 #include "SystemSC.h"
-#include "SystemSC3.h"
 #include "SystemWC.h"
 #include "Variable.h"
 #include "miniunz.h"
