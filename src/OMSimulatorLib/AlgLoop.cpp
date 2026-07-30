@@ -62,13 +62,26 @@ inline bool checkFlag(int flag, std::string functionName)
 }
 
 /**
- * @brief Error handler function given to KINSOL.
+ * @brief Error handler function of type SUNErrHandlerFn.
  *
- * @param errorCode   Error code from KINSOL
- * @param module      Name of the module reporting the error.
- * @param function    Name of the function in which the error occurred.
- * @param msg         Error Message.
- * @param user_data   Pointer to user data. Unused.
+ * Pushed onto the error handler stack of the SUNDIALS context, so it is called
+ * for errors reported by KINSOL and by any other SUNDIALS module created with
+ * that context.
+ *
+ * @param line            Line number in the SUNDIALS source file where the
+ *                        error occurred.
+ * @param func_name       Name of the SUNDIALS function in which the error
+ *                        occurred.
+ * @param file            Name of the SUNDIALS source file where the error
+ *                        occurred.
+ * @param msg             Error message. Can be NULL, in which case the message
+ *                        belonging to `err_code` is used.
+ * @param err_code        Error code. Either a SUNErrCode or a package level
+ *                        code, e.g. one of the KIN_* constants.
+ * @param err_user_data   Pointer to user data given to
+ *                        SUNContext_PushErrHandler(), a KINSOL_USER_DATA
+ *                        pointer. Can be NULL.
+ * @param sunctx          SUNDIALS context reporting the error. Unused.
  */
 void oms::KinsolSolver::sundialsErrorHandlerFunction(int line, const char *func_name,
                                                      const char *file, const char *msg,
@@ -77,7 +90,7 @@ void oms::KinsolSolver::sundialsErrorHandlerFunction(int line, const char *func_
 {
   KINSOL_USER_DATA* kinsolUserData;
   std::string systNum = "unknown";
-  std::string mod = std::string(file) + ":" + std::to_string(line);
+  std::string file_location = std::string(file) + ":" + std::to_string(line);
   std::string func = func_name;
 
   if (err_user_data != NULL)
@@ -89,7 +102,7 @@ void oms::KinsolSolver::sundialsErrorHandlerFunction(int line, const char *func_
   /* Package level codes (KIN_* and friends) are not SUNErrCodes, so SUNGetErrMsg()
      only makes sense when SUNDIALS did not supply a message - same rule as
      SUNDIALS' own default handler. */
-  logError("SUNDIALS_ERROR: [system] " + systNum + " [at] " + mod + " | [function] " + func
+  logError("SUNDIALS_ERROR: [system] " + systNum + " [at] " + file_location + " | [function] " + func
            + " | [error_code] " + std::to_string(err_code)
            + "\n" + std::string(msg ? msg : SUNGetErrMsg(err_code)));
 }
