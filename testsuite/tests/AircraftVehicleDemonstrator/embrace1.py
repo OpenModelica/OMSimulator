@@ -3,7 +3,8 @@
 ## ucrt64: no
 ## win: no
 ## mac: no
-## asan: yes
+## asan: no
+## the ECS_HW FMU reads memory that it freed itself (setlocale)
 
 from OMSimulator import SSP, Settings, CRef, Capi
 

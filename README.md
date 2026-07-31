@@ -1,14 +1,17 @@
-# OMSimulator [![License: OSMC-PL](https://img.shields.io/badge/license-OSMC--PL-lightgrey.svg)](OSMC-License.txt)
+# OMSimulator
+
+[![License: OSMC-PL](https://img.shields.io/badge/license-OSMC--PL-lightgrey.svg)](OSMC-License.txt)
+[![codecov](https://codecov.io/gh/OpenModelica/OMSimulator/branch/master/graph/badge.svg?token=HmYNZuQtNA)](https://codecov.io/gh/OpenModelica/OMSimulator)
 
 The OpenModelica FMI & SSP-based co-simulation environment.
 
-### Branch Overview
+## Branch Overview
 
 - **`master`**: Development branch for active, unstable updates.
 - **`maintenance/v2.1`**: Stable branch for version 2.1 with patch updates (latest release: **v2.1.3**).
 - **`maintenance/v2.0`**: Stable branch for version 2.0 with patch updates (latest release: **v2.0.1**).
 
-### Overview
+## Overview
 
 OMSimulator can be used as:
 
@@ -18,10 +21,10 @@ OMSimulator can be used as:
 
 OMSimulator is also included with the OpenModelica installer, which includes OMEdit, a graphical editor.
 
-* [OpenModelica](https://openmodelica.org/)
-* [Standalone package](https://build.openmodelica.org/omsimulator/)
+- [OpenModelica](https://openmodelica.org/)
+- [Standalone package](https://build.openmodelica.org/omsimulator/)
 
-### Documentation
+## Documentation
 
 Latest documentation:
 
@@ -29,7 +32,7 @@ Latest documentation:
 - [User Guide HTML](https://openmodelica.org/doc/OMSimulator/master/OMSimulator/UsersGuide/html/)
 - [OMSimulatorLib Doxygen](https://openmodelica.org/doc/OMSimulator/master/OMSimulator/doxygen/html/index.html)
 
-### Testing and Coverage
+## Testing and Coverage
 
 OMSimulator's coverage tests provide insights across a wide range of publicly available libraries. For an overview of all tested libraries and their detailed reports, visit the [Coverage Test Overview](https://libraries.openmodelica.org/branches/master-fmi/).
 
@@ -38,10 +41,10 @@ OMSimulator's coverage tests provide insights across a wide range of publicly av
 
 > **Note**: Issues may be attributed to OMSimulator itself or the FMI export in OpenModelica.
 
-### Build Instructions
+## Build Instructions
 
 To compile the project, please follow the steps outlined in the [BUILD.md](BUILD.md) file.
 
-### License
+## License
 
 This project is licensed under the OSMC Public License. See [OSMC-License.txt](OSMC-License.txt) for details.

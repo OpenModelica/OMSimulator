@@ -3,7 +3,8 @@
 ## ucrt64: no
 ## win: no
 ## mac: no
-## asan: yes
+## asan: no
+## the FMUs this test loads leak memory inside their own binaries
 
 from OMSimulator import SSP, Settings, CRef, Capi
 
