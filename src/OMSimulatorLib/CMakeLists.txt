@@ -2,22 +2,28 @@ project(OMSimulatorLib)
 
 find_package(Threads)
 
+# GCC and Clang both work, but they are slightly different
 if (ASAN)
   set(CMAKE_BUILD_TYPE Debug)
-ENDIF ()
 
-IF (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror=uninitialized")
-ELSEIF (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.1)
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror=uninitialized")
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror=return-local-addr")
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror=return-type")
-  if (ASAN)
-    message(STATUS "AddressSanitizer enabled")
-    add_compile_options("-fsanitize=address" "-fno-omit-frame-pointer")
-    link_libraries("-fsanitize=address")
-  ENDIF ()
-ENDIF ()
+  if ((CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5.1) OR
+      (CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 3.1))
+    message(FATAL_ERROR
+            "ASAN=ON needs GCC 5.1 or newer, or Clang 3.1 or newer, but the selected "
+            "C++ compiler is ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION} "
+            "(${CMAKE_CXX_COMPILER}). Configure with a supported compiler, e.g. "
+            "-DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++, or build without -DASAN=ON.")
+  endif ()
+
+  message(STATUS "AddressSanitizer enabled")
+  add_compile_options("-fsanitize=address" "-fno-omit-frame-pointer")
+  link_libraries("-fsanitize=address")
+endif ()
+
+# Be pedantic about potential memory issues
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror=uninitialized")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror=return-type")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror=return-local-addr")
 
 set(OMSIMULATORLIB_SOURCES
       AlgLoop.cpp
