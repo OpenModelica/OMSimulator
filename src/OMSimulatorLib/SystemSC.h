@@ -40,6 +40,8 @@
 #include "System.h"
 #include "OMSimulator/Types.h"
 
+#include <memory>
+
 #include <cvode/cvode.h>                  /* prototypes for CVODE fcts., consts. */
 #include <nvector/nvector_serial.h>       /* serial N_Vector types, fcts., macros */
 #include <sunlinsol/sunlinsol_dense.h>    /* Default dense linear solver */
@@ -90,8 +92,9 @@ namespace oms
   private:
     std::vector<Component*> fmus; // use Component Base class to support FMI 2 ME and FMI 3 ME
 
-    bool* callEventUpdate = new bool[fmus.size()](); //initialize with false
-    bool* terminateSimulation = new bool[fmus.size()](); //initialize with false
+    // One entry per FMU, allocated by initialize() once fmus is filled.
+    std::unique_ptr<bool[]> callEventUpdate;     //initialized with false
+    std::unique_ptr<bool[]> terminateSimulation; //initialized with false
 
     std::vector<size_t> nStates;
     std::vector<size_t> nEventIndicators;
