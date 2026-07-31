@@ -3,6 +3,7 @@
 ## ucrt64: yes
 ## win: yes
 ## mac: yes
+## asan: yes
 
 import logging
 logging.basicConfig(level=logging.INFO)

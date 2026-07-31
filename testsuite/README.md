@@ -61,7 +61,8 @@ Special directives in the header of a test file:
 * `asan: yes`
 
   Also run the test case in an AddressSanitizer build (`-DOMS_TESTSUITE_ASAN=ON`), where all other
-  tests are skipped.
+  tests are skipped. Such a run leak checks the `OMSimulatorPython3` wrapper and the interpreter
+  as well; the leaks those report on their own are ignored through `lsan-suppressions.txt`.
 * `env: KEY=VALUE ...`
 
   Extra environment variables for the test case.

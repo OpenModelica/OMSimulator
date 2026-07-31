@@ -3,6 +3,8 @@
 ## ucrt64: yes
 ## win: yes
 ## mac: yes
+## asan: no
+## the FMUs this test loads leak memory inside their own binaries
 
 ## This example test dc motors fmu's with ME solver
 

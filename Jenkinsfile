@@ -8,7 +8,6 @@ pipeline {
     booleanParam(name: 'MACOS_ARM64', defaultValue: false, description: 'Build with macOS-arm64 (M1 mac)')
     booleanParam(name: 'SUBMODULE_UPDATE', defaultValue: false, description: 'Allow pull request to update submodules (disabled by default due to common user errors)')
     booleanParam(name: 'UPLOAD_BUILD_OPENMODELICA', defaultValue: false, description: 'Upload install artifacts to build.openmodelica.org/omsimulator. Activates MINGW_UCRT64 as well.')
-    booleanParam(name: 'ASAN', defaultValue: false, description: 'Build and test with AddressSanitizer (disabled by default while the reported leaks are unfixed)')
     string(name: 'CTEST_FLAGS', defaultValue: '', description: 'Extra flags passed to ctest, e.g. -R api')
   }
   stages {
@@ -48,12 +47,6 @@ pipeline {
     stage('build-in-parallel') {
       parallel {
         stage('linux64-resolute-asan') {
-          // Disabled until the leaks AddressSanitizer reports have been fixed.
-          // Set the ASAN build parameter to run it in the meantime.
-          when {
-            expression { return params.ASAN }
-            beforeAgent true
-          }
           stages {
             stage('build-asan') {
               agent {

@@ -319,6 +319,11 @@ oms_status_enu_t oms::SystemSC::initialize()
     event_indicators_prev.push_back((double*)calloc(nEventIndicators.back(), sizeof(double)));
    }
 
+  // Now that fmus is filled, the per-FMU flags the integrator steps write to
+  // can be sized. make_unique value-initializes them, i.e. all false.
+  callEventUpdate = std::make_unique<bool[]>(fmus.size());
+  terminateSimulation = std::make_unique<bool[]>(fmus.size());
+
   if (n_states == 0)
     logInfo("model doesn't contain any continuous state");
 
@@ -511,8 +516,8 @@ oms_status_enu_t oms::SystemSC::terminate()
   }
 
   fmus.clear();
-  delete[] callEventUpdate;
-  delete[] terminateSimulation;
+  callEventUpdate.reset();
+  terminateSimulation.reset();
   nStates.clear();
   nEventIndicators.clear();
   states.clear();
@@ -579,6 +584,8 @@ oms_status_enu_t oms::SystemSC::reset()
   for (double* ptr : event_indicators) free(ptr);
   for (double* ptr : event_indicators_prev) free(ptr);
   fmus.clear();
+  callEventUpdate.reset();
+  terminateSimulation.reset();
   nStates.clear();
   nEventIndicators.clear();
   states.clear();

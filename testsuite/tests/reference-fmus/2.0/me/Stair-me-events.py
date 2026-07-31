@@ -2,7 +2,7 @@
 ## linux: yes
 ## ucrt64: yes
 ## win: yes
-## asan: no
+## asan: yes
 
 # Every time event has to be stored as exactly two data points, the value before
 # and the value after the event. The output grid is accumulated in floating-point

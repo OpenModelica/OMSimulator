@@ -300,7 +300,9 @@ oms::KinsolSolver* oms::KinsolSolver::NewKinsolSolver(const int algLoopNum, cons
 {
   int flag;
   int printLevel;
-  KinsolSolver* kinsolSolver = new KinsolSolver();
+  /* Held by a unique_ptr until it is complete, so that the error returns below
+   * do not leak the object and the SUNDIALS memory it allocated so far. */
+  std::unique_ptr<KinsolSolver> kinsolSolver(new KinsolSolver());
 
   logDebug("Create new KinsolSolver object for algebraic loop number " + std::to_string(algLoopNum));
 
@@ -392,7 +394,7 @@ oms::KinsolSolver* oms::KinsolSolver::NewKinsolSolver(const int algLoopNum, cons
     fScaleData[i] = 1.0;
   }
 
-  return kinsolSolver;
+  return kinsolSolver.release();
 }
 
 /**
@@ -488,8 +490,8 @@ oms::AlgLoop::AlgLoop(oms_alg_solver_enu_t method, double relativeTolerance, scc
 
   if (method == oms_alg_solver_kinsol)
   {
-    kinsolData = KinsolSolver::NewKinsolSolver(systNumber, SCC.connections.size(), relativeTolerance, useDirectionalDerivative);
-    if (kinsolData==NULL)
+    kinsolData.reset(KinsolSolver::NewKinsolSolver(systNumber, SCC.connections.size(), relativeTolerance, useDirectionalDerivative));
+    if (!kinsolData)
     {
       logError("NewKinsolSolver() failed. Aborting!");
       throw("AlgLoop() failed!");
