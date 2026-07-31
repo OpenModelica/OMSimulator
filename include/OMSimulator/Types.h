@@ -99,7 +99,6 @@ typedef enum {
   oms_system_none,
   oms_system_wc,       ///< Weakly Coupled System
   oms_system_sc,       ///< Strongly Coupled System for FMU2 and FMU3
-  oms_system_sc3       ///< Strongly Coupled System for only FMU3
 } oms_system_enu_t;
 
 typedef enum {

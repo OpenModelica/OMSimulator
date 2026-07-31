@@ -40,6 +40,8 @@
 #include "System.h"
 #include "OMSimulator/Types.h"
 
+#include <memory>
+
 #include <sundials/sundials_context.h>  /* SUNContext */
 #include <sundials/sundials_logger.h>   /* SUNLogger */
 #include <cvode/cvode.h>                /* prototypes for CVODE fcts., consts. */
@@ -92,8 +94,9 @@ namespace oms
   private:
     std::vector<Component*> fmus; // use Component Base class to support FMI 2 ME and FMI 3 ME
 
-    bool* callEventUpdate = new bool[fmus.size()](); //initialize with false
-    bool* terminateSimulation = new bool[fmus.size()](); //initialize with false
+    // One entry per FMU, allocated by initialize() once fmus is filled.
+    std::unique_ptr<bool[]> callEventUpdate;     //initialized with false
+    std::unique_ptr<bool[]> terminateSimulation; //initialized with false
 
     std::vector<size_t> nStates;
     std::vector<size_t> nEventIndicators;

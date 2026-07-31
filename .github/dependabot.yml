@@ -1,0 +1,18 @@
+version: 2
+
+updates:
+  # The workflows pin actions by commit SHA, which is what Dependabot bumps; it
+  # keeps the trailing "# vX.Y.Z" comment in sync so the pins stay readable.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    # One pull request for all actions instead of one per action.
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+    commit-message:
+      prefix: ci
+    labels:
+      - dependencies

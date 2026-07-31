@@ -1,0 +1,35 @@
+## status: correct
+## linux: yes
+## ucrt64: yes
+## win: yes
+## asan: yes
+
+from OMSimulator import SSP, CRef, Settings, Capi
+Settings.suppressPath = True
+
+model = SSP()
+model.addResource('../../../resources/Dahlquist.fmu', new_name='resources/Dahlquist.fmu')
+
+model.addComponent(CRef('default', 'Dahlquist'), 'resources/Dahlquist.fmu')
+
+instantiated_model = model.instantiate()
+instantiated_model.setResultFile("Dahlquist-cs.mat")
+
+instantiated_model.setStopTime(10.0)
+instantiated_model.setTolerance(1e-5)
+
+instantiated_model.initialize()
+instantiated_model.simulate()
+
+instantiated_model.terminate()
+instantiated_model.delete()
+
+if 1 == Capi.compareSimulationResults("../../../references/Dahlquist-cs.mat", "Dahlquist-cs.mat", "default.Dahlquist.x", "default.Dahlquist.x", 1e-4, 1e-4):
+  print("signal x is equal", flush=True)
+else:
+  print("signal x is not equal", flush=True)
+
+## Result:
+## info:    Result file: Dahlquist-cs.mat (bufferSize=10)
+## signal x is equal
+## endResult

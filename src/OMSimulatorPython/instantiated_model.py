@@ -53,7 +53,6 @@ class SystemType(Enum):
   '''Enumeration for system type to map with c api.'''
   wc = 1
   sc = 2
-  sc3 = 3
 
 # Solver methods that produce a WC system; all others produce SC.
 _WC_SOLVER_METHODS = {"oms_ma", "oms_mav", "oms_mav2"}

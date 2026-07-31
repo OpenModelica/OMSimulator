@@ -1,2 +1,8 @@
 /*.fmu
 /*.ssp
+/*.fmutmp/
+/*.json
+/*.libs
+/*.log
+/index.html
+/*.makefile

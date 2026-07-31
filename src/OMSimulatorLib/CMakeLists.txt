@@ -2,22 +2,45 @@ project(OMSimulatorLib)
 
 find_package(Threads)
 
+# GCC and Clang both work, but they are slightly different
 if (ASAN)
   set(CMAKE_BUILD_TYPE Debug)
-ENDIF ()
 
-IF (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+  if ((CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5.1) OR
+      (CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 3.1))
+    message(FATAL_ERROR
+            "ASAN=ON needs GCC 5.1 or newer, or Clang 3.1 or newer, but the selected "
+            "C++ compiler is ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION} "
+            "(${CMAKE_CXX_COMPILER}). Configure with a supported compiler, e.g. "
+            "-DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++, or build without -DASAN=ON.")
+  endif ()
+
+  message(STATUS "AddressSanitizer enabled")
+  add_compile_options("-fsanitize=address" "-fno-omit-frame-pointer")
+  link_libraries("-fsanitize=address")
+endif ()
+
+# Be pedantic about potential memory issues
+if (MSVC)
+  # MSVC doesn't know -Werror=<name>, its warnings only have numbers.
+  set(OMS_MSVC_MEMORY_WARNINGS
+        4700 # uninitialized local variable used                (-Wuninitialized)
+        4701 # potentially uninitialized local variable used    (-Wmaybe-uninitialized)
+        4703 # potentially uninitialized local pointer used     (-Wmaybe-uninitialized)
+        4715 # not all control paths return a value             (-Wreturn-type)
+        4716 # must return a value                              (-Wreturn-type)
+        4172 # returning address of local variable or temporary (-Wreturn-local-addr)
+     )
+  foreach (warning IN LISTS OMS_MSVC_MEMORY_WARNINGS)
+    # /w1<n> reports the warning at the default warning level (C4701 and C4703
+    # are level 4 and would stay silent otherwise), /we<n> turns it into an error.
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /w1${warning} /we${warning}")
+  endforeach ()
+else ()
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror=uninitialized")
-ELSEIF (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.1)
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror=uninitialized")
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror=return-local-addr")
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror=return-type")
-  if (ASAN)
-    message(STATUS "AddressSanitizer enabled")
-    add_compile_options("-fsanitize=address" "-fno-omit-frame-pointer")
-    link_libraries("-fsanitize=address")
-  ENDIF ()
-ENDIF ()
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror=return-local-addr")
+endif ()
 
 set(OMSIMULATORLIB_SOURCES
       AlgLoop.cpp
@@ -59,7 +82,6 @@ set(OMSIMULATORLIB_SOURCES
       ssd/Tags.cpp
       System.cpp
       SystemSC.cpp
-      SystemSC3.cpp
       SystemWC.cpp
       Values.cpp
       Variable.cpp)
