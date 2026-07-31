@@ -64,6 +64,33 @@ def comment_prefix(test_file: Path) -> str:
   return COMMENT_PREFIX.get(test_file.suffix, DEFAULT_COMMENT_PREFIX)
 
 
+# Windows extended-length path prefixes.
+EXTENDED_PREFIX = "\\\\?\\"
+EXTENDED_UNC_PREFIX = "\\\\?\\UNC\\"
+
+
+def absolute(path: Path) -> Path:
+  """Absolute, normalized path, guaranteed free of a `\\\\?\\` prefix.
+
+  `Path.resolve()` cannot be used for this on Windows: it goes through
+  GetFinalPathNameByHandle, which always returns the extended-length form, and
+  it only strips that prefix again when it can prove that the shortened path
+  refers to the same object. For a path that does not exist yet -- which the
+  private work directory of a test never does -- that proof depends on the two
+  lookups failing with the same error code, so the prefix survives every now and
+  then. A `\\\\?\\` directory then breaks the test: every .py test is started
+  through OMSimulatorPython3.bat, i.e. through cmd.exe, which rejects such a
+  working directory ("UNC paths are not supported"), falls back to C:\\Windows
+  and runs the test where none of its files are.
+  """
+  result = os.path.abspath(path)
+  if result.startswith(EXTENDED_UNC_PREFIX):
+    return Path("\\\\" + result[len(EXTENDED_UNC_PREFIX):])
+  if result.startswith(EXTENDED_PREFIX):
+    return Path(result[len(EXTENDED_PREFIX):])
+  return Path(result)
+
+
 PLATFORMS = ("linux", "mac", "win", "ucrt64")
 
 # The platform whose metadata key decides whether a test is enabled. Set from
@@ -333,9 +360,9 @@ def main() -> int:
   global PLATFORM
   PLATFORM = args.platform
 
-  test_file = args.test.resolve()
-  testsuite_root = args.testsuite_root.resolve()
-  tests_root = args.tests_root.resolve()
+  test_file = absolute(args.test)
+  testsuite_root = absolute(args.testsuite_root)
+  tests_root = absolute(args.tests_root)
   prefix = comment_prefix(test_file)
   info, expected = parse_test_file(test_file)
 
@@ -352,12 +379,12 @@ def main() -> int:
     print("skipped: not enabled for platform %r" % PLATFORM)
     return SKIP_EXIT_CODE
 
-  exe = simulator_executable(test_file, args.bin_dir.resolve())
+  exe = simulator_executable(test_file, absolute(args.bin_dir))
   if not exe.exists():
     print("%s not found; build and install OMSimulator before running the testsuite" % exe)
     return 1
 
-  run_dir = prepare_work_dir(args.work_dir.resolve(), testsuite_root, tests_root,
+  run_dir = prepare_work_dir(absolute(args.work_dir), testsuite_root, tests_root,
                              test_file)
 
   start = time.time()
