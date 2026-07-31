@@ -21,9 +21,26 @@ if (ASAN)
 endif ()
 
 # Be pedantic about potential memory issues
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror=uninitialized")
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror=return-type")
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror=return-local-addr")
+if (MSVC)
+  # MSVC doesn't know -Werror=<name>, its warnings only have numbers.
+  set(OMS_MSVC_MEMORY_WARNINGS
+        4700 # uninitialized local variable used                (-Wuninitialized)
+        4701 # potentially uninitialized local variable used    (-Wmaybe-uninitialized)
+        4703 # potentially uninitialized local pointer used     (-Wmaybe-uninitialized)
+        4715 # not all control paths return a value             (-Wreturn-type)
+        4716 # must return a value                              (-Wreturn-type)
+        4172 # returning address of local variable or temporary (-Wreturn-local-addr)
+     )
+  foreach (warning IN LISTS OMS_MSVC_MEMORY_WARNINGS)
+    # /w1<n> reports the warning at the default warning level (C4701 and C4703
+    # are level 4 and would stay silent otherwise), /we<n> turns it into an error.
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /w1${warning} /we${warning}")
+  endforeach ()
+else ()
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror=uninitialized")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror=return-type")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror=return-local-addr")
+endif ()
 
 set(OMSIMULATORLIB_SOURCES
       AlgLoop.cpp
