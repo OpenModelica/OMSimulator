@@ -98,8 +98,8 @@ target_include_directories(OMSimulatorLib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(OMSimulatorLib
                         PUBLIC
                           oms::public_includes
-                          oms::3rd::kinsol
-                          oms::3rd::cvode
+                          oms::3rd::sundials::kinsol
+                          oms::3rd::sundials::cvode
                           oms::3rd::fmi4c
                           oms::3rd::minizip
                           oms::3rd::zlib
@@ -129,8 +129,8 @@ target_include_directories(OMSimulatorLib_static PUBLIC ${CMAKE_CURRENT_SOURCE_D
 target_link_libraries(OMSimulatorLib_static
                         PUBLIC
                           oms::public_includes
-                          oms::3rd::kinsol
-                          oms::3rd::cvode
+                          oms::3rd::sundials::kinsol
+                          oms::3rd::sundials::cvode
                           oms::3rd::fmi4c
                           oms::3rd::minizip
                           oms::3rd::zlib
