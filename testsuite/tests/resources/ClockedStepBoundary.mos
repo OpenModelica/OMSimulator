@@ -1,0 +1,13 @@
+// Regenerates testsuite/resources/ClockedStepBoundary.
+//
+// A clocked model: Modelica.Clocked drives it from periodic clocks whose tick
+// times are computed exactly (k * period), while a master stepping the FMU
+// accumulates its own communication points. The two disagree by an ULP once the
+// accumulated end of a communication step lands just past a tick, which is what
+// the clockedStepBoundary test exercises.
+
+loadModel(Modelica, {"4.0.0"}); getErrorString();
+
+buildModelFMU(Modelica.Clocked.Examples.CascadeControlledDrive.AbsoluteClocks, version="2.0", fmuType="me", fileNamePrefix="ClockedStepBoundary", platforms={"x86_64-linux-gnu docker run multiarch/crossbuild","x86_64-w64-mingw32 docker run multiarch/crossbuild"}); getErrorString();
+
+system("zip -qd ClockedStepBoundary.fmu sources/* && unzip -o ClockedStepBoundary.fmu -d ClockedStepBoundary/");

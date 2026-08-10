@@ -1,4 +1,5 @@
 oms_add_test(
+  clockedStepBoundary.py
   DualMassOscillator1.py
   DualMassOscillator2.py
   exportJson1.py
