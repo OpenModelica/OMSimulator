@@ -1,0 +1,36 @@
+<uq:ExperimentSetup xmlns:uq="http://openscaling.org/UQ1/UncertaintyQuantification" generationTool="pylsuq" generationTimeAndDate="2025-10-07T14:41:02" name="L90LS_UD_OS_OS#-">
+  <uq:Model name="L90LS_UD_OS_OS#-" file="D:\SVN\eVeber-FMI_branchViktor\test_area\test_ssp\ParkerSimPack\valveFMU\L90LS_UD_OS_OS.fmu"/>
+  <uq:ExperimentSet>
+    <uq:ForwardUncertaintyQuantification>
+      <uq:ParameterSet>
+        <uq:OperationalDomain>
+          <uq:Axes>
+            <uq:Axis name="uA"/>
+            <uq:Axis name="uB"/>
+            <uq:Axis name="pP"/>
+            <uq:Axis name="pTA"/>
+            <uq:Axis name="pTB"/>
+            <uq:Axis name="pA"/>
+            <uq:Axis name="pB"/>
+            <uq:Axis name="pLin"/>
+            <uq:Axis name="pLmax"/>
+            <uq:Axis name="p_TP"/>
+            <uq:Axis name="p_PS"/>
+          </uq:Axes>
+          <uq:Boundary>
+            <uq:Box>
+              <uq:Point coordinates="0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0"/>
+              <uq:Point coordinates="900.0 900.0 400.0 20.0 20.0 400.0 400.0 500.0 500.0 35.0 50.0"/>
+            </uq:Box>
+          </uq:Boundary>
+          <uq:ExperimentPoints>
+            <uq:PointSet id="points">
+              <uq:Points/>
+              <uq:Parameters/>
+            </uq:PointSet>
+          </uq:ExperimentPoints>
+        </uq:OperationalDomain>
+      </uq:ParameterSet>
+    </uq:ForwardUncertaintyQuantification>
+  </uq:ExperimentSet>
+</uq:ExperimentSetup>

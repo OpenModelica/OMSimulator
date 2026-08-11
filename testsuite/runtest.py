@@ -205,7 +205,7 @@ def prepare_work_dir(work_dir: Path, testsuite_root: Path, tests_root: Path,
 
   # Shared, read-only inputs are linked, not copied: resources/ alone is >100 MB.
   for shared in ("resources", "references"):
-    source = testsuite_root / shared
+    source = tests_root / shared
     if source.is_dir():
       link_or_copy(source, work_dir / shared)
 
