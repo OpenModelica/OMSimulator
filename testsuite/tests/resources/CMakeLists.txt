@@ -12,6 +12,7 @@ set(OM_OMS_TESTSUITE_RESOURCES_FMUS
         ${CMAKE_CURRENT_SOURCE_DIR}/B
         ${CMAKE_CURRENT_SOURCE_DIR}/BouncingBall
         ${CMAKE_CURRENT_SOURCE_DIR}/BouncingBall3
+        ${CMAKE_CURRENT_SOURCE_DIR}/ClockedStepBoundary
         ${CMAKE_CURRENT_SOURCE_DIR}/Dahlquist
         ${CMAKE_CURRENT_SOURCE_DIR}/Dahlquist3
         ${CMAKE_CURRENT_SOURCE_DIR}/DualMassOscillator.System1

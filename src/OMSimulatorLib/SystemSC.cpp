@@ -881,6 +881,15 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
   {
     const fmi3Float64 tout = std::min(tnext, end_time);
 
+    // CVode rejects an interval it cannot tell apart from zero (CV_TOO_CLOSE)
+    // There is nothing left to integrate in it; assume end_time is reached.
+    if (tout - time < 2.0 * SUN_UNIT_ROUNDOFF * std::max(std::fabs(time), std::fabs(tout)))
+    {
+      logDebug("CVode: skipping degenerate interval " + std::to_string(time) + " -> " + std::to_string(tout));
+      time = end_time;
+      break;
+    }
+
     logDebug("CVode: " + std::to_string(time) + " -> " + std::to_string(tout));
     for (size_t j=0, k=0; j < fmus.size(); ++j)
       for (size_t i=0; i < nStates[j]; ++i, ++k)
