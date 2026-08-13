@@ -881,12 +881,8 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
   {
     const fmi3Float64 tout = std::min(tnext, end_time);
 
-    // CVode rejects an interval it cannot tell apart from zero (CV_TOO_CLOSE),
-    // and it only tests for that on the first call after a re-init - which is
-    // exactly the call that follows every event handled below. end_time is
-    // accumulated by this loop while the event times come from the FMU, so an
-    // event on the last ULP before end_time leaves precisely such an interval.
-    // There is nothing left to integrate in it; take end_time as reached.
+    // CVode rejects an interval it cannot tell apart from zero (CV_TOO_CLOSE)
+    // There is nothing left to integrate in it; assume end_time is reached.
     if (tout - time < 2.0 * SUN_UNIT_ROUNDOFF * std::max(std::fabs(time), std::fabs(tout)))
     {
       logDebug("CVode: skipping degenerate interval " + std::to_string(time) + " -> " + std::to_string(tout));
