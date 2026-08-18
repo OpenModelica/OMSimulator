@@ -32,5 +32,7 @@ Download = "https://pypi.org/project/OMSimulator/#files"
 packages = ["OMSimulator"] ## dynamically created
 zip-safe = false
 
-[tool.setuptools.cmdclass]
-build_py = "build_helpers.OMSInstaller"
+[tool.setuptools.package-data]
+OMSimulator = ["**/*"]
+
+@OMS_PIP_CMDCLASS@
