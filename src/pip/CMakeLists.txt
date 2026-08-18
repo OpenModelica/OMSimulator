@@ -24,4 +24,11 @@ if(OMS_ENABLE_LOCAL_PIP)
   install(DIRECTORY "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/OMSimulator/" DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/install/OMSimulator/")
   # Copy the platform-specific OMSimulator shared library
   install(FILES "$<TARGET_FILE:OMSimulatorLib>" DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/install/OMSimulator/")
+
+  find_package(Python COMPONENTS Interpreter REQUIRED)
+  add_custom_target(pip_install
+    COMMAND "${Python_EXECUTABLE}" -m pip install .
+    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/install"
+    USES_TERMINAL
+  )
 endif()
