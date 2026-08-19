@@ -8,6 +8,7 @@ project(OMSimulator)
 option(OMS_ENABLE_OMSimulator "Enable OMSimulator component" ON)
 option(OMS_ENABLE_OMSimulatorGui "Enable OMSimulator GUI component" OFF)
 option(OMS_ENABLE_PIP "Enable pip component" OFF)
+option(OMS_ENABLE_LOCAL_PIP "Prepare pip package using local OMSimulator build" OFF)
 option(OMS_ENABLE_TESTSUITE "Enable the OMSimulator testsuite" OFF)
 option(OMS_ENABLE_COVERAGE "Instrument the OMSimulator C++ sources for code coverage" OFF)
 
@@ -86,7 +87,7 @@ if(OMS_ENABLE_OMSimulatorGui)
   add_subdirectory(src/OMSimulatorGui)
 endif()
 
-if(OMS_ENABLE_PIP)
+if(OMS_ENABLE_PIP OR OMS_ENABLE_LOCAL_PIP)
   add_subdirectory(src/pip)
 endif()
 
