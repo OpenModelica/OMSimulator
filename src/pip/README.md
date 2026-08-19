@@ -10,6 +10,10 @@ The package can be installed in two ways:
 2. **Local installation** — the package is prepared from the OMSimulator build and
    install tree without downloading any binaries.
 
+# Standard installation
+```bash
+pip install OMSimulator
+```
 # OMSimulator-local-pip
 
 The local pip installation builds the OMSimulator Python package from the
