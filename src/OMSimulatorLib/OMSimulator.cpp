@@ -61,12 +61,6 @@
 #include <string>
 #include <thread>
 
-#if defined(OMS_STATIC)
-extern "C"
-{
-  #include "../OMSimulatorLua/OMSimulatorLua.c"
-}
-#endif
 
 void oms_setLoggingCallback(void (*cb)(oms_message_type_enu_t type, const char* message))
 {
@@ -1235,26 +1229,7 @@ oms_status_enu_t oms_RunFile(const char* filename)
   }
   else if (type == ".lua")
   {
-#if defined(OMS_STATIC)
-    lua_State *L = luaL_newstate();
-    luaL_openlibs(L);
-    luaopen_OMSimulatorLua(L);
-    if (luaL_loadfile(L, filename)) {
-      logError(lua_tostring(L, -1));
-      lua_close(L);
-      return oms_status_error;
-    }
-
-    if (lua_pcall(L, 0, 0, 0)) {
-      logError(lua_tostring(L, -1));
-      lua_close(L);
-      return oms_status_error;
-    }
-
-    lua_close(L);
-#else
-    return logError("Lua is only supported in the static version of OMSimulatorLib");
-#endif
+    return logError("Lua support is deprecated. Please use python scripts instead.");
   }
   else
     return logError("Not able to process file '" + std::string(filename) + "'\nUse OMSimulator --help for more information.");
