@@ -103,7 +103,6 @@ target_link_libraries(OMSimulatorLib
                           oms::3rd::fmi4c
                           oms::3rd::minizip
                           oms::3rd::zlib
-                          oms::3rd::lua
                           oms::3rd::pugixml::header
                           oms::3rd::json::header
                           oms::3rd::ctpl::header)
@@ -134,7 +133,6 @@ target_link_libraries(OMSimulatorLib_static
                           oms::3rd::fmi4c
                           oms::3rd::minizip
                           oms::3rd::zlib
-                          oms::3rd::lua
                           oms::3rd::pugixml::header
                           oms::3rd::json::header
                           oms::3rd::ctpl::header)

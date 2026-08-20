@@ -73,7 +73,6 @@ add_subdirectory(3rdParty)
 # Add project modules
 add_subdirectory(include)
 add_subdirectory(src/OMSimulatorLib)
-add_subdirectory(src/OMSimulatorLua)
 add_subdirectory(src/OMSimulatorPython)
 add_subdirectory(src/OMSimulatorServer)
 add_subdirectory(doc)
