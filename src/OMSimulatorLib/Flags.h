@@ -106,7 +106,7 @@ namespace oms
     const std::string re_mode = "(me|cs)";
     const std::string re_double = "((\\+|-)?[[:digit:]]+)(\\.(([[:digit:]]+)?))?((e|E)((\\+|-)?)[[:digit:]]+)?";
     const std::string re_number = "[[:digit:]]+";
-    const std::string re_filename = ".+(\\.fmu|\\.ssp)";
+    const std::string re_filename = ".+(\\.fmu|\\.ssp|\\.lua)";
     const std::string re_solver = "(euler|cvode)";
 
   public:
