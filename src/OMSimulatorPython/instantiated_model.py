@@ -483,27 +483,19 @@ class InstantiatedModel:
 
   def _setReal(self, mapped_cref: str, value: float):
     self.apiCall.append(f'oms_setReal("{mapped_cref}", {value})')
-    status = Capi.setReal(mapped_cref, value) # Get the value from the CAPI
-    if status != Status.ok:
-      raise RuntimeError(f"Failed to set value for {mapped_cref}: {status}")
+    return Capi.setReal(mapped_cref, value) # Get the value from the CAPI
 
   def _setInteger(self, mapped_cref: str, value: int):
     self.apiCall.append(f'oms_setInteger("{mapped_cref}", {value})')
-    status = Capi.setInteger(mapped_cref, value) # Get the value from the CAPI
-    if status != Status.ok:
-      raise RuntimeError(f"Failed to set value for {mapped_cref}: {status}")
+    return Capi.setInteger(mapped_cref, value) # Get the value from the CAPI
 
   def _setBoolean(self, mapped_cref: str, value: bool):
     self.apiCall.append(f'oms_setBoolean("{mapped_cref}", {value})')
-    status = Capi.setBoolean(mapped_cref, value) # Get the value from the CAPI
-    if status != Status.ok:
-      raise RuntimeError(f"Failed to set value for {mapped_cref}: {status}")
+    return Capi.setBoolean(mapped_cref, value) # Get the value from the CAPI
 
   def _setString(self, mapped_cref: str, value: str):
     self.apiCall.append(f'oms_setString("{mapped_cref}", {value})')
-    status = Capi.setString(mapped_cref, value) # Get the value from the CAPI
-    if status != Status.ok:
-      raise RuntimeError(f"Failed to set value for {mapped_cref}: {status}")
+    return Capi.setString(mapped_cref, value) # Get the value from the CAPI
 
   def getValue(self, cref: CRef):
     name = ".".join(cref.names)
@@ -538,27 +530,19 @@ class InstantiatedModel:
         raise TypeError(f"Unsupported type: {type}")
 
   def _getReal(self, cref: CRef):
-    value, status = Capi.getReal(cref) # Get the value from the CAPI
-    if status != Status.ok:
-      raise RuntimeError(f"Failed to get value for {cref}: {status}")
+    (value, _) = Capi.getReal(cref) # Get the value from the CAPI
     return value
 
   def _getInteger(self, cref: CRef):
-    value, status = Capi.getInteger(cref)
-    if status != Status.ok:
-      raise RuntimeError(f"Failed to get value for {cref}: {status}")
+    (value, _) = Capi.getInteger(cref)
     return value
 
   def _getBoolean(self, cref: CRef):
-    value, status = Capi.getBoolean(cref)
-    if status != Status.ok:
-      raise RuntimeError(f"Failed to get value for {cref}: {status}")
+    (value, _) = Capi.getBoolean(cref)
     return value
 
   def _getString(self, cref: CRef):
-    value, status = Capi.getString(cref)
-    if status != Status.ok:
-      raise RuntimeError(f"Failed to get value for {cref}: {status}")
+    (value, _) = Capi.getString(cref)
     return value
 
   def initialize(self):
