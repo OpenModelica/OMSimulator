@@ -112,8 +112,10 @@ def _runFMU(path: Path, args: argparse.Namespace) -> None:
   fmu.stepSize = args.stepSize
   fmu.instantiate()  # applies the settings above (falling back to the FMU's DefaultExperiment)
 
-  if args.solver is not None:
+  if args.solver is not None and args.mode == 'me':
     fmu.setSolver(args.solver)
+  elif args.mode == 'cs':
+    fmu.setSolver('ma')
   fmu.setResultFile(args.resultFile or f"{path.stem}_res.mat")
 
   exp = fmu.appliedExperiment
