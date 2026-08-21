@@ -146,17 +146,17 @@ _GLOBAL_FLAGS = {
 }
 
 def main(argv=None) -> int:
-  parser = argparse.ArgumentParser(prog='OMSimulatorPython3', description=__doc__)
+  parser = argparse.ArgumentParser(prog='OMSimulatorPython3', description=__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
   parser.add_argument('model', type=Path, help='Path to a .ssp or .fmu file to simulate')
-  parser.add_argument('--result-file', help='Override the result file name')
-  parser.add_argument('--start-time', type=float, help='Override the simulation start time')
-  parser.add_argument('--stop-time', type=float, help='Override the simulation stop time')
-  parser.add_argument('--tolerance', type=float, help='Override the solver tolerance (.fmu only)')
-  parser.add_argument('--step-size', type=float, help='Override the (maximum) simulation step size (.fmu only)')
-  parser.add_argument('--mode', choices=['cs', 'me'], help="Force 'cs' (co-simulation) or 'me' (model exchange) for FMUs that export both " "kinds (.fmu only)")
-  parser.add_argument('--solver', choices=['euler', 'cvode'], help='Set the ODE solver for model-exchange FMUs (.fmu, mode=me only)')
-  parser.add_argument('--stripRoot', action='store_true', help='Remove the root system prefix from exported signal names')
-  parser.add_argument('--skipCSVHeader', action='store_true', help='Skip the CSV delimiter row in the header of .csv result files (already the default)')
+  parser.add_argument('--resultFile', default='default_res.mat', help='Override the result file name')
+  parser.add_argument('--startTime', type=float, default=0.0, help='Override the simulation start time')
+  parser.add_argument('--stopTime', type=float, default=1.0, help='Override the simulation stop time')
+  parser.add_argument('--tolerance', type=float, default=1e-4, help='Override the solver tolerance (.fmu only)')
+  parser.add_argument('--stepSize', type=float, default=1e-3, help='Override the (maximum) simulation step size (.fmu only)')
+  parser.add_argument('--mode', choices=['cs', 'me'], default='me', help="Force 'cs' (co-simulation) or 'me' (model exchange) for FMUs that export both " "kinds (.fmu only)")
+  parser.add_argument('--solver', choices=['euler', 'cvode'], default='cvode', help='Set the ODE solver for model-exchange FMUs (.fmu, mode=me only)')
+  parser.add_argument('--stripRoot', action='store_true', default=True, help='Remove the root system prefix from exported signal names')
+  parser.add_argument('--skipCSVHeader', action='store_true', default=True, help='Skip the CSV delimiter row in the header of .csv result files (already the default)')
   parser.add_argument('--validate', action='store_true', help='Only validate the file against its schema; do not simulate')
   args = parser.parse_args(argv)
 
