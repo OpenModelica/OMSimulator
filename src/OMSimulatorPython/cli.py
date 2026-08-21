@@ -77,10 +77,10 @@ def _runSSP(path: Path, args: argparse.Namespace) -> None:
   ssp = SSP(str(path))
   model = ssp.instantiate()
 
-  if args.stop_time is not None:
-    model.setStopTime(args.stop_time)
-  if args.result_file is not None:
-    model.setResultFile(args.result_file)
+  if args.stopTime is not None:
+    model.setStopTime(args.stopTime)
+  if args.resultFile is not None:
+    model.setResultFile(args.resultFile)
 
   model.initialize()
   model.simulate()
@@ -106,15 +106,15 @@ def _runFMU(path: Path, args: argparse.Namespace) -> None:
   # start/stop/tolerance/stepSize must be set before instantiate(): they need to reach
   # the FMU's fmi2SetupExperiment call, not just the solver's own bookkeeping, otherwise
   # the FMU's first recorded sample won't reflect the override (only later steps would).
-  fmu.startTime = args.start_time
-  fmu.stopTime = args.stop_time
+  fmu.startTime = args.startTime
+  fmu.stopTime = args.stopTime
   fmu.tolerance = args.tolerance
-  fmu.stepSize = args.step_size
+  fmu.stepSize = args.stepSize
   fmu.instantiate()  # applies the settings above (falling back to the FMU's DefaultExperiment)
 
   if args.solver is not None:
     fmu.setSolver(args.solver)
-  fmu.setResultFile(args.result_file or f"{path.stem}_res.mat")
+  fmu.setResultFile(args.resultFile or f"{path.stem}_res.mat")
 
   exp = fmu.appliedExperiment
   kind_str = _FMU_KIND_STR.get(fmu.mode, fmu.mode)
@@ -158,6 +158,37 @@ def main(argv=None) -> int:
   parser.add_argument('--stripRoot', action='store_true', default=True, help='Remove the root system prefix from exported signal names')
   parser.add_argument('--skipCSVHeader', action='store_true', default=True, help='Skip the CSV delimiter row in the header of .csv result files (already the default)')
   parser.add_argument('--validate', action='store_true', help='Only validate the file against its schema; do not simulate')
+  parser.add_argument('--addParametersToCSV', action='store_true', help='Export parameters to a .csv file')
+  parser.add_argument('--algLoopSolver', choices=['fixedpoint', 'kinsol'], default='kinsol', help='Specifies the loop solver method (fixedpoint, kinsol) used for algebraic loops spanning multiple components')
+  parser.add_argument('--clearAllOptions', action='store_true', help='Reset all flags to their default values')
+  parser.add_argument('--CVODEMaxErrTestFails', type=int, default=100, help='Maximum number of error test failures for CVODE')
+  parser.add_argument('--CVODEMaxNLSFailures', type=int, default=100, help='Maximum number of nonlinear convergence failures for CVODE')
+  parser.add_argument('--CVODEMaxNLSIterations', type=int, default=5, help='Maximum number of nonlinear solver iterations for CVODE')
+  parser.add_argument('--CVODEMaxSteps', type=int, default=1000, help='Maximum number of steps for CVODE')
+  parser.add_argument('--deleteTempFiles', action=argparse.BooleanOptionalAction, default=True, help='Delete temporary files as soon as they are no longer needed')
+  parser.add_argument('--directionalDerivatives', action=argparse.BooleanOptionalAction, default=True, help='Use directional derivatives to calculate the Jacobian for algebraic loops')
+  parser.add_argument('--dumpAlgLoops', action='store_true', help='Dump information for algebraic loops')
+  parser.add_argument('--emitEvents', action=argparse.BooleanOptionalAction, default=True, help='Emit events during simulation')
+  parser.add_argument('--ignoreInitialUnknowns', action='store_true', help='Ignore initial unknowns from the modelDescription.xml')
+  parser.add_argument('--initialStepSize', type=float, default=1e-6, help='Specify the initial step size')
+  parser.add_argument('--inputExtrapolation', action='store_true', help='Enable input extrapolation using derivative information')
+  parser.add_argument('--intervals', '-i', type=int, default=500, help='Specify the number of communication points (arg > 1)')
+  parser.add_argument('--logFile', '-l', help='Specify the log file (stdout is used if no log file is specified)')
+  parser.add_argument('--logLevel', type=int, default=0, help='Set the log level (0: default, 1: debug, 2: debug+trace)')
+  parser.add_argument('--master', default='ma', help='Specify the master algorithm (ma)')
+  parser.add_argument('--maxEventIteration', type=int, default=100, help='Specify the maximum number of iterations for handling a single event')
+  parser.add_argument('--maxLoopIteration', type=int, default=10, help='Specify the maximum number of iterations for solving algebraic loops between system-level components. Internal algebraic loops of components are not affected.')
+  parser.add_argument('--minimumStepSize', type=float, default=1e-12, help='Specify the minimum step size')
+  parser.add_argument('--numProcs', '-n', type=int, default=1, help='Specify the maximum number of processors to use (0=auto, 1=default)')
+  parser.add_argument('--progressBar', action='store_true', help='Show a progress bar for the simulation progress in the terminal')
+  parser.add_argument('--realTime', action='store_true', help='Enable experimental feature for (soft) real-time co-simulation')
+  parser.add_argument('--solverStats', action='store_true', help='Add solver stats to the result file, e.g., step size; not supported for all solvers')
+  parser.add_argument('--suppressPath', action='store_true', help='Suppress path information in info messages; especially useful for testing')
+  parser.add_argument('--tempDir', default='.', help='Specify the temporary directory')
+  parser.add_argument('--timeout', type=int, default=0, help='Specify the maximum allowed time in seconds for running a simulation (0 disables)')
+  parser.add_argument('--wallTime', action='store_true', help='Add wall time information to the result file')
+  parser.add_argument('--workingDir', default='.', help='Specify the working directory')
+  parser.add_argument('--zeroNominal', action='store_true', help='Accept FMUs with invalid nominal values and replace the invalid nominal values with 1.0')
   args = parser.parse_args(argv)
 
   handler = _HANDLERS.get(args.model.suffix.lower())
