@@ -140,6 +140,13 @@ _HANDLERS = {
   '.fmu': _runFMU,
 }
 
+
+def _has_option(argv, option):
+  return any(
+    arg == option or arg.startswith(option + '=')
+    for arg in argv
+  )
+
 # Boolean CLI flags that map 1:1 to a global native command line option (applies
 # process-wide, regardless of .fmu/.ssp). args attribute name -> native option string.
 _GLOBAL_FLAGS = {
@@ -147,7 +154,43 @@ _GLOBAL_FLAGS = {
   'skipCSVHeader': '--skipCSVHeader=true',
 }
 
+_GLOBAL_OPTIONS = {
+  'addParametersToCSV': '--addParametersToCSV',
+  'algLoopSolver': '--algLoopSolver',
+  'clearAllOptions': '--clearAllOptions',
+  'CVODEMaxErrTestFails': '--CVODEMaxErrTestFails',
+  'CVODEMaxNLSFailures': '--CVODEMaxNLSFailures',
+  'CVODEMaxNLSIterations': '--CVODEMaxNLSIterations',
+  'CVODEMaxSteps': '--CVODEMaxSteps',
+  'deleteTempFiles': '--deleteTempFiles',
+  'directionalDerivatives': '--directionalDerivatives',
+  'dumpAlgLoops': '--dumpAlgLoops',
+  'emitEvents': '--emitEvents',
+  'ignoreInitialUnknowns': '--ignoreInitialUnknowns',
+  'initialStepSize': '--initialStepSize',
+  'inputExtrapolation': '--inputExtrapolation',
+  'intervals': '--intervals',
+  'logFile': '--logFile',
+  'logLevel': '--logLevel',
+  'master': '--master',
+  'maxEventIteration': '--maxEventIteration',
+  'maxLoopIteration': '--maxLoopIteration',
+  'minimumStepSize': '--minimumStepSize',
+  'numProcs': '--numProcs',
+  'progressBar': '--progressBar',
+  'realTime': '--realTime',
+  'solverStats': '--solverStats',
+  'suppressPath': '--suppressPath',
+  'tempDir': '--tempDir',
+  'timeout': '--timeout',
+  'wallTime': '--wallTime',
+  'workingDir': '--workingDir',
+  'zeroNominal': '--zeroNominal',
+}
 def main(argv=None) -> int:
+  if argv is None:
+    argv = sys.argv[1:]
+
   parser = argparse.ArgumentParser(prog='OMSimulatorPython3', description=__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
   parser.add_argument('model', type=Path, help='Path to a .ssp or .fmu file to simulate')
   parser.add_argument('--resultFile', default='default_res.mat', help='Override the result file name')
@@ -174,23 +217,24 @@ def main(argv=None) -> int:
   parser.add_argument('--ignoreInitialUnknowns', action='store_true', help='Ignore initial unknowns from the modelDescription.xml')
   parser.add_argument('--initialStepSize', type=float, default=1e-6, help='Specify the initial step size')
   parser.add_argument('--inputExtrapolation', action='store_true', help='Enable input extrapolation using derivative information')
-  parser.add_argument('--intervals', '-i', type=int, default=500, help='Specify the number of communication points (arg > 1)')
-  parser.add_argument('--logFile', '-l', help='Specify the log file (stdout is used if no log file is specified)')
+  parser.add_argument('--intervals', type=int, default=500, help='Specify the number of communication points (arg > 1)')
+  parser.add_argument('--logFile', help='Specify the log file (stdout is used if no log file is specified)')
   parser.add_argument('--logLevel', type=int, default=0, help='Set the log level (0: default, 1: debug, 2: debug+trace)')
   parser.add_argument('--master', default='ma', help='Specify the master algorithm (ma)')
   parser.add_argument('--maxEventIteration', type=int, default=100, help='Specify the maximum number of iterations for handling a single event')
   parser.add_argument('--maxLoopIteration', type=int, default=10, help='Specify the maximum number of iterations for solving algebraic loops between system-level components. Internal algebraic loops of components are not affected.')
   parser.add_argument('--minimumStepSize', type=float, default=1e-12, help='Specify the minimum step size')
-  parser.add_argument('--numProcs', '-n', type=int, default=1, help='Specify the maximum number of processors to use (0=auto, 1=default)')
+  parser.add_argument('--numProcs', type=int, default=1, help='Specify the maximum number of processors to use (0=auto, 1=default)')
   parser.add_argument('--progressBar', action='store_true', help='Show a progress bar for the simulation progress in the terminal')
   parser.add_argument('--realTime', action='store_true', help='Enable experimental feature for (soft) real-time co-simulation')
   parser.add_argument('--solverStats', action='store_true', help='Add solver stats to the result file, e.g., step size; not supported for all solvers')
   parser.add_argument('--suppressPath', action='store_true', help='Suppress path information in info messages; especially useful for testing')
   parser.add_argument('--tempDir', default='.', help='Specify the temporary directory')
   parser.add_argument('--timeout', type=int, default=0, help='Specify the maximum allowed time in seconds for running a simulation (0 disables)')
-  parser.add_argument('--wallTime', action='store_true', help='Add wall time information to the result file')
+  parser.add_argument('--wallTime', action='store_true',help='Add wall time information to the result file')
   parser.add_argument('--workingDir', default='.', help='Specify the working directory')
   parser.add_argument('--zeroNominal', action='store_true', help='Accept FMUs with invalid nominal values and replace the invalid nominal values with 1.0')
+  parser.add_argument('--version', action='version', version=f'{Capi.getVersion()}')
   args = parser.parse_args(argv)
 
   handler = _HANDLERS.get(args.model.suffix.lower())
@@ -205,6 +249,19 @@ def main(argv=None) -> int:
   for flag_name, option in _GLOBAL_FLAGS.items():
     if getattr(args, flag_name):
       status = Capi.setCommandLineOption(option)
+      if status != Status.ok:
+        raise RuntimeError(f"Failed to set {option}: {status}")
+
+  for attr, option in _GLOBAL_OPTIONS.items():
+    if _has_option(argv, option):
+      value = getattr(args, attr)
+      if value == "":
+        value = "''"  # empty string needs to be quoted for the native command line parser
+
+      if isinstance(value, bool):
+        value = str(value).lower()
+
+      status = Capi.setCommandLineOption(f'{option}={value}')
       if status != Status.ok:
         raise RuntimeError(f"Failed to set {option}: {status}")
 
