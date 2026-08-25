@@ -2903,14 +2903,14 @@ oms_status_enu_t oms::System::configureDcpSlave(port_t port)
 
     //Create server DCP manager
     dcpManager = new DcpManagerSlave(slaveDescription, dcpDriver->getDcpDriver());
-    dcpManager->setInitializeCallback<SYNC>(        std::bind(&dcpInitialize, this));
-    dcpManager->setConfigureCallback<SYNC>(         std::bind(&dcpConfigure, this));
-    dcpManager->setSynchronizingStepCallback<SYNC>( std::bind(&dcpDoStep, this, std::placeholders::_1));
-    dcpManager->setSynchronizedStepCallback<SYNC>(  std::bind(&dcpDoStep, this, std::placeholders::_1));
-    dcpManager->setRunningStepCallback<SYNC>(       std::bind(&dcpDoStep, this, std::placeholders::_1));
-    dcpManager->setRunningNRTStepCallback<SYNC>(    std::bind(&dcpDoStep, this, std::placeholders::_1));
-    dcpManager->setTimeResListener<SYNC>(           std::bind(&dcpSetTimeRes, this, std::placeholders::_1, std::placeholders::_2));
-    dcpManager->setStopCallback<SYNC>(              std::bind(&dcpStop, this));
+    dcpManager->setInitializeCallback<SYNC>(        std::bind(&oms::System::dcpInitialize, this));
+    dcpManager->setConfigureCallback<SYNC>(         std::bind(&oms::System::dcpConfigure, this));
+    dcpManager->setSynchronizingStepCallback<SYNC>( std::bind(&oms::System::dcpDoStep, this, std::placeholders::_1));
+    dcpManager->setSynchronizedStepCallback<SYNC>(  std::bind(&oms::System::dcpDoStep, this, std::placeholders::_1));
+    dcpManager->setRunningStepCallback<SYNC>(       std::bind(&oms::System::dcpDoStep, this, std::placeholders::_1));
+    dcpManager->setRunningNRTStepCallback<SYNC>(    std::bind(&oms::System::dcpDoStep, this, std::placeholders::_1));
+    dcpManager->setTimeResListener<SYNC>(           std::bind(&oms::System::dcpSetTimeRes, this, std::placeholders::_1, std::placeholders::_2));
+    dcpManager->setStopCallback<SYNC>(              std::bind(&oms::System::dcpStop, this));
 
     dcpManager->addLogListener([this](auto&& arg) {
     dcpLog.logOstream(std::forward<decltype(arg)>(arg));
