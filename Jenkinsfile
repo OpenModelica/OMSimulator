@@ -310,7 +310,7 @@ IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 cmake --build build/ --config Release --parallel %NUMBER_OF_PROCESSORS% --target install -v
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 
-call install\\bin\\OMSimulator.exe --version
+call install\\bin\\OMSimulator.bat --version
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 
 C:\\OMDevUCRT\\tools\\msys\\usr\\bin\\sh --login -i '${env.WORKSPACE}/buildZip.sh'

@@ -58,6 +58,7 @@ _FMU_KIND_STR = {
 _FMU_SOLVER = {
   'euler': 2,
   'cvode': 3,
+  'ma':6
 }
 
 class FMU:
@@ -631,9 +632,6 @@ class FMU:
       raise RuntimeError("FMU must be instantiated before setting the solver")
     if method not in _FMU_SOLVER:
       raise ValueError(f"Invalid solver '{method}': expected one of {sorted(_FMU_SOLVER)}")
-    if self.mode != 'me':
-      raise ValueError(f"Cannot set solver '{method}': '{self.instanceName}' is not a model-exchange FMU "
-                        f"({_FMU_KIND_STR.get(self.mode, self.mode)})")
     status = Capi.setSolver(f"{self.instanceName}.root", _FMU_SOLVER[method])
     if status != Status.ok:
       raise RuntimeError(f"Failed to set solver: {status}")

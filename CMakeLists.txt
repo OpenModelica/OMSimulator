@@ -5,7 +5,6 @@ cmake_minimum_required(VERSION 3.14)
 project(OMSimulator)
 
 # Options to enable/disable specific components
-option(OMS_ENABLE_OMSimulator "Enable OMSimulator component" ON)
 option(OMS_ENABLE_OMSimulatorGui "Enable OMSimulator GUI component" OFF)
 option(OMS_ENABLE_PIP "Enable pip component" OFF)
 option(OMS_ENABLE_LOCAL_PIP "Prepare pip package using local OMSimulator build" OFF)
@@ -77,10 +76,6 @@ add_subdirectory(src/OMSimulatorPython)
 add_subdirectory(src/OMSimulatorServer)
 add_subdirectory(doc)
 add_subdirectory(schema)
-
-if(OMS_ENABLE_OMSimulator)
-  add_subdirectory(src/OMSimulator)
-endif()
 
 if(OMS_ENABLE_OMSimulatorGui)
   add_subdirectory(src/OMSimulatorGui)
