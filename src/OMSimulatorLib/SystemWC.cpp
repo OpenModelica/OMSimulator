@@ -490,7 +490,7 @@ oms_status_enu_t oms::SystemWC::doStep()
       }
 
       time = tNext;
-      bool emitted;
+      bool emitted = false;
       if (isTopLevelSystem())
         getModel().emit(time, false, &emitted);
       // updating the inputs is the only thing that can happen at a communication
@@ -624,7 +624,7 @@ oms_status_enu_t oms::SystemWC::doStep()
       else
       {
         time = tNext;
-        bool emitted;
+        bool emitted = false;
         if (isTopLevelSystem())
           getModel().emit(time, false, &emitted);
         // see above: only a changed input introduces a discontinuity here
