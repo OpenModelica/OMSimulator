@@ -351,7 +351,7 @@ class InstantiatedModel:
       raise KeyError(f"Missing required key: '{systemName}'")
 
     ## apply ssm mapping if exist and apply start values from mapped parameters
-    if ssm and ssm.mappingEntry:
+    if ssm and ssm.filename:
       for source, targets in ssm.mappingEntry.items():
         if CRef(source) in value.start_values:
           (source_value, type, _, _) = value.start_values[CRef(source)]
