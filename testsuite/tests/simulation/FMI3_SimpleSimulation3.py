@@ -68,7 +68,6 @@ instantiated_model.delete()
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
 ##
-## Loading FMI version 3...
 ## info:    Result file: FMI3_SimpleSimulation3_res.mat (bufferSize=10)
 ## info: After simulation:
 ## info:    default.param1: 10.81

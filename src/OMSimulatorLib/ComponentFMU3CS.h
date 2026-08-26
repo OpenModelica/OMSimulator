@@ -106,7 +106,7 @@ namespace oms
     oms_status_enu_t updateOrDeleteStartValueInReplacedComponent(std::vector<std::string>& warningList);
 
     oms_status_enu_t setFmuTime(double time) {this->time = time; return oms_status_ok;}
-    fmiHandle* getFMU() {return fmu;}
+    fmuHandle* getFMU() {return fmu;}
     std::vector<Variable> getAllVariables() {return allVariables;}
 
     oms_status_enu_t getRealOutputDerivative(const ComRef& cref, SignalDerivative& der);
@@ -146,7 +146,8 @@ namespace oms
 
   private:
     fmi3LogMessageCallback omsfmi3logger;
-    fmiHandle *fmu = NULL;
+    fmuHandle *fmu = NULL;
+    fmi3InstanceHandle *instance = NULL;
     FMUInfo fmuInfo;
 
     std::vector<Variable> allVariables;
