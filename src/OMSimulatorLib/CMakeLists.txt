@@ -107,7 +107,9 @@ target_include_directories(dcplib
                            ${CMAKE_SOURCE_DIR}/3rdParty/DCPLib/include/zip
                            ${CMAKE_SOURCE_DIR}/3rdParty/asio/include)
 target_link_libraries(OMSimulatorLib PRIVATE dcplib)
-target_link_libraries(OMSimulatorLib PUBLIC ws2_32)
+if(WIN32)
+  target_link_libraries(OMSimulatorLib PUBLIC ws2_32)
+endif()
 
 target_include_directories(OMSimulatorLib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -162,7 +164,9 @@ target_link_libraries(OMSimulatorLib_static PRIVATE dcplib)
 
 target_link_libraries(OMSimulatorLib_static PUBLIC ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
 
-target_link_libraries(OMSimulatorLib_static PUBLIC ws2_32)
+if(WIN32)
+  target_link_libraries(OMSimulatorLib_static PUBLIC ws2_32)
+endif()
 
 if(MINGW)
   target_link_libraries(OMSimulatorLib_static PUBLIC shlwapi)
