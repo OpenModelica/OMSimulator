@@ -49,7 +49,7 @@ namespace oms
   class Variable
   {
   public:
-    Variable(fmiHandle * fmi4c, int index, oms_component_enu_t componentType);
+    Variable(fmuHandle * fmi4c, int index, oms_component_enu_t componentType);
     ~Variable();
 
     void markAsState(size_t der_index) { is_state = true; this->der_index = der_index; }
@@ -108,8 +108,8 @@ namespace oms
 
   private:
 
-    void configureFMI2Variable(fmiHandle *fmi4c, int index);
-    void configureFMI3Variable(fmiHandle *fmi4c, int index);
+    void configureFMI2Variable(fmuHandle *fmi4c, int index);
+    void configureFMI3Variable(fmuHandle *fmi4c, int index);
 
     ComRef cref;
     std::string description;

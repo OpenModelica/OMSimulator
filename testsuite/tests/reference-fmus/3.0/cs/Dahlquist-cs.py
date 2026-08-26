@@ -30,7 +30,6 @@ else:
   print("signal x is not equal", flush=True)
 
 ## Result:
-## Loading FMI version 3...
 ## info:    Result file: Dahlquist-cs3.mat (bufferSize=10)
 ## signal x is equal
 ## endResult

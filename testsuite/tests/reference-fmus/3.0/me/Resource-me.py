@@ -31,7 +31,6 @@ instantiated_model.terminate()
 instantiated_model.delete()
 
 ## Result:
-## Loading FMI version 3...
 ## info:    model doesn't contain any continuous state
 ## info:    maximum step size for 'model.root': 0.001000
 ## info:    Result file: Resource-me3.mat (bufferSize=10)

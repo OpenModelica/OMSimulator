@@ -34,7 +34,6 @@ else:
   print("signal v is not equal", flush=True)
 
 ## Result:
-## Loading FMI version 3...
 ## info:    Result file: BouncingBall-cs3.mat (bufferSize=10)
 ## signal h is equal
 ## signal v is equal

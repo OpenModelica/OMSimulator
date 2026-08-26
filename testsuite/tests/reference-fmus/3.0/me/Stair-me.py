@@ -35,7 +35,6 @@ else:
   print("signal counter is not equal", flush=True)
 
 ## Result:
-## Loading FMI version 3...
 ## info:    model doesn't contain any continuous state
 ## info:    maximum step size for 'model.root': 0.200000
 ## info:    Result file: Stair-me3.mat (bufferSize=10)

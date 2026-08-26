@@ -31,7 +31,6 @@ else:
   print("signal counter is not equal", flush=True)
 
 ## Result:
-## Loading FMI version 3...
 ## info:    Result file: Stair-cs3.mat (bufferSize=10)
 ## signal counter is equal
 ## endResult

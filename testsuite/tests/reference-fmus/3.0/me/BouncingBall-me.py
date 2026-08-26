@@ -37,7 +37,6 @@ else:
   print("signal v is not equal")
 
 ## Result:
-## Loading FMI version 3...
 ## info:    maximum step size for 'model.root': 0.001000
 ## info:    Result file: BouncingBall-me3.mat (bufferSize=10)
 ## info:    Final Statistics for 'model.root':

@@ -39,7 +39,7 @@
 #include "Util.h"
 #include <iostream>
 
-oms::Variable::Variable(fmiHandle* fmi4c, int index_, oms_component_enu_t componentType)
+oms::Variable::Variable(fmuHandle* fmi4c, int index_, oms_component_enu_t componentType)
   : der_index(0), state_index(0), is_state(false), is_der(false), is_continuous_time_state(false), is_continuous_time_der(false), index(index_), fmi2(false), fmi3(false), componentType(componentType)
 {
 
@@ -62,7 +62,7 @@ oms::Variable::Variable(fmiHandle* fmi4c, int index_, oms_component_enu_t compon
 }
 
 
-void oms::Variable::configureFMI2Variable(fmiHandle* fmi4c, int index_)
+void oms::Variable::configureFMI2Variable(fmuHandle* fmi4c, int index_)
 {
   // extract the attributes
   fmi2VariableHandle *var = fmi2_getVariableByIndex(fmi4c, index_+1);
@@ -114,7 +114,7 @@ void oms::Variable::configureFMI2Variable(fmiHandle* fmi4c, int index_)
   }
 }
 
-void oms::Variable::configureFMI3Variable(fmiHandle* fmi4c, int index_)
+void oms::Variable::configureFMI3Variable(fmuHandle* fmi4c, int index_)
 {
   // extract the attributes
   fmi3VariableHandle *var = fmi3_getVariableByIndex(fmi4c, index_+1);

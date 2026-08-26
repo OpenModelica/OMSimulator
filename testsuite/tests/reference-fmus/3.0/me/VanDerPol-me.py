@@ -39,7 +39,6 @@ else:
   print("signal x1 is not equal", flush=True)
 
 ## Result:
-## Loading FMI version 3...
 ## info:    maximum step size for 'model.root': 0.001000
 ## info:    Result file: VanDerPol-me3.mat (bufferSize=10)
 ## info:    Final Statistics for 'model.root':
