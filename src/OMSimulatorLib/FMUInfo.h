@@ -51,7 +51,7 @@ namespace oms
     FMUInfo(const std::string& path);
     ~FMUInfo();
 
-    void update(oms_component_enu_t componentType, fmiHandle* fmi4c);
+    void update(oms_component_enu_t componentType, fmuHandle* fmi4c);
 
     std::string getPath() const {return std::string(path);}
     oms_fmi_kind_enu_t getKind() const {return fmiKind;}
@@ -63,8 +63,8 @@ namespace oms
     std::string getGenerationTool() const {return std::string(generationTool);}
 
   private:
-    void updateFMI2Info(fmiHandle *fmi4c);
-    void updateFMI3Info(fmiHandle *fmi4c);
+    void updateFMI2Info(fmuHandle *fmi4c);
+    void updateFMI3Info(fmuHandle *fmi4c);
 
     // methods to copy the object
     FMUInfo(const FMUInfo& rhs);            ///< not implemented

@@ -57,7 +57,6 @@ instantiated_model.delete()
 ## Result:
 ## warning: Unknown FMI3 base type for var : Binary_input
 ## warning: Unknown FMI3 base type for var : Binary_output
-## Loading FMI version 3...
 ## info:    No result file will be created
 ## info:    Feedthrough.Float32_continuous_input: 3.0999999046325684
 ## info:    Feedthrough.Float64_continuous_input: 3.3

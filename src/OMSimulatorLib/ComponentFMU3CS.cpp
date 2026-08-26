@@ -58,8 +58,8 @@ oms::ComponentFMU3CS::ComponentFMU3CS(const ComRef& cref, System* parentSystem, 
 
 oms::ComponentFMU3CS::~ComponentFMU3CS()
 {
-  if (oms_modelState_virgin != getModel().getModelState())
-    fmi3_freeInstance(fmu);
+  if (instance && oms_modelState_virgin != getModel().getModelState())
+    fmi3_freeInstance(instance);
 
   fmi4c_freeFmu(fmu);
 }
@@ -643,7 +643,8 @@ oms_status_enu_t oms::ComponentFMU3CS::setExportName(const std::string& exportNa
 oms_status_enu_t oms::ComponentFMU3CS::instantiate()
 {
   // TODO investigate fmi3IntermediateUpdateCallback = NULL
-  if(!fmi3_instantiateCoSimulation(fmu, fmi3False, fmi3True, fmi3False, fmi3False, NULL, 0, fmu, omsfmi3logger, NULL))
+  instance = fmi3_instantiateCoSimulation(fmu, fmi3False, fmi3True, fmi3False, fmi3False, NULL, 0, fmu, omsfmi3logger, NULL);
+  if (!instance)
   {
     logInfo("fmi3Instantiate() failed");
     exit(1);
@@ -690,7 +691,7 @@ oms_status_enu_t oms::ComponentFMU3CS::instantiate()
   double relativeTolerance = 0.0;
   getParentSystem()->getTolerance(&relativeTolerance);
 
-  fmi3Status status_ = fmi3_enterInitializationMode(fmu, fmi3False, relativeTolerance, time, fmi3False, getModel().getStopTime());
+  fmi3Status status_ = fmi3_enterInitializationMode(instance, fmi3False, relativeTolerance, time, fmi3False, getModel().getStopTime());
 
   if (fmi3OK != status_) return logError_FMUCall("fmi3_enterInitializationMode", this);
 
@@ -852,7 +853,7 @@ oms_status_enu_t oms::ComponentFMU3CS::initialize()
   CallClock callClock(clock);
 
   // exitInitialization
-  fmi3Status status = fmi3_exitInitializationMode(fmu);
+  fmi3Status status = fmi3_exitInitializationMode(instance);
 
   if (fmi3OK != status) return logError_FMUCall("fmi3_exitInitializationMode", this);
 
@@ -864,18 +865,19 @@ oms_status_enu_t oms::ComponentFMU3CS::initialize()
 oms_status_enu_t oms::ComponentFMU3CS::terminate()
 {
   freeState();
-  fmi3Status fmistatus = fmi3_terminate(fmu);
+  fmi3Status fmistatus = fmi3_terminate(instance);
   if (fmi3OK != fmistatus)
     return logError_Termination(getCref());
 
-  fmi3_freeInstance(fmu);
+  fmi3_freeInstance(instance);
+  instance = NULL;
 
   return oms_status_ok;
 }
 
 oms_status_enu_t oms::ComponentFMU3CS::reset()
 {
-  fmi3Status fmistatus = fmi3_reset(fmu);
+  fmi3Status fmistatus = fmi3_reset(instance);
   if (fmi3OK != fmistatus)
     return logError_ResetFailed(getCref());
 
@@ -884,7 +886,7 @@ oms_status_enu_t oms::ComponentFMU3CS::reset()
   double relativeTolerance = 0.0;
   getParentSystem()->getTolerance(&relativeTolerance);
 
-  fmi3Status status_ = fmi3_enterInitializationMode(fmu, fmi3False, relativeTolerance, time, fmi3True, getModel().getStopTime());
+  fmi3Status status_ = fmi3_enterInitializationMode(instance, fmi3False, relativeTolerance, time, fmi3True, getModel().getStopTime());
   if (fmi3OK != fmistatus) return logError_FMUCall("fmi3_enterInitializationMode", this);
 
   return oms_status_ok;
@@ -901,7 +903,7 @@ oms_status_enu_t oms::ComponentFMU3CS::stepUntil(double stopTime)
 
   while (time < stopTime)
   {
-    fmi3Status status = fmi3_doStep(fmu,  time, hdef, fmi3True, &eventEncountered, &terminateSimulation, &earlyReturn, &lastT);
+    fmi3Status status = fmi3_doStep(instance,  time, hdef, fmi3True, &eventEncountered, &terminateSimulation, &earlyReturn, &lastT);
     time += hdef;
 
     if (status == fmi3Discard)
@@ -922,7 +924,7 @@ oms_status_enu_t oms::ComponentFMU3CS::getBoolean(const fmi3ValueReference& vr, 
   CallClock callClock(clock);
 
   // bool value_;
-  if (fmi3OK != fmi3_getBoolean(fmu, &vr, 1, &value, 1))
+  if (fmi3OK != fmi3_getBoolean(instance, &vr, 1, &value, 1))
     return oms_status_error;
 
   // value = value_ ? true : false;
@@ -1018,7 +1020,7 @@ oms_status_enu_t oms::ComponentFMU3CS::getInteger(const fmi3ValueReference& vr, 
     case oms_signal_numeric_type_INT64:
     {
       int64_t v64;
-      if (fmi3OK != fmi3_getInt64(fmu, &vr, 1, &v64, 1))
+      if (fmi3OK != fmi3_getInt64(instance, &vr, 1, &v64, 1))
         return oms_status_error;
       if (v64 < INT_MIN || v64 > INT_MAX)
         return oms_status_error; // out of int range
@@ -1028,7 +1030,7 @@ oms_status_enu_t oms::ComponentFMU3CS::getInteger(const fmi3ValueReference& vr, 
     case oms_signal_numeric_type_INT32:
     {
       int32_t v32;
-      if (fmi3OK != fmi3_getInt32(fmu, &vr, 1, &v32, 1))
+      if (fmi3OK != fmi3_getInt32(instance, &vr, 1, &v32, 1))
         return oms_status_error;
       value = static_cast<int>(v32); // safe
       break;
@@ -1036,7 +1038,7 @@ oms_status_enu_t oms::ComponentFMU3CS::getInteger(const fmi3ValueReference& vr, 
     case oms_signal_numeric_type_INT16:
     {
       int16_t v16;
-      if (fmi3OK != fmi3_getInt16(fmu, &vr, 1, &v16, 1))
+      if (fmi3OK != fmi3_getInt16(instance, &vr, 1, &v16, 1))
         return oms_status_error;
       value = static_cast<int>(v16); // safe
       break;
@@ -1044,7 +1046,7 @@ oms_status_enu_t oms::ComponentFMU3CS::getInteger(const fmi3ValueReference& vr, 
     case oms_signal_numeric_type_INT8:
     {
       int8_t v8;
-      if (fmi3OK != fmi3_getInt8(fmu, &vr, 1, &v8, 1))
+      if (fmi3OK != fmi3_getInt8(instance, &vr, 1, &v8, 1))
         return oms_status_error;
       value = static_cast<int>(v8); // safe
       break;
@@ -1052,7 +1054,7 @@ oms_status_enu_t oms::ComponentFMU3CS::getInteger(const fmi3ValueReference& vr, 
     case oms_signal_numeric_type_UINT64:
     {
       uint64_t vU64;
-      if (fmi3OK != fmi3_getUInt64(fmu, &vr, 1, &vU64, 1))
+      if (fmi3OK != fmi3_getUInt64(instance, &vr, 1, &vU64, 1))
         return oms_status_error;
       if (vU64 > static_cast<uint64_t>(INT_MAX))
         return oms_status_error; // cannot fit in int
@@ -1062,7 +1064,7 @@ oms_status_enu_t oms::ComponentFMU3CS::getInteger(const fmi3ValueReference& vr, 
     case oms_signal_numeric_type_UINT32:
     {
       uint32_t vU32;
-      if (fmi3OK != fmi3_getUInt32(fmu, &vr, 1, &vU32, 1))
+      if (fmi3OK != fmi3_getUInt32(instance, &vr, 1, &vU32, 1))
         return oms_status_error;
       if (vU32 > static_cast<uint32_t>(INT_MAX))
         return oms_status_error; // cannot fit in int
@@ -1072,7 +1074,7 @@ oms_status_enu_t oms::ComponentFMU3CS::getInteger(const fmi3ValueReference& vr, 
     case oms_signal_numeric_type_UINT16:
     {
       uint16_t vU16;
-      if (fmi3OK != fmi3_getUInt16(fmu, &vr, 1, &vU16, 1))
+      if (fmi3OK != fmi3_getUInt16(instance, &vr, 1, &vU16, 1))
         return oms_status_error;
       value = static_cast<int>(vU16); // safe
       break;
@@ -1080,7 +1082,7 @@ oms_status_enu_t oms::ComponentFMU3CS::getInteger(const fmi3ValueReference& vr, 
     case oms_signal_numeric_type_UINT8:
     {
       uint8_t vU8;
-      if (fmi3OK != fmi3_getUInt8(fmu, &vr, 1, &vU8, 1))
+      if (fmi3OK != fmi3_getUInt8(instance, &vr, 1, &vU8, 1))
         return oms_status_error;
       value = static_cast<int>(vU8); // safe
       break;
@@ -1190,14 +1192,14 @@ oms_status_enu_t oms::ComponentFMU3CS::getReal(const fmi3ValueReference& vr, dou
   {
     case oms_signal_numeric_type_FLOAT64:
     {
-      if (fmi3OK != fmi3_getFloat64(fmu, &vr, 1, &value, 1))
+      if (fmi3OK != fmi3_getFloat64(instance, &vr, 1, &value, 1))
         return oms_status_error;
       break;
     }
     case oms_signal_numeric_type_FLOAT32:
     {
       float value_;
-      if (fmi3OK != fmi3_getFloat32(fmu, &vr, 1, &value_, 1))
+      if (fmi3OK != fmi3_getFloat32(instance, &vr, 1, &value_, 1))
         return oms_status_error;
       // Convert the float to double and assign to 'value'
       value = static_cast<double>(value_);
@@ -1300,7 +1302,7 @@ oms_status_enu_t oms::ComponentFMU3CS::getString(const fmi3ValueReference& vr, s
   CallClock callClock(clock);
   fmi3String str;
 
-  if (fmi3OK != fmi3_getString(fmu, &vr, 1, &str, 1))
+  if (fmi3OK != fmi3_getString(instance, &vr, 1, &str, 1))
     return oms_status_error;
 
   value = std::string(str);
@@ -1497,7 +1499,7 @@ oms_status_enu_t oms::ComponentFMU3CS::getDirectionalDerivativeHeper(const int u
       dvknown[i] = 0.0;
   }
 
-  fmi3_getDirectionalDerivative(fmu, &vr_unknown, 1, vr_known, dependencyList.size(), dvknown, 1, &value, 1);
+  fmi3_getDirectionalDerivative(instance, &vr_unknown, 1, vr_known, dependencyList.size(), dvknown, 1, &value, 1);
 
   free(vr_known);
   free(dvknown);
@@ -1522,7 +1524,7 @@ oms_status_enu_t oms::ComponentFMU3CS::getRealOutputDerivative(const ComRef& cre
   if (!fmu || j < 0)
     return logError_UnknownSignal(getFullCref() + cref);
 
-  der = SignalDerivative(getFMUInfo()->getMaxOutputDerivativeOrder(), fmu, allVariables[j].getValueReferenceFMI3());
+  der = SignalDerivative(getFMUInfo()->getMaxOutputDerivativeOrder(), instance, allVariables[j].getValueReferenceFMI3());
   return oms_status_ok;
 }
 
@@ -1551,8 +1553,8 @@ oms_status_enu_t oms::ComponentFMU3CS::setRealInputDerivative(const ComRef& cref
   if (!fmu || j < 0)
     return logError_UnknownSignal(getFullCref() + cref);
 
-  fmi3ValueReference vr = allVariables[j].getValueReferenceFMI3();
-  return der.setRealInputDerivatives(fmu, vr);
+  // FMI 3.0 dropped fmi2SetRealInputDerivatives, so there is nothing to set here
+  return logError_NotImplemented;
 }
 
 oms_status_enu_t oms::ComponentFMU3CS::setBoolean(const ComRef& cref, bool value)
@@ -1599,7 +1601,7 @@ oms_status_enu_t oms::ComponentFMU3CS::setBoolean(const ComRef& cref, bool value
   {
     fmi3ValueReference vr = allVariables[j].getValueReferenceFMI3();
     // int value_ = value ? 1 : 0;
-    if (fmi3OK != fmi3_setBoolean(fmu, &vr, 1, &value, 1))
+    if (fmi3OK != fmi3_setBoolean(instance, &vr, 1, &value, 1))
       return oms_status_error;
   }
 
@@ -1655,56 +1657,56 @@ oms_status_enu_t oms::ComponentFMU3CS::setInteger(const ComRef& cref, int value)
       case oms_signal_numeric_type_INT64:
       {
         int64_t v = static_cast<int64_t>(value);
-        if (fmi3OK != fmi3_setInt64(fmu, &vr, 1, &v, 1))
+        if (fmi3OK != fmi3_setInt64(instance, &vr, 1, &v, 1))
           return oms_status_error;
         break;
       }
       case oms_signal_numeric_type_INT32:
       {
         int32_t v = static_cast<int32_t>(value);
-        if (fmi3OK != fmi3_setInt32(fmu, &vr, 1, &v, 1))
+        if (fmi3OK != fmi3_setInt32(instance, &vr, 1, &v, 1))
           return oms_status_error;
         break;
       }
       case oms_signal_numeric_type_INT16:
       {
         int16_t v = static_cast<int16_t>(value);
-        if (fmi3OK != fmi3_setInt16(fmu, &vr, 1, &v, 1))
+        if (fmi3OK != fmi3_setInt16(instance, &vr, 1, &v, 1))
           return oms_status_error;
         break;
       }
       case oms_signal_numeric_type_INT8:
       {
         int8_t v = static_cast<int8_t>(value);
-        if (fmi3OK != fmi3_setInt8(fmu, &vr, 1, &v, 1))
+        if (fmi3OK != fmi3_setInt8(instance, &vr, 1, &v, 1))
           return oms_status_error;
         break;
       }
       case oms_signal_numeric_type_UINT64:
       {
         uint64_t v = static_cast<uint64_t>(value);
-        if (fmi3OK != fmi3_setUInt64(fmu, &vr, 1, &v, 1))
+        if (fmi3OK != fmi3_setUInt64(instance, &vr, 1, &v, 1))
           return oms_status_error;
         break;
       }
       case oms_signal_numeric_type_UINT32:
       {
         uint32_t v = static_cast<uint32_t>(value);
-        if (fmi3OK != fmi3_setUInt32(fmu, &vr, 1, &v, 1))
+        if (fmi3OK != fmi3_setUInt32(instance, &vr, 1, &v, 1))
           return oms_status_error;
         break;
       }
       case oms_signal_numeric_type_UINT16:
       {
         uint16_t v = static_cast<uint16_t>(value);
-        if (fmi3OK != fmi3_setUInt16(fmu, &vr, 1, &v, 1))
+        if (fmi3OK != fmi3_setUInt16(instance, &vr, 1, &v, 1))
           return oms_status_error;
         break;
       }
       case oms_signal_numeric_type_UINT8:
       {
         uint8_t v = static_cast<uint8_t>(value);
-        if (fmi3OK != fmi3_setUInt8(fmu, &vr, 1, &v, 1))
+        if (fmi3OK != fmi3_setUInt8(instance, &vr, 1, &v, 1))
           return oms_status_error;
         break;
       }
@@ -1771,14 +1773,14 @@ oms_status_enu_t oms::ComponentFMU3CS::setReal(const ComRef& cref, double value)
     {
       case oms_signal_numeric_type_FLOAT64:
       {
-        if (fmi3OK != fmi3_setFloat64(fmu, &vr, 1, &value, 1))
+        if (fmi3OK != fmi3_setFloat64(instance, &vr, 1, &value, 1))
           return oms_status_error;
         break;
       }
       case oms_signal_numeric_type_FLOAT32:
       {
         float value_= static_cast<float>(value);
-        if (fmi3OK != fmi3_setFloat32(fmu, &vr, 1, &value_, 1))
+        if (fmi3OK != fmi3_setFloat32(instance, &vr, 1, &value_, 1))
           return oms_status_error;
         break;
       }
@@ -1838,7 +1840,7 @@ oms_status_enu_t oms::ComponentFMU3CS::setString(const ComRef& cref, const std::
   {
     fmi3ValueReference vr = allVariables[j].getValueReferenceFMI3();
     fmi3String value_ = value.c_str();
-    if (fmi3OK != fmi3_setString(fmu, &vr, 1, &value_, 1))
+    if (fmi3OK != fmi3_setString(instance, &vr, 1, &value_, 1))
       return oms_status_error;
   }
 
@@ -2118,7 +2120,7 @@ oms_status_enu_t oms::ComponentFMU3CS::removeSignalsFromResults(const char* rege
 
 oms_status_enu_t oms::ComponentFMU3CS::saveState()
 {
-  fmi3Status fmistatus = fmi3_getFMUState(fmu, &fmuState);
+  fmi3Status fmistatus = fmi3_getFMUState(instance, &fmuState);
   if (fmi3OK != fmistatus) return logError_FMUCall("fmi3_getFMUState", this);
   fmuStateTime = time;
 
@@ -2130,7 +2132,7 @@ oms_status_enu_t oms::ComponentFMU3CS::freeState()
   if (!fmuState)
     return oms_status_warning;
 
-  fmi3Status fmistatus = fmi3_freeFMUState(fmu, &fmuState);
+  fmi3Status fmistatus = fmi3_freeFMUState(instance, &fmuState);
   fmuState = NULL;
   if (fmi3OK != fmistatus) return logError_FMUCall("fmi3_freeFMUstate", this);
 
@@ -2139,7 +2141,7 @@ oms_status_enu_t oms::ComponentFMU3CS::freeState()
 
 oms_status_enu_t oms::ComponentFMU3CS::restoreState()
 {
-  fmi3Status fmistatus = fmi3_setFMUState(fmu, fmuState);
+  fmi3Status fmistatus = fmi3_setFMUState(instance, fmuState);
   if (fmi3OK != fmistatus) return logError_FMUCall("fmi3_setFMUstate", this);
   time = fmuStateTime;
 
