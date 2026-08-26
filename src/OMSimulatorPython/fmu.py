@@ -529,9 +529,7 @@ class FMU:
       case _:
         raise ValueError(f"Unsupported fmuType: {self.fmuType}")
 
-    status = Capi.setCommandLineOption("--suppressPath=true")
-    if status != Status.ok:
-      raise RuntimeError(f"Failed to set command line option: {status}")
+    Capi.setSuppressPath()
 
     status = Capi.setTempDirectory(tempfile.mkdtemp())
     if status != Status.ok:

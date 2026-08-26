@@ -31,24 +31,24 @@
 # See the full OSMC Public License conditions for more details.
 
 '''
-Command line entry point for OMSimulatorPython3.
+Command line entry point for OMSimulator.
 
 Allows running a model file directly, e.g.:
-  OMSimulatorPython3 test.ssp
-  OMSimulatorPython3 model.fmu
+  OMSimulator test.ssp
+  OMSimulator model.fmu
 
 without having to write a driver script. All simulation settings
 (start/stop time, result file, tolerance, ...) are taken from the
-model itself; use --result-file/--start-time/--stop-time/--tolerance/
---step-size to override them. For FMUs that export both model exchange
+model itself; use --resultFile/--startTime/--stopTime/--tolerance/
+--stepSize to override them. For FMUs that export both model exchange
 and co-simulation, use --mode to pick which one to run. Pass --stripRoot
 to drop the "model.root" prefix from exported signal names.
 
 Files are validated against their schema (FMI for .fmu, SSP for .ssp)
 before simulation; pass --validate to only validate the file and skip
 simulation e.g.:
-  OMSimulatorPython --validate test.ssp
-  OMSimulatorPython --validate model.fmu
+  OMSimulator --validate test.ssp
+  OMSimulator --validate model.fmu
 '''
 
 import argparse
@@ -77,8 +77,12 @@ def _runSSP(path: Path, args: argparse.Namespace) -> None:
   ssp = SSP(str(path))
   model = ssp.instantiate()
 
+  if args.startTime is not None:
+    model.setStartTime(args.startTime)
   if args.stopTime is not None:
     model.setStopTime(args.stopTime)
+  if args.tolerance is not None:
+    model.setTolerance(args.tolerance)
   if args.resultFile is not None:
     model.setResultFile(args.resultFile)
 
@@ -112,10 +116,11 @@ def _runFMU(path: Path, args: argparse.Namespace) -> None:
   fmu.stepSize = args.stepSize
   fmu.instantiate()  # applies the settings above (falling back to the FMU's DefaultExperiment)
 
-  if args.solver is not None and args.mode == 'me':
-    fmu.setSolver(args.solver)
-  elif args.mode == 'cs':
+  # instantiate() resolves the mode for an FMU exporting both kinds.
+  if fmu.mode == 'cs':
     fmu.setSolver('ma')
+  elif args.solver is not None:
+    fmu.setSolver(args.solver)
   fmu.setResultFile(args.resultFile or f"{path.stem}_res.mat")
 
   exp = fmu.appliedExperiment
@@ -140,130 +145,111 @@ _HANDLERS = {
   '.fmu': _runFMU,
 }
 
+# Forwarded verbatim to the native flag parser (Flags.h), which owns their real
+# defaults. clearAllOptions is first because it resets whatever came before it.
+_NATIVE_OPTIONS = (
+  'clearAllOptions', 'addParametersToCSV', 'algLoopSolver', 'CVODEMaxErrTestFails',
+  'CVODEMaxNLSFailures', 'CVODEMaxNLSIterations', 'CVODEMaxSteps', 'deleteTempFiles',
+  'directionalDerivatives', 'dumpAlgLoops', 'emitEvents', 'ignoreInitialUnknowns',
+  'initialStepSize', 'inputExtrapolation', 'intervals', 'logFile', 'logLevel',
+  'master', 'maxEventIteration', 'maxLoopIteration', 'minimumStepSize', 'numProcs',
+  'progressBar', 'realTime', 'skipCSVHeader', 'solverStats', 'stripRoot',
+  'tempDir', 'timeout', 'wallTime', 'workingDir', 'zeroNominal',
+)
 
-def _has_option(argv, option):
-  return any(
-    arg == option or arg.startswith(option + '=')
-    for arg in argv
-  )
+# re_void in Flags.h: rejected unless passed without a value.
+_NATIVE_VOID_OPTIONS = frozenset({'clearAllOptions'})
 
-# Boolean CLI flags that map 1:1 to a global native command line option (applies
-# process-wide, regardless of .fmu/.ssp). args attribute name -> native option string.
-_GLOBAL_FLAGS = {
-  'stripRoot': '--stripRoot=true',
-  'skipCSVHeader': '--skipCSVHeader=true',
-}
 
-_GLOBAL_OPTIONS = {
-  'addParametersToCSV': '--addParametersToCSV',
-  'algLoopSolver': '--algLoopSolver',
-  'clearAllOptions': '--clearAllOptions',
-  'CVODEMaxErrTestFails': '--CVODEMaxErrTestFails',
-  'CVODEMaxNLSFailures': '--CVODEMaxNLSFailures',
-  'CVODEMaxNLSIterations': '--CVODEMaxNLSIterations',
-  'CVODEMaxSteps': '--CVODEMaxSteps',
-  'deleteTempFiles': '--deleteTempFiles',
-  'directionalDerivatives': '--directionalDerivatives',
-  'dumpAlgLoops': '--dumpAlgLoops',
-  'emitEvents': '--emitEvents',
-  'ignoreInitialUnknowns': '--ignoreInitialUnknowns',
-  'initialStepSize': '--initialStepSize',
-  'inputExtrapolation': '--inputExtrapolation',
-  'intervals': '--intervals',
-  'logFile': '--logFile',
-  'logLevel': '--logLevel',
-  'master': '--master',
-  'maxEventIteration': '--maxEventIteration',
-  'maxLoopIteration': '--maxLoopIteration',
-  'minimumStepSize': '--minimumStepSize',
-  'numProcs': '--numProcs',
-  'progressBar': '--progressBar',
-  'realTime': '--realTime',
-  'solverStats': '--solverStats',
-  'suppressPath': '--suppressPath',
-  'tempDir': '--tempDir',
-  'timeout': '--timeout',
-  'wallTime': '--wallTime',
-  'workingDir': '--workingDir',
-  'zeroNominal': '--zeroNominal',
-}
+def _addOption(parser, name, default, help, **kwargs):
+  '''Declare an option documenting a default that argparse must not apply.
+
+  A value argparse filled in would reach the native flag parser or the FMU as an
+  explicit setting and override the model's own.
+  '''
+  parser.add_argument(name, default=None, help=f'{help} (default: {default})', **kwargs)
+
+
+def _nativeArg(option: str, value: str | None = None) -> str:
+  '''Render one argument for std::quoted, the native flag tokenizer.
+
+  It only strips quotes that open a token, so the whole argument goes inside
+  them, not just the value.
+  '''
+  arg = option if value is None else f'{option}={value}'
+  return '"' + arg.replace('\\', '\\\\').replace('"', '\\"') + '"'
+
+
 def main(argv=None) -> int:
-  if argv is None:
-    argv = sys.argv[1:]
-
-  parser = argparse.ArgumentParser(prog='OMSimulatorPython3', description=__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+  parser = argparse.ArgumentParser(prog='OMSimulator', description=__doc__)
   parser.add_argument('model', type=Path, help='Path to a .ssp or .fmu file to simulate')
-  parser.add_argument('--resultFile', default='default_res.mat', help='Override the result file name')
-  parser.add_argument('--startTime', type=float, default=0.0, help='Override the simulation start time')
-  parser.add_argument('--stopTime', type=float, default=1.0, help='Override the simulation stop time')
-  parser.add_argument('--tolerance', type=float, default=1e-4, help='Override the solver tolerance (.fmu only)')
-  parser.add_argument('--stepSize', type=float, default=1e-3, help='Override the (maximum) simulation step size (.fmu only)')
-  parser.add_argument('--mode', choices=['cs', 'me'], default='me', help="Force 'cs' (co-simulation) or 'me' (model exchange) for FMUs that export both " "kinds (.fmu only)")
-  parser.add_argument('--solver', choices=['euler', 'cvode'], default='cvode', help='Set the ODE solver for model-exchange FMUs (.fmu, mode=me only)')
-  parser.add_argument('--stripRoot', action='store_true', default=True, help='Remove the root system prefix from exported signal names')
-  parser.add_argument('--skipCSVHeader', action='store_true', default=True, help='Skip the CSV delimiter row in the header of .csv result files (already the default)')
   parser.add_argument('--validate', action='store_true', help='Only validate the file against its schema; do not simulate')
-  parser.add_argument('--addParametersToCSV', action='store_true', help='Export parameters to a .csv file')
-  parser.add_argument('--algLoopSolver', choices=['fixedpoint', 'kinsol'], default='kinsol', help='Specifies the loop solver method (fixedpoint, kinsol) used for algebraic loops spanning multiple components')
-  parser.add_argument('--clearAllOptions', action='store_true', help='Reset all flags to their default values')
-  parser.add_argument('--CVODEMaxErrTestFails', type=int, default=100, help='Maximum number of error test failures for CVODE')
-  parser.add_argument('--CVODEMaxNLSFailures', type=int, default=100, help='Maximum number of nonlinear convergence failures for CVODE')
-  parser.add_argument('--CVODEMaxNLSIterations', type=int, default=5, help='Maximum number of nonlinear solver iterations for CVODE')
-  parser.add_argument('--CVODEMaxSteps', type=int, default=1000, help='Maximum number of steps for CVODE')
-  parser.add_argument('--deleteTempFiles', action=argparse.BooleanOptionalAction, default=True, help='Delete temporary files as soon as they are no longer needed')
-  parser.add_argument('--directionalDerivatives', action=argparse.BooleanOptionalAction, default=True, help='Use directional derivatives to calculate the Jacobian for algebraic loops')
-  parser.add_argument('--dumpAlgLoops', action='store_true', help='Dump information for algebraic loops')
-  parser.add_argument('--emitEvents', action=argparse.BooleanOptionalAction, default=True, help='Emit events during simulation')
-  parser.add_argument('--ignoreInitialUnknowns', action='store_true', help='Ignore initial unknowns from the modelDescription.xml')
-  parser.add_argument('--initialStepSize', type=float, default=1e-6, help='Specify the initial step size')
-  parser.add_argument('--inputExtrapolation', action='store_true', help='Enable input extrapolation using derivative information')
-  parser.add_argument('--intervals', type=int, default=500, help='Specify the number of communication points (arg > 1)')
-  parser.add_argument('--logFile', help='Specify the log file (stdout is used if no log file is specified)')
-  parser.add_argument('--logLevel', type=int, default=0, help='Set the log level (0: default, 1: debug, 2: debug+trace)')
-  parser.add_argument('--master', default='ma', help='Specify the master algorithm (ma)')
-  parser.add_argument('--maxEventIteration', type=int, default=100, help='Specify the maximum number of iterations for handling a single event')
-  parser.add_argument('--maxLoopIteration', type=int, default=10, help='Specify the maximum number of iterations for solving algebraic loops between system-level components. Internal algebraic loops of components are not affected.')
-  parser.add_argument('--minimumStepSize', type=float, default=1e-12, help='Specify the minimum step size')
-  parser.add_argument('--numProcs', type=int, default=1, help='Specify the maximum number of processors to use (0=auto, 1=default)')
-  parser.add_argument('--progressBar', action='store_true', help='Show a progress bar for the simulation progress in the terminal')
-  parser.add_argument('--realTime', action='store_true', help='Enable experimental feature for (soft) real-time co-simulation')
-  parser.add_argument('--solverStats', action='store_true', help='Add solver stats to the result file, e.g., step size; not supported for all solvers')
-  parser.add_argument('--suppressPath', action='store_true', help='Suppress path information in info messages; especially useful for testing')
-  parser.add_argument('--tempDir', default='.', help='Specify the temporary directory')
-  parser.add_argument('--timeout', type=int, default=0, help='Specify the maximum allowed time in seconds for running a simulation (0 disables)')
-  parser.add_argument('--wallTime', action='store_true',help='Add wall time information to the result file')
-  parser.add_argument('--workingDir', default='.', help='Specify the working directory')
-  parser.add_argument('--zeroNominal', action='store_true', help='Accept FMUs with invalid nominal values and replace the invalid nominal values with 1.0')
   parser.add_argument('--version', action='version', version=f'{Capi.getVersion()}')
+  _addOption(parser, '--addParametersToCSV', 'false', 'Export parameters to a .csv file', action=argparse.BooleanOptionalAction)
+  _addOption(parser, '--algLoopSolver', 'kinsol', 'Specifies the loop solver method used for algebraic loops spanning multiple components', choices=['fixedpoint', 'kinsol'])
+  parser.add_argument('--clearAllOptions', action='store_true', default=None, help='Reset all flags to their default values')
+  _addOption(parser, '--CVODEMaxErrTestFails', 100, 'Maximum number of error test failures for CVODE', type=int)
+  _addOption(parser, '--CVODEMaxNLSFailures', 100, 'Maximum number of nonlinear convergence failures for CVODE', type=int)
+  _addOption(parser, '--CVODEMaxNLSIterations', 5, 'Maximum number of nonlinear solver iterations for CVODE', type=int)
+  _addOption(parser, '--CVODEMaxSteps', 1000, 'Maximum number of steps for CVODE', type=int)
+  _addOption(parser, '--deleteTempFiles', 'true', 'Delete temporary files as soon as they are no longer needed', action=argparse.BooleanOptionalAction)
+  _addOption(parser, '--directionalDerivatives', 'true', 'Use directional derivatives to calculate the Jacobian for algebraic loops', action=argparse.BooleanOptionalAction)
+  _addOption(parser, '--dumpAlgLoops', 'false', 'Dump information for algebraic loops', action=argparse.BooleanOptionalAction)
+  _addOption(parser, '--emitEvents', 'true', 'Emit events during simulation', action=argparse.BooleanOptionalAction)
+  _addOption(parser, '--ignoreInitialUnknowns', 'false', 'Ignore initial unknowns from the modelDescription.xml', action=argparse.BooleanOptionalAction)
+  _addOption(parser, '--initialStepSize', 1e-6, 'Specify the initial step size', type=float)
+  _addOption(parser, '--inputExtrapolation', 'false', 'Enable input extrapolation using derivative information', action=argparse.BooleanOptionalAction)
+  _addOption(parser, '--intervals', 500, 'Specify the number of communication points (arg > 1)', type=int)
+  _addOption(parser, '--logFile', 'stdout', 'Specify the log file')
+  _addOption(parser, '--logLevel', 0, 'Set the log level (0: default, 1: debug, 2: debug+trace)', type=int)
+  _addOption(parser, '--master', 'ma', 'Specify the master algorithm (ma)')
+  _addOption(parser, '--maxEventIteration', 100, 'Specify the maximum number of iterations for handling a single event', type=int)
+  _addOption(parser, '--maxLoopIteration', 10, 'Specify the maximum number of iterations for solving algebraic loops between system-level components. Internal algebraic loops of components are not affected.', type=int)
+  _addOption(parser, '--minimumStepSize', 1e-12, 'Specify the minimum step size', type=float)
+  _addOption(parser, '--mode', 'co-simulation', "Force 'cs' (co-simulation) or 'me' (model exchange) for FMUs that export both kinds (.fmu only)", choices=['cs', 'me'])
+  _addOption(parser, '--numProcs', 1, 'Specify the maximum number of processors to use (0=auto, 1=default)', type=int)
+  _addOption(parser, '--progressBar', 'false', 'Show a progress bar for the simulation progress in the terminal', action=argparse.BooleanOptionalAction)
+  _addOption(parser, '--realTime', 'false', 'Enable experimental feature for (soft) real-time co-simulation', action=argparse.BooleanOptionalAction)
+  _addOption(parser, '--resultFile', "the model name plus '_res.mat'", 'Specify the name of the output result file')
+  _addOption(parser, '--skipCSVHeader', 'true', 'Skip the CSV delimiter row in the header of .csv result files', action=argparse.BooleanOptionalAction)
+  _addOption(parser, '--solver', 'cvode', 'Set the ODE solver for model-exchange FMUs (.fmu, mode=me only)', choices=['euler', 'cvode'])
+  _addOption(parser, '--solverStats', 'false', 'Add solver stats to the result file, e.g., step size; not supported for all solvers', action=argparse.BooleanOptionalAction)
+  _addOption(parser, '--startTime', 'from the model', 'Specify the start time', type=float)
+  _addOption(parser, '--stepSize', 'from the model', 'Specify the (maximum) step size (.fmu only)', type=float)
+  _addOption(parser, '--stopTime', 'from the model', 'Specify the stop time', type=float)
+  _addOption(parser, '--stripRoot', 'false', 'Remove the root system prefix from all exported signals', action=argparse.BooleanOptionalAction)
+  _addOption(parser, '--suppressPath', 'true', 'Suppress path information in info messages; especially useful for testing', action=argparse.BooleanOptionalAction)
+  _addOption(parser, '--tempDir', 'the working directory', 'Specify the temporary directory')
+  _addOption(parser, '--timeout', '0 (disabled)', 'Specify the maximum allowed time in seconds for running a simulation', type=int)
+  _addOption(parser, '--tolerance', 'from the model', 'Specify the relative tolerance', type=float)
+  _addOption(parser, '--wallTime', 'false', 'Add wall time information to the result file', action=argparse.BooleanOptionalAction)
+  _addOption(parser, '--workingDir', 'the current directory', 'Specify the working directory')
+  _addOption(parser, '--zeroNominal', 'false', 'Accept FMUs with invalid nominal values and replace the invalid nominal values with 1.0', action=argparse.BooleanOptionalAction)
   args = parser.parse_args(argv)
 
   handler = _HANDLERS.get(args.model.suffix.lower())
   if handler is None:
-    parser.error(f"Unsupported file type '{args.model.suffix}'. Expected a .ssp or .fmu file, "f"or run a .py driver script directly, e.g. 'OMSimulatorPython3 script.py'.")
+    parser.error(f"Unsupported file type '{args.model.suffix}'. Expected a .ssp or .fmu file, "f"or run a .py driver script directly, e.g. 'OMSimulator script.py'.")
 
   if not args.model.is_file():
     parser.error(f"File not found: {args.model}")
 
+  # Claim the flag before the FMU/SSP layers, which suppress paths themselves.
+  Capi.setSuppressPath(True if args.suppressPath is None else args.suppressPath)
+
   # Global native flags; set them once here rather than threading them through
   # FMU/SSP/SSD/InstantiatedModel. Must happen before instantiate().
-  for flag_name, option in _GLOBAL_FLAGS.items():
-    if getattr(args, flag_name):
-      status = Capi.setCommandLineOption(option)
-      if status != Status.ok:
-        raise RuntimeError(f"Failed to set {option}: {status}")
-
-  for attr, option in _GLOBAL_OPTIONS.items():
-    if _has_option(argv, option):
-      value = getattr(args, attr)
-      if value == "":
-        value = "''"  # empty string needs to be quoted for the native command line parser
-
-      if isinstance(value, bool):
-        value = str(value).lower()
-
-      status = Capi.setCommandLineOption(f'{option}={value}')
-      if status != Status.ok:
-        raise RuntimeError(f"Failed to set {option}: {status}")
+  for attr in _NATIVE_OPTIONS:
+    value = getattr(args, attr)
+    if value is None:
+      continue
+    if attr in _NATIVE_VOID_OPTIONS:
+      arg = _nativeArg(f'--{attr}')
+    else:
+      arg = _nativeArg(f'--{attr}', str(value).lower() if isinstance(value, bool) else str(value))
+    status = Capi.setCommandLineOption(arg)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set {arg}: {status}")
 
   handler(args.model, args)
   return 0
