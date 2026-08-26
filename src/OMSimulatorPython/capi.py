@@ -46,6 +46,7 @@ class Status(Enum):
 
 class capi:
   def __init__(self):
+    self._suppressPathSet = False
     dirname = os.path.dirname(__file__)
     ## look for dll in the current directory for the python pip package
     omslib = os.path.join(dirname, "@OMSIMULATORLIB_STRING@")
@@ -246,6 +247,18 @@ class capi:
   def setCommandLineOption(self, cmd):
     status = self.obj.oms_setCommandLineOption(cmd.encode())
     return Status(status)
+
+  def setSuppressPath(self, value: bool = True) -> None:
+    '''Set --suppressPath once per process; the first caller decides.
+
+    The native flag parser warns about a flag that is set twice.
+    '''
+    if self._suppressPathSet:
+      return
+    status = self.setCommandLineOption(f'--suppressPath={str(value).lower()}')
+    if status != Status.ok:
+      raise RuntimeError(f'Failed to set --suppressPath: {status}')
+    self._suppressPathSet = True
 
   def setConnectionLinearTransformation(self, crefA, crefB, factor, offset):
     '''Set the linear transformation for a connection between two connectors.
