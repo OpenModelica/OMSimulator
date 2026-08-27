@@ -186,7 +186,7 @@ class FMU:
           # Parse modelName, guid, ...
           self._fmiVersion = model_description.get('fmiVersion')
           self._valid = utils.validateFMU(model_description, str(self._fmu_path), self._fmiVersion)
-          self._modelName = model_description.get('modelName')
+          self._modelName = model_description.get('modelName').replace(" ", "") ## remove any whitespace from modelName
           self._guid = model_description.get('guid')
           self._description = model_description.get('description')
           self._generationTool = model_description.get('generationTool')
