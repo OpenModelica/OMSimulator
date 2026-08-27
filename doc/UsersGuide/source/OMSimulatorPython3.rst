@@ -50,13 +50,13 @@ Command Line Interface
 -----------------------
 
 In addition to the Python API, the **oms3 Python** package installs a
-``OMSimulatorPython3`` command line entry point that can run a ``.ssp`` or
-``.fmu`` file directly, without having to write a driver script:
+``OMSimulator`` command line entry point that can run a ``.ssp`` or
+``.fmu`` or ``.py`` file directly, without having to write a driver script:
 
 .. code-block:: bash
 
-  OMSimulatorPython3 model.ssp
-  OMSimulatorPython3 model.fmu
+  OMSimulator model.ssp
+  OMSimulator model.fmu
 
 All simulation settings (start/stop time, tolerance, ...) are taken from the
 model itself; use the flags below to override them. Both file types are
@@ -67,28 +67,30 @@ The full list of command line arguments can also be printed at any time with:
 
 .. code-block:: bash
 
-  OMSimulatorPython3 --help
+  OMSimulator --help
 
-.. list-table:: OMSimulatorPython3 command line flags
+The table below summarizes the most commonly used flags. For a complete list,  refer to :doc:`OMSimulator`.
+
+.. list-table:: OMSimulator command line flags
    :header-rows: 1
    :widths: 20 20 60
 
    * - Flag
      - Value
      - Description
-   * - ``--result-file``
+   * - ``--resultFile``
      - ``FILE``
      - Override the result file name.
-   * - ``--start-time``
+   * - ``--startTime``
      - ``TIME``
      - Override the simulation start time.
-   * - ``--stop-time``
+   * - ``--stopTime``
      - ``TIME``
      - Override the simulation stop time.
    * - ``--tolerance``
      - ``TOL``
      - Override the solver tolerance (``.fmu`` only).
-   * - ``--step-size``
+   * - ``--stepSize``
      - ``SIZE``
      - Override the (maximum) simulation step size (``.fmu`` only).
    * - ``--mode``
@@ -107,7 +109,7 @@ The full list of command line arguments can also be printed at any time with:
      - ``.fmu`` | ``.ssp``
      - Only validate the file against its schema; do not simulate.
 
-.. index:: OMSimulatorPython3; Command Line Interface Examples
+.. index:: OMSimulator; Command Line Interface Examples
 
 Examples
 ^^^^^^^^
@@ -115,21 +117,21 @@ Examples
 .. code-block:: bash
 
   # Simulate an FMU using its own declared defaults
-  OMSimulatorPython3 model.fmu
+  OMSimulator model.fmu
 
   # Force model-exchange mode with the Euler solver and a custom step size
-  OMSimulatorPython3 model.fmu --mode me --solver euler --step-size 1e-3
+  OMSimulator model.fmu --mode me --solver euler --stepSize 1e-3
 
   # Only validate an FMU or SSP against its schema, without simulating
-  OMSimulatorPython3 model.fmu --validate
-  OMSimulatorPython3 model.ssp --validate
+  OMSimulator model.fmu --validate
+  OMSimulator model.ssp --validate
 
   # Override the stop time and result file of an SSP
-  OMSimulatorPython3 model.ssp --stop-time 10 --result-file out.mat
+  OMSimulator model.ssp --stopTime 10 --resultFile out.mat
 
   # Drop the "model.root" prefix from exported signal names (.fmu or .ssp)
-  OMSimulatorPython3 model.fmu --stripRoot
-  OMSimulatorPython3 model.ssp --stripRoot
+  OMSimulator model.fmu --stripRoot
+  OMSimulator model.ssp --stripRoot
 
 Quick start Example
 -------------------
