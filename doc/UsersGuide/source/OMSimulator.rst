@@ -18,7 +18,7 @@ A brief description of all command line flags can be displayed using
 :code:`OMSimulator --help`:
 
 .. literalinclude:: omsimulator-help.inc
-   :language: bash
+   :language: text
 
 To use the :code:`logLevel` flag with option debug (:code:`--logLevel=1`)
 or debug+trace (:code:`--logLevel=2`), OMSimulator needs to be built with

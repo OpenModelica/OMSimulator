@@ -5,20 +5,6 @@ setBoolean
 Sets the value of a given boolean signal.
 #END#
 
-#LUA#
-.. code-block:: lua
-
-  status = oms_setBoolean(cref, value)
-
-#END#
-
-#PYTHON#
-.. code-block:: python
-
-  status = oms.setBoolean(cref, value)
-
-#END#
-
 #CAPI#
 .. code-block:: c
 

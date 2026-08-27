@@ -6,19 +6,6 @@ Sets maximum log file size in MB. If the file exceeds this limit, the logging
 will continue on stdout.
 #END#
 
-#LUA#
-.. code-block:: lua
-
-  oms_setMaxLogFileSize(size)
-
-#END#
-
-#PYTHON#
-.. code-block:: python
-
-  oms.setMaxLogFileSize(size)
-
-#END#
 
 #CAPI#
 .. code-block:: c

@@ -5,20 +5,6 @@ setReal
 Sets the value of a given real signal.
 #END#
 
-#LUA#
-.. code-block:: lua
-
-  status = oms_setReal(cref, value)
-
-#END#
-
-#PYTHON#
-.. code-block:: python
-
-  status = oms.setReal(cref, value)
-
-#END#
-
 #CAPI#
 .. code-block:: c
 

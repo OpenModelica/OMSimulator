@@ -5,19 +5,6 @@ getBoolean
 Get boolean value of given signal.
 #END#
 
-#LUA#
-.. code-block:: lua
-
-  value, status = oms_getBoolean(cref)
-
-#END#
-
-#PYTHON#
-.. code-block:: python
-
-  value, status = oms.getBoolean(cref)
-
-#END#
 
 #CAPI#
 .. code-block:: c

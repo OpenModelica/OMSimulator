@@ -5,20 +5,6 @@ rename
 Renames a model, system, or component.
 #END#
 
-#LUA#
-.. code-block:: lua
-
-  status = oms_rename(cref, newCref)
-
-#END#
-
-#PYTHON#
-.. code-block:: python
-
-  status = oms.rename(cref, newCref)
-
-#END#
-
 #CAPI#
 .. code-block:: c
 

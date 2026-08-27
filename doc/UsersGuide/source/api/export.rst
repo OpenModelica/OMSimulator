@@ -5,20 +5,6 @@ export
 Exports a composite model to a SPP file.
 #END#
 
-#LUA#
-.. code-block:: lua
-
-  status = oms_export(cref, filename)
-
-#END#
-
-#PYTHON#
-.. code-block:: python
-
-  status = oms.export(cref, filename)
-
-#END#
-
 #CAPI#
 .. code-block:: c
 

@@ -6,19 +6,6 @@ Free the memory allocated by some other API. Pass the object for which memory
 is allocated.
 #END#
 
-#LUA#
-
-This function is neither needed nor available from the Lua interface.
-
-#END#
-
-#PYTHON#
-.. code-block:: python
-
-  oms.freeMemory(obj)
-
-#END#
-
 #CAPI#
 .. code-block:: c
 

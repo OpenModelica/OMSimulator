@@ -5,20 +5,6 @@ deleteConnection
 Deletes the connection between connectors `crefA` and `crefB`.
 #END#
 
-#LUA#
-.. code-block:: lua
-
-  status = oms_deleteConnection(crefA, crefB)
-
-#END#
-
-#PYTHON#
-.. code-block:: python
-
-  status = oms.deleteConnection(crefA, crefB)
-
-#END#
-
 #CAPI#
 .. code-block:: c
 

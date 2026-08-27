@@ -5,13 +5,6 @@ getModelState
 Gets the model state of the given model cref.
 #END#
 
-#LUA#
-.. code-block:: lua
-
-  modelState, status = oms_getModelState(cref)
-
-#END#
-
 #CAPI#
 .. code-block:: c
 

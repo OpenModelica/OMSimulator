@@ -5,19 +5,6 @@ setVariableStepSize
 Sets the step size parameters for methods with stepsize control.
 #END#
 
-#LUA#
-.. code-block:: lua
-
-  status = oms_getVariableStepSize(cref, initialStepSize, minimumStepSize, maximumStepSize)
-
-#END#
-
-#PYTHON#
-.. code-block:: python
-
-  status = oms.getVariableStepSize(cref, initialStepSize, minimumStepSize, maximumStepSize)
-
-#END#
 
 #CAPI#
 .. code-block:: c
