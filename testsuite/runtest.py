@@ -79,7 +79,7 @@ def absolute(path: Path) -> Path:
   private work directory of a test never does -- that proof depends on the two
   lookups failing with the same error code, so the prefix survives every now and
   then. A `\\\\?\\` directory then breaks the test: every .py test is started
-  through OMSimulatorPython3.bat, i.e. through cmd.exe, which rejects such a
+  through OMSimulator.bat, i.e. through cmd.exe, which rejects such a
   working directory ("UNC paths are not supported"), falls back to C:\\Windows
   and runs the test where none of its files are.
   """
@@ -117,10 +117,7 @@ def simulator_executable(test_file: Path, bin_dir: Path) -> Path:
   # (subprocess uses CreateProcess, not a POSIX exec), which cannot run the
   # shebang-based shell script directly, so both need the .bat/.exe wrapper.
   windows = PLATFORM in ("win", "ucrt64")
-  if test_file.suffix == ".py":
-    name = "OMSimulatorPython3.bat" if windows else "OMSimulatorPython3"
-  else:
-    name = "OMSimulator.exe" if windows else "OMSimulator"
+  name = "OMSimulator.bat" if windows else "OMSimulator"
   return bin_dir / name
 
 
@@ -342,7 +339,7 @@ def main() -> int:
   parser.add_argument("--work-dir", required=True, type=Path,
                       help="private working directory for this test; it is wiped on every run")
   parser.add_argument("--bin-dir", required=True, type=Path,
-                      help="directory holding OMSimulator / OMSimulatorPython3")
+                      help="directory holding OMSimulator / OMSimulator")
   parser.add_argument("--omc-diff", required=True, type=Path,
                       help="the omc-diff executable used to compare results")
   parser.add_argument("--epsilon", default=DEFAULT_EPSILON,

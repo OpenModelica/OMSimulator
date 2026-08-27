@@ -64,7 +64,6 @@ def _system_type_label(system_type: SystemType) -> str:
   return "oms_system_wc" if system_type == SystemType.wc else "oms_system_sc"
 
 class InstantiatedModel:
-  _suppress_path_set = False # Class variable to track if suppressPath has been set
   def __init__(self, json_description, system: System, resources: dict):
     #print(f"info: Instantiating model with JSON description:\n{json_description}", flush=True)
     config = json.loads(json_description)
@@ -75,12 +74,7 @@ class InstantiatedModel:
     self.resources = resources
     self.fmuInstantitated = False
 
-    # Only set once
-    if not InstantiatedModel._suppress_path_set:
-      status = Capi.setCommandLineOption("--suppressPath=true")
-      if status != Status.ok:
-        raise RuntimeError(f"Failed to set command line option: {status}")
-      InstantiatedModel._suppress_path_set = True
+    Capi.setSuppressPath()
     # Set the temporary directory
     status = Capi.setTempDirectory(tempfile.mkdtemp())
     if status != Status.ok:
@@ -351,7 +345,7 @@ class InstantiatedModel:
       raise KeyError(f"Missing required key: '{systemName}'")
 
     ## apply ssm mapping if exist and apply start values from mapped parameters
-    if ssm and ssm.mappingEntry:
+    if ssm and (ssm.filename or ssm.mappingEntry):
       for source, targets in ssm.mappingEntry.items():
         if CRef(source) in value.start_values:
           (source_value, type, _, _) = value.start_values[CRef(source)]

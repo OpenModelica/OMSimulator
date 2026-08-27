@@ -46,6 +46,15 @@
 #include <iostream>
 #include <regex>
 #include <sstream>
+#include <system_error>
+
+#if defined(_WIN32) || defined(_WIN64)
+#include <process.h>
+#define OMS_GETPID _getpid
+#else
+#include <unistd.h>
+#define OMS_GETPID getpid
+#endif
 
 oms::Flags::Flags()
 {
@@ -70,54 +79,72 @@ oms::Flags &oms::Flags::GetInstance()
   return flags;
 }
 
-void LoadSettings(nlohmann::json &json)
+static std::filesystem::path SettingsDir()
 {
 #if defined(_WIN32) || defined(_WIN64)
   const char *homeDir = getenv("USERPROFILE");
 #else
   const char *homeDir = getenv("HOME");
 #endif
-  if (homeDir)
-  {
-    std::filesystem::path filePath = std::filesystem::path(homeDir) / ".omsimulator" / "settings.json";
-    if (std::filesystem::exists(filePath))
-    {
-      std::ifstream fileStream(filePath);
-      if (fileStream.is_open())
-      {
-        json = nlohmann::json::parse(fileStream);
-        fileStream.close();
-      }
-    }
-  }
+  return homeDir ? std::filesystem::path(homeDir) / ".omsimulator" : std::filesystem::path();
+}
+
+void LoadSettings(nlohmann::json &json)
+{
+  std::filesystem::path dir = SettingsDir();
+  if (dir.empty())
+    return;
+
+  std::ifstream fileStream(dir / "settings.json");
+  if (!fileStream.is_open())
+    return;
+
+  std::stringstream buffer;
+  buffer << fileStream.rdbuf();
+  std::string content = buffer.str();
+
+  if (content.find_first_not_of(" \t\n\r") == std::string::npos)
+    return;
+
+  json = nlohmann::json::parse(content);
 }
 
 void SaveSettings(nlohmann::json &json)
 {
-#if defined(_WIN32) || defined(_WIN64)
-  const char *homeDir = getenv("USERPROFILE");
-#else
-  const char *homeDir = getenv("HOME");
-#endif
-  if (homeDir)
-  {
-    std::filesystem::path path = std::filesystem::path(homeDir) / ".omsimulator";
-    std::filesystem::path filePath = path / "settings.json";
-    std::filesystem::create_directories(path);
-    std::ofstream fileStream(filePath);
-    if (fileStream.is_open())
-    {
-      fileStream << json.dump(2);
-      fileStream.close();
-    }
-    else
-    {
-      logWarning("Failed to open settings.json for writing");
-    }
-  }
-  else
+  std::filesystem::path dir = SettingsDir();
+  if (dir.empty())
   {
     logWarning("HOME environment variable is not set, settings.json couldn't be saved");
+    return;
+  }
+
+  std::filesystem::create_directories(dir);
+
+  std::filesystem::path tmpPath = dir / ("settings.json." + std::to_string(OMS_GETPID()) + ".tmp");
+  {
+    std::ofstream fileStream(tmpPath, std::ios::binary | std::ios::trunc);
+    if (!fileStream.is_open())
+    {
+      logWarning("Failed to open settings.json for writing");
+      return;
+    }
+    fileStream << json.dump(2);
+    fileStream.flush();
+    if (!fileStream.good())
+    {
+      fileStream.close();
+      std::filesystem::remove(tmpPath);
+      logWarning("Failed to write settings.json");
+      return;
+    }
+  }
+
+  std::error_code ec;
+  std::filesystem::rename(tmpPath, dir / "settings.json", ec);
+  if (ec)
+  {
+    std::filesystem::remove(tmpPath);
+    logWarning("Failed to update settings.json: " + ec.message());
   }
 }
 
