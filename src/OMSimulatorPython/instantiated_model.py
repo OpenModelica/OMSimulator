@@ -64,13 +64,14 @@ def _system_type_label(system_type: SystemType) -> str:
   return "oms_system_wc" if system_type == SystemType.wc else "oms_system_sc"
 
 class InstantiatedModel:
-  def __init__(self, json_description, system: System, resources: dict):
+  def __init__(self, json_description, ssdName: str, system: System, resources: dict):
     #print(f"info: Instantiating model with JSON description:\n{json_description}", flush=True)
     config = json.loads(json_description)
     self.modelName = "model" ## create random name, but we cannot commits test as jenkins will gerate new model name
     self.apiCall = []
     self.mappedCrefs = {}  # Store mapped CRefs associated with their export names
     self.system = system
+    self.ssdName = ssdName
     self.resources = resources
     self.fmuInstantitated = False
 
@@ -101,7 +102,7 @@ class InstantiatedModel:
 
     root_label = _system_type_label(root_type)
     status = Capi.addSystem(f"{self.modelName}.root", root_type.value)
-    export_name = f"{self.system.name}"  # Use the system's name as the export name for the root system
+    export_name = f"{self.ssdName}.{self.system.name}"  # Use the system's name as the export name for the root system
     if export_name not in self.mappedCrefs:
       self.mappedCrefs[export_name] = f"{self.modelName}.root"
     if status != Status.ok:
@@ -183,8 +184,7 @@ class InstantiatedModel:
         status = Capi.addSubModel(comp_path, comp["path"])
         if status != Status.ok:
           raise RuntimeError(f"Failed to add oms_addSubModel: {status}")
-        export_name = ".".join(comp["name"])
-
+        export_name =f"{self.ssdName}.{".".join(comp['name'])}"
         ## parse connector geometry for the component if exist and set it to capi after adding the component, this is needed for proper mapping of connector geometry
         if "connectors" in comp:
           for connector in comp["connectors"]:
@@ -425,7 +425,7 @@ class InstantiatedModel:
         if status != Status.ok:
           raise RuntimeError(f"Failed to set connector numeric type for {connector_path}: {status}")
 
-      export_name = systemName
+      export_name = f"{self.ssdName}.{systemName}"
       if not connector_name in self.mappedCrefs:
         self.mappedCrefs[connector_name] = connector_path
       status = Capi.setExportName(connector_path, export_name)  # Set export name if provided
