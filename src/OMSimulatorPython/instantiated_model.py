@@ -102,7 +102,7 @@ class InstantiatedModel:
 
     root_label = _system_type_label(root_type)
     status = Capi.addSystem(f"{self.modelName}.root", root_type.value)
-    export_name = f"{self.ssdName}.{self.system.name}"  # Use the system's name as the export name for the root system
+    export_name = f"{self.system.name}"  # Use the system's name as the export name for the root system
     if export_name not in self.mappedCrefs:
       self.mappedCrefs[export_name] = f"{self.modelName}.root"
     if status != Status.ok:
@@ -184,7 +184,8 @@ class InstantiatedModel:
         status = Capi.addSubModel(comp_path, comp["path"])
         if status != Status.ok:
           raise RuntimeError(f"Failed to add oms_addSubModel: {status}")
-        export_name =f"{self.ssdName}.{".".join(comp['name'])}"
+        export_name = ".".join(comp["name"])
+
         ## parse connector geometry for the component if exist and set it to capi after adding the component, this is needed for proper mapping of connector geometry
         if "connectors" in comp:
           for connector in comp["connectors"]:
@@ -205,7 +206,7 @@ class InstantiatedModel:
         if not export_name in self.mappedCrefs:
           self.mappedCrefs[export_name] = comp_path
           self.mappedCrefs[".".join(comp["name"][:-1])] = solver_path # map parent system too for connector lookup
-        status = Capi.setExportName(comp_path, export_name)  # Set export name if provided
+        status = Capi.setExportName(comp_path, f"{self.ssdName}.{export_name}")  # Set export name if provided
         if status != Status.ok:
           raise RuntimeError(f"Failed to set export name: {status}")
 
@@ -242,11 +243,11 @@ class InstantiatedModel:
             raise RuntimeError(f"Failed to set connection linear transformation: {status}")
 
     ## set start values
-    self.setStartValues(self.system.value, f"{self.ssdName}.{self.system.name}", self.system.parameterMapping)
+    self.setStartValues(self.system.value, self.system.name, self.system.parameterMapping)
     ## set start values from ssv files
-    self.setStartValuesFromSSV(self.system.parameterResources, f"{self.ssdName}.{self.system.name}")
+    self.setStartValuesFromSSV(self.system.parameterResources, self.system.name)
     ## iterate start values from sub-system both inline and ssv files if exist
-    self.setStartValuesFromElements(self.system.elements, f"{self.ssdName}.{self.system.name}")
+    self.setStartValuesFromElements(self.system.elements, self.system.name)
 
     self.apiCall.append(f'oms_instantiate("{self.modelName}")')
     status = Capi.instantiate(self.modelName)
@@ -425,10 +426,10 @@ class InstantiatedModel:
         if status != Status.ok:
           raise RuntimeError(f"Failed to set connector numeric type for {connector_path}: {status}")
 
-      export_name = f"{self.ssdName}.{systemName}"
+      export_name = systemName
       if not connector_name in self.mappedCrefs:
         self.mappedCrefs[connector_name] = connector_path
-      status = Capi.setExportName(connector_path, export_name)  # Set export name if provided
+      status = Capi.setExportName(connector_path, f"{self.ssdName}.{export_name}")  # Set export name if provided
       if status != Status.ok:
         raise RuntimeError(f"Failed to set export name: {status}")
       status = Capi.setAliasName(connector_path, str(connector.name))  # Set alias name for connector
