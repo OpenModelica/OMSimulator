@@ -79,7 +79,7 @@ oms::FMUInfo::~FMUInfo()
   if (this->version) delete[] this->version;
 }
 
-void oms::FMUInfo::update(oms_component_enu_t componentType, fmiHandle* fmu)
+void oms::FMUInfo::update(oms_component_enu_t componentType, fmuHandle* fmu)
 {
   // Check the component type
   switch (componentType)
@@ -96,7 +96,7 @@ void oms::FMUInfo::update(oms_component_enu_t componentType, fmiHandle* fmu)
 
 }
 
-void oms::FMUInfo::updateFMI2Info(fmiHandle* fmu)
+void oms::FMUInfo::updateFMI2Info(fmuHandle* fmu)
 {
   if (fmi2_getSupportsCoSimulation(fmu))
     this->fmiKind = oms_fmi_kind_cs;
@@ -142,7 +142,7 @@ void oms::FMUInfo::updateFMI2Info(fmiHandle* fmu)
   }
 }
 
-void oms::FMUInfo::updateFMI3Info(fmiHandle* fmu)
+void oms::FMUInfo::updateFMI3Info(fmuHandle* fmu)
 {
   if (fmi3_supportsCoSimulation(fmu))
     this->fmiKind = oms_fmi_kind_cs;

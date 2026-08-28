@@ -35,7 +35,6 @@ else:
   print("signal x1 is not equal", flush=True)
 
 ## Result:
-## Loading FMI version 3...
 ## info:    Result file: VanDerPol-cs3.mat (bufferSize=10)
 ## signal x0 is equal
 ## signal x1 is equal

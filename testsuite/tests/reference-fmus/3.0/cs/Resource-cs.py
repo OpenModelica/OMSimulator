@@ -27,7 +27,6 @@ instantiated_model.terminate()
 instantiated_model.delete()
 
 ## Result:
-## Loading FMI version 3...
 ## info:    Result file: Resource-cs3.mat (bufferSize=10)
 ## info:    Resource.y: 97
 ## endResult
