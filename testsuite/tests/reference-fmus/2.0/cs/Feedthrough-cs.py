@@ -4,8 +4,9 @@
 ## win: yes
 ## asan: yes
 
-from OMSimulator import SSP, CRef, Settings
+from OMSimulator import SSP, CRef, Settings, Capi
 Settings.suppressPath = True
+Capi.setCommandLineOption("--stripRoot=true")
 
 model = SSP()
 model.addResource('../../../resources/Feedthrough.fmu', new_name='resources/Feedthrough.fmu')
