@@ -312,7 +312,7 @@ class System:
         connectors = inst.makeConnectors() if inst else list()
         unitDefinitions =  list()
         enumerationDefinitions = list()
-        component = Component(first, resource, connectors, unitDefinitions, enumerationDefinitions)
+        component = Component(first, resource, None, connectors, unitDefinitions, enumerationDefinitions)
         component.fmuType = inst.fmuType if inst else None
         self.elements[first] = component
         return component
