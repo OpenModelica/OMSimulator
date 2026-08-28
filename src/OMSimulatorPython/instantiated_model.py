@@ -242,11 +242,11 @@ class InstantiatedModel:
             raise RuntimeError(f"Failed to set connection linear transformation: {status}")
 
     ## set start values
-    self.setStartValues(self.system.value, self.system.name, self.system.parameterMapping)
+    self.setStartValues(self.system.value, f"{self.ssdName}.{self.system.name}", self.system.parameterMapping)
     ## set start values from ssv files
-    self.setStartValuesFromSSV(self.system.parameterResources, self.system.name)
+    self.setStartValuesFromSSV(self.system.parameterResources, f"{self.ssdName}.{self.system.name}")
     ## iterate start values from sub-system both inline and ssv files if exist
-    self.setStartValuesFromElements(self.system.elements, self.system.name)
+    self.setStartValuesFromElements(self.system.elements, f"{self.ssdName}.{self.system.name}")
 
     self.apiCall.append(f'oms_instantiate("{self.modelName}")')
     status = Capi.instantiate(self.modelName)
