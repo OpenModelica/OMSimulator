@@ -5,13 +5,6 @@ simulate_realtime
 Experimental feature for (soft) real-time simulation.
 #END#
 
-#LUA#
-.. code-block:: lua
-
-  status = experimental_simulate_realtime(ident)
-
-#END#
-
 #CAPI#
 .. code-block:: c
 

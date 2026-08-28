@@ -5,20 +5,6 @@ setStopTime
 Set the stop time of the simulation.
 #END#
 
-#LUA#
-.. code-block:: lua
-
-  status = oms_setStopTime(cref, stopTime)
-
-#END#
-
-#PYTHON#
-.. code-block:: python
-
-  status = oms.setStopTime(cref, stopTime)
-
-#END#
-
 #CAPI#
 .. code-block:: c
 

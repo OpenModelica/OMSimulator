@@ -36,6 +36,7 @@ Command line entry point for OMSimulator.
 Allows running a model file directly, e.g.:
   OMSimulator test.ssp
   OMSimulator model.fmu
+  OMSimulator test.py running a Python driver script
 
 without having to write a driver script. All simulation settings
 (start/stop time, result file, tolerance, ...) are taken from the

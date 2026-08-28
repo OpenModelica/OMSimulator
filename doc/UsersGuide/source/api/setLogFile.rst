@@ -8,20 +8,6 @@ reset.
 filename="" to redirect to std streams and proper filename to redirect to file.
 #END#
 
-#LUA#
-.. code-block:: lua
-
-  status = oms_setLogFile(filename)
-
-#END#
-
-#PYTHON#
-.. code-block:: python
-
-  status = oms.setLogFile(filename)
-
-#END#
-
 #CAPI#
 .. code-block:: c
 

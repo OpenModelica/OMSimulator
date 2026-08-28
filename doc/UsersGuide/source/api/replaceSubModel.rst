@@ -12,33 +12,9 @@ are updated and the start values in the ssv files will not be changed.
 
 #END#
 
-#LUA#
-.. code-block:: lua
-
-  status = oms_replaceSubModel(cref, fmuPath)
-
-#END#
-
-#PYTHON#
-.. code-block:: python
-
-  status = oms.replaceSubModel(cref, fmuPath)
-
-#END#
-
 #CAPI#
 .. code-block:: c
 
   oms_status_enu_t oms_replaceSubModel(const char* cref, const char* fmuPath);
-
-#END#
-
-
-#DESCRIPTION#
-  It is possible to import an partially developed fmu (i.e contains only modeldescription.xml without any binaries) in OMSimulator, and later can be replaced with a fully develped fmu. An example to use the API,
-  oms_addSubModel("model.root.A", "../resources/replaceA.fmu")
-  oms_export("model", "test.ssp")
-  oms_import("test.ssp")
-  oms_replaceSubModel("model.root.A", "../resources/replaceA_extended.fmu")
 
 #END#

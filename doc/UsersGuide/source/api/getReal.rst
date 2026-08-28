@@ -5,19 +5,6 @@ getReal
 Get real value.
 #END#
 
-#LUA#
-.. code-block:: lua
-
-  value, status = oms_getReal(cref)
-
-#END#
-
-#PYTHON#
-.. code-block:: python
-
-  value, status = oms.getReal(cref)
-
-#END#
 
 #CAPI#
 .. code-block:: c

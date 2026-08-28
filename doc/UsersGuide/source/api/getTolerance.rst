@@ -5,19 +5,6 @@ getTolerance
 Gets the tolerance of a given system or component.
 #END#
 
-#LUA#
-.. code-block:: lua
-
-  relativeTolerance, status = oms_getTolerance(cref)
-
-#END#
-
-#PYTHON#
-.. code-block:: python
-
-  relativeTolerance, status = oms.getTolerance(cref)
-
-#END#
 
 #CAPI#
 .. code-block:: c

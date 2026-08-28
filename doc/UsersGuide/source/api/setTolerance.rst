@@ -5,20 +5,6 @@ setTolerance
 Sets the tolerance for a given model or system.
 #END#
 
-#LUA#
-.. code-block:: lua
-
-  status = oms_setTolerance(const char* cref, double relativeTolerance)
-
-#END#
-
-#PYTHON#
-.. code-block:: python
-
-  status = oms.setTolerance(const char* cref,  double relativeTolerance)
-
-#END#
-
 #CAPI#
 .. code-block:: c
 

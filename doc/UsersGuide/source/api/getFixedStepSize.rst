@@ -7,19 +7,6 @@ co-simulation systems and also for the integrator step size in model exchange
 systems.
 #END#
 
-#LUA#
-.. code-block:: lua
-
-  stepSize, status = oms_setFixedStepSize(cref)
-
-#END#
-
-#PYTHON#
-.. code-block:: python
-
-  stepSize, status = oms.getFixedStepSize(cref)
-
-#END#
 
 #CAPI#
 .. code-block:: c
@@ -31,7 +18,7 @@ systems.
 #OMC#
 .. code-block:: modelica
 
-  (stepSize, status) := oms_setFixedStepSize(cref);
+  (stepSize, status) := oms_getFixedStepSize(cref);
 
 #END#
 

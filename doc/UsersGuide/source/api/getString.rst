@@ -10,20 +10,6 @@ using the C-API. The Lua and Python bindings take care of the memory
 and the caller doesn't need to call free.
 #END#
 
-#LUA#
-.. code-block:: lua
-
-  value, status = oms_getString(cref)
-
-#END#
-
-#PYTHON#
-.. code-block:: python
-
-  value, status = oms.getString(cref)
-
-#END#
-
 #CAPI#
 .. code-block:: c
 

@@ -5,20 +5,6 @@ getSystemType
 Gets the type of the given system.
 #END#
 
-#LUA#
-.. code-block:: lua
-
-  type, status = oms_getSystemType(cref)
-
-#END#
-
-#PYTHON#
-.. code-block:: python
-
-  type, status = oms.getSystemType(cref)
-
-#END#
-
 #CAPI#
 .. code-block:: c
 

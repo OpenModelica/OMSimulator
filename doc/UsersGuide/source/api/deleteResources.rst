@@ -18,39 +18,6 @@ The filename of the reference or resource file is provided by the users using co
 
 #END#
 
-#LUA#
-.. code-block:: lua
-
-  status = oms_deleteResources(cref)
-
-  -- Example
-  oms_importFile("deleteResources1.ssp")
-  -- delete only the references in ".ssd" file
-  oms_deleteResources("deleteResources.root:root.ssv")
-  -- delete both references and resources
-  oms_deleteResources("deleteResources:root.ssv")
-  oms_export("deleteResources1.ssp")
-
-#END#
-
-#PYTHON#
-.. code-block:: python
-
-  status = oms.deleteResources(cref))
-
-  ## Example
-  from OMSimulator import OMSimulator
-  oms = OMSimulator()
-  oms.importFile("deleteResources1.ssp")
-  ## delete only the references in ".ssd" file
-  oms.deleteResources("deleteResources.root:root.ssv")
-  ## delete both references and resources
-  oms.deleteResources("deleteResources:root.ssv")
-  oms.export("deleteResources1.ssp")
-
-
-#END#
-
 #CAPI#
 .. code-block:: c
 

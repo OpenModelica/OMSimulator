@@ -19,41 +19,6 @@ and the ".ssm" file is optional and is provided by the user as the second argume
 
 #END#
 
-#LUA#
-.. code-block:: lua
-
-  status = oms_referenceResources(cref, ssmFile)
-
-  -- Example
-  oms_importFile("referenceResources1.ssp")
-  -- delete only the references in ".ssd" file
-  oms_deleteResources("referenceResources1.root:root.ssv")
-  -- usage-1 switch with new references, only ssv file
-  oms_referenceResources("referenceResources1.root:Config1.ssv")
-  -- usage-2 switch with new references, both ssv and ssm file
-  oms_referenceResources("referenceResources1.root:Config1.ssv", "Config1.ssm")
-  oms_export("referenceResources1.ssp")
-
-#END#
-
-#PYTHON#
-.. code-block:: python
-
-  status = oms.referenceResources(cref, ssmFile)
-
-  ## Example
-  from OMSimulator import OMSimulator
-  oms = OMSimulator()
-  oms.importFile("referenceResources1.ssp")
-  ## delete only the references in ".ssd" file
-  oms.deleteResources("referenceResources1.root:root.ssv")
-  ## usage-1 switch with new references, only ssv file
-  oms.referenceResources("referenceResources1.root:Config1.ssv")
-  ## usage-2 switch with new references, both ssv and ssm file
-  oms.referenceResources("referenceResources1.root:Config1.ssv", "Config1.ssm")
-
-
-#END#
 
 #CAPI#
 .. code-block:: c

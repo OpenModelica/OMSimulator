@@ -5,20 +5,6 @@ setCommandLineOption
 Sets special flags.
 #END#
 
-#LUA#
-.. code-block:: lua
-
-  status = oms_setCommandLineOption(cmd)
-
-#END#
-
-#PYTHON#
-.. code-block:: python
-
-  status = oms.setCommandLineOption(cmd)
-
-#END#
-
 #CAPI#
 .. code-block:: c
 
@@ -30,14 +16,5 @@ Sets special flags.
 .. code-block:: modelica
 
   status := oms_setCommandLineOption(cmd);
-
-#END#
-
-#DESCRIPTION#
-
-Available flags:
-
-.. literalinclude :: omsimulator-help.inc
-   :language: bash
 
 #END#

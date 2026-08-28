@@ -88,7 +88,7 @@ git clone https://github.com/OpenModelica/OMSimulator.git --recurse-submodules
 
    ```bash
    cmake --build build/ --config Release --target install
-   ./install/bin/OMSimulator.exe --version
+   ./install/bin/OMSimulator.bat --version
    ```
 
 ## Testing the Build

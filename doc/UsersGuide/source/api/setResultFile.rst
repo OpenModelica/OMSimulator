@@ -5,21 +5,6 @@ setResultFile
 Set the result file of the simulation.
 #END#
 
-#LUA#
-.. code-block:: lua
-
-  status = oms_setResultFile(cref, filename)
-  status = oms_setResultFile(cref, filename, bufferSize)
-
-#END#
-
-#PYTHON#
-.. code-block:: python
-
-  status = oms.setResultFile(cref, filename)
-  status = oms.setResultFile(cref, filename, bufferSize)
-
-#END#
 
 #CAPI#
 .. code-block:: c

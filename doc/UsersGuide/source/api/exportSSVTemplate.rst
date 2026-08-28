@@ -6,19 +6,6 @@ Exports all signals that have start values of one or multiple FMUs to a SSV file
 If called for a top level model, start values of all FMUs are exported to the SSV file. If called for a component, start values of just this FMU are exported to the SSV file.
 #END#
 
-#LUA#
-.. code-block:: lua
-
-  status = oms_exportSSVTemplate(cref, filename)
-
-#END#
-
-#PYTHON#
-.. code-block:: python
-
-  status = oms.exportSSVTemplate(cref, filename)
-
-#END#
 
 #CAPI#
 .. code-block:: c

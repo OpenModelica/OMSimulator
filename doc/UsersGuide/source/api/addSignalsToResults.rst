@@ -5,19 +5,6 @@ addSignalsToResults
 Add all variables that match the given regex to the result file.
 #END#
 
-#LUA#
-.. code-block:: lua
-
-  status = oms_addSignalsToResults(cref, regex)
-
-#END#
-
-#PYTHON#
-.. code-block:: python
-
-  status = oms.addSignalsToResults(cref, regex)
-
-#END#
 
 #CAPI#
 .. code-block:: c
