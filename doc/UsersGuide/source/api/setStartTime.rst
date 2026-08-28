@@ -5,19 +5,6 @@ setStartTime
 Set the start time of the simulation.
 #END#
 
-#LUA#
-.. code-block:: lua
-
-  status = oms_setStartTime(cref, startTime)
-
-#END#
-
-#PYTHON#
-.. code-block:: python
-
-  status = oms.setStartTime(cref, startTime)
-
-#END#
 
 #CAPI#
 .. code-block:: c

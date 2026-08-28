@@ -5,19 +5,6 @@ setInteger
 Sets the value of a given integer signal.
 #END#
 
-#LUA#
-.. code-block:: lua
-
-  status = oms_setInteger(cref, value)
-
-#END#
-
-#PYTHON#
-.. code-block:: python
-
-  status = oms.setInteger(cref, value)
-
-#END#
 
 #CAPI#
 .. code-block:: c

@@ -6,20 +6,6 @@ Adds a new connection between connectors `A` and `B`. The connectors need to be
 specified as fully qualified component references, e.g., `"model.system.component.signal"`.
 #END#
 
-#LUA#
-.. code-block:: lua
-
-  status = oms_addConnection(crefA, crefB, suppressUnitConversion)
-
-#END#
-
-#PYTHON#
-.. code-block:: python
-
-  status = oms.addConnection(crefA, crefB, suppressUnitConversion)
-
-#END#
-
 #CAPI#
 .. code-block:: c
 

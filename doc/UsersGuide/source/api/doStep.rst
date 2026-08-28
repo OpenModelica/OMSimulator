@@ -7,13 +7,6 @@ will be determined by the master algorithm and is limited by the
 definied minimal and maximal step sizes.
 #END#
 
-#PYTHON#
-.. code-block:: python
-
-  status = oms.doStep(cref)
-
-#END#
-
 #CAPI#
 .. code-block:: c
 

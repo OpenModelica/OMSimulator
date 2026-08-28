@@ -5,19 +5,6 @@ getInteger
 Get integer value of given signal.
 #END#
 
-#LUA#
-.. code-block:: lua
-
-  value, status = oms_getInteger(cref)
-
-#END#
-
-#PYTHON#
-.. code-block:: python
-
-  value, status = oms.getInteger(cref)
-
-#END#
 
 #CAPI#
 .. code-block:: c

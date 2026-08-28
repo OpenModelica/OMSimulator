@@ -5,13 +5,6 @@ getSubModelPath
 Returns the path of a given component.
 #END#
 
-#PYTHON#
-.. code-block:: python
-
-  path, status = oms.getSubModelPath(cref)
-
-#END#
-
 #CAPI#
 .. code-block:: c
 

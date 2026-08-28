@@ -7,20 +7,6 @@ The mapping entry contains two attributes namely source and target. The source a
 The function can be called for a top level model or a certain FMU component. If called for a top level model, start values of all FMUs are exported to the SSM file. If called for a component, start values of just this FMU are exported to the SSM file.
 #END#
 
-#LUA#
-.. code-block:: lua
-
-  status = oms_exportSSMTemplate(cref, filename)
-
-#END#
-
-#PYTHON#
-.. code-block:: python
-
-  status = oms.exportSSMTemplate(cref, filename)
-
-#END#
-
 #CAPI#
 .. code-block:: c
 

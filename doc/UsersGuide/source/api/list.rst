@@ -9,19 +9,6 @@ the C-API. The Lua and Python bindings take care of the memory and the caller
 doesn't need to call free.
 #END#
 
-#LUA#
-.. code-block:: lua
-
-  contents, status = oms_list(cref)
-
-#END#
-
-#PYTHON#
-.. code-block:: python
-
-  contents, status = oms.list(cref)
-
-#END#
 
 #CAPI#
 .. code-block:: c

@@ -6,20 +6,6 @@ This function compares a given signal of two result files within absolute and
 relative tolerances.
 #END#
 
-#LUA#
-.. code-block:: lua
-
-  oms_compareSimulationResults(filenameA, filenameB, var, relTol, absTol)
-
-#END#
-
-#PYTHON#
-.. code-block:: python
-
-  oms.compareSimulationResults(filenameA, filenameB, var, relTol, absTol)
-
-#END#
-
 #CAPI#
 .. code-block:: c
 

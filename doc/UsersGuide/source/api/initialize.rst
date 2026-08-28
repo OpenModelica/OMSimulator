@@ -5,19 +5,6 @@ initialize
 Initializes a composite model.
 #END#
 
-#LUA#
-.. code-block:: lua
-
-  status = oms_initialize(cref)
-
-#END#
-
-#PYTHON#
-.. code-block:: python
-
-  status = oms.initialize(cref)
-
-#END#
 
 #CAPI#
 .. code-block:: c

@@ -5,19 +5,6 @@ addSystem
 Adds a (sub-)system to a model or system.
 #END#
 
-#LUA#
-.. code-block:: lua
-
-  status = oms_addSystem(cref, type)
-
-#END#
-
-#PYTHON#
-.. code-block:: python
-
-  status = oms.addSystem(cref, type)
-
-#END#
 
 #CAPI#
 .. code-block:: c

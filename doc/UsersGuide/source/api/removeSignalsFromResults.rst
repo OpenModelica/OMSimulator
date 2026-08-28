@@ -5,19 +5,6 @@ removeSignalsFromResults
 Removes all variables that match the given regex to the result file.
 #END#
 
-#LUA#
-.. code-block:: lua
-
-  status = oms_removeSignalsFromResults(cref, regex)
-
-#END#
-
-#PYTHON#
-.. code-block:: python
-
-  status = oms.removeSignalsFromResults(cref, regex)
-
-#END#
 
 #CAPI#
 .. code-block:: c

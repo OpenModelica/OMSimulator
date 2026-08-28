@@ -5,13 +5,6 @@ getResultFile
 Gets the result filename and buffer size of the given model cref.
 #END#
 
-#PYTHON#
-.. code-block:: python
-
-  filename, bufferSize, status = oms.getResultFile(cref)
-
-#END#
-
 #CAPI#
 .. code-block:: c
 

@@ -5,19 +5,6 @@ getTime
 Get the current simulation time from the model.
 #END#
 
-#LUA#
-.. code-block:: lua
-
-  time, status = oms_getTime(cref)
-
-#END#
-
-#PYTHON#
-.. code-block:: python
-
-  time, status = oms.getTime(cref)
-
-#END#
 
 #CAPI#
 .. code-block:: c
