@@ -152,9 +152,10 @@ oms::Model& oms::Component::getModel() const
 
 oms::Connector* oms::Component::getConnector(const ComRef& cref)
 {
-  for (auto &connector : connectors)
-    if (connector && connector->getName() == cref)
+  for (auto &connector : connectors) {
+    if (connector && connector->getName() == cref) 
       return connector;
+  }
 
   return NULL;
 }

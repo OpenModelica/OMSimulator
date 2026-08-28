@@ -48,9 +48,28 @@
 
 #include <ctpl_stl.h>
 
+#include <dcp/model/constant/DcpError.hpp>
+#include <dcp/model/constant/DcpState.hpp>
+//#include <dcp/logic/DcpManagerMaster.hpp>
+//#include <dcp/driver/ethernet/udp/UdpDriver.hpp>
+#include <dcp/log/OstreamLog.hpp>
+
+struct DcpConnection
+{
+    size_t fromServer, fromVr;
+    std::vector<size_t> toServers, toVrs;
+};
+
+//DCP related forward declarations
+class DcpManagerMaster;
+class UdpDriver;
+class SlaveDescription_t;
+
 namespace oms
 {
   class Component;
+  class ComponentDCP;
+  class Connection;
   class System;
 
   class Model
@@ -111,6 +130,13 @@ namespace oms
     oms_status_enu_t terminate();
     oms_status_enu_t reset();
 
+    oms_status_enu_t configureDcpMaster();
+    oms_status_enu_t addDcpSlave(ComponentDCP *component);
+    oms_status_enu_t addDcpConnection(oms::Connection *connection);
+    void startDcpMasterThread();
+    oms_status_enu_t startDcpMaster();
+    oms_status_enu_t setDcpPorts(int masterPort, int slavePort);
+
     oms_modelState_enu_t getModelState() const {return modelState;}
 
     oms_status_enu_t setStartTime(double value);
@@ -118,7 +144,7 @@ namespace oms
     oms_status_enu_t setStopTime(double value);
     double getStopTime() const {return stopTime;}
     double getTime() const;
-
+    
     oms_status_enu_t setLoggingInterval(double loggingInterval);
     double getLoggingInterval() const {return loggingInterval;}
     oms_status_enu_t setResultFile(const std::string& filename, int bufferSize);
@@ -187,6 +213,47 @@ namespace oms
     ctpl::thread_pool* pool = nullptr;
 
     ComRef new_root_cref;
+
+    DcpManagerMaster *dcpManager;
+    UdpDriver* dcpDriver;
+    port_t dcpMasterPort;
+    port_t dcpSlavePort;
+    int dcpSlaveCount;
+    std::map<ComponentDCP*, size_t> dcpComponents;
+    std::shared_ptr<SlaveDescription_t> dcpInternalSystemSlaveDescription;
+    std::map<ComponentDCP*, std::shared_ptr<SlaveDescription_t>> dcpComponentToSlaveDescriptionMap;
+    std::vector<std::shared_ptr<SlaveDescription_t>> dcpSlaveDescriptions;
+    std::vector<DcpConnection> dcpConnections;
+    OstreamLog dcpLog;
+    double dcpComStep;
+    double dcpTime = 0; //TODO: Start time should not be hard-coded
+    double dcpStopTime = 10;  //TODO: Should not be hard-coded
+    std::map<uint8_t, uint64_t> dcpReceivedAcks;
+    std::map<uint8_t, uint8_t> dcpNumOfCmd;
+    uint8_t dcpMaxInitRuns = 0;
+    uint8_t dcpIntializationRuns = 1;
+    uint8_t dcpSlavesWaitingForInitialize = 0;
+    uint8_t dcpSlavesWaitingForConfiguration = 0;
+    uint8_t dcpSlavesWaitingForConfigure = 0;
+    uint8_t dcpSlavesWaitingForStep = 0;
+    size_t dcpSlavesStopped = 0;
+    size_t dcpSlavesDeregistered = 0;
+    uint8_t serversRunPastStopTime = 0;
+    oms_status_enu_t dcpMasterThreadReturnValue;
+
+    
+    void dcpInitialize();
+    void dcpConfiguration();
+    void dcpConfigure();
+    void dcpRun(DcpState currentState, uint8_t sender);
+    void dcpDoStep();
+    void dcpStop();
+    void dcpDeregister(uint8_t sender);
+    void dcpSendOutputs(DcpState currentState, uint8_t sender);
+    void dcpReceiveAck(uint8_t sender, uint16_t);
+    void dcpReceiveNAck(uint8_t sender, uint16_t pduSeqId, DcpError errorCode);
+    void dcpDataReceived(uint16_t dataId, size_t length, uint8_t payload[]);
+    void dcpReceiveStateChangedNotification(uint8_t sender, DcpState state);
   };
 }
 

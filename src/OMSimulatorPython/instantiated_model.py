@@ -618,6 +618,14 @@ class InstantiatedModel:
     if status != Status.ok:
       raise RuntimeError(f"Failed to set fixed step size: {status}")
 
+  def setDcpPorts(self, masterPort: int, slavePort: int):
+    if self.fmuInstantitated is False:
+      raise RunTimeError("FMU must be instantiated before setting DCP ports")
+
+    status = Capi.setDcpPorts(f"{self.modelName}.root", masterPort, slavePort)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to set DCP ports: {status}")
+
   def setVariableStepSize(self, initialStepSize: float, minimumStepSize: float, maximumStepSize: float):
     if self.fmuInstantitated is False:
       raise RuntimeError("FMU must be instantiated before setting variable step size")

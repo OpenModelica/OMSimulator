@@ -1672,7 +1672,19 @@ oms_status_enu_t oms_setFixedStepSize(const char* cref, double stepSize)
   return logError_SystemNotInModel(model->getCref(), front);
 }
 
-oms_status_enu_t oms_setVariableStepSize(const char* cref, double initialStepSize, double minimumStepSize, double maximumStepSize)
+OMSAPI oms_status_enu_t OMSCALL oms_setDcpPorts(const char *cref, int masterPort, int slavePort)
+{
+  oms::ComRef tail(cref);
+  oms::ComRef front = tail.pop_front();
+
+  oms::Model* model = oms::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  return model->setDcpPorts(masterPort, slavePort);
+}
+
+oms_status_enu_t oms_setVariableStepSize(const char *cref, double initialStepSize, double minimumStepSize, double maximumStepSize)
 {
   oms::ComRef tail(cref);
   oms::ComRef front = tail.pop_front();

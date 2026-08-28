@@ -48,6 +48,7 @@ set(OMSIMULATORLIB_SOURCES
       Clock.cpp
       Clocks.cpp
       Component.cpp
+      ComponentDCP.cpp
       ComponentFMU3CS.cpp
       ComponentFMUCS.cpp
       ComponentFMU3ME.cpp
@@ -58,6 +59,7 @@ set(OMSIMULATORLIB_SOURCES
       Connector.cpp
       CSVReader.cpp
       CSVWriter.cpp
+      DCPInfo.cpp
       DirectedGraph.cpp
       Element.cpp
       Flags.cpp
@@ -93,6 +95,22 @@ list(APPEND OMSIMULATORLIB_SOURCES "${CMAKE_CURRENT_BINARY_DIR}/Version.cpp")
 add_library(OMSimulatorLib SHARED ${OMSIMULATORLIB_SOURCES})
 set_target_properties(OMSimulatorLib PROPERTIES OUTPUT_NAME OMSimulator)
 
+add_library(dcplib INTERFACE)
+# DCPLib headers live in the top-level 3rdParty directory
+target_include_directories(dcplib 
+                           INTERFACE 
+                           ${CMAKE_SOURCE_DIR}/3rdParty/DCPLib/include/core
+                           ${CMAKE_SOURCE_DIR}/3rdParty/DCPLib/include/ethernet
+                           ${CMAKE_SOURCE_DIR}/3rdParty/DCPLib/include/master
+                           ${CMAKE_SOURCE_DIR}/3rdParty/DCPLib/include/slave
+                           ${CMAKE_SOURCE_DIR}/3rdParty/DCPLib/include/xml
+                           ${CMAKE_SOURCE_DIR}/3rdParty/DCPLib/include/zip
+                           ${CMAKE_SOURCE_DIR}/3rdParty/asio/include)
+target_link_libraries(OMSimulatorLib PRIVATE dcplib)
+if(WIN32)
+  target_link_libraries(OMSimulatorLib PUBLIC ws2_32)
+endif()
+
 target_include_directories(OMSimulatorLib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(OMSimulatorLib
@@ -105,7 +123,9 @@ target_link_libraries(OMSimulatorLib
                           oms::3rd::zlib
                           oms::3rd::pugixml::header
                           oms::3rd::json::header
-                          oms::3rd::ctpl::header)
+                          oms::3rd::ctpl::header
+                          oms::3rd::xerces
+                          oms::3rd::libzip)
 
 target_link_libraries(OMSimulatorLib PUBLIC ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
 
@@ -135,9 +155,18 @@ target_link_libraries(OMSimulatorLib_static
                           oms::3rd::zlib
                           oms::3rd::pugixml::header
                           oms::3rd::json::header
-                          oms::3rd::ctpl::header)
+                          oms::3rd::ctpl::header
+                          oms::3rd::xerces
+                          oms::3rd::ctpl::header
+                          oms::3rd::libzip)
+                          
+target_link_libraries(OMSimulatorLib_static PRIVATE dcplib)
 
 target_link_libraries(OMSimulatorLib_static PUBLIC ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
+
+if(WIN32)
+  target_link_libraries(OMSimulatorLib_static PUBLIC ws2_32)
+endif()
 
 if(MINGW)
   target_link_libraries(OMSimulatorLib_static PUBLIC shlwapi)
@@ -165,6 +194,30 @@ if (MINGW)
     message(STATUS "Copied files from: ${DLL_LIST} to ${CMAKE_INSTALL_PREFIX}/bin")
   else()
     message(WARNING "No DLLs found matching the pattern")
+  endif()
+endif()
+
+if(ICU_FOUND)
+  message(STATUS "ICU_LIBRARIES_FOUND: ${ICU_LIBRARIES}")
+  if (MINGW)
+    list(GET ICU_LIBRARIES 0 ICU_PATH)
+    get_filename_component(DLL_DIR "${ICU_PATH}/../../bin" ABSOLUTE)
+    message(STATUS "DLL_DIR: ${DLL_DIR}")
+    # collect all DLLs matching the pattern
+    file(GLOB DLL_LIST
+              "${DLL_DIR}/libicuuc*.dll"
+              "${DLL_DIR}/libicudt*.dll"
+              "${DLL_DIR}/libstdc++*.dll"
+              "${DLL_DIR}/libwinpthread*.dll"
+              "${DLL_DIR}/libgcc_*.dll")
+    # Check if the DLL_LIST is not empty before installing
+    if (DLL_LIST)
+      # Install the files from the list to the 'bin' directory
+      install(FILES ${DLL_LIST} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+      message(STATUS "Copied files from: ${DLL_LIST} to ${CMAKE_INSTALL_PREFIX}/bin")
+    else()
+      message(WARNING "No DLLs found matching the pattern")
+    endif()
   endif()
 endif()
 
