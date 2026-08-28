@@ -58,6 +58,7 @@ _FMU_KIND_STR = {
 _FMU_SOLVER = {
   'euler': 2,
   'cvode': 3,
+  'ma':6
 }
 
 class FMU:
@@ -185,7 +186,7 @@ class FMU:
           # Parse modelName, guid, ...
           self._fmiVersion = model_description.get('fmiVersion')
           self._valid = utils.validateFMU(model_description, str(self._fmu_path), self._fmiVersion)
-          self._modelName = model_description.get('modelName')
+          self._modelName = model_description.get('modelName').replace(" ", "") ## remove any whitespace from modelName
           self._guid = model_description.get('guid')
           self._description = model_description.get('description')
           self._generationTool = model_description.get('generationTool')
@@ -528,9 +529,7 @@ class FMU:
       case _:
         raise ValueError(f"Unsupported fmuType: {self.fmuType}")
 
-    status = Capi.setCommandLineOption("--suppressPath=true")
-    if status != Status.ok:
-      raise RuntimeError(f"Failed to set command line option: {status}")
+    Capi.setSuppressPath()
 
     status = Capi.setTempDirectory(tempfile.mkdtemp())
     if status != Status.ok:
@@ -631,9 +630,6 @@ class FMU:
       raise RuntimeError("FMU must be instantiated before setting the solver")
     if method not in _FMU_SOLVER:
       raise ValueError(f"Invalid solver '{method}': expected one of {sorted(_FMU_SOLVER)}")
-    if self.mode != 'me':
-      raise ValueError(f"Cannot set solver '{method}': '{self.instanceName}' is not a model-exchange FMU "
-                        f"({_FMU_KIND_STR.get(self.mode, self.mode)})")
     status = Capi.setSolver(f"{self.instanceName}.root", _FMU_SOLVER[method])
     if status != Status.ok:
       raise RuntimeError(f"Failed to set solver: {status}")

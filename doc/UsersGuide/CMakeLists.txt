@@ -8,13 +8,24 @@
 # if it is changed to link to a shared OMSimulatorLib, then it will not run from the build tree
 # because it will nto find the shared lib. In that case we need to first install the project and then
 # use the installed OMSimulator here.
+
+if(WIN32)
+  set(OMSIMULATOR_COMMAND
+      "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}/OMSimulator.bat")
+else()
+  set(OMSIMULATOR_COMMAND
+      "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}/OMSimulator")
+endif()
+
 add_custom_target(doc-generate-cmd-help-file
-                  COMMAND $<TARGET_FILE:OMSimulator> --help > ${CMAKE_CURRENT_SOURCE_DIR}/source/omsimulator-help.inc
+  COMMAND ${OMSIMULATOR_COMMAND} --help
+          > "${CMAKE_CURRENT_SOURCE_DIR}/source/omsimulator-help.inc"
 
-                  BYPRODUCTS ${CMAKE_CURRENT_SOURCE_DIR}/source/omsimulator-help.inc
-                  COMMENT "Generating omsimulator-help.inc.")
+  BYPRODUCTS
+    "${CMAKE_CURRENT_SOURCE_DIR}/source/omsimulator-help.inc"
 
-
+  COMMENT "Generating omsimulator-help.inc."
+)
 
 ####################
 ## PDF
