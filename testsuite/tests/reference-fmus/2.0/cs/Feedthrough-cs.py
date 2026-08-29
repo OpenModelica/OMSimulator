@@ -6,7 +6,6 @@
 
 from OMSimulator import SSP, CRef, Settings, Capi
 Settings.suppressPath = True
-Capi.setCommandLineOption("--stripRoot=true")
 
 model = SSP()
 model.addResource('../../../resources/Feedthrough.fmu', new_name='resources/Feedthrough.fmu')
@@ -39,7 +38,7 @@ instantiated_model.delete()
 
 ## Result:
 ## info:    Result file: Feedthrough-cs.mat (bufferSize=10)
-## info:    Parameter default.Feedthrough.String_parameter will not be stored in the result file, because the signal type is not supported
+## info:    Parameter default.default.Feedthrough.String_parameter will not be stored in the result file, because the signal type is not supported
 ## info:    Feedthrough.Boolean_output: True
 ## info:    Feedthrough.Enumeration_output: 2
 ## info:    Feedthrough.Float64_continuous_output: 3.1

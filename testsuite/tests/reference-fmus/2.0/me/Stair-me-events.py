@@ -39,7 +39,7 @@ instantiated_model.delete()
 with open("Stair-me-events.csv") as file:
   rows = list(csv.reader(file, skipinitialspace=True))
 
-counter = rows[0].index('default.Stair.counter')
+counter = rows[0].index('default.default.Stair.counter')
 
 # group the data points by their time stamp
 groups = []
