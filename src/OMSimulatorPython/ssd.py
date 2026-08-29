@@ -270,7 +270,7 @@ class SSD:
       raise ValueError("Variant doesn't contain a system")
     simulation_info = {"startTime": self.startTime, "stopTime": self.stopTime, "resultFile": self.resultFile, "loggingInterval": self.loggingInterval, "bufferSize": self.bufferSize}
     json_desc = self.system.generateJson(resources, tempdir, simulation_info)
-    return InstantiatedModel(json_desc, self.system, resources)
+    return InstantiatedModel(json_desc, self._name, self.system, resources)
 
   def list(self, prefix=""):
     '''Prints the SSD contents.'''

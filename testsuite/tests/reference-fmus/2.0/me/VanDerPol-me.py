@@ -6,6 +6,7 @@
 
 from OMSimulator import SSP, CRef, Settings, Capi
 Settings.suppressPath = True
+Capi.setCommandLineOption("--stripRoot=true")
 
 model = SSP()
 model.addResource('../../../resources/VanDerPol.fmu', new_name='resources/VanDerPol.fmu')

@@ -64,13 +64,14 @@ def _system_type_label(system_type: SystemType) -> str:
   return "oms_system_wc" if system_type == SystemType.wc else "oms_system_sc"
 
 class InstantiatedModel:
-  def __init__(self, json_description, system: System, resources: dict):
+  def __init__(self, json_description, ssdName: str, system: System, resources: dict):
     #print(f"info: Instantiating model with JSON description:\n{json_description}", flush=True)
     config = json.loads(json_description)
     self.modelName = "model" ## create random name, but we cannot commits test as jenkins will gerate new model name
     self.apiCall = []
     self.mappedCrefs = {}  # Store mapped CRefs associated with their export names
     self.system = system
+    self.ssdName = ssdName
     self.resources = resources
     self.fmuInstantitated = False
 
@@ -205,7 +206,7 @@ class InstantiatedModel:
         if not export_name in self.mappedCrefs:
           self.mappedCrefs[export_name] = comp_path
           self.mappedCrefs[".".join(comp["name"][:-1])] = solver_path # map parent system too for connector lookup
-        status = Capi.setExportName(comp_path, export_name)  # Set export name if provided
+        status = Capi.setExportName(comp_path, f"{self.ssdName}.{export_name}")  # Set export name if provided
         if status != Status.ok:
           raise RuntimeError(f"Failed to set export name: {status}")
 
@@ -428,7 +429,7 @@ class InstantiatedModel:
       export_name = systemName
       if not connector_name in self.mappedCrefs:
         self.mappedCrefs[connector_name] = connector_path
-      status = Capi.setExportName(connector_path, export_name)  # Set export name if provided
+      status = Capi.setExportName(connector_path, f"{self.ssdName}.{export_name}")  # Set export name if provided
       if status != Status.ok:
         raise RuntimeError(f"Failed to set export name: {status}")
       status = Capi.setAliasName(connector_path, str(connector.name))  # Set alias name for connector
