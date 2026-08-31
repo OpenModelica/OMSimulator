@@ -1503,6 +1503,19 @@ oms::Model& oms::System::getModel()
   return *parentModel;
 }
 
+oms_status_enu_t oms::System::enterInitializationMode()
+{
+  for (const auto& subsystem : getSubSystems())
+    if (oms_status_ok != subsystem.second->enterInitializationMode())
+      return oms_status_error;
+
+  for (const auto& component : getComponents())
+    if (oms_status_ok != component.second->enterInitializationMode())
+      return oms_status_error;
+
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms::System::deleteAllConectionsTo(const oms::ComRef& cref)
 {
   for (int i=0; i<connections.size(); ++i)

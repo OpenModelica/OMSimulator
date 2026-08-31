@@ -684,15 +684,19 @@ oms_status_enu_t oms::ComponentFMU3CS::instantiate()
   {
     setResourcesHelper1(values);
   }
-  // enterInitialization
   time = getModel().getStartTime();
 
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::ComponentFMU3CS::enterInitializationMode()
+{
   double relativeTolerance = 0.0;
   getParentSystem()->getTolerance(&relativeTolerance);
 
-  fmi3Status status_ = fmi3_enterInitializationMode(fmu, fmi3False, relativeTolerance, time, fmi3False, getModel().getStopTime());
+  fmi3Status status = fmi3_enterInitializationMode(fmu, fmi3False, relativeTolerance, time, fmi3False, getModel().getStopTime());
 
-  if (fmi3OK != status_) return logError_FMUCall("fmi3_enterInitializationMode", this);
+  if (fmi3OK != status) return logError_FMUCall("fmi3_enterInitializationMode", this);
 
   return oms_status_ok;
 }

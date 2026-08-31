@@ -79,6 +79,7 @@ namespace oms
     virtual oms_status_enu_t updateSignals(ResultWriter& resultFile);
     virtual oms_status_enu_t setSolver(oms_solver_enu_t solver) {return oms_status_error;}
     virtual oms_status_enu_t instantiate() = 0;
+    oms_status_enu_t enterInitializationMode();
     virtual oms_status_enu_t initialize() = 0;
     virtual oms_status_enu_t terminate() = 0;
     virtual oms_status_enu_t reset() = 0;

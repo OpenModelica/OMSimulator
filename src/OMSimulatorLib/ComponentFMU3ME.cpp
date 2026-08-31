@@ -670,15 +670,28 @@ oms_status_enu_t oms::ComponentFMU3ME::instantiate()
     setResourcesHelper1(values);
   }
 
-  // enterInitialization
+  const double& startTime = getModel().getStartTime();
+
+  newDiscreteStatesNeeded = fmi3False;
+  terminateSimulation = fmi3False;
+  nominalsOfContinuousStatesChanged = fmi3False;
+  valuesOfContinuousStatesChanged = fmi3True;
+  nextEventTimeDefined = fmi3False;
+  nextEventTime = -0.0;
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::ComponentFMU3ME::enterInitializationMode()
+{
   const double& startTime = getModel().getStartTime();
 
   double relativeTolerance = 0.0;
   getParentSystem()->getTolerance(&relativeTolerance);
 
-  fmi3Status status_ = fmi3_enterInitializationMode(fmu, fmi3False, relativeTolerance, startTime, fmi3False, getModel().getStopTime());
+  fmi3Status status = fmi3_enterInitializationMode(fmu, fmi3False, relativeTolerance, startTime, fmi3False, getModel().getStopTime());
 
-  if (fmi3OK != status_) return logError_FMUCall("fmi3_enterInitializationMode", this);
+  if (fmi3OK != status) return logError_FMUCall("fmi3_enterInitializationMode", this);
 
   newDiscreteStatesNeeded = fmi3False;
   terminateSimulation = fmi3False;

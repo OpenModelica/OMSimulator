@@ -671,7 +671,7 @@ oms_status_enu_t oms::ComponentFMUCS::instantiate()
     setResourcesHelper1(values);
   }
 
-  // enterInitialization
+  // setup experiment
   time = getModel().getStartTime();
   double relativeTolerance = 0.0;
   getParentSystem()->getTolerance(&relativeTolerance);
@@ -679,8 +679,13 @@ oms_status_enu_t oms::ComponentFMUCS::instantiate()
   fmi2Status status = fmi2_setupExperiment(fmu, fmi2True, relativeTolerance, time, fmi2False, 1.0);
   if (fmi2OK != status) return logError_FMUCall("fmi2_setupExperiment", this);
 
-  fmi2Status status_ = fmi2_enterInitializationMode(fmu);
-  if (fmi2OK != status_) return logError_FMUCall("fmi2_enterInitializationMode", this);
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::ComponentFMUCS::enterInitializationMode()
+{
+  fmi2Status status = fmi2_enterInitializationMode(fmu);
+  if (fmi2OK != status) return logError_FMUCall("fmi2_enterInitializationMode", this);
 
   return oms_status_ok;
 }

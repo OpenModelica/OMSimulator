@@ -233,6 +233,9 @@ oms_status_enu_t oms::SystemWC::initialize()
   clock.reset();
   CallClock callClock(clock);
 
+  if (oms_status_ok != enterInitializationMode())
+    return oms_status_error;
+
   if (oms_status_ok != updateDependencyGraphs())
     return oms_status_error;
 

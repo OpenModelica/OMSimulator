@@ -71,6 +71,7 @@ namespace oms
     oms_status_enu_t exportToSSVTemplate(pugi::xml_node& ssvNode, Snapshot& snapshot);
     oms_status_enu_t exportToSSMTemplate(pugi::xml_node& ssmNode);
     oms_status_enu_t instantiate();
+    oms_status_enu_t enterInitializationMode();
     oms_status_enu_t initialize();
     oms_status_enu_t terminate();
     oms_status_enu_t reset();

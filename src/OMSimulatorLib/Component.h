@@ -74,6 +74,7 @@ namespace oms
 
     virtual oms_status_enu_t initialize() = 0;
     virtual oms_status_enu_t instantiate() = 0;
+    virtual oms_status_enu_t enterInitializationMode() { return oms_status_ok; }
     virtual oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultFile) = 0;
     virtual oms_status_enu_t removeSignalsFromResults(const char* regex) = 0;
     virtual oms_status_enu_t reset() = 0;
