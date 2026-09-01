@@ -451,7 +451,7 @@ class InstantiatedModel:
     component = self.system.elements.get(CRef(component_name))
 
     # Top-level system variable: no FMI check required
-    if component is None:
+    if not isinstance(component, Component):
       return True
 
     variable = component.fmu.getVariableByName(variable_name)
