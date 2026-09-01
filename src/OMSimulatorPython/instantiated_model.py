@@ -457,7 +457,6 @@ class InstantiatedModel:
     variable = component.fmu.getVariableByName(variable_name)
 
     if variable and self.fmuInstantiated and not self.fmuInitialized:
-      print(f"info: Checking FMI requirements for variable '{variable_name}' in component '{component_name} {variable.initial}' after FMU instantiation.", flush=True)
       if not variable.isInput() and not variable.isExact():
         warnings.warn(
             f"Cannot set variable '{variable_name}' after the FMU "
