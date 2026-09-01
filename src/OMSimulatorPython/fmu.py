@@ -339,7 +339,7 @@ class FMU:
           self._states.append(self._variables[derivative_index - 1])
 
       # Create and store the variable
-      variable = Variable(name, description, value_reference, causality, variability, var_type, unit, start, declaredType)
+      variable = Variable(name, description, value_reference, causality, variability, initial, var_type, unit, start, declaredType)
 
       # Assign unit definitions if applicable
       if unit:
@@ -392,7 +392,7 @@ class FMU:
         # print(f"var_name: {name}, var_type: {var_type}, causality: {causality}, variability: {variability}, initial: {initial}, start: {start}")
 
         # Create and store the variable
-        variable = Variable(name, description, value_reference, causality, variability, var_type, unit, start, declaredType)
+        variable = Variable(name, description, value_reference, causality, variability, initial, var_type, unit, start, declaredType)
 
         # Assign unit definitions if applicable
         if unit:

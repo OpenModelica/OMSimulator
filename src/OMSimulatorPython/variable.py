@@ -110,12 +110,13 @@ class Binary(FMI3Type): pass
 
 class Variable:
   '''Class for storing variable information'''
-  def __init__(self, name: Union[str, CRef], description : str, valueReference: Union[str, int], causality, variability, signal_type, unit, start_value, declaredType):
+  def __init__(self, name: Union[str, CRef], description : str, valueReference: Union[str, int], causality, variability, initial, signal_type, unit, start_value, declaredType):
     self.name = CRef(name)
     self.description = description
     self.valueReference = int(valueReference)
     self.causality = causality if isinstance(causality, Causality) else Causality[causality]
     self.variability = variability
+    self.initial = initial
     self.signal_type = signal_type if isinstance(signal_type, SignalType) else SignalType[signal_type]
     self.unit = unit
     self.modelDescriptionStartValue = start_value
