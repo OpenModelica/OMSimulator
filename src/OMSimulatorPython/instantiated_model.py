@@ -74,7 +74,7 @@ class InstantiatedModel:
     self.system = system
     self.ssdName = ssdName
     self.resources = resources
-    self.fmuInstantitated = False
+    self.fmuInstantiated = False
     self.fmuInitialized = False
 
     Capi.setSuppressPath()
@@ -255,7 +255,7 @@ class InstantiatedModel:
     status = Capi.instantiate(self.modelName)
     if status != Status.ok:
       raise RuntimeError(f"Failed to instantiate model: {status}")
-    self.fmuInstantitated = True
+    self.fmuInstantiated = True
     ## set start and stop time from ssp
     self.setStartTime(float(config["simulation settings"]['start time']))
     self.setStopTime(float(config["simulation settings"]['stop time']))
@@ -456,6 +456,18 @@ class InstantiatedModel:
 
     variable = component.fmu.getVariableByName(variable_name)
 
+    if variable and self.fmuInstantiated and not self.fmuInitialized:
+      print(f"info: Checking FMI requirements for variable '{variable_name}' in component '{component_name} {variable.initial}' after FMU instantiation.", flush=True)
+      if not variable.isInput() and not variable.isExact():
+        warnings.warn(
+            f"Cannot set variable '{variable_name}' after the FMU "
+            f"is instantiated. Only variables with "
+            f"causality='input' or initial='exact' can "
+            f"be set at this stage. Variable '{variable_name}' has "
+            f"causality='{variable.causality.name}' and "
+            f"initial='{variable.initial}'",RuntimeWarning)
+        return False
+
     if variable and self.fmuInitialized:
       if not variable.isInput() or not variable.isContinuous():
         warnings.warn(
@@ -630,7 +642,7 @@ class InstantiatedModel:
       raise RuntimeError(f"Failed to do step: {status}")
 
   def setStopTime(self, stopTime: float):
-    if self.fmuInstantitated is False:
+    if self.fmuInstantiated is False:
       raise RuntimeError("FMU must be instantiated before setting stop time")
 
     status = Capi.setStopTime(self.modelName, stopTime)
@@ -638,7 +650,7 @@ class InstantiatedModel:
       raise RuntimeError(f"Failed to set stop time: {status}")
 
   def setTolerance(self, tolerance: float):
-    if self.fmuInstantitated is False:
+    if self.fmuInstantiated is False:
       raise RuntimeError("FMU must be instantiated before setting tolerance")
 
     status = Capi.setTolerance(f"{self.modelName}.root", tolerance)
@@ -646,7 +658,7 @@ class InstantiatedModel:
       raise RuntimeError(f"Failed to set tolerance: {status}")
 
   def setFixedStepSize(self, stepSize: float):
-    if self.fmuInstantitated is False:
+    if self.fmuInstantiated is False:
       raise RuntimeError("FMU must be instantiated before setting variable step size")
 
     status = Capi.setFixedStepSize(f"{self.modelName}.root", stepSize)
@@ -654,7 +666,7 @@ class InstantiatedModel:
       raise RuntimeError(f"Failed to set fixed step size: {status}")
 
   def setDcpPorts(self, masterPort: int, slavePort: int):
-    if self.fmuInstantitated is False:
+    if self.fmuInstantiated is False:
       raise RunTimeError("FMU must be instantiated before setting DCP ports")
 
     status = Capi.setDcpPorts(f"{self.modelName}.root", masterPort, slavePort)
@@ -662,7 +674,7 @@ class InstantiatedModel:
       raise RuntimeError(f"Failed to set DCP ports: {status}")
 
   def setVariableStepSize(self, initialStepSize: float, minimumStepSize: float, maximumStepSize: float):
-    if self.fmuInstantitated is False:
+    if self.fmuInstantiated is False:
       raise RuntimeError("FMU must be instantiated before setting variable step size")
 
     status = Capi.setVariableStepSize(f"{self.modelName}.root", initialStepSize, minimumStepSize, maximumStepSize)

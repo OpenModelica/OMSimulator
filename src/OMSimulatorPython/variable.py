@@ -138,3 +138,6 @@ class Variable:
 
   def isContinuous(self):
     return self.variability == "continuous"
+
+  def isExact(self):
+    return self.initial == "exact"
