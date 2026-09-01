@@ -61,6 +61,49 @@ _FMU_SOLVER = {
   'ma':6
 }
 
+## default initial attribute table for FMI 2.0, based on variability and causality
+initialDefaultTableFmi2 = {
+    "fixed": {
+        "input": "unknown",
+        "output": "unknown",
+        "parameter": "exact",
+        "calculatedParameter": "calculated",
+        "local": "calculated",
+        "independent": "unknown",
+    },
+    "tunable": {
+        "input": "unknown",
+        "output": "unknown",
+        "parameter": "exact",
+        "calculatedParameter": "calculated",
+        "local": "calculated",
+        "independent": "unknown",
+    },
+    "constant": {
+        "input": "unknown",
+        "output": "exact",
+        "parameter": "unknown",
+        "calculatedParameter": "exact",
+        "local": "exact",
+        "independent": "unknown",
+    },
+    "discrete": {
+        "input": "unknown",
+        "output": "calculated",
+        "parameter": "unknown",
+        "calculatedParameter": "calculated",
+        "local": "calculated",
+        "independent": "unknown",
+    },
+    "continuous": {
+        "input": "unknown",
+        "output": "calculated",
+        "parameter": "unknown",
+        "calculatedParameter": "calculated",
+        "local": "calculated",
+        "independent": "unknown",
+    },
+}
 class FMU:
   def __init__(self, fmu_path: Union[str, Path], instanceName: str = None):
     '''Initialize the FMU by loading modelDescription.xml from the FMU archive.'''
@@ -263,6 +306,9 @@ class FMU:
       'stepSize': _get('stepSize', 1e-3),
     }
 
+  def _getInitialAttribute(self, variability, causality):
+    return initialDefaultTableFmi2.get(variability, {}).get(causality)
+
   def _parse_variables_fmi2(self, model_description):
     '''Parses variables from the ModelVariables section of modelDescription.xml'''
     scalar_variables = model_description.xpath('//ModelVariables/ScalarVariable')
@@ -272,7 +318,7 @@ class FMU:
       value_reference = scalar_var.get('valueReference')
       causality = scalar_var.get('causality', 'local')
       variability = scalar_var.get('variability', 'continuous')
-
+      initial = scalar_var.get('initial') if scalar_var.get('initial') is not None else self._getInitialAttribute(variability, causality)
       var_type = None
       unit = None
       start = None
@@ -327,7 +373,7 @@ class FMU:
         value_reference = element.get("valueReference")
         causality = element.get("causality", "local")
         variability = element.get("variability", "continuous")
-        initial = element.get("initial")
+        initial = element.get('initial') if element.get('initial') is not None else self._getInitialAttribute(variability, causality)
         start = element.get("start")
         derivative_index = int(element.get('derivative', '-1'))
         declaredType = element.get('declaredType')
@@ -417,6 +463,12 @@ class FMU:
               connector.setEnumerationName(var.declaredType)
         connectors.append(connector)
     return connectors
+
+  def getVariableByName(self, name: str) -> Variable | None:
+    for var in self.variables:
+      if str(var.name) == name:
+        return var
+    return None
 
   def varExist(self, cref: str) -> bool:
     return any(var.name == cref for var in self.variables)

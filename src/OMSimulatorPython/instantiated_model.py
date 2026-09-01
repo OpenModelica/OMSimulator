@@ -41,6 +41,7 @@ from OMSimulator.variable import Causality, SignalType, SignalNumericType
 import json
 import tempfile
 from enum import Enum
+import warnings
 
 class SolverType(Enum):
   '''Enumeration for solver method to map with c api.'''
@@ -74,6 +75,7 @@ class InstantiatedModel:
     self.ssdName = ssdName
     self.resources = resources
     self.fmuInstantitated = False
+    self.fmuInitialized = False
 
     Capi.setSuppressPath()
     # Set the temporary directory
@@ -440,8 +442,39 @@ class InstantiatedModel:
     """Returns the generated API calls as a string."""
     return "\n".join(self.apiCall)
 
+  def checkfmiRequirements(self, cref: CRef):
+    """Checks if a component variable meets the FMI requirements."""
+    ## Last element is the variable name
+    variable_name = cref.names[-1]
+    ## The second last element is the component name
+    component_name = cref.names[-2]
+    component = self.system.elements.get(CRef(component_name))
+
+    # Top-level system variable: no FMI check required
+    if component is None:
+      return True
+
+    variable = component.fmu.getVariableByName(variable_name)
+
+    if variable and self.fmuInitialized:
+      if not variable.isInput() or not variable.isContinuous():
+        warnings.warn(
+            f"Cannot set variable '{variable_name}' after the FMU "
+            f"is initialized. Only variables with "
+            f"causality='input' and variability='continuous' can "
+            f"be set at this stage. Variable '{variable_name}' has "
+            f"causality='{variable.causality.name}' and "
+            f"variability='{variable.variability}'",RuntimeWarning)
+        return False
+
+    return True
+
   def setValue(self, cref: CRef, value):
     """Sets a value for a specific CRef in the model."""
+
+    if not self.checkfmiRequirements(cref):
+      return
+
     name = ".".join(cref.names)
 
     ## check for top level connectors with alias names first
@@ -544,6 +577,7 @@ class InstantiatedModel:
     status = Capi.initialize(self.modelName)
     if status != Status.ok:
       raise RuntimeError(f"Failed to initialize model: {status}")
+    self.fmuInitialized = True
 
   def reset(self):
     '''Reset the model to the state right after instantiation, discarding initialization/simulation progress.'''

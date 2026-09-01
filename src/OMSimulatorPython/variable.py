@@ -134,3 +134,6 @@ class Variable:
 
   def isCalculatedParameter(self):
     return self.causality == Causality.calculatedParameter
+
+  def isContinuous(self):
+    return self.variability == "continuous"
