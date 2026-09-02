@@ -457,7 +457,8 @@ class InstantiatedModel:
     variable = component.fmu.getVariableByName(variable_name)
 
     if variable and self.fmuInstantiated and not self.fmuInitialized:
-      if not variable.isInput() and not variable.isExact():
+      allowed = (variable.isInput() or variable.isExact())
+      if not allowed:
         warnings.warn(
             f"Cannot set variable '{variable_name}' after the FMU "
             f"is instantiated. Only variables with "
@@ -468,11 +469,13 @@ class InstantiatedModel:
         return False
 
     if variable and self.fmuInitialized:
-      if not variable.isInput() or not variable.isContinuous():
+      allowed = (variable.isInput()) or (variable.isParameter() and variable.isTunable())
+      if not allowed:
         warnings.warn(
             f"Cannot set variable '{variable_name}' after the FMU "
             f"is initialized. Only variables with "
-            f"causality='input' and variability='continuous' can "
+            f"causality='input' or "
+            f"causality='parameter' and variability='tunable' can "
             f"be set at this stage. Variable '{variable_name}' has "
             f"causality='{variable.causality.name}' and "
             f"variability='{variable.variability}'",RuntimeWarning)

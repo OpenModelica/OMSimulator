@@ -139,5 +139,8 @@ class Variable:
   def isContinuous(self):
     return self.variability == "continuous"
 
+  def isTunable(self):
+    return self.variability == "tunable"
+
   def isExact(self):
     return self.initial == "exact"
