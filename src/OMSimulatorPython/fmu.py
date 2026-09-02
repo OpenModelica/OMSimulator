@@ -40,10 +40,12 @@ from lxml import etree as ET
 from OMSimulator.connector import Connector
 from OMSimulator.unit import Unit
 from OMSimulator.variable import Variable, SignalType
+from OMSimulator.values import Values
 from OMSimulator import namespace, utils
 from OMSimulator.capi import Capi, Status
 from OMSimulator.cref import CRef
 from OMSimulator.enumeration import Enumeration
+import warnings
 
 logger = logging.getLogger(__name__)
 
@@ -61,6 +63,49 @@ _FMU_SOLVER = {
   'ma':6
 }
 
+## default initial attribute table for FMI 2.0, based on variability and causality
+initialDefaultTableFmi2 = {
+    "fixed": {
+        "input": "unknown",
+        "output": "unknown",
+        "parameter": "exact",
+        "calculatedParameter": "calculated",
+        "local": "calculated",
+        "independent": "unknown",
+    },
+    "tunable": {
+        "input": "unknown",
+        "output": "unknown",
+        "parameter": "exact",
+        "calculatedParameter": "calculated",
+        "local": "calculated",
+        "independent": "unknown",
+    },
+    "constant": {
+        "input": "unknown",
+        "output": "exact",
+        "parameter": "unknown",
+        "calculatedParameter": "exact",
+        "local": "exact",
+        "independent": "unknown",
+    },
+    "discrete": {
+        "input": "unknown",
+        "output": "calculated",
+        "parameter": "unknown",
+        "calculatedParameter": "calculated",
+        "local": "calculated",
+        "independent": "unknown",
+    },
+    "continuous": {
+        "input": "unknown",
+        "output": "calculated",
+        "parameter": "unknown",
+        "calculatedParameter": "calculated",
+        "local": "calculated",
+        "independent": "unknown",
+    },
+}
 class FMU:
   def __init__(self, fmu_path: Union[str, Path], instanceName: str = None):
     '''Initialize the FMU by loading modelDescription.xml from the FMU archive.'''
@@ -93,7 +138,9 @@ class FMU:
     self.appliedExperiment = {}
     self.apiCall = []
     self.instanceName = instanceName
-    self.fmuInstantitated = False
+    self.value = Values()
+    self.fmuInstantiated = False
+    self.fmuInitialized = False
     self.mode = None
     # override the FMU's declared defaultExperiment; must be set before instantiate()
     # since they need to reach the FMU's fmi2SetupExperiment call, not just the
@@ -263,6 +310,9 @@ class FMU:
       'stepSize': _get('stepSize', 1e-3),
     }
 
+  def _getInitialAttribute(self, variability, causality):
+    return initialDefaultTableFmi2.get(variability, {}).get(causality)
+
   def _parse_variables_fmi2(self, model_description):
     '''Parses variables from the ModelVariables section of modelDescription.xml'''
     scalar_variables = model_description.xpath('//ModelVariables/ScalarVariable')
@@ -272,7 +322,7 @@ class FMU:
       value_reference = scalar_var.get('valueReference')
       causality = scalar_var.get('causality', 'local')
       variability = scalar_var.get('variability', 'continuous')
-
+      initial = scalar_var.get('initial') if scalar_var.get('initial') is not None else self._getInitialAttribute(variability, causality)
       var_type = None
       unit = None
       start = None
@@ -293,7 +343,7 @@ class FMU:
           self._states.append(self._variables[derivative_index - 1])
 
       # Create and store the variable
-      variable = Variable(name, description, value_reference, causality, variability, var_type, unit, start, declaredType)
+      variable = Variable(name, description, value_reference, causality, variability, initial, var_type, unit, start, declaredType)
 
       # Assign unit definitions if applicable
       if unit:
@@ -327,7 +377,7 @@ class FMU:
         value_reference = element.get("valueReference")
         causality = element.get("causality", "local")
         variability = element.get("variability", "continuous")
-        initial = element.get("initial")
+        initial = element.get('initial') if element.get('initial') is not None else self._getInitialAttribute(variability, causality)
         start = element.get("start")
         derivative_index = int(element.get('derivative', '-1'))
         declaredType = element.get('declaredType')
@@ -346,7 +396,7 @@ class FMU:
         # print(f"var_name: {name}, var_type: {var_type}, causality: {causality}, variability: {variability}, initial: {initial}, start: {start}")
 
         # Create and store the variable
-        variable = Variable(name, description, value_reference, causality, variability, var_type, unit, start, declaredType)
+        variable = Variable(name, description, value_reference, causality, variability, initial, var_type, unit, start, declaredType)
 
         # Assign unit definitions if applicable
         if unit:
@@ -417,6 +467,12 @@ class FMU:
               connector.setEnumerationName(var.declaredType)
         connectors.append(connector)
     return connectors
+
+  def getVariableByName(self, name: str) -> Variable | None:
+    for var in self.variables:
+      if str(var.name) == name:
+        return var
+    return None
 
   def varExist(self, cref: str) -> bool:
     return any(var.name == cref for var in self.variables)
@@ -506,6 +562,30 @@ class FMU:
     else:
       return parts[-1]
 
+  def applyStartValues(self):
+    """
+    Apply start values to the FMU's variables. set before instantiation. This method should be called after the FMU is loaded and before it is instantiated.
+    """
+    for key, (value, type, _, _) in self.value.start_values.items():
+      mappedCrefs = f"{self.instanceName}.root.{self.instanceName}.{key}"
+      #Determine the variable type
+      type, status = Capi.getVariableType(mappedCrefs)
+      if status != Status.ok:
+        raise RuntimeError(f"Failed to get variable type for {key}: {status}")
+
+      match SignalType(type):
+        case SignalType.Real:  # oms_signal_type_real
+          return self._setReal(mappedCrefs, value)
+        case SignalType.Integer:  # oms_signal_type_integer
+          return self._setInteger(mappedCrefs, value)
+        case SignalType.Boolean:  # oms_signal_type_boolean
+          return self._setBoolean(mappedCrefs, value)
+        case SignalType.String:  # oms_signal_type_string
+          return self._setString(mappedCrefs, value)
+        case SignalType.Enumeration:  # oms_signal_type_enumeration
+          return self._setInteger(mappedCrefs, value)  # Treat enumeration as integer
+        case _:
+          raise TypeError(f"Unsupported type: {type}")
 
   def instantiate(self):
     '''Instantiate the FMU for simulation.
@@ -588,37 +668,38 @@ class FMU:
     status = Capi.setVariableStepSize(self.instanceName, 1e-6, 1e-12, self.appliedExperiment['stepSize'])
     if status != Status.ok:
       raise RuntimeError(f"Failed to set variable step size: {status}")
-
+    ## apply start values before instantiation, so that initialization can use them before entering fmi2_enterInitializationMode
+    self.applyStartValues()
     status = Capi.instantiate(self.instanceName)
     if status != Status.ok:
       raise RuntimeError(f"Failed to instantiate model: {status}")
-    self.fmuInstantitated = True
+    self.fmuInstantiated = True
 
     self.apiCall.append(f'oms.instantiate("{self.instanceName}")')
 
   def setStartTime(self, startTime: float):
-    if self.fmuInstantitated is False:
+    if self.fmuInstantiated is False:
       raise RuntimeError("FMU must be instantiated before setting start time")
     status = Capi.setStartTime(self.instanceName, startTime)
     if status != Status.ok:
       raise RuntimeError(f"Failed to set start time: {status}")
 
   def setStopTime(self, stopTime: float):
-    if self.fmuInstantitated is False:
+    if self.fmuInstantiated is False:
       raise RuntimeError("FMU must be instantiated before setting stop time")
     status = Capi.setStopTime(self.instanceName, stopTime)
     if status != Status.ok:
       raise RuntimeError(f"Failed to set stop time: {status}")
 
   def setTolerance(self, tolerance: float):
-    if self.fmuInstantitated is False:
+    if self.fmuInstantiated is False:
       raise RuntimeError("FMU must be instantiated before setting tolerance")
     status = Capi.setTolerance(self.instanceName, tolerance)
     if status != Status.ok:
       raise RuntimeError(f"Failed to set tolerance: {status}")
 
   def setStepSize(self, stepSize: float):
-    if self.fmuInstantitated is False:
+    if self.fmuInstantiated is False:
       raise RuntimeError("FMU must be instantiated before setting variable step size")
     status = Capi.setVariableStepSize(self.instanceName, 1e-6, 1e-12, stepSize)
     if status != Status.ok:
@@ -626,7 +707,7 @@ class FMU:
 
   def setSolver(self, method: str):
     '''Set the ODE solver ('euler' or 'cvode'). Only applies to model-exchange FMUs.'''
-    if self.fmuInstantitated is False:
+    if self.fmuInstantiated is False:
       raise RuntimeError("FMU must be instantiated before setting the solver")
     if method not in _FMU_SOLVER:
       raise ValueError(f"Invalid solver '{method}': expected one of {sorted(_FMU_SOLVER)}")
@@ -635,7 +716,7 @@ class FMU:
       raise RuntimeError(f"Failed to set solver: {status}")
 
   def getValue(self, cref: str):
-    if self.fmuInstantitated is False:
+    if self.fmuInstantiated is False:
       raise RuntimeError("FMU must be instantiated before getting values")
 
     '''Get the value of a variable by its name.'''
@@ -687,14 +768,48 @@ class FMU:
       raise RuntimeError(f"Failed to get value for {cref}: {status}")
     return value
 
-  def setValue(self, cref: str, value):
-    """Sets a value for a specific CRef in the model."""
+  def checkfmiRequirements(self, cref: CRef):
+    """Checks if a component variable meets the FMI requirements."""
+    variable = self.getVariableByName(str(cref))
 
-    if self.fmuInstantitated is False:
-      raise RuntimeError("FMU must be instantiated before setting values")
+    if variable and self.fmuInstantiated and not self.fmuInitialized:
+      allowed = (variable.isInput() or variable.isExact())
+      if not allowed:
+        warnings.warn(
+            f"Cannot set variable '{cref}' after the FMU "
+            f"is instantiated. Only variables with "
+            f"causality='input' or initial='exact' can "
+            f"be set at this stage. Variable '{cref}' has "
+            f"causality='{variable.causality.name}' and "
+            f"initial='{variable.initial}'",RuntimeWarning)
+        return False
+
+    if variable and self.fmuInitialized:
+      allowed = (variable.isInput()) or (variable.isParameter() and variable.isTunable())
+      if not allowed:
+        warnings.warn(
+            f"Cannot set variable '{cref}' after the FMU "
+            f"is initialized. Only variables with "
+            f"causality='input' or "
+            f"causality='parameter' and variability='tunable' can "
+            f"be set at this stage. Variable '{cref}' has "
+            f"causality='{variable.causality.name}' and "
+            f"variability='{variable.variability}'",RuntimeWarning)
+        return False
+
+    return True
+
+  def setValue(self, cref: str, value, unit=None, description = None):
+    """Sets a value for a specific CRef in the model."""
 
     if not self.varExist(CRef(cref)):
       raise KeyError(f"Variable '{cref}' does not exist in the FMU")
+
+    if self.fmuInstantiated is False:
+      return self.value.setValue(cref, value, unit, description)
+
+    if not self.checkfmiRequirements(CRef(cref)):
+      return  # Skip setting the value if FMI requirements are not met
 
     mappedCrefs = f"{self.instanceName}.root.{self.instanceName}.{cref}"
 
@@ -742,7 +857,7 @@ class FMU:
       raise RuntimeError(f"Failed to set value for {mapped_cref}: {status}")
 
   def setResultFile(self, filename: str):
-    if self.fmuInstantitated is False:
+    if self.fmuInstantiated is False:
       raise RuntimeError("FMU must be instantiated before setting result file")
 
     status = Capi.setResultFile(self.instanceName, filename)
@@ -750,15 +865,16 @@ class FMU:
       raise RuntimeError(f"Failed to setResultFile {filename}: {status}")
 
   def initialize(self):
-    if self.fmuInstantitated is False:
+    if self.fmuInstantiated is False:
       raise RuntimeError("FMU must be instantiated before initialization")
 
     status = Capi.initialize(self.instanceName)
     if status != Status.ok:
       raise RuntimeError(f"Failed to initialize model: {status}")
+    self.fmuInitialized = True
 
   def simulate(self):
-    if self.fmuInstantitated is False:
+    if self.fmuInstantiated is False:
       raise RuntimeError("FMU must be instantiated before simulation")
 
     status = Capi.simulate(self.instanceName)
