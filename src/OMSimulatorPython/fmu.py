@@ -40,6 +40,7 @@ from lxml import etree as ET
 from OMSimulator.connector import Connector
 from OMSimulator.unit import Unit
 from OMSimulator.variable import Variable, SignalType
+from OMSimulator.values import Values
 from OMSimulator import namespace, utils
 from OMSimulator.capi import Capi, Status
 from OMSimulator.cref import CRef
@@ -137,6 +138,7 @@ class FMU:
     self.appliedExperiment = {}
     self.apiCall = []
     self.instanceName = instanceName
+    self.value = Values()
     self.fmuInstantiated = False
     self.fmuInitialized = False
     self.mode = None
@@ -560,6 +562,30 @@ class FMU:
     else:
       return parts[-1]
 
+  def applyStartValues(self):
+    """
+    Apply start values to the FMU's variables. set before instantiation. This method should be called after the FMU is loaded and before it is instantiated.
+    """
+    for key, (value, type, _, _) in self.value.start_values.items():
+      mappedCrefs = f"{self.instanceName}.root.{self.instanceName}.{key}"
+      #Determine the variable type
+      type, status = Capi.getVariableType(mappedCrefs)
+      if status != Status.ok:
+        raise RuntimeError(f"Failed to get variable type for {key}: {status}")
+
+      match SignalType(type):
+        case SignalType.Real:  # oms_signal_type_real
+          return self._setReal(mappedCrefs, value)
+        case SignalType.Integer:  # oms_signal_type_integer
+          return self._setInteger(mappedCrefs, value)
+        case SignalType.Boolean:  # oms_signal_type_boolean
+          return self._setBoolean(mappedCrefs, value)
+        case SignalType.String:  # oms_signal_type_string
+          return self._setString(mappedCrefs, value)
+        case SignalType.Enumeration:  # oms_signal_type_enumeration
+          return self._setInteger(mappedCrefs, value)  # Treat enumeration as integer
+        case _:
+          raise TypeError(f"Unsupported type: {type}")
 
   def instantiate(self):
     '''Instantiate the FMU for simulation.
@@ -642,7 +668,8 @@ class FMU:
     status = Capi.setVariableStepSize(self.instanceName, 1e-6, 1e-12, self.appliedExperiment['stepSize'])
     if status != Status.ok:
       raise RuntimeError(f"Failed to set variable step size: {status}")
-
+    ## apply start values before instantiation, so that initialization can use them before entering fmi2_enterInitializationMode
+    self.applyStartValues()
     status = Capi.instantiate(self.instanceName)
     if status != Status.ok:
       raise RuntimeError(f"Failed to instantiate model: {status}")
@@ -772,13 +799,14 @@ class FMU:
 
     return True
 
-  def setValue(self, cref: str, value):
+  def setValue(self, cref: str, value, unit=None, description = None):
     """Sets a value for a specific CRef in the model."""
-    if self.fmuInstantiated is False:
-      raise RuntimeError("FMU must be instantiated before setting values")
 
     if not self.varExist(CRef(cref)):
       raise KeyError(f"Variable '{cref}' does not exist in the FMU")
+
+    if self.fmuInstantiated is False:
+      return self.value.setValue(cref, value, unit, description)
 
     if not self.checkfmiRequirements(CRef(cref)):
       return  # Skip setting the value if FMI requirements are not met
