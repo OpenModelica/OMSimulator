@@ -38,6 +38,7 @@
 
 #include "Component.h"
 #include "ComRef.h"
+#include "LsDae.h"
 #include "ResultWriter.h"
 #include "Snapshot.h"
 #include "Values.h"
@@ -111,6 +112,28 @@ namespace oms
 
     size_t getNumberOfContinuousStates() const {return nContinuousStates;}
     size_t getNumberOfEventIndicators() const {return nEventIndicators;}
+
+    /// fmi-ls-dae: what the FMU's layered-standard manifest declares, if any.
+    const LsDaeManifest& getLsDae() const {return lsDae;}
+    bool hasDaeFormulation() const {return lsDae.isValid();}
+    /// Whether this instance was switched into DAE mode.
+    bool isInDaeMode() const {return daeMode;}
+    /**
+     * \brief Switch the FMU into fmi-ls-dae's DAE mode.
+     *
+     * The switch is a structural parameter, so it is set in Configuration Mode,
+     * before initialization. From then on the FMU no longer answers with the
+     * derivatives and the algebraic variables: the importer owns them and reads
+     * the residuals of F(t, x, x', z) = 0 back.
+     */
+    oms_status_enu_t enableDaeMode();
+    size_t getNumberOfDaeResiduals() const {return lsDae.getResiduals().size();}
+    size_t getNumberOfAlgebraicVariables() const {return lsDae.getAlgebraicVariables().size();}
+    oms_status_enu_t getDaeResiduals(double* residuals);
+    oms_status_enu_t getAlgebraicVariables(double* values);
+    oms_status_enu_t setAlgebraicVariables(const double* values);
+    /// The state derivatives, by value reference: the implicit form's knowns.
+    oms_status_enu_t setDerivatives(const double* derivatives);
     oms_status_enu_t getContinuousStates(double* states);
     oms_status_enu_t setContinuousStates(double* states);
     oms_status_enu_t getDerivatives(double* derivatives);
@@ -160,6 +183,13 @@ namespace oms
 
     size_t nEventIndicators;
     size_t nContinuousStates;
+
+    /// fmi-ls-dae: the manifest, and whether this instance runs in DAE mode.
+    LsDaeManifest lsDae;
+    bool daeMode = false;
+    /// The <ContinuousStateDerivative> value references of the model
+    /// description, in the order fmi3GetContinuousStates uses for the states.
+    std::vector<fmi3ValueReference> derivativeVrs;
 
     fmi3Boolean newDiscreteStatesNeeded;
     fmi3Boolean terminateSimulation;
