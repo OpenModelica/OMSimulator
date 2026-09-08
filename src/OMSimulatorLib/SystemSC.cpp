@@ -166,6 +166,70 @@ int oms::cvode_roots(sunrealtype t, N_Vector y, sunrealtype *gout, void *user_da
  * step.
  * ------------------------------------------------------------------------- */
 
+/**
+ * \brief Which algebraic loops of the simulation graph become rows of the
+ *        global system, and what their unknowns are.
+ *
+ * Every connection of a loop contributes one unknown, the value of the input it
+ * drives, and one row, output - input = 0 — the same system the inner Newton
+ * solved, handed to IDA instead. A loop is only lifted if all of its
+ * connections carry reals: an integer or boolean connection is not something a
+ * continuous unknown can stand for, so such a loop keeps its inner solver.
+ */
+std::vector<bool> oms::SystemSC::allLoopsOf(DirectedGraph& graph) const
+{
+  size_t loops = 0;
+  for (const scc_t& scc : graph.getSortedConnections())
+    if (scc.thisIsALoop)
+      ++loops;
+  return std::vector<bool>(loops, true);
+}
+
+bool oms::SystemSC::anyComponentInDaeMode()
+{
+  for (const auto& component : getComponents())
+  {
+    const ComponentFMU3ME* fmu3 = dynamic_cast<const ComponentFMU3ME*>(component.second);
+    if (fmu3 && fmu3->isInDaeMode())
+      return true;
+  }
+  return false;
+}
+
+void oms::SystemSC::collectLiftedLoops()
+{
+  liftedConnections.clear();
+  liftedLoops.clear();
+
+  const std::vector<scc_t>& sortedConnections = simulationGraph.getSortedConnections();
+  for (const scc_t& scc : sortedConnections)
+  {
+    if (!scc.thisIsALoop)
+      continue;
+
+    bool allReal = true;
+    for (const auto& connection : scc.connections)
+      if (simulationGraph.getNodes()[connection.second].getType() != oms_signal_type_real ||
+          simulationGraph.getNodes()[connection.first].getType() != oms_signal_type_real)
+        allReal = false;
+
+    liftedLoops.push_back(allReal);
+    if (!allReal)
+    {
+      logInfo("system \"" + std::string(getFullCref()) + "\": an algebraic loop over connections that are not all real keeps its own solver");
+      continue;
+    }
+
+    for (const auto& connection : scc.connections)
+      liftedConnections.push_back({connection.first, connection.second});
+  }
+
+  if (!liftedConnections.empty())
+    logInfo("system \"" + std::string(getFullCref()) + "\": " + std::to_string(liftedConnections.size()) +
+            " connection(s) of " + std::to_string(std::count(liftedLoops.begin(), liftedLoops.end(), true)) +
+            " algebraic loop(s) are rows of the DAE system, not an inner solve");
+}
+
 oms_status_enu_t oms::SystemSC::setDaePoint(double t, N_Vector yy, N_Vector yp)
 {
   oms_status_enu_t status;
@@ -205,8 +269,17 @@ oms_status_enu_t oms::SystemSC::setDaePoint(double t, N_Vector yy, N_Vector yp)
     }
   }
 
-  // The coupling, before the rows below are asked for.
-  return updateInputs(simulationGraph);
+  // The loop connections IDA owns: the unknown is the value of the driven input.
+  // Set before the propagation below, which then leaves those loops alone.
+  for (size_t k = 0; k < liftedConnections.size(); ++k)
+  {
+    const double value = NV_Ith_S(yy, nDaeUnknowns - liftedConnections.size() + k);
+    if (oms_status_ok != setReal(simulationGraph.getNodes()[liftedConnections[k].input].getName(), value))
+      return oms_status_error;
+  }
+
+  // The rest of the coupling, before the rows below are asked for.
+  return updateInputsInternal(simulationGraph, &liftedLoops);
 }
 
 oms_status_enu_t oms::SystemSC::getDaePoint(N_Vector yy, N_Vector yp)
@@ -238,6 +311,17 @@ oms_status_enu_t oms::SystemSC::getDaePoint(N_Vector yy, N_Vector yp)
       NV_Ith_S(yy, j) = algebraicVars[i][k];
       NV_Ith_S(yp, j) = 0.0;   // an algebraic unknown has no derivative row
     }
+  }
+
+  // The lifted loop connections, seeded with the values the inputs hold — after
+  // initialization, or after an event, that is the best guess there is.
+  for (size_t k = 0, j = nDaeUnknowns - liftedConnections.size(); k < liftedConnections.size(); ++k, ++j)
+  {
+    double value = 0.0;
+    if (oms_status_ok != getReal(simulationGraph.getNodes()[liftedConnections[k].input].getName(), value))
+      return oms_status_error;
+    NV_Ith_S(yy, j) = value;
+    NV_Ith_S(yp, j) = 0.0;
   }
 
   return oms_status_ok;
@@ -272,6 +356,17 @@ int oms::ida_res(sunrealtype t, N_Vector yy, N_Vector yp, N_Vector rr, void* use
       for (size_t k = 0; k < system->nStates[i]; ++k, ++j)
         NV_Ith_S(rr, j) = NV_Ith_S(yp, j) - system->states_der[i][k];
     }
+  }
+
+  // The lifted loop rows: what the driving output now says, against the value
+  // IDA is carrying for the input it drives.
+  for (size_t k = 0, j = system->nDaeUnknowns - system->liftedConnections.size();
+       k < system->liftedConnections.size(); ++k, ++j)
+  {
+    double value = 0.0;
+    if (oms_status_ok != system->getReal(system->simulationGraph.getNodes()[system->liftedConnections[k].output].getName(), value))
+      return -1;
+    NV_Ith_S(rr, j) = value - NV_Ith_S(yy, j);
   }
 
   return 0;
@@ -434,7 +529,18 @@ oms_status_enu_t oms::SystemSC::initialize()
   if (oms_status_ok != updateDependencyGraphs())
     return oms_status_error;
 
-  if (oms_status_ok != updateInputs(initializationGraph))
+  // fmi-ls-dae: a component in DAE mode does not solve for its own algebraic
+  // outputs — the master does — so a loop through one cannot be closed by the
+  // inner Newton here. Leave every loop of the initialization graph to the
+  // consistent-initial-conditions solve at the end of this function.
+  daeMode = anyComponentInDaeMode();
+  if (daeMode)
+  {
+    std::vector<bool> allLoops = allLoopsOf(initializationGraph);
+    if (oms_status_ok != updateInputsInternal(initializationGraph, &allLoops))
+      return oms_status_error;
+  }
+  else if (oms_status_ok != updateInputs(initializationGraph))
     return oms_status_error;
 
   for (const auto& subsystem : getSubSystems())
@@ -477,9 +583,17 @@ oms_status_enu_t oms::SystemSC::initialize()
     algebraicVars.push_back((double*)calloc(nAlgebraic.back(), sizeof(double)));
     residuals.push_back((double*)calloc(inDaeMode ? fmu3->getNumberOfDaeResiduals() : 0, sizeof(double)));
     if (inDaeMode)
-      daeMode = true;
+      daeMode = true;   // already true from anyComponentInDaeMode(), kept for clarity
     nDaeUnknowns += nStates.back() + nAlgebraic.back();
    }
+
+  // fmi-ls-dae: with IDA driving the system, an algebraic loop over connections
+  // can be rows of it instead of an inner Newton of its own.
+  if (daeMode)
+  {
+    collectLiftedLoops();
+    nDaeUnknowns += liftedConnections.size();
+  }
 
   if (daeMode && oms_solver_sc_ida != solverMethod)
   {
@@ -696,6 +810,12 @@ oms_status_enu_t oms::SystemSC::initialize()
       }
     }
 
+    for (size_t k = 0, j = nDaeUnknowns - liftedConnections.size(); k < liftedConnections.size(); ++k, ++j)
+    {
+      NV_Ith_S(solverData.ida.id, j) = 0.0;
+      NV_Ith_S(solverData.ida.abstol, j) = relativeTolerance;
+    }
+
     solverData.ida.mem = IDACreate(solverData.ida.sunctx);
     if (!solverData.ida.mem) return logError("SUNDIALS_ERROR: IDACreate() failed - returned NULL pointer");
 
@@ -840,6 +960,8 @@ oms_status_enu_t oms::SystemSC::terminate()
   residuals.clear();
   daeMode = false;
   nDaeUnknowns = 0;
+  liftedConnections.clear();
+  liftedLoops.clear();
   states.clear();
   states_der.clear();
   states_nominal.clear();
@@ -943,6 +1065,8 @@ oms_status_enu_t oms::SystemSC::reset()
   residuals.clear();
   daeMode = false;
   nDaeUnknowns = 0;
+  liftedConnections.clear();
+  liftedLoops.clear();
   states.clear();
   states_der.clear();
   states_nominal.clear();
@@ -1467,7 +1591,12 @@ oms_status_enu_t oms::SystemSC::doStepIDA()
         fmus[i]->doEventIteration();
       }
 
-      updateInputs(eventGraph);
+      {
+        // As during initialization: the loops are the integrator's, and
+        // calcConsistentInitialConditions() below closes them.
+        std::vector<bool> allLoops = allLoopsOf(eventGraph);
+        updateInputsInternal(eventGraph, &allLoops);
+      }
 
       for (size_t i = 0; i < fmus.size(); ++i)
       {
@@ -1503,7 +1632,10 @@ oms_status_enu_t oms::SystemSC::doStepIDA()
       if (oms_status_ok != status) return status;
 
       // emit the right limit of the event
-      updateInputs(eventGraph);
+      {
+        std::vector<bool> allLoops = allLoopsOf(eventGraph);
+        updateInputsInternal(eventGraph, &allLoops);
+      }
       if (isTopLevelSystem())
         getModel().emit(time, true);
 
@@ -1545,6 +1677,11 @@ oms_status_enu_t oms::SystemSC::stepUntil(double stopTime)
 }
 
 oms_status_enu_t oms::SystemSC::updateInputs(DirectedGraph& graph)
+{
+  return updateInputsInternal(graph, nullptr);
+}
+
+oms_status_enu_t oms::SystemSC::updateInputsInternal(DirectedGraph& graph, const std::vector<bool>* liftedLoops)
 {
   CallClock callClock(clock);
   oms_status_enu_t status;
@@ -1596,11 +1733,17 @@ oms_status_enu_t oms::SystemSC::updateInputs(DirectedGraph& graph)
     }
     else
     {
-      status = solveAlgLoop(graph, loopNum);
-      if (oms_status_ok != status)
+      // A loop IDA owns is already satisfied by the point it set; solving it
+      // again here would fight the integrator for the same unknowns.
+      const bool lifted = liftedLoops && loopNum < static_cast<int>(liftedLoops->size()) && (*liftedLoops)[loopNum];
+      if (!lifted)
       {
-        forceLoopsToBeUpdated();
-        return status;
+        status = solveAlgLoop(graph, loopNum);
+        if (oms_status_ok != status)
+        {
+          forceLoopsToBeUpdated();
+          return status;
+        }
       }
       loopNum++;
     }

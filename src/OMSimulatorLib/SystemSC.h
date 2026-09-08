@@ -88,6 +88,23 @@ namespace oms
     oms_status_enu_t doStepEuler();
     oms_status_enu_t doStepCVODE();
     oms_status_enu_t doStepIDA();
+    /**
+     * \brief updateInputs, with the algebraic loops IDA owns left alone.
+     *
+     * \param liftedLoops  one flag per loop of the graph, in the order the
+     *                     sorted connections hold them; a loop marked true is
+     *                     skipped, because its connections are rows of the
+     *                     global system and IDA has already set their inputs.
+     *                     nullptr solves every loop, which is what updateInputs
+     *                     itself does.
+     */
+    oms_status_enu_t updateInputsInternal(DirectedGraph& graph, const std::vector<bool>* liftedLoops);
+    /// Which loops of the simulation graph can become rows: every connection real.
+    void collectLiftedLoops();
+    /// A flag per loop of the graph, all true: leave every loop to the integrator.
+    std::vector<bool> allLoopsOf(DirectedGraph& graph) const;
+    /// Whether any component was switched into DAE mode; readable before initialize().
+    bool anyComponentInDaeMode();
     /// Distribute the DAE unknowns y (and the state derivatives yp) into the FMUs.
     oms_status_enu_t setDaePoint(double t, N_Vector yy, N_Vector yp);
     /// Read the point the FMUs hold back into y and yp, after a solve or an event.
@@ -131,7 +148,28 @@ namespace oms
     std::vector<double*> algebraicVars;
     std::vector<double*> residuals;
     bool daeMode = false;              ///< any component runs in DAE mode
-    size_t nDaeUnknowns = 0;           ///< states + algebraic variables, over all components
+    size_t nDaeUnknowns = 0;           ///< states, algebraic variables and lifted loop connections
+
+    /**
+     * An algebraic loop lifted into the global system. The loop's connections
+     * are what the inner Newton solved for; here each becomes one unknown — the
+     * value of the driven input — and one row, output - input = 0. So a loop
+     * spanning components is resolved by the integrator, with its own error
+     * control, instead of being iterated to convergence inside every residual
+     * evaluation on top of whatever each FMU hides internally.
+     *
+     * These unknowns follow the components' in y, and their rows the components'
+     * rows. They are algebraic: their entry in IDASetId's vector is 0.
+     */
+    struct LiftedConnection
+    {
+      int output;   ///< graph node driving the connection
+      int input;    ///< graph node it drives, and the unknown
+    };
+    std::vector<LiftedConnection> liftedConnections;
+    /// Per loop of the simulation graph, whether it was lifted; passed to
+    /// updateInputsInternal so the inner solver leaves those alone.
+    std::vector<bool> liftedLoops;
 
     std::vector<double*> states;
     std::vector<double*> states_der;
