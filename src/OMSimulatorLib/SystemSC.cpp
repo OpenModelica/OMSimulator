@@ -262,6 +262,7 @@ void oms::SystemSC::buildDaeJacobianSparsity()
   daeJacColorOfColumn.clear();
   daeJacColumnsOfColor.clear();
   daeJacIncrement.clear();
+  daeJacSparse = false;
 
   const size_t n = nDaeUnknowns;
   if (0 == n)
@@ -437,7 +438,7 @@ void oms::SystemSC::buildDaeJacobianSparsity()
   daeJacIncrement.assign(n, 0.0);
   logInfo("system \"" + std::string(getFullCref()) + "\": DAE Jacobian " + std::to_string(n) + "x" + std::to_string(n) +
           ", " + std::to_string(nnz) + " structural nonzeros, " + std::to_string(daeJacColumnsOfColor.size()) +
-          " colour(s) — one residual evaluation per colour instead of one per unknown");
+          " colour(s) — sparse (KLU), one residual evaluation per colour instead of one per unknown");
 }
 
 /**
@@ -455,7 +456,27 @@ int oms::ida_jac(sunrealtype t, sunrealtype cj, N_Vector yy, N_Vector yp, N_Vect
   SystemSC* system = (SystemSC*)user_data;
   const size_t n = system->nDaeUnknowns;
 
-  SUNMatZero(Jac);
+  // A sparse matrix carries its structure in the same arrays as its values, and
+  // SUNMatZero would wipe it; every entry of the pattern is written below
+  // anyway, structure and value together.
+  sunindextype* colptrs = nullptr;
+  sunindextype* rowvals = nullptr;
+  sunrealtype* data = nullptr;
+  if (system->daeJacSparse)
+  {
+    colptrs = SUNSparseMatrix_IndexPointers(Jac);
+    rowvals = SUNSparseMatrix_IndexValues(Jac);
+    data = SUNSparseMatrix_Data(Jac);
+    sunindextype at = 0;
+    for (size_t j = 0; j < n; ++j)
+    {
+      colptrs[j] = at;
+      at += static_cast<sunindextype>(system->daeJacRowsByColumn[j].size());
+    }
+    colptrs[n] = at;
+  }
+  else
+    SUNMatZero(Jac);
 
   sunrealtype hh = 0.0;
   if (IDAGetCurrentStep(system->solverData.ida.mem, &hh) != IDA_SUCCESS)
@@ -497,8 +518,20 @@ int oms::ida_jac(sunrealtype t, sunrealtype cj, N_Vector yy, N_Vector yp, N_Vect
     for (const int j : columns)
     {
       const sunrealtype scale = 1.0 / system->daeJacIncrement[j];
-      for (const int i : system->daeJacRowsByColumn[j])
-        SM_ELEMENT_D(Jac, i, j) = (NV_Ith_S(tmp3, i) - NV_Ith_S(rr, i)) * scale;
+      const std::vector<int>& rows = system->daeJacRowsByColumn[j];
+      for (size_t k = 0; k < rows.size(); ++k)
+      {
+        const int i = rows[k];
+        const sunrealtype value = (NV_Ith_S(tmp3, i) - NV_Ith_S(rr, i)) * scale;
+        if (system->daeJacSparse)
+        {
+          const sunindextype at = colptrs[j] + static_cast<sunindextype>(k);
+          rowvals[at] = i;
+          data[at] = value;
+        }
+        else
+          SM_ELEMENT_D(Jac, i, j) = value;
+      }
     }
   }
 
@@ -1118,20 +1151,39 @@ oms_status_enu_t oms::SystemSC::initialize()
       if (flag < 0) return logError("SUNDIALS_ERROR: IDARootInit() failed with flag = " + std::to_string(flag));
     }
 
-    solverData.ida.J = SUNDenseMatrix(n, n, solverData.ida.sunctx);
-    if (!solverData.ida.J) return logError("SUNDIALS_ERROR: SUNDenseMatrix() failed");
-    solverData.ida.linSol = SUNLinSol_Dense(solverData.ida.y, solverData.ida.J, solverData.ida.sunctx);
-    if (!solverData.ida.linSol) return logError("SUNDIALS_ERROR: SUNLinSol_Dense() failed");
+    // The components' manifests say which unknowns each residual reaches. That
+    // structure does two things: it colours the columns, so the Jacobian is
+    // differenced a colour at a time instead of a column at a time — a handful
+    // of residual evaluations instead of one per unknown, each of which calls
+    // into every FMU — and it lets the matrix be held sparse and factorized by
+    // KLU. Without a usable structure the matrix is dense and IDA differences it
+    // itself.
+    buildDaeJacobianSparsity();
+    daeJacSparse = !daeJacColumnsOfColor.empty();
+
+    if (daeJacSparse)
+    {
+      sunindextype nnz = 0;
+      for (const std::vector<int>& rows : daeJacRowsByColumn)
+        nnz += static_cast<sunindextype>(rows.size());
+
+      solverData.ida.J = SUNSparseMatrix(n, n, nnz, CSC_MAT, solverData.ida.sunctx);
+      if (!solverData.ida.J) return logError("SUNDIALS_ERROR: SUNSparseMatrix() failed");
+      solverData.ida.linSol = SUNLinSol_KLU(solverData.ida.y, solverData.ida.J, solverData.ida.sunctx);
+      if (!solverData.ida.linSol) return logError("SUNDIALS_ERROR: SUNLinSol_KLU() failed");
+    }
+    else
+    {
+      solverData.ida.J = SUNDenseMatrix(n, n, solverData.ida.sunctx);
+      if (!solverData.ida.J) return logError("SUNDIALS_ERROR: SUNDenseMatrix() failed");
+      solverData.ida.linSol = SUNLinSol_Dense(solverData.ida.y, solverData.ida.J, solverData.ida.sunctx);
+      if (!solverData.ida.linSol) return logError("SUNDIALS_ERROR: SUNLinSol_Dense() failed");
+    }
+
     flag = IDASetLinearSolver(solverData.ida.mem, solverData.ida.linSol, solverData.ida.J);
     if (flag < 0) return logError("SUNDIALS_ERROR: IDASetLinearSolver() failed with flag = " + std::to_string(flag));
 
-    // The components' manifests say which unknowns each residual reaches. That
-    // structure colours the columns, and the Jacobian is then differenced a
-    // colour at a time instead of a column at a time — the difference between a
-    // handful of residual evaluations and one per unknown, each of which calls
-    // into every FMU. Without a usable structure IDA differences it itself.
-    buildDaeJacobianSparsity();
-    if (!daeJacColumnsOfColor.empty())
+    if (daeJacSparse)
     {
       flag = IDASetJacFn(solverData.ida.mem, ida_jac);
       if (flag < 0) return logError("SUNDIALS_ERROR: IDASetJacFn() failed with flag = " + std::to_string(flag));
@@ -1257,6 +1309,7 @@ oms_status_enu_t oms::SystemSC::terminate()
   daeJacColorOfColumn.clear();
   daeJacColumnsOfColor.clear();
   daeJacIncrement.clear();
+  daeJacSparse = false;
   states.clear();
   states_der.clear();
   states_nominal.clear();
@@ -1367,6 +1420,7 @@ oms_status_enu_t oms::SystemSC::reset()
   daeJacColorOfColumn.clear();
   daeJacColumnsOfColor.clear();
   daeJacIncrement.clear();
+  daeJacSparse = false;
   states.clear();
   states_der.clear();
   states_nominal.clear();

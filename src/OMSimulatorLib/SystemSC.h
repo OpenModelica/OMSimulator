@@ -48,6 +48,8 @@
 #include <nvector/nvector_serial.h>     /* serial N_Vector types, fcts., macros */
 #include <ida/ida.h>                    /* prototypes for IDA fcts., consts. */
 #include <sunlinsol/sunlinsol_dense.h>  /* Default dense linear solver */
+#include <sunlinsol/sunlinsol_klu.h>    /* KLU, for the structured DAE Jacobian */
+#include <sunmatrix/sunmatrix_sparse.h>
 
 namespace oms
 {
@@ -191,6 +193,9 @@ namespace oms
     std::vector<std::vector<int>> daeJacColumnsOfColor;
     /// The increment each column was perturbed by, kept between the two passes.
     std::vector<double> daeJacIncrement;
+    /// Whether the Jacobian is held sparse and factorized by KLU, which needs a
+    /// structure; without one it is dense and IDA differences it itself.
+    bool daeJacSparse = false;
 
     std::vector<double*> states;
     std::vector<double*> states_der;
