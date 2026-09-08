@@ -60,6 +60,8 @@ namespace oms
   int cvode_roots(sunrealtype t, N_Vector y, sunrealtype *gout, void* user_data);
   int ida_res(sunrealtype t, N_Vector yy, N_Vector yp, N_Vector rr, void* user_data);
   int ida_roots(sunrealtype t, N_Vector yy, N_Vector yp, sunrealtype *gout, void* user_data);
+  int ida_jac(sunrealtype t, sunrealtype cj, N_Vector yy, N_Vector yp, N_Vector rr,
+              SUNMatrix Jac, void* user_data, N_Vector tmp1, N_Vector tmp2, N_Vector tmp3);
 
   class SystemSC : public System
   {
@@ -105,6 +107,17 @@ namespace oms
     std::vector<bool> allLoopsOf(DirectedGraph& graph) const;
     /// Whether any component was switched into DAE mode; readable before initialize().
     bool anyComponentInDaeMode();
+    /**
+     * \brief The structure of the DAE Jacobian, out of the components' manifests.
+     *
+     * Which unknowns each row reaches, and a colouring of the columns from it: two
+     * columns share a colour when no row reaches both, so one residual evaluation
+     * differences all of them at once. A dense difference quotient costs one
+     * residual evaluation per unknown — and every one of those calls into every
+     * FMU — where a coloured one costs as many as there are colours, which for a
+     * coupled system is a handful however many unknowns there are.
+     */
+    void buildDaeJacobianSparsity();
     /// Distribute the DAE unknowns y (and the state derivatives yp) into the FMUs.
     oms_status_enu_t setDaePoint(double t, N_Vector yy, N_Vector yp);
     /// Read the point the FMUs hold back into y and yp, after a solve or an event.
@@ -171,6 +184,14 @@ namespace oms
     /// updateInputsInternal so the inner solver leaves those alone.
     std::vector<bool> liftedLoops;
 
+    /// Per unknown, the rows that reach it; empty when the structure is unknown
+    /// and IDA differences the Jacobian itself.
+    std::vector<std::vector<int>> daeJacRowsByColumn;
+    std::vector<int> daeJacColorOfColumn;
+    std::vector<std::vector<int>> daeJacColumnsOfColor;
+    /// The increment each column was perturbed by, kept between the two passes.
+    std::vector<double> daeJacIncrement;
+
     std::vector<double*> states;
     std::vector<double*> states_der;
     std::vector<double*> states_nominal;
@@ -204,6 +225,7 @@ namespace oms
       SUNLinearSolver linSol;
       SUNMatrix J;
       N_Vector abstol;
+      N_Vector ewt;           /* the error weights, for the Jacobian's increments */
     };
 
     union SolverData_t
@@ -218,6 +240,8 @@ namespace oms
     friend int oms::cvode_roots(sunrealtype t, N_Vector y, sunrealtype *gout, void* user_data);
     friend int oms::ida_res(sunrealtype t, N_Vector yy, N_Vector yp, N_Vector rr, void* user_data);
     friend int oms::ida_roots(sunrealtype t, N_Vector yy, N_Vector yp, sunrealtype *gout, void* user_data);
+    friend int oms::ida_jac(sunrealtype t, sunrealtype cj, N_Vector yy, N_Vector yp, N_Vector rr,
+                            SUNMatrix Jac, void* user_data, N_Vector tmp1, N_Vector tmp2, N_Vector tmp3);
   };
 }
 

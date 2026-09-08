@@ -2154,6 +2154,28 @@ oms_status_enu_t oms::ComponentFMU3ME::validateDaeMode()
   if (!daeMode)
     return oms_status_ok;
 
+  // The state each derivative belongs to: a residual's dependency on a state and
+  // on its derivative are the same column of the Jacobian, because one
+  // difference quotient carries dF/dx + cj*dF/dder(x) together.
+  // The `derivative` attribute is a value reference in FMI 3.0, where FMI 2.0 had
+  // an index — the same change as the ModelStructure dependencies. fmi4c hands
+  // the raw attribute through under its FMI 2.0 name, so what Variable calls the
+  // state index is the state's value reference here.
+  stateVrs.clear();
+  for (const fmi3ValueReference vr : derivativeVrs)
+  {
+    const Variable* der = variableByFMI3ValueReference(vr);
+    const Variable* state = der ? variableByFMI3ValueReference(der->getStateIndex()) : nullptr;
+    if (!state)
+    {
+      logWarning("fmi-ls-dae: FMU \"" + std::string(getFullCref()) + "\" does not say which state the derivative at value reference " +
+                 std::to_string(vr) + " belongs to; the DAE Jacobian will be treated as dense");
+      stateVrs.clear();
+      break;
+    }
+    stateVrs.push_back(state->getValueReferenceFMI3());
+  }
+
   if (derivativeVrs.size() != getNumberOfContinuousStates())
     return logError("fmi-ls-dae: FMU \"" + std::string(getFullCref()) + "\" has " +
                     std::to_string(getNumberOfContinuousStates()) + " continuous states but its <ModelStructure> lists " +

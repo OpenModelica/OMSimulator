@@ -44,6 +44,9 @@
 #include "ssd/Tags.h"
 
 #include <algorithm>
+#include <cmath>
+#include <set>
+#include <map>
 #include <cstring>
 #include <sstream>
 #include <iostream>
@@ -228,6 +231,283 @@ void oms::SystemSC::collectLiftedLoops()
     logInfo("system \"" + std::string(getFullCref()) + "\": " + std::to_string(liftedConnections.size()) +
             " connection(s) of " + std::to_string(std::count(liftedLoops.begin(), liftedLoops.end(), true)) +
             " algebraic loop(s) are rows of the DAE system, not an inner solve");
+}
+
+/**
+ * \brief Does this component own the graph node, i.e. is the node one of its
+ *        own variables?
+ */
+static bool componentOwnsNode(const oms::Component* component, const oms::ComRef& node, std::string& variableName)
+{
+  // The connection graph of a system names its nodes relative to that system
+  // ("A.u"), while a component knows itself by its full path
+  // ("model.root.A"). Try both, so this does not depend on which one a caller
+  // built the graph with.
+  const std::string name = std::string(node);
+  for (const std::string& prefix : {std::string(component->getFullCref()) + ".",
+                                    std::string(component->getCref()) + "."})
+  {
+    if (name.rfind(prefix, 0) == 0 && name.size() > prefix.size())
+    {
+      variableName = name.substr(prefix.size());
+      return true;
+    }
+  }
+  return false;
+}
+
+void oms::SystemSC::buildDaeJacobianSparsity()
+{
+  daeJacRowsByColumn.clear();
+  daeJacColorOfColumn.clear();
+  daeJacColumnsOfColor.clear();
+  daeJacIncrement.clear();
+
+  const size_t n = nDaeUnknowns;
+  if (0 == n)
+    return;
+
+  // Where each component's unknowns sit, and which column a value reference of
+  // it stands for. A state and its derivative share a column: one difference
+  // quotient carries dF/dx + cj*dF/dder(x) together.
+  std::vector<size_t> columnOfComponent(fmus.size(), 0);
+  std::vector<std::map<fmi3ValueReference, int>> columnOfValueReference(fmus.size());
+  const size_t loopBase = n - liftedConnections.size();
+
+  for (size_t i = 0, j = 0; i < fmus.size(); ++i)
+  {
+    columnOfComponent[i] = j;
+    if (daeFmus[i])
+    {
+      const std::vector<fmi3ValueReference>& stateVrs = daeFmus[i]->getStateValueReferences();
+      const std::vector<fmi3ValueReference>& derVrs = daeFmus[i]->getDerivativeValueReferences();
+      if (stateVrs.size() != nStates[i])
+      {
+        // The component could not say which state each derivative belongs to;
+        // without that a residual's dependency on a state cannot be placed.
+        logInfo("system \"" + std::string(getFullCref()) + "\": the DAE Jacobian of \"" +
+                std::string(fmus[i]->getFullCref()) + "\" has no usable structure; differencing it densely");
+        return;
+      }
+      for (size_t k = 0; k < nStates[i]; ++k)
+      {
+        columnOfValueReference[i][stateVrs[k]] = static_cast<int>(j + k);
+        columnOfValueReference[i][derVrs[k]] = static_cast<int>(j + k);
+      }
+      const std::vector<uint32_t>& algVrs = daeFmus[i]->getLsDae().getAlgebraicVariables();
+      for (size_t k = 0; k < algVrs.size(); ++k)
+        columnOfValueReference[i][algVrs[k]] = static_cast<int>(j + nStates[i] + k);
+    }
+    j += nStates[i] + nAlgebraic[i];
+  }
+
+  // A lifted loop's unknown is the value of an input of some component, so a
+  // residual that depends on that input depends on that column.
+  std::vector<int> componentOfLoop(liftedConnections.size(), -1);
+  std::vector<int> componentOfLoopOutput(liftedConnections.size(), -1);
+  for (size_t k = 0; k < liftedConnections.size(); ++k)
+  {
+    for (size_t i = 0; i < fmus.size(); ++i)
+    {
+      std::string variableName;
+      if (componentOwnsNode(fmus[i], simulationGraph.getNodes()[liftedConnections[k].input].getName(), variableName))
+      {
+        componentOfLoop[k] = static_cast<int>(i);
+        if (daeFmus[i])
+        {
+          const Variable* v = daeFmus[i]->getVariable(ComRef(variableName));
+          if (v)
+            columnOfValueReference[i][v->getValueReferenceFMI3()] = static_cast<int>(loopBase + k);
+        }
+      }
+      if (componentOwnsNode(fmus[i], simulationGraph.getNodes()[liftedConnections[k].output].getName(), variableName))
+        componentOfLoopOutput[k] = static_cast<int>(i);
+    }
+  }
+
+  // The loop unknowns that drive a component. A residual of it may depend on any
+  // of them, and the manifest does not say: the dependencies it declares are
+  // those of the FMU's own DAE Jacobian, whose columns are the states and the
+  // algebraic variables — an input is not one of them. It only becomes an
+  // unknown here, where the master carries it, so these columns are added to
+  // every row of the component whether the manifest names them or not.
+  auto incomingLoopColumns = [&](size_t i, std::vector<int>& out) {
+    for (size_t k = 0; k < liftedConnections.size(); ++k)
+      if (componentOfLoop[k] == static_cast<int>(i))
+        out.push_back(static_cast<int>(loopBase + k));
+  };
+
+  // All the columns of one component, plus those: what a row is taken to reach
+  // when nothing more precise is known.
+  auto columnsAround = [&](size_t i, std::vector<int>& out) {
+    for (size_t k = 0; k < nStates[i] + nAlgebraic[i]; ++k)
+      out.push_back(static_cast<int>(columnOfComponent[i] + k));
+    incomingLoopColumns(i, out);
+  };
+
+  std::vector<std::vector<int>> columnsByRow(n);
+  size_t row = 0;
+  for (size_t i = 0; i < fmus.size(); ++i)
+  {
+    if (daeFmus[i])
+    {
+      const std::vector<std::vector<uint32_t>>& dependencies = daeFmus[i]->getLsDae().getResidualDependencies();
+      for (size_t k = 0; k < nStates[i] + nAlgebraic[i]; ++k, ++row)
+      {
+        bool exact = k < dependencies.size() && !dependencies[k].empty();
+        if (exact)
+        {
+          for (const uint32_t vr : dependencies[k])
+          {
+            const auto it = columnOfValueReference[i].find(vr);
+            if (it == columnOfValueReference[i].end())
+            {
+              // A value reference that is not one of the unknowns: a parameter or
+              // time, which contribute nothing, or a variable of the component
+              // that stands for the unknowns behind it. Cannot tell the two
+              // apart here, so take the whole component.
+              exact = false;
+              break;
+            }
+            columnsByRow[row].push_back(it->second);
+          }
+        }
+        if (exact)
+          incomingLoopColumns(i, columnsByRow[row]);
+        else
+        {
+          columnsByRow[row].clear();
+          columnsAround(i, columnsByRow[row]);
+        }
+      }
+    }
+    else
+    {
+      // x' - f(x, u, t): its own states, and whatever drives its inputs.
+      for (size_t k = 0; k < nStates[i]; ++k, ++row)
+        columnsAround(i, columnsByRow[row]);
+    }
+  }
+
+  // A loop row is output - input: the unknown it stands for, and whatever the
+  // component computing that output depends on.
+  for (size_t k = 0; k < liftedConnections.size(); ++k, ++row)
+  {
+    columnsByRow[row].push_back(static_cast<int>(loopBase + k));
+    if (componentOfLoopOutput[k] >= 0)
+      columnsAround(static_cast<size_t>(componentOfLoopOutput[k]), columnsByRow[row]);
+    else
+      for (size_t c = 0; c < n; ++c)
+        columnsByRow[row].push_back(static_cast<int>(c));
+  }
+
+  // Transpose, and drop the duplicates a conservative row may have collected.
+  daeJacRowsByColumn.assign(n, {});
+  size_t nnz = 0;
+  for (size_t r = 0; r < n; ++r)
+  {
+    std::sort(columnsByRow[r].begin(), columnsByRow[r].end());
+    columnsByRow[r].erase(std::unique(columnsByRow[r].begin(), columnsByRow[r].end()), columnsByRow[r].end());
+    for (const int c : columnsByRow[r])
+      daeJacRowsByColumn[c].push_back(static_cast<int>(r));
+    nnz += columnsByRow[r].size();
+  }
+
+  // Greedy distance-1 colouring of the columns: two columns may share a colour
+  // only when no row reaches both, which is what makes their contributions
+  // separable in a single differenced evaluation.
+  daeJacColorOfColumn.assign(n, -1);
+  for (size_t c = 0; c < n; ++c)
+  {
+    std::set<int> forbidden;
+    for (const int r : daeJacRowsByColumn[c])
+      for (const int other : columnsByRow[r])
+        if (other != static_cast<int>(c) && daeJacColorOfColumn[other] >= 0)
+          forbidden.insert(daeJacColorOfColumn[other]);
+
+    int color = 0;
+    while (forbidden.count(color))
+      ++color;
+    daeJacColorOfColumn[c] = color;
+    if (static_cast<size_t>(color) >= daeJacColumnsOfColor.size())
+      daeJacColumnsOfColor.resize(color + 1);
+    daeJacColumnsOfColor[color].push_back(static_cast<int>(c));
+  }
+
+  daeJacIncrement.assign(n, 0.0);
+  logInfo("system \"" + std::string(getFullCref()) + "\": DAE Jacobian " + std::to_string(n) + "x" + std::to_string(n) +
+          ", " + std::to_string(nnz) + " structural nonzeros, " + std::to_string(daeJacColumnsOfColor.size()) +
+          " colour(s) — one residual evaluation per colour instead of one per unknown");
+}
+
+/**
+ * \brief The DAE Jacobian dF/dy + cj*dF/dy', differenced one colour at a time.
+ *
+ * The colouring makes every column of a colour distinguishable in a single
+ * evaluation, because no row reaches two of them, so the whole matrix costs as
+ * many residual evaluations as there are colours. IDA's own difference quotient
+ * would cost one per unknown, and each of those calls into every FMU of the
+ * system.
+ */
+int oms::ida_jac(sunrealtype t, sunrealtype cj, N_Vector yy, N_Vector yp, N_Vector rr,
+                 SUNMatrix Jac, void* user_data, N_Vector tmp1, N_Vector tmp2, N_Vector tmp3)
+{
+  SystemSC* system = (SystemSC*)user_data;
+  const size_t n = system->nDaeUnknowns;
+
+  SUNMatZero(Jac);
+
+  sunrealtype hh = 0.0;
+  if (IDAGetCurrentStep(system->solverData.ida.mem, &hh) != IDA_SUCCESS)
+    return -1;
+  // Its own vector: tmp3 takes the perturbed residual below, which would
+  // otherwise overwrite the weights before the next colour reads them.
+  if (IDAGetErrWeights(system->solverData.ida.mem, system->solverData.ida.ewt) != IDA_SUCCESS)
+    return -1;
+
+  const sunrealtype srur = std::sqrt(SUN_UNIT_ROUNDOFF);
+
+  for (const std::vector<int>& columns : system->daeJacColumnsOfColor)
+  {
+    N_VScale(1.0, yy, tmp1);
+    N_VScale(1.0, yp, tmp2);
+
+    for (const int j : columns)
+    {
+      const sunrealtype yj = NV_Ith_S(yy, j);
+      const sunrealtype ypj = NV_Ith_S(yp, j);
+      const sunrealtype ewtj = NV_Ith_S(system->solverData.ida.ewt, j);
+
+      // IDA's own difference quotient increment (IDADenseDQJac).
+      sunrealtype inc = std::max(srur * std::max(std::fabs(yj), std::fabs(hh * ypj)), 1.0 / ewtj);
+      if (hh * ypj < 0.0)
+        inc = -inc;
+      inc = (yj + inc) - yj;
+      if (0.0 == inc)
+        inc = srur;
+
+      system->daeJacIncrement[j] = inc;
+      NV_Ith_S(tmp1, j) = yj + inc;
+      NV_Ith_S(tmp2, j) = ypj + cj * inc;
+    }
+
+    if (0 != ida_res(t, tmp1, tmp2, tmp3, user_data))
+      return -1;
+
+    for (const int j : columns)
+    {
+      const sunrealtype scale = 1.0 / system->daeJacIncrement[j];
+      for (const int i : system->daeJacRowsByColumn[j])
+        SM_ELEMENT_D(Jac, i, j) = (NV_Ith_S(tmp3, i) - NV_Ith_S(rr, i)) * scale;
+    }
+  }
+
+  // The point the components hold is the perturbed one; put the original back so
+  // whatever reads them next does not see it.
+  if (oms_status_ok != system->setDaePoint(t, yy, yp))
+    return -1;
+
+  return 0;
 }
 
 oms_status_enu_t oms::SystemSC::setDaePoint(double t, N_Vector yy, N_Vector yp)
@@ -785,7 +1065,8 @@ oms_status_enu_t oms::SystemSC::initialize()
     solverData.ida.yp = N_VNew_Serial(n, solverData.ida.sunctx);
     solverData.ida.id = N_VNew_Serial(n, solverData.ida.sunctx);
     solverData.ida.abstol = N_VNew_Serial(n, solverData.ida.sunctx);
-    if (!solverData.ida.y || !solverData.ida.yp || !solverData.ida.id || !solverData.ida.abstol)
+    solverData.ida.ewt = N_VNew_Serial(n, solverData.ida.sunctx);
+    if (!solverData.ida.y || !solverData.ida.yp || !solverData.ida.id || !solverData.ida.abstol || !solverData.ida.ewt)
       return logError("SUNDIALS_ERROR: N_VNew_Serial() failed - returned NULL pointer");
 
     // The point the components hold after their own initialization, and which
@@ -837,15 +1118,24 @@ oms_status_enu_t oms::SystemSC::initialize()
       if (flag < 0) return logError("SUNDIALS_ERROR: IDARootInit() failed with flag = " + std::to_string(flag));
     }
 
-    // A dense Jacobian, differenced by IDA. The manifest's residual dependencies
-    // would give a sparsity pattern for KLU; that is the next step and matters
-    // as soon as the system is more than small.
     solverData.ida.J = SUNDenseMatrix(n, n, solverData.ida.sunctx);
     if (!solverData.ida.J) return logError("SUNDIALS_ERROR: SUNDenseMatrix() failed");
     solverData.ida.linSol = SUNLinSol_Dense(solverData.ida.y, solverData.ida.J, solverData.ida.sunctx);
     if (!solverData.ida.linSol) return logError("SUNDIALS_ERROR: SUNLinSol_Dense() failed");
     flag = IDASetLinearSolver(solverData.ida.mem, solverData.ida.linSol, solverData.ida.J);
     if (flag < 0) return logError("SUNDIALS_ERROR: IDASetLinearSolver() failed with flag = " + std::to_string(flag));
+
+    // The components' manifests say which unknowns each residual reaches. That
+    // structure colours the columns, and the Jacobian is then differenced a
+    // colour at a time instead of a column at a time — the difference between a
+    // handful of residual evaluations and one per unknown, each of which calls
+    // into every FMU. Without a usable structure IDA differences it itself.
+    buildDaeJacobianSparsity();
+    if (!daeJacColumnsOfColor.empty())
+    {
+      flag = IDASetJacFn(solverData.ida.mem, ida_jac);
+      if (flag < 0) return logError("SUNDIALS_ERROR: IDASetJacFn() failed with flag = " + std::to_string(flag));
+    }
 
     flag = IDASetMaxStep(solverData.ida.mem, maximumStepSize);
     if (flag < 0) return logError("SUNDIALS_ERROR: IDASetMaxStep() failed with flag = " + std::to_string(flag));
@@ -900,6 +1190,7 @@ oms_status_enu_t oms::SystemSC::terminate()
     N_VDestroy_Serial(solverData.ida.yp);
     N_VDestroy_Serial(solverData.ida.id);
     N_VDestroy_Serial(solverData.ida.abstol);
+    N_VDestroy_Serial(solverData.ida.ewt);
     IDAFree(&(solverData.ida.mem));
     SUNContext_Free(&(solverData.ida.sunctx));
     solverData.ida.mem = nullptr;
@@ -962,6 +1253,10 @@ oms_status_enu_t oms::SystemSC::terminate()
   nDaeUnknowns = 0;
   liftedConnections.clear();
   liftedLoops.clear();
+  daeJacRowsByColumn.clear();
+  daeJacColorOfColumn.clear();
+  daeJacColumnsOfColor.clear();
+  daeJacIncrement.clear();
   states.clear();
   states_der.clear();
   states_nominal.clear();
@@ -1004,6 +1299,7 @@ oms_status_enu_t oms::SystemSC::reset()
     N_VDestroy_Serial(solverData.ida.yp);
     N_VDestroy_Serial(solverData.ida.id);
     N_VDestroy_Serial(solverData.ida.abstol);
+    N_VDestroy_Serial(solverData.ida.ewt);
     IDAFree(&(solverData.ida.mem));
     SUNContext_Free(&(solverData.ida.sunctx));
     solverData.ida.mem = nullptr;
@@ -1067,6 +1363,10 @@ oms_status_enu_t oms::SystemSC::reset()
   nDaeUnknowns = 0;
   liftedConnections.clear();
   liftedLoops.clear();
+  daeJacRowsByColumn.clear();
+  daeJacColorOfColumn.clear();
+  daeJacColumnsOfColor.clear();
+  daeJacIncrement.clear();
   states.clear();
   states_der.clear();
   states_nominal.clear();
