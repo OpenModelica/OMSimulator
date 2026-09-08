@@ -652,6 +652,13 @@ oms_status_enu_t oms::ComponentFMU3ME::instantiate()
     exit(1);
   }
 
+  // fmi-ls-dae: the switch is a structural parameter, so Configuration Mode is
+  // where it goes — before the start values and before initialization. An FMU
+  // that declares a DAE formulation is used as one: its residuals are what it
+  // has, and its ODE face need not even be implemented.
+  if (lsDae.isValid() && oms_status_ok != enableDaeMode())
+    return oms_status_error;
+
   // set start values from local resources
   if (values.hasResources())
   {
@@ -899,6 +906,10 @@ oms_status_enu_t oms::ComponentFMU3ME::initialize()
   // get number of event indicators after initialize
   fmistatus = fmi3_getNumberOfEventIndicators(instance, &nEventIndicators);
   if (fmi3OK != fmistatus) return logError_FMUCall("fmi3_getNumberOfEventIndicators", this);
+
+  // fmi-ls-dae: now that the state count is known, the DAE system can be checked
+  if (oms_status_ok != validateDaeMode())
+    return oms_status_error;
 
   // fmi3_exitInitialization_mode leaves FMU in event mode
   if (oms_status_ok != doEventIteration())
@@ -2094,20 +2105,9 @@ oms_status_enu_t oms::ComponentFMU3ME::enableDaeMode()
     return logError("fmi-ls-dae: FMU \"" + std::string(getFullCref()) +
                     "\" states a semi-explicit DAE, which is not supported yet");
 
-  if (derivativeVrs.size() != getNumberOfContinuousStates())
-    return logError("fmi-ls-dae: FMU \"" + std::string(getFullCref()) + "\" has " +
-                    std::to_string(getNumberOfContinuousStates()) + " continuous states but its <ModelStructure> lists " +
-                    std::to_string(derivativeVrs.size()) + " state derivatives");
-
-  // The implicit form's residuals cover the state rows too, so a square system
-  // wants one residual per state and per algebraic variable.
-  const size_t wanted = getNumberOfContinuousStates() + lsDae.getAlgebraicVariables().size();
-  if (lsDae.getResiduals().size() != wanted)
-    return logError("fmi-ls-dae: FMU \"" + std::string(getFullCref()) + "\" states an implicit DAE with " +
-                    std::to_string(getNumberOfContinuousStates()) + " states and " +
-                    std::to_string(lsDae.getAlgebraicVariables().size()) + " algebraic variables, which wants " +
-                    std::to_string(wanted) + " residuals, but lists " + std::to_string(lsDae.getResiduals().size()) +
-                    "; only a square system can be integrated");
+  // The number of continuous states is only known once the FMU has left
+  // Initialization Mode, which is long after Configuration Mode; the checks that
+  // need it are in validateDaeMode(), called from initialize().
 
   if (fmi3OK != fmi3_enterConfigurationMode(instance))
     return logError_FMUCall("fmi3_enterConfigurationMode", this);
@@ -2124,6 +2124,33 @@ oms_status_enu_t oms::ComponentFMU3ME::enableDaeMode()
     return logError_FMUCall("fmi3_exitConfigurationMode", this);
 
   daeMode = true;
+  return oms_status_ok;
+}
+
+/**
+ * \brief The fmi-ls-dae checks that need the state count, which the FMU only
+ *        reports once it has left Initialization Mode.
+ */
+oms_status_enu_t oms::ComponentFMU3ME::validateDaeMode()
+{
+  if (!daeMode)
+    return oms_status_ok;
+
+  if (derivativeVrs.size() != getNumberOfContinuousStates())
+    return logError("fmi-ls-dae: FMU \"" + std::string(getFullCref()) + "\" has " +
+                    std::to_string(getNumberOfContinuousStates()) + " continuous states but its <ModelStructure> lists " +
+                    std::to_string(derivativeVrs.size()) + " state derivatives");
+
+  // The implicit form's residuals cover the state rows too, so a square system
+  // wants one residual per state and per algebraic variable.
+  const size_t wanted = getNumberOfContinuousStates() + lsDae.getAlgebraicVariables().size();
+  if (lsDae.getResiduals().size() != wanted)
+    return logError("fmi-ls-dae: FMU \"" + std::string(getFullCref()) + "\" states an implicit DAE with " +
+                    std::to_string(getNumberOfContinuousStates()) + " states and " +
+                    std::to_string(lsDae.getAlgebraicVariables().size()) + " algebraic variables, which wants " +
+                    std::to_string(wanted) + " residuals, but lists " + std::to_string(lsDae.getResiduals().size()) +
+                    "; only a square system can be integrated");
+
   return oms_status_ok;
 }
 

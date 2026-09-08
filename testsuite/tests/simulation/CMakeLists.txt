@@ -7,6 +7,7 @@ oms_add_test(
   exportJson4.py
   fmuSimulation1.py
   fmuSimulation2.py
+  fmuSimulation3.py
   LinearTransformation1.py
   LinearTransformation2.py
   LinearTransformation3.py

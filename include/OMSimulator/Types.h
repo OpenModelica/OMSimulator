@@ -76,6 +76,7 @@ typedef enum {
   oms_solver_sc_min,
   oms_solver_sc_explicit_euler,
   oms_solver_sc_cvode,  ///< default
+  oms_solver_sc_ida,    ///< DAE mode: SUNDIALS IDA over the components' residuals (fmi-ls-dae)
   oms_solver_sc_max,
   oms_solver_wc_min,
   oms_solver_wc_ma,     ///< Fixed stepsize (default)

@@ -152,6 +152,151 @@ int oms::cvode_roots(sunrealtype t, N_Vector y, sunrealtype *gout, void *user_da
   return 0;
 }
 
+/* ---------------------------------------------------------------------------
+ * fmi-ls-dae: the system as one implicit DAE
+ *
+ * The unknowns are laid out per component, [x_i | z_i], and so are the rows: a
+ * component in DAE mode contributes the residuals it declares, an ODE component
+ * the explicit rows x'_i - f_i(x, u, t). Both blocks are square, so the system
+ * is, and a system may mix the two.
+ *
+ * The coupling is where it was for CVODE: updateInputs() propagates connected
+ * outputs into inputs before the rows are evaluated, so the residuals see a
+ * consistent coupling rather than the value left over from the last accepted
+ * step.
+ * ------------------------------------------------------------------------- */
+
+oms_status_enu_t oms::SystemSC::setDaePoint(double t, N_Vector yy, N_Vector yp)
+{
+  oms_status_enu_t status;
+
+  for (size_t i = 0, j = 0; i < fmus.size(); ++i)
+  {
+    fmus[i]->setTime(t);
+
+    const size_t xoff = j;   // where this component's states sit in y and yp
+    for (size_t k = 0; k < nStates[i]; ++k, ++j)
+      states[i][k] = NV_Ith_S(yy, j);
+    for (size_t k = 0; k < nAlgebraic[i]; ++k, ++j)
+      algebraicVars[i][k] = NV_Ith_S(yy, j);
+
+    if (nStates[i] > 0)
+    {
+      status = fmus[i]->setContinuousStates(states[i]);
+      if (oms_status_ok != status) return status;
+    }
+
+    if (daeFmus[i])
+    {
+      // The implicit form's residuals are a function of (t, x, x', z), so the
+      // derivatives are knowns the master hands over, not something the FMU owes.
+      if (nStates[i] > 0)
+      {
+        for (size_t k = 0; k < nStates[i]; ++k)
+          states_der[i][k] = NV_Ith_S(yp, xoff + k);
+        status = daeFmus[i]->setDerivatives(states_der[i]);
+        if (oms_status_ok != status) return status;
+      }
+      if (nAlgebraic[i] > 0)
+      {
+        status = daeFmus[i]->setAlgebraicVariables(algebraicVars[i]);
+        if (oms_status_ok != status) return status;
+      }
+    }
+  }
+
+  // The coupling, before the rows below are asked for.
+  return updateInputs(simulationGraph);
+}
+
+oms_status_enu_t oms::SystemSC::getDaePoint(N_Vector yy, N_Vector yp)
+{
+  oms_status_enu_t status;
+
+  for (size_t i = 0, j = 0; i < fmus.size(); ++i)
+  {
+    if (nStates[i] > 0)
+    {
+      status = fmus[i]->getContinuousStates(states[i]);
+      if (oms_status_ok != status) return status;
+      status = fmus[i]->getDerivatives(states_der[i]);
+      if (oms_status_ok != status) return status;
+    }
+    if (daeFmus[i] && nAlgebraic[i] > 0)
+    {
+      status = daeFmus[i]->getAlgebraicVariables(algebraicVars[i]);
+      if (oms_status_ok != status) return status;
+    }
+
+    for (size_t k = 0; k < nStates[i]; ++k, ++j)
+    {
+      NV_Ith_S(yy, j) = states[i][k];
+      NV_Ith_S(yp, j) = states_der[i][k];
+    }
+    for (size_t k = 0; k < nAlgebraic[i]; ++k, ++j)
+    {
+      NV_Ith_S(yy, j) = algebraicVars[i][k];
+      NV_Ith_S(yp, j) = 0.0;   // an algebraic unknown has no derivative row
+    }
+  }
+
+  return oms_status_ok;
+}
+
+int oms::ida_res(sunrealtype t, N_Vector yy, N_Vector yp, N_Vector rr, void* user_data)
+{
+  SystemSC* system = (SystemSC*)user_data;
+
+  if (oms_status_ok != system->setDaePoint(t, yy, yp))
+    return -1;
+
+  for (size_t i = 0, j = 0; i < system->fmus.size(); ++i)
+  {
+    if (system->daeFmus[i])
+    {
+      const size_t n = system->nStates[i] + system->nAlgebraic[i];
+      if (n == 0)
+        continue;
+      if (oms_status_ok != system->daeFmus[i]->getDaeResiduals(system->residuals[i]))
+        return -1;
+      for (size_t k = 0; k < n; ++k, ++j)
+        NV_Ith_S(rr, j) = system->residuals[i][k];
+    }
+    else
+    {
+      // An ODE component closes its own rows: x' - f(x, u, t).
+      if (0 == system->nStates[i])
+        continue;
+      if (oms_status_ok != system->fmus[i]->getDerivatives(system->states_der[i]))
+        return -1;
+      for (size_t k = 0; k < system->nStates[i]; ++k, ++j)
+        NV_Ith_S(rr, j) = NV_Ith_S(yp, j) - system->states_der[i][k];
+    }
+  }
+
+  return 0;
+}
+
+int oms::ida_roots(sunrealtype t, N_Vector yy, N_Vector yp, sunrealtype *gout, void* user_data)
+{
+  SystemSC* system = (SystemSC*)user_data;
+
+  if (oms_status_ok != system->setDaePoint(t, yy, yp))
+    return -1;
+
+  for (size_t i = 0, j_gout = 0; i < system->fmus.size(); ++i)
+  {
+    if (0 == system->nEventIndicators[i])
+      continue;
+    if (oms_status_ok != system->fmus[i]->getEventindicators(system->event_indicators[i], system->nEventIndicators[i]))
+      return -1;
+    for (size_t k = 0; k < system->nEventIndicators[i]; ++k, ++j_gout)
+      gout[j_gout] = system->event_indicators[i][k];
+  }
+
+  return 0;
+}
+
 oms::SystemSC::SystemSC(const ComRef& cref, Model* parentModel, System* parentSystem)
   : oms::System(cref, oms_system_sc, parentModel, parentSystem, oms_solver_sc_cvode)
 {
@@ -187,6 +332,8 @@ std::string oms::SystemSC::getSolverName() const
       return std::string("euler");
     case oms_solver_sc_cvode:
       return std::string("cvode");
+    case oms_solver_sc_ida:
+      return std::string("ida");
     default:
       return std::string("unknown");
   }
@@ -198,6 +345,8 @@ oms_status_enu_t oms::SystemSC::setSolverMethod(std::string solver)
     solverMethod = oms_solver_sc_explicit_euler;
   else if (std::string("cvode") == solver)
     solverMethod = oms_solver_sc_cvode;
+  else if (std::string("ida") == solver)
+    solverMethod = oms_solver_sc_ida;
   else
     return oms_status_error;
 
@@ -269,6 +418,8 @@ oms_status_enu_t oms::SystemSC::instantiate()
     ;
   else if (oms_solver_sc_cvode == solverMethod)
     solverData.cvode.mem = nullptr;
+  else if (oms_solver_sc_ida == solverMethod)
+    solverData.ida.mem = nullptr;
   else
     return logError_InternalError;
 
@@ -316,7 +467,32 @@ oms_status_enu_t oms::SystemSC::initialize()
     states_nominal.push_back((double*)calloc(nStates.back(), sizeof(double)));
     event_indicators.push_back((double*)calloc(nEventIndicators.back(), sizeof(double)));
     event_indicators_prev.push_back((double*)calloc(nEventIndicators.back(), sizeof(double)));
+
+    // fmi-ls-dae: a component that was switched into DAE mode carries algebraic
+    // unknowns of its own and answers with residuals instead of derivatives.
+    ComponentFMU3ME* fmu3 = dynamic_cast<ComponentFMU3ME*>(fmu);
+    const bool inDaeMode = fmu3 && fmu3->isInDaeMode();
+    daeFmus.push_back(inDaeMode ? fmu3 : nullptr);
+    nAlgebraic.push_back(inDaeMode ? fmu3->getNumberOfAlgebraicVariables() : 0);
+    algebraicVars.push_back((double*)calloc(nAlgebraic.back(), sizeof(double)));
+    residuals.push_back((double*)calloc(inDaeMode ? fmu3->getNumberOfDaeResiduals() : 0, sizeof(double)));
+    if (inDaeMode)
+      daeMode = true;
+    nDaeUnknowns += nStates.back() + nAlgebraic.back();
    }
+
+  if (daeMode && oms_solver_sc_ida != solverMethod)
+  {
+    // DAE mode is not a choice the user makes: a component that declares a DAE
+    // formulation has no explicit ODE for CVODE to integrate.
+    logInfo("system \"" + std::string(getFullCref()) + "\" contains a component in DAE mode (fmi-ls-dae); integrating with IDA instead of " + getSolverName());
+    solverMethod = oms_solver_sc_ida;
+  }
+  else if (!daeMode && oms_solver_sc_ida == solverMethod)
+  {
+    logInfo("system \"" + std::string(getFullCref()) + "\" contains no component in DAE mode; integrating with CVODE instead of ida");
+    solverMethod = oms_solver_sc_cvode;
+  }
 
   // Now that fmus is filled, the per-FMU flags the integrator steps write to
   // can be sized. make_unique value-initializes them, i.e. all false.
@@ -472,6 +648,100 @@ oms_status_enu_t oms::SystemSC::initialize()
     flag = CVodeSetMaxNumSteps(solverData.cvode.mem, Flags::CVODEMaxSteps());            // MAXIMUM NUMBER OF STEPS
     if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetMaxNumSteps() failed with flag = " + std::to_string(flag));
   }
+  else if (oms_solver_sc_ida == solverMethod)
+  {
+    // fmi-ls-dae: one implicit system over [states | algebraic variables].
+    if (SUNContext_Create(SUN_COMM_NULL, &solverData.ida.sunctx) != SUN_SUCCESS)
+      logError("SUNDIALS_ERROR: SUNContext_Create() failed");
+
+    /* Mute SUNDIALS' own output, use OMSimulator's logger */
+    {
+      SUNLogger logger = NULL;
+      if (SUNContext_GetLogger(solverData.ida.sunctx, &logger) == SUN_SUCCESS && logger != NULL)
+      {
+        SUNLogger_SetErrorFilename(logger, "");
+        SUNLogger_SetWarningFilename(logger, "");
+        SUNLogger_SetInfoFilename(logger, "");
+        SUNLogger_SetDebugFilename(logger, "");
+      }
+    }
+
+    const long n = static_cast<long>(nDaeUnknowns);
+    solverData.ida.y = N_VNew_Serial(n, solverData.ida.sunctx);
+    solverData.ida.yp = N_VNew_Serial(n, solverData.ida.sunctx);
+    solverData.ida.id = N_VNew_Serial(n, solverData.ida.sunctx);
+    solverData.ida.abstol = N_VNew_Serial(n, solverData.ida.sunctx);
+    if (!solverData.ida.y || !solverData.ida.yp || !solverData.ida.id || !solverData.ida.abstol)
+      return logError("SUNDIALS_ERROR: N_VNew_Serial() failed - returned NULL pointer");
+
+    // The point the components hold after their own initialization, and which
+    // of the unknowns are differential: IDACalcIC solves for the algebraic ones
+    // and for the derivatives of the differential ones.
+    if (oms_status_ok != getDaePoint(solverData.ida.y, solverData.ida.yp))
+      return oms_status_error;
+
+    for (size_t i = 0, j = 0; i < fmus.size(); ++i)
+    {
+      for (size_t k = 0; k < nStates[i]; ++k, ++j)
+      {
+        NV_Ith_S(solverData.ida.id, j) = 1.0;
+        NV_Ith_S(solverData.ida.abstol, j) = relativeTolerance * states_nominal[i][k];
+      }
+      for (size_t k = 0; k < nAlgebraic[i]; ++k, ++j)
+      {
+        NV_Ith_S(solverData.ida.id, j) = 0.0;
+        // The FMU gives no nominal for an algebraic unknown of its own, so the
+        // relative tolerance stands in for it.
+        NV_Ith_S(solverData.ida.abstol, j) = relativeTolerance;
+      }
+    }
+
+    solverData.ida.mem = IDACreate(solverData.ida.sunctx);
+    if (!solverData.ida.mem) return logError("SUNDIALS_ERROR: IDACreate() failed - returned NULL pointer");
+
+    int flag = IDASetUserData(solverData.ida.mem, (void*)this);
+    if (flag < 0) return logError("SUNDIALS_ERROR: IDASetUserData() failed with flag = " + std::to_string(flag));
+
+    flag = IDAInit(solverData.ida.mem, ida_res, time, solverData.ida.y, solverData.ida.yp);
+    if (flag < 0) return logError("SUNDIALS_ERROR: IDAInit() failed with flag = " + std::to_string(flag));
+
+    flag = IDASVtolerances(solverData.ida.mem, relativeTolerance, solverData.ida.abstol);
+    if (flag < 0) return logError("SUNDIALS_ERROR: IDASVtolerances() failed with flag = " + std::to_string(flag));
+
+    flag = IDASetId(solverData.ida.mem, solverData.ida.id);
+    if (flag < 0) return logError("SUNDIALS_ERROR: IDASetId() failed with flag = " + std::to_string(flag));
+
+    if (n_event_indicators > 0)
+    {
+      flag = IDARootInit(solverData.ida.mem, static_cast<int>(n_event_indicators), ida_roots);
+      if (flag < 0) return logError("SUNDIALS_ERROR: IDARootInit() failed with flag = " + std::to_string(flag));
+    }
+
+    // A dense Jacobian, differenced by IDA. The manifest's residual dependencies
+    // would give a sparsity pattern for KLU; that is the next step and matters
+    // as soon as the system is more than small.
+    solverData.ida.J = SUNDenseMatrix(n, n, solverData.ida.sunctx);
+    if (!solverData.ida.J) return logError("SUNDIALS_ERROR: SUNDenseMatrix() failed");
+    solverData.ida.linSol = SUNLinSol_Dense(solverData.ida.y, solverData.ida.J, solverData.ida.sunctx);
+    if (!solverData.ida.linSol) return logError("SUNDIALS_ERROR: SUNLinSol_Dense() failed");
+    flag = IDASetLinearSolver(solverData.ida.mem, solverData.ida.linSol, solverData.ida.J);
+    if (flag < 0) return logError("SUNDIALS_ERROR: IDASetLinearSolver() failed with flag = " + std::to_string(flag));
+
+    flag = IDASetMaxStep(solverData.ida.mem, maximumStepSize);
+    if (flag < 0) return logError("SUNDIALS_ERROR: IDASetMaxStep() failed with flag = " + std::to_string(flag));
+    if (initialStepSize > 0.0)
+    {
+      flag = IDASetInitStep(solverData.ida.mem, initialStepSize);
+      if (flag < 0) return logError("SUNDIALS_ERROR: IDASetInitStep() failed with flag = " + std::to_string(flag));
+    }
+    flag = IDASetMaxNumSteps(solverData.ida.mem, Flags::CVODEMaxSteps());
+    if (flag < 0) return logError("SUNDIALS_ERROR: IDASetMaxNumSteps() failed with flag = " + std::to_string(flag));
+
+    // The start point the components initialized to need not satisfy the
+    // coupled system; IDA solves for a consistent one before the first step.
+    if (oms_status_ok != calcConsistentInitialConditions(time + maximumStepSize))
+      return oms_status_error;
+  }
 
   // Mark algebraic loops to be updated on next call
   forceLoopsToBeUpdated();
@@ -488,6 +758,32 @@ oms_status_enu_t oms::SystemSC::terminate()
   for (const auto& component : getComponents())
     if (oms_status_ok != component.second->terminate())
       return oms_status_error;
+
+  if (oms_solver_sc_ida == solverMethod && solverData.ida.mem)
+  {
+    long int nst = 0, nre = 0, nsetups = 0, nni = 0, ncfn = 0, netf = 0;
+    IDAGetNumSteps(solverData.ida.mem, &nst);
+    IDAGetNumResEvals(solverData.ida.mem, &nre);
+    IDAGetNumLinSolvSetups(solverData.ida.mem, &nsetups);
+    IDAGetNumErrTestFails(solverData.ida.mem, &netf);
+    IDAGetNumNonlinSolvIters(solverData.ida.mem, &nni);
+    IDAGetNumNonlinSolvConvFails(solverData.ida.mem, &ncfn);
+
+    std::string msg = "Final Statistics for '" + std::string(getFullCref()) + "':\n";
+    msg += "NumSteps = " + std::to_string(nst) + " NumResEvals  = " + std::to_string(nre) + " NumLinSolvSetups = " + std::to_string(nsetups) + "\n";
+    msg += "NumNonlinSolvIters = " + std::to_string(nni) + " NumNonlinSolvConvFails = " + std::to_string(ncfn) + " NumErrTestFails = " + std::to_string(netf);
+    logInfo(msg);
+
+    SUNMatDestroy(solverData.ida.J);
+    SUNLinSolFree(solverData.ida.linSol);
+    N_VDestroy_Serial(solverData.ida.y);
+    N_VDestroy_Serial(solverData.ida.yp);
+    N_VDestroy_Serial(solverData.ida.id);
+    N_VDestroy_Serial(solverData.ida.abstol);
+    IDAFree(&(solverData.ida.mem));
+    SUNContext_Free(&(solverData.ida.sunctx));
+    solverData.ida.mem = nullptr;
+  }
 
   if (oms_solver_sc_cvode == solverMethod && solverData.cvode.mem)
   {
@@ -529,13 +825,21 @@ oms_status_enu_t oms::SystemSC::terminate()
     free(states_nominal[i]);
     free(event_indicators[i]);
     free(event_indicators_prev[i]);
+    free(algebraicVars[i]);
+    free(residuals[i]);
   }
 
   fmus.clear();
+  daeFmus.clear();
   callEventUpdate.reset();
   terminateSimulation.reset();
   nStates.clear();
   nEventIndicators.clear();
+  nAlgebraic.clear();
+  algebraicVars.clear();
+  residuals.clear();
+  daeMode = false;
+  nDaeUnknowns = 0;
   states.clear();
   states_der.clear();
   states_nominal.clear();
@@ -556,6 +860,32 @@ oms_status_enu_t oms::SystemSC::reset()
       return oms_status_error;
 
   time = getModel().getStartTime();
+
+  if (oms_solver_sc_ida == solverMethod && solverData.ida.mem)
+  {
+    long int nst = 0, nre = 0, nsetups = 0, nni = 0, ncfn = 0, netf = 0;
+    IDAGetNumSteps(solverData.ida.mem, &nst);
+    IDAGetNumResEvals(solverData.ida.mem, &nre);
+    IDAGetNumLinSolvSetups(solverData.ida.mem, &nsetups);
+    IDAGetNumErrTestFails(solverData.ida.mem, &netf);
+    IDAGetNumNonlinSolvIters(solverData.ida.mem, &nni);
+    IDAGetNumNonlinSolvConvFails(solverData.ida.mem, &ncfn);
+
+    std::string msg = "Final Statistics for '" + std::string(getFullCref()) + "':\n";
+    msg += "NumSteps = " + std::to_string(nst) + " NumResEvals  = " + std::to_string(nre) + " NumLinSolvSetups = " + std::to_string(nsetups) + "\n";
+    msg += "NumNonlinSolvIters = " + std::to_string(nni) + " NumNonlinSolvConvFails = " + std::to_string(ncfn) + " NumErrTestFails = " + std::to_string(netf);
+    logInfo(msg);
+
+    SUNMatDestroy(solverData.ida.J);
+    SUNLinSolFree(solverData.ida.linSol);
+    N_VDestroy_Serial(solverData.ida.y);
+    N_VDestroy_Serial(solverData.ida.yp);
+    N_VDestroy_Serial(solverData.ida.id);
+    N_VDestroy_Serial(solverData.ida.abstol);
+    IDAFree(&(solverData.ida.mem));
+    SUNContext_Free(&(solverData.ida.sunctx));
+    solverData.ida.mem = nullptr;
+  }
 
   if (oms_solver_sc_cvode == solverMethod && solverData.cvode.mem)
   {
@@ -595,16 +925,24 @@ oms_status_enu_t oms::SystemSC::reset()
   // instead of appending duplicate entries for every FMU (which corrupts
   // solver setup and causes lifecycle calls like enterContinuousTimeMode()
   // to be issued twice for the same FMU).
+  for (double* ptr : algebraicVars) free(ptr);
+  for (double* ptr : residuals) free(ptr);
   for (double* ptr : states) free(ptr);
   for (double* ptr : states_der) free(ptr);
   for (double* ptr : states_nominal) free(ptr);
   for (double* ptr : event_indicators) free(ptr);
   for (double* ptr : event_indicators_prev) free(ptr);
   fmus.clear();
+  daeFmus.clear();
   callEventUpdate.reset();
   terminateSimulation.reset();
   nStates.clear();
   nEventIndicators.clear();
+  nAlgebraic.clear();
+  algebraicVars.clear();
+  residuals.clear();
+  daeMode = false;
+  nDaeUnknowns = 0;
   states.clear();
   states_der.clear();
   states_nominal.clear();
@@ -623,6 +961,9 @@ oms_status_enu_t oms::SystemSC::doStep()
 
     case oms_solver_sc_cvode:
       return doStepCVODE();
+
+    case oms_solver_sc_ida:
+      return doStepIDA();
 
     default:
       return logError_InternalError;
@@ -1024,6 +1365,157 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
 
   return oms_status_ok;
 
+}
+
+/**
+ * \brief IDACalcIC over the point the components hold, then read the consistent
+ *        point back into them.
+ *
+ * The components initialize on their own, each consistent with itself but not
+ * necessarily with the coupled system; and after an event the same is true
+ * again. IDA_YA_YDP_INIT solves for the algebraic unknowns and the derivatives
+ * of the differential ones, keeping the states where they are.
+ */
+oms_status_enu_t oms::SystemSC::calcConsistentInitialConditions(double tout)
+{
+  // IDACalcIC wants a time it may integrate towards; anything but the current
+  // one will do, and the step it takes is thrown away.
+  if (tout <= time)
+    tout = time + 1.0;
+
+  int flag = IDACalcIC(solverData.ida.mem, IDA_YA_YDP_INIT, tout);
+  if (flag < 0)
+    return logError("SUNDIALS_ERROR: IDACalcIC() failed with flag = " + std::to_string(flag) +
+                    " at time " + std::to_string(time) +
+                    " (the coupled DAE has no consistent point there, or its Jacobian is singular)");
+
+  flag = IDAGetConsistentIC(solverData.ida.mem, solverData.ida.y, solverData.ida.yp);
+  if (flag < 0)
+    return logError("SUNDIALS_ERROR: IDAGetConsistentIC() failed with flag = " + std::to_string(flag));
+
+  // Leave the components standing at the consistent point, so what is emitted
+  // and what the next step starts from agree with it.
+  return setDaePoint(time, solverData.ida.y, solverData.ida.yp);
+}
+
+oms_status_enu_t oms::SystemSC::doStepIDA()
+{
+  oms_status_enu_t status;
+  int flag;
+
+  double end_time = std::min(time + maximumStepSize, getModel().getStopTime());
+
+  // find next time event
+  double tnext = end_time + 1.0;
+  for (size_t i = 0; i < fmus.size(); ++i)
+  {
+    if (fmus[i]->getNextEventTimeDefined() && (tnext > fmus[i]->getNextEventTime()))
+      tnext = fmus[i]->getNextEventTime();
+
+    if (fmus[i]->getTerminateSimulation())
+    {
+      logInfo("Simulation terminated by FMU " + std::string(fmus[i]->getFullCref()) + " at time " + std::to_string(time));
+      getModel().setStopTime(time);
+      time = end_time;
+    }
+  }
+  snapToEventTime(end_time, tnext);
+
+  while (time < end_time)
+  {
+    const double tout = std::min(tnext, end_time);
+
+    // Nothing left to integrate in an interval IDA cannot tell apart from zero.
+    if (tout - time < 2.0 * SUN_UNIT_ROUNDOFF * std::max(std::fabs(time), std::fabs(tout)))
+    {
+      logDebug("IDA: skipping degenerate interval " + std::to_string(time) + " -> " + std::to_string(tout));
+      time = end_time;
+      break;
+    }
+
+    logDebug("IDA: " + std::to_string(time) + " -> " + std::to_string(tout));
+    flag = IDASolve(solverData.ida.mem, tout, &time, solverData.ida.y, solverData.ida.yp, IDA_NORMAL);
+    if (flag < 0)
+      return logError("IDA failed with flag = " + std::to_string(flag) + " at time " + std::to_string(time));
+
+    // The components stand at the point IDA returned.
+    status = setDaePoint(time, solverData.ida.y, solverData.ida.yp);
+    if (oms_status_ok != status) return status;
+
+    for (const auto& component : getComponents())
+      component.second->setTime(time);
+
+    for (size_t i = 0; i < fmus.size(); ++i)
+    {
+      status = fmus[i]->completedIntegratorStep(true, callEventUpdate[i], terminateSimulation[i]);
+      if (oms_status_ok != status) return status;
+    }
+
+    if (IDA_ROOT_RETURN == flag || time == tnext)
+    {
+      logDebug("event found!!! " + std::to_string(time));
+
+      // emit the left limit of the event
+      if (isTopLevelSystem())
+        getModel().emit(time, false);
+
+      for (size_t i = 0; i < fmus.size(); ++i)
+      {
+        status = fmus[i]->enterEventMode();
+        if (oms_status_ok != status) return status;
+
+        fmus[i]->doEventIteration();
+      }
+
+      updateInputs(eventGraph);
+
+      for (size_t i = 0; i < fmus.size(); ++i)
+      {
+        status = fmus[i]->enterContinuousTimeMode();
+        if (oms_status_ok != status) return status;
+      }
+
+      // find next time event
+      tnext = end_time + 1.0;
+      for (size_t i = 0; i < fmus.size(); ++i)
+      {
+        if (fmus[i]->getNextEventTimeDefined() && (tnext > fmus[i]->getNextEventTime()))
+          tnext = fmus[i]->getNextEventTime();
+
+        if (fmus[i]->getTerminateSimulation())
+        {
+          logInfo("Simulation terminated by FMU " + std::string(fmus[i]->getFullCref()) + " at time " + std::to_string(time));
+          getModel().setStopTime(time);
+          time = end_time;
+        }
+      }
+
+      // The event moved the components; take the point they hold now, restart
+      // IDA there and let it find a consistent one again — the algebraic
+      // unknowns and the derivatives need not have survived the event.
+      status = getDaePoint(solverData.ida.y, solverData.ida.yp);
+      if (oms_status_ok != status) return status;
+
+      flag = IDAReInit(solverData.ida.mem, time, solverData.ida.y, solverData.ida.yp);
+      if (flag < 0) return logError("SUNDIALS_ERROR: IDAReInit() failed with flag = " + std::to_string(flag));
+
+      status = calcConsistentInitialConditions(std::min(tnext, end_time));
+      if (oms_status_ok != status) return status;
+
+      // emit the right limit of the event
+      updateInputs(eventGraph);
+      if (isTopLevelSystem())
+        getModel().emit(time, true);
+
+      continue;
+    }
+
+    updateInputs(simulationGraph);
+    if (isTopLevelSystem())
+      getModel().emit(time, false);
+  }
+
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms::SystemSC::stepUntil(double stopTime)

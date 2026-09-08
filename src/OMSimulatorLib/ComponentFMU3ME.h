@@ -127,6 +127,8 @@ namespace oms
      * the residuals of F(t, x, x', z) = 0 back.
      */
     oms_status_enu_t enableDaeMode();
+    /// The DAE checks that need the state count, which is known after initialization.
+    oms_status_enu_t validateDaeMode();
     size_t getNumberOfDaeResiduals() const {return lsDae.getResiduals().size();}
     size_t getNumberOfAlgebraicVariables() const {return lsDae.getAlgebraicVariables().size();}
     oms_status_enu_t getDaeResiduals(double* residuals);

@@ -56,11 +56,13 @@ _FMU_KIND_STR = {
 
 # ODE solver methods usable for model-exchange ('me'/sc) FMUs. Kept local to
 # avoid importing instantiated_model.py, which imports system.py, which
-# imports this module (circular import).
+# imports this module (circular import). These are values of oms_solver_enu_t
+# in include/OMSimulator/Types.h, as in instantiated_model.SolverType.
 _FMU_SOLVER = {
   'euler': 2,
   'cvode': 3,
-  'ma':6
+  'ida': 4,
+  'ma': 7
 }
 
 ## default initial attribute table for FMI 2.0, based on variability and causality
