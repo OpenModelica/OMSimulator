@@ -297,17 +297,24 @@ def CmdSupportsTarget(filename: str, target: str):
   return False
 
 for filename in sorted(filter(lambda file: file.endswith('.rst'), os.listdir('api'))):
+  # Not every command documents a #DESCRIPTION#. Including one that is not
+  # there fails the whole include with a CRITICAL "Text not found", which also
+  # drops the section it was part of.
+  hasDescription = CmdSupportsTarget(filename, '#DESCRIPTION#')
+
   if CmdSupportsTarget(filename, '#CAPI#'):
     OMSimulatorLib = OMSimulatorLib + ".. " + filename + "\n\n"
     OMSimulatorLib = OMSimulatorLib + ".. include:: api/" + filename + "\n  :start-after: #CAPTION#\n  :end-before: #END#\n\n"
     OMSimulatorLib = OMSimulatorLib + ".. include:: api/" + filename + "\n  :start-after: #CAPI#\n  :end-before: #END#\n\n"
-    OMSimulatorLib = OMSimulatorLib + ".. include:: api/" + filename + "\n  :start-after: #DESCRIPTION#\n  :end-before: #END#\n\n"
+    if hasDescription:
+      OMSimulatorLib = OMSimulatorLib + ".. include:: api/" + filename + "\n  :start-after: #DESCRIPTION#\n  :end-before: #END#\n\n"
 
   if CmdSupportsTarget(filename, '#OMC#'):
     OMCScripting = OMCScripting + ".. " + filename + "\n\n"
     OMCScripting = OMCScripting + ".. include:: api/" + filename + "\n  :start-after: #CAPTION#\n  :end-before: #END#\n\n"
     OMCScripting = OMCScripting + ".. include:: api/" + filename + "\n  :start-after: #OMC#\n  :end-before: #END#\n\n"
-    OMCScripting = OMCScripting + ".. include:: api/" + filename + "\n  :start-after: #DESCRIPTION#\n  :end-before: #END#\n\n"
+    if hasDescription:
+      OMCScripting = OMCScripting + ".. include:: api/" + filename + "\n  :start-after: #DESCRIPTION#\n  :end-before: #END#\n\n"
 
 open("OMSimulatorLib.inc", "w").write("%s" % OMSimulatorLib)
 open("OMCScripting.inc", "w").write("%s" % OMCScripting)

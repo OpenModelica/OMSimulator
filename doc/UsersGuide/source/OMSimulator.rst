@@ -10,6 +10,8 @@ Python simulation scripts using the OMSimulator Python API.
 
 .. index:: OMSimulator; Flags
 
+.. _omsimulator-flags:
+
 OMSimulator Flags
 -----------------
 

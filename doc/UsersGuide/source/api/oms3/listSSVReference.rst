@@ -20,9 +20,11 @@ by a system, sub-system, or component within the SSP model.
 
 **Returns:**
   - (*list[dict]*): A list of dict referenced by the given system, sub-system, or component.
+
     - Each dict contains:
-        - ``ssv`` (*str*): Path to the referenced SSV file relative to the SSP model resources.
-        - ``ssm`` (*str* | *None*): Path to the associated SSM file if one exists; otherwise, ``None``.
+
+      - ``ssv`` (*str*): Path to the referenced SSV file relative to the SSP model resources.
+      - ``ssm`` (*str* | *None*): Path to the associated SSM file if one exists; otherwise, ``None``.
 
 **Example usage**:
 

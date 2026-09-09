@@ -6,7 +6,7 @@ components in the system. Solvers are configured by name in the Simulation
 Setup dialog and assigned to individual FMU components.
 
 Available Solvers
-~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^
 
 **Co-Simulation (CS) Solvers**
 
@@ -54,7 +54,7 @@ equations provided by the FMU.
        Suitable for non-stiff systems. Controlled by ``fixedStepSize``.
 
 Solver Settings
-~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^
 
 The following settings can be configured for each named solver:
 
@@ -82,7 +82,7 @@ The following settings can be configured for each named solver:
      - The maximum allowed step size.
 
 Solver Assignment
-~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^
 
 Each FMU component in a system can be assigned one named solver configuration.
 The available solvers are filtered based on the FMI kind of the component:

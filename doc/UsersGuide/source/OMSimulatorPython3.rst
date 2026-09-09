@@ -69,7 +69,8 @@ The full list of command line arguments can also be printed at any time with:
 
   OMSimulator --help
 
-The table below summarizes the most commonly used flags. For a complete list,  refer to :doc:`OMSimulator`.
+The table below summarizes the most commonly used flags. For a complete list,
+refer to :ref:`OMSimulator Flags <omsimulator-flags>`.
 
 .. list-table:: OMSimulator command line flags
    :header-rows: 1
