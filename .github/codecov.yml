@@ -1,0 +1,32 @@
+# Codecov configuration; anything not set here keeps Codecov's default.
+# Reference: https://docs.codecov.com/docs/codecovyml-reference
+#
+# What reaches Codecov is already scoped by gcovr, which filters to src/ and
+# include/ (see config.cmake/OMSimulatorCoverage.cmake). 3rdParty/ and
+# testsuite/ never make it into coverage.xml, so there is nothing to ignore
+# here.
+
+codecov:
+  # The coverage job deliberately uploads even when the testsuite fails, so
+  # that a red run still tells us what it covered. Waiting for CI to go green
+  # would throw exactly those reports away.
+  require_ci_to_pass: false
+
+coverage:
+  status:
+    # Informational for now: comment the numbers on every PR, but never block a
+    # merge on them. There is only one coverage run (linux/gcc) and no agreed
+    # target yet, so a failing check would be noise rather than a signal. Drop
+    # `informational` once a baseline is settled and the numbers are trusted.
+    project:
+      default:
+        informational: true
+    patch:
+      default:
+        informational: true
+
+comment:
+  # diff = coverage of the lines this PR touches, files = the per-file
+  # breakdown. That is the part worth reading in a PR; the rest lives in the
+  # Codecov UI.
+  layout: "condensed_header, diff, files, condensed_footer"
