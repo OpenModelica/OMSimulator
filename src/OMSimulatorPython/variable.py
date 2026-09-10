@@ -45,6 +45,10 @@ class Causality(Enum):
   calculatedParameter = 3
   local = 4
   independent = 5
+  # FMI 3.0: a parameter that changes the structure of the FMU (the number of
+  # states, of variables, of an array's dimensions) and can only be set in
+  # Configuration Mode. fmi-ls-dae's DAE-mode switch is one.
+  structuralParameter = 6
 
 
 class SignalType(Enum):
@@ -135,6 +139,9 @@ class Variable:
 
   def isCalculatedParameter(self):
     return self.causality == Causality.calculatedParameter
+
+  def isStructuralParameter(self):
+    return self.causality == Causality.structuralParameter
 
   def isContinuous(self):
     return self.variability == "continuous"

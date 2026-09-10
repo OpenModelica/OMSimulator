@@ -213,7 +213,7 @@ def main(argv=None) -> int:
   _addOption(parser, '--realTime', 'false', 'Enable experimental feature for (soft) real-time co-simulation', action=argparse.BooleanOptionalAction)
   _addOption(parser, '--resultFile', "the model name plus '_res.mat'", 'Specify the name of the output result file')
   _addOption(parser, '--skipCSVHeader', 'true', 'Skip the CSV delimiter row in the header of .csv result files', action=argparse.BooleanOptionalAction)
-  _addOption(parser, '--solver', 'cvode', 'Set the ODE solver for model-exchange FMUs (.fmu, mode=me only)', choices=['euler', 'cvode'])
+  _addOption(parser, '--solver', 'cvode', "Set the solver for model-exchange FMUs (.fmu, mode=me only). 'ida' is the DAE mode of fmi-ls-dae and is selected on its own for an FMU that declares a DAE formulation", choices=['euler', 'cvode', 'ida'])
   _addOption(parser, '--solverStats', 'false', 'Add solver stats to the result file, e.g., step size; not supported for all solvers', action=argparse.BooleanOptionalAction)
   _addOption(parser, '--startTime', 'from the model', 'Specify the start time', type=float)
   _addOption(parser, '--stepSize', 'from the model', 'Specify the (maximum) step size (.fmu only)', type=float)

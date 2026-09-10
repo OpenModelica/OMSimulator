@@ -77,6 +77,8 @@ namespace oms
 
     oms_status_enu_t stepUntil(double stopTime);
 
+    /// The variable a ModelStructure dependency names (FMI 3.0: a value reference).
+    const Variable* variableByFMI3ValueReference(unsigned int vr) const;
     oms_status_enu_t initializeDependencyGraph_initialUnknowns();
     oms_status_enu_t initializeDependencyGraph_outputs();
 

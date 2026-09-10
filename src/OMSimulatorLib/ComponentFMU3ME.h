@@ -38,6 +38,7 @@
 
 #include "Component.h"
 #include "ComRef.h"
+#include "LsDae.h"
 #include "ResultWriter.h"
 #include "Snapshot.h"
 #include "Values.h"
@@ -73,6 +74,8 @@ namespace oms
     oms_status_enu_t terminate();
     oms_status_enu_t reset();
 
+    /// The variable a ModelStructure dependency names (FMI 3.0: a value reference).
+    const Variable* variableByFMI3ValueReference(unsigned int vr) const;
     oms_status_enu_t initializeDependencyGraph_initialUnknowns();
     oms_status_enu_t initializeDependencyGraph_outputs();
 
@@ -111,6 +114,35 @@ namespace oms
 
     size_t getNumberOfContinuousStates() const {return nContinuousStates;}
     size_t getNumberOfEventIndicators() const {return nEventIndicators;}
+
+    /// fmi-ls-dae: what the FMU's layered-standard manifest declares, if any.
+    const LsDaeManifest& getLsDae() const {return lsDae;}
+    bool hasDaeFormulation() const {return lsDae.isValid();}
+    /// Whether this instance was switched into DAE mode.
+    bool isInDaeMode() const {return daeMode;}
+    /**
+     * \brief Switch the FMU into fmi-ls-dae's DAE mode.
+     *
+     * The switch is a structural parameter, so it is set in Configuration Mode,
+     * before initialization. From then on the FMU no longer answers with the
+     * derivatives and the algebraic variables: the importer owns them and reads
+     * the residuals of F(t, x, x', z) = 0 back.
+     */
+    oms_status_enu_t enableDaeMode();
+    /// The DAE checks that need the state count, which is known after initialization.
+    oms_status_enu_t validateDaeMode();
+    size_t getNumberOfDaeResiduals() const {return lsDae.getResiduals().size();}
+    size_t getNumberOfAlgebraicVariables() const {return lsDae.getAlgebraicVariables().size();}
+    oms_status_enu_t getDaeResiduals(double* residuals);
+    /// The value references of the continuous states, in the order
+    /// fmi3GetContinuousStates uses — that of <ContinuousStateDerivative>.
+    const std::vector<fmi3ValueReference>& getStateValueReferences() const {return stateVrs;}
+    /// The value references of the state derivatives, in the same order.
+    const std::vector<fmi3ValueReference>& getDerivativeValueReferences() const {return derivativeVrs;}
+    oms_status_enu_t getAlgebraicVariables(double* values);
+    oms_status_enu_t setAlgebraicVariables(const double* values);
+    /// The state derivatives, by value reference: the implicit form's knowns.
+    oms_status_enu_t setDerivatives(const double* derivatives);
     oms_status_enu_t getContinuousStates(double* states);
     oms_status_enu_t setContinuousStates(double* states);
     oms_status_enu_t getDerivatives(double* derivatives);
@@ -159,6 +191,16 @@ namespace oms
 
     size_t nEventIndicators;
     size_t nContinuousStates;
+
+    /// fmi-ls-dae: the manifest, and whether this instance runs in DAE mode.
+    LsDaeManifest lsDae;
+    bool daeMode = false;
+    /// The <ContinuousStateDerivative> value references of the model
+    /// description, in the order fmi3GetContinuousStates uses for the states.
+    std::vector<fmi3ValueReference> derivativeVrs;
+    /// The states those derivatives belong to, resolved from the derivative
+    /// links of the model description; same order.
+    std::vector<fmi3ValueReference> stateVrs;
 
     fmi3Boolean newDiscreteStatesNeeded;
     fmi3Boolean terminateSimulation;
