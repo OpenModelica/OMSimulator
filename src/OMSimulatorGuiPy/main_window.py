@@ -245,8 +245,6 @@ class MainWindow(QMainWindow):
     self._diagramView.connectorValueRequested.connect(self._onCanvasConnectorValueRequested)
     self._diagramView.addParameterFileRequested.connect(self._onCanvasAddParameterFileRequested)
     self._diagramView.editParameterFileRequested.connect(self._onCanvasEditParameterFileRequested)
-    self._diagramView.editParameterFileResourceRequested.connect(self._onCanvasEditParameterFileResourceRequested)
-    self._diagramView.removeParameterFileResourceRequested.connect(self._onCanvasRemoveParameterFileResourceRequested)
     # Fits/centers the empty default canvas immediately -- without this,
     # DiagramView.setSystem() (the only place that ever calls setSceneRect
     # and fitInView) never runs until a model is actually loaded, so the
@@ -784,12 +782,13 @@ class MainWindow(QMainWindow):
     self._addParameterFileAtPath(self._crefPath(node))
 
   def _onCanvasAddParameterFileRequested(self, elementName: str) -> None:
+    # Only ever fires for a right-clicked component/subsystem box -- there's
+    # no empty-canvas entry point for "the current system itself" (add that
+    # via its own row in the tree instead).
     path = self._diagramLevelPath()
     if not path:
       return  # the model level's own root box isn't addressable
-    if elementName:
-      path = [*path, elementName]
-    self._addParameterFileAtPath(path)
+    self._addParameterFileAtPath([*path, elementName])
 
   def _addParameterFileAtPath(self, path: list[str]) -> None:
     dialog = AddParameterFileDialog(self)
@@ -822,11 +821,13 @@ class MainWindow(QMainWindow):
     self._editParameterFileResource(ssvResource, ssmResource, self._crefPath(node.parent.parent))
 
   def _onCanvasEditParameterFileRequested(self, elementName: str) -> None:
+    # Only ever fires for a component/subsystem's own "P" badge -- there's
+    # no badge on "the current system itself" any more (see
+    # _onCanvasAddParameterFileRequested for why).
     path = self._diagramLevelPath()
     if not path:
       return
-    if elementName:
-      path = [*path, elementName]
+    path = [*path, elementName]
     # Badge-driven edit has no single TreeNode to read the resource pair off
     # of (see _onEditParameterFileRequested) -- ask the model for whatever is
     # attached at this cref instead. listSSVReference can still return
@@ -872,25 +873,6 @@ class MainWindow(QMainWindow):
         QMessageBox.critical(self, 'Add Parameter Mapping failed', str(e))
         return
 
-    self._onModelChanged()
-
-  def _onCanvasEditParameterFileResourceRequested(self, ssvResource: str, ssmResource: str) -> None:
-    path = self._diagramLevelPath()
-    if not path:
-      return
-    self._editParameterFileResource(ssvResource, ssmResource or None, path)
-
-  def _onCanvasRemoveParameterFileResourceRequested(self, ssvResource: str) -> None:
-    path = self._diagramLevelPath()
-    if not path:
-      return
-    if QMessageBox.question(self, 'Remove Parameter File', f'Remove "{Path(ssvResource).name}"?') != QMessageBox.StandardButton.Yes:
-      return
-    try:
-      self._ssp.removeSSVReference(CRef(*path), ssvResource)
-    except Exception as e:
-      QMessageBox.critical(self, 'Remove Parameter File failed', str(e))
-      return
     self._onModelChanged()
 
   def _onRemoveParameterFileRequested(self, node) -> None:
