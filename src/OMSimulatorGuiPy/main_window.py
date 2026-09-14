@@ -781,14 +781,21 @@ class MainWindow(QMainWindow):
       return
     self._addParameterFileAtPath(self._crefPath(node))
 
-  def _onCanvasAddParameterFileRequested(self, elementName: str) -> None:
-    # Only ever fires for a right-clicked component/subsystem box -- there's
-    # no empty-canvas entry point for "the current system itself" (add that
-    # via its own row in the tree instead).
+  def _canvasElementPath(self, elementName: str) -> list[str]:
+    '''cref path for a right-clicked canvas box named `elementName`. Usually
+    a child at the currently drilled-into level (_diagramLevelPath() +
+    elementName); but at the model level, _diagramLevelPath() is empty and
+    the one box shown there is the whole root system itself (a
+    _RootBoxProxy stand-in, see MainWindow) -- elementName there already
+    *is* the root system's own name (ElementIconItem.name / _RootBoxProxy.name
+    both resolve to it), so the single-segment path IS the full cref, the
+    same shape _crefPath(node) already produces for the root System's own
+    tree row.'''
     path = self._diagramLevelPath()
-    if not path:
-      return  # the model level's own root box isn't addressable
-    self._addParameterFileAtPath([*path, elementName])
+    return [*path, elementName] if path else [elementName]
+
+  def _onCanvasAddParameterFileRequested(self, elementName: str) -> None:
+    self._addParameterFileAtPath(self._canvasElementPath(elementName))
 
   def _addParameterFileAtPath(self, path: list[str]) -> None:
     dialog = AddParameterFileDialog(self)
@@ -821,13 +828,7 @@ class MainWindow(QMainWindow):
     self._editParameterFileResource(ssvResource, ssmResource, self._crefPath(node.parent.parent))
 
   def _onCanvasEditParameterFileRequested(self, elementName: str) -> None:
-    # Only ever fires for a component/subsystem's own "P" badge -- there's
-    # no badge on "the current system itself" any more (see
-    # _onCanvasAddParameterFileRequested for why).
-    path = self._diagramLevelPath()
-    if not path:
-      return
-    path = [*path, elementName]
+    path = self._canvasElementPath(elementName)
     # Badge-driven edit has no single TreeNode to read the resource pair off
     # of (see _onEditParameterFileRequested) -- ask the model for whatever is
     # attached at this cref instead. listSSVReference can still return

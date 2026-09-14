@@ -742,17 +742,12 @@ class DiagramView(QGraphicsView):
     while element is not None and not isinstance(element, ElementIconItem):
       element = element.parentItem()
     if element is not None:
-      # The model level's own root box is a _RootBoxProxy stand-in (see
-      # MainWindow), not a real addressable System/Component -- same
-      # duck-typing systemDrillDownRequested's own handler above uses
-      # (target = getattr(item.element, 'system', item.element)). Attaching
-      # a parameter file to it from out here doesn't correspond to anything
-      # real; drill into the actual root system (double-click it) and add it
-      # there instead, so no menu at all rather than one whose only action
-      # would just silently no-op (MainWindow._onCanvasAddParameterFileRequested
-      # already bails out when _diagramLevelPath() is empty).
-      if getattr(element.element, 'system', None) is not None:
-        return
+      # Works the same for a real component/subsystem box and for the model
+      # level's own root box (a _RootBoxProxy stand-in, see MainWindow) --
+      # element.name already resolves to the right cref-addressable name
+      # either way (_RootBoxProxy.name forwards to the real root System's
+      # own name), and MainWindow._canvasElementPath knows how to build the
+      # right path for both cases.
       menu = QMenu(self)
       addParameterFileAction = menu.addAction('Add Parameter File...')
       chosen = menu.exec(event.globalPos())
