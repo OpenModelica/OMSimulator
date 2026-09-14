@@ -44,6 +44,7 @@ from OMSimulatorGui.models.system_tree_model import (
     KIND_COMPONENT,
     KIND_COMPONENT_TABLE,
     KIND_CONNECTOR,
+    KIND_PARAMETER_FILE,
     KIND_SYSTEM,
 )
 
@@ -51,9 +52,12 @@ _DELETABLE_KINDS = (KIND_SYSTEM, KIND_COMPONENT, KIND_COMPONENT_TABLE, KIND_CONN
 
 
 class SystemTreeView(QTreeView):
-  addSystemRequested = Signal(object)     # TreeNode: parent system to add into
-  addComponentRequested = Signal(object)  # TreeNode: parent system to add into
-  addConnectorRequested = Signal(object)  # TreeNode: parent system to add into
+  addSystemRequested = Signal(object)          # TreeNode: parent system to add into
+  addComponentRequested = Signal(object)       # TreeNode: parent system to add into
+  addConnectorRequested = Signal(object)       # TreeNode: parent system to add into
+  addParameterFileRequested = Signal(object)   # TreeNode: system/component to attach to
+  editParameterFileRequested = Signal(object)  # TreeNode: the parameter-file entry to edit
+  removeParameterFileRequested = Signal(object)  # TreeNode: the parameter-file entry to remove
   deleteRequested = Signal(object)        # TreeNode: element/connector to delete
   renameRequested = Signal(object)        # TreeNode: element to rename
   propertiesRequested = Signal(object)    # TreeNode: FMU component to show properties for
@@ -69,12 +73,20 @@ class SystemTreeView(QTreeView):
 
   def _onDoubleClicked(self, index) -> None:
     node = self.model().nodeFromIndex(index)
-    if node is not None and node.kind == KIND_COMPONENT:
+    if node is None:
+      return
+    if node.kind == KIND_COMPONENT:
       self.propertiesRequested.emit(node)
+    elif node.kind == KIND_PARAMETER_FILE:
+      self.editParameterFileRequested.emit(node)
 
   def keyPressEvent(self, event) -> None:
     if event.key() == Qt.Key.Key_Delete:
       node = self.model().nodeFromIndex(self.currentIndex())
+      if node is not None and node.kind == KIND_PARAMETER_FILE:
+        self.removeParameterFileRequested.emit(node)
+        event.accept()
+        return
       # Same eligibility as the context menu's own "Delete" action -- see
       # _onContextMenuRequested (a top-level system can't delete itself).
       if node is not None and node.kind in _DELETABLE_KINDS and not (
@@ -98,6 +110,7 @@ class SystemTreeView(QTreeView):
       menu.addAction('Add System...', lambda: self.addSystemRequested.emit(node))
       menu.addAction('Add Component...', lambda: self.addComponentRequested.emit(node))
       menu.addAction('Add Connector...', lambda: self.addConnectorRequested.emit(node))
+      menu.addAction('Add Parameter File...', lambda: self.addParameterFileRequested.emit(node))
       menu.addSeparator()
       menu.addAction('Rename...', lambda: self.renameRequested.emit(node))
       deleteAction = menu.addAction('Delete', lambda: self.deleteRequested.emit(node))
@@ -106,10 +119,15 @@ class SystemTreeView(QTreeView):
       if node.kind == KIND_COMPONENT:
         menu.addAction('Properties...', lambda: self.propertiesRequested.emit(node))
         menu.addSeparator()
+      menu.addAction('Add Parameter File...', lambda: self.addParameterFileRequested.emit(node))
+      menu.addSeparator()
       menu.addAction('Rename...', lambda: self.renameRequested.emit(node))
       menu.addAction('Delete', lambda: self.deleteRequested.emit(node))
     elif node.kind == KIND_CONNECTOR:
       menu.addAction('Delete', lambda: self.deleteRequested.emit(node))
+    elif node.kind == KIND_PARAMETER_FILE:
+      menu.addAction('Edit Values...', lambda: self.editParameterFileRequested.emit(node))
+      menu.addAction('Remove', lambda: self.removeParameterFileRequested.emit(node))
     else:
       return
 

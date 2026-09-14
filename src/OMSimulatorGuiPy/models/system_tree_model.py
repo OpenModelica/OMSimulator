@@ -40,6 +40,8 @@ copy or duplicate the underlying model data itself (TreeNode.obj is the
 actual System/Component/Connector/Connection instance).
 '''
 
+from pathlib import Path
+
 from PySide6.QtCore import QAbstractItemModel, QModelIndex, Qt
 
 from OMSimulator import Component, ComponentTable, Connection, Connector, System
@@ -53,7 +55,9 @@ KIND_CONNECTORS_GROUP = 'connectors_group'
 KIND_CONNECTOR = 'connector'
 KIND_CONNECTIONS_GROUP = 'connections_group'
 KIND_CONNECTION = 'connection'
-KIND_GROUP_KINDS = (KIND_CONNECTORS_GROUP, KIND_CONNECTIONS_GROUP)
+KIND_PARAMETER_FILES_GROUP = 'parameter_files_group'
+KIND_PARAMETER_FILE = 'parameter_file'
+KIND_GROUP_KINDS = (KIND_CONNECTORS_GROUP, KIND_CONNECTIONS_GROUP, KIND_PARAMETER_FILES_GROUP)
 KIND_INVISIBLE_ROOT = 'invisible_root'
 
 
@@ -102,6 +106,29 @@ def _elementLabel(name: str, element) -> str:
   return name
 
 
+def _parameterFileLabel(ssv: str, ssm: str | None) -> str:
+  return f'{Path(ssv).name} (+ {Path(ssm).name})' if ssm else Path(ssv).name
+
+
+def _addParameterFileNodes(node: TreeNode, element) -> None:
+  '''Appends a "Parameter Files" group listing whatever SSV (optionally +SSM)
+  references are attached to `element` (a System or Component) -- both hold
+  the same self.parameterResources: list[{ssvResource: ssmResourceOrNone}]
+  shape, see System/Component.addSSVReference.
+
+  removeSSVReference only deletes the dict *key*, leaving an empty {} behind
+  in the list (System/Component._remove) -- so parameterResources itself can
+  stay non-empty (e.g. [{}]) after the last file was removed. Flatten first
+  and check that instead of the raw list, or a removed entry would keep
+  showing an empty "Parameter Files" group.'''
+  entries = [(ssv, ssm) for entry in (getattr(element, 'parameterResources', None) or []) for ssv, ssm in entry.items()]
+  if not entries:
+    return
+  group = node.addChild(TreeNode(KIND_PARAMETER_FILES_GROUP, 'Parameter Files', None))
+  for ssv, ssm in entries:
+    group.addChild(TreeNode(KIND_PARAMETER_FILE, _parameterFileLabel(ssv, ssm), (ssv, ssm)))
+
+
 def _buildSystemNode(system: System, label: str, parent: TreeNode | None = None) -> TreeNode:
   node = TreeNode(KIND_SYSTEM, label, system, parent)
 
@@ -109,9 +136,11 @@ def _buildSystemNode(system: System, label: str, parent: TreeNode | None = None)
     if isinstance(element, System):
       node.addChild(_buildSystemNode(element, _elementLabel(name, element)))
     elif isinstance(element, Component):
-      node.addChild(TreeNode(KIND_COMPONENT, _elementLabel(name, element), element))
+      componentNode = node.addChild(TreeNode(KIND_COMPONENT, _elementLabel(name, element), element))
+      _addParameterFileNodes(componentNode, element)
     elif isinstance(element, ComponentTable):
-      node.addChild(TreeNode(KIND_COMPONENT_TABLE, _elementLabel(name, element), element))
+      tableNode = node.addChild(TreeNode(KIND_COMPONENT_TABLE, _elementLabel(name, element), element))
+      _addParameterFileNodes(tableNode, element)
 
   if system.connectors:
     group = node.addChild(TreeNode(KIND_CONNECTORS_GROUP, 'Connectors', None))
@@ -122,6 +151,8 @@ def _buildSystemNode(system: System, label: str, parent: TreeNode | None = None)
     group = node.addChild(TreeNode(KIND_CONNECTIONS_GROUP, 'Connections', None))
     for connection in system.connections:
       group.addChild(TreeNode(KIND_CONNECTION, _connectionLabel(connection), connection))
+
+  _addParameterFileNodes(node, system)
 
   return node
 

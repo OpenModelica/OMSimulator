@@ -57,7 +57,14 @@ from OMSimulator.connector import ConnectorGeometry
 from OMSimulator.elementgeometry import ElementGeometry
 from OMSimulator.variable import Causality
 
-from OMSimulatorGui.views.diagram_items import ConnectionItem, ElementIconItem, PortItem, SystemBoundaryItem, geometryToSceneRect
+from OMSimulatorGui.views.diagram_items import (
+    ConnectionItem,
+    ElementIconItem,
+    ParameterFileBadgeItem,
+    PortItem,
+    SystemBoundaryItem,
+    geometryToSceneRect,
+)
 
 _FALLBACK_COLS = 4
 _FALLBACK_CELL_W = 80.0
@@ -351,6 +358,14 @@ class DiagramView(QGraphicsView):
   # MainWindow resolves the full cref from self._diagramLevelPath().
   elementDeleteRequested = Signal(str)
   connectorDeleteRequested = Signal(str)
+  # Right-click "Add Parameter File..." -- '' means the current system level
+  # itself (its own boundary/empty canvas), a non-empty name means that
+  # element (component or nested system) at the current level. Same
+  # empty-string-means-current-level convention as connectorValueRequested.
+  addParameterFileRequested = Signal(str)
+  # Double-click on a component/system's own "P" badge -- '' means the
+  # current system level itself, same convention as addParameterFileRequested.
+  editParameterFileRequested = Signal(str)
 
   def __init__(self, parent=None):
     super().__init__(parent)
@@ -426,6 +441,13 @@ class DiagramView(QGraphicsView):
 
   def mouseDoubleClickEvent(self, event) -> None:
     clickedItem = self.itemAt(event.pos())
+
+    if isinstance(clickedItem, ParameterFileBadgeItem):
+      host = clickedItem.parentItem()
+      elementName = host.name if isinstance(host, ElementIconItem) else ''
+      self.editParameterFileRequested.emit(elementName)
+      return
+
     # Radius-based fallback, not just an exact hit -- same reasoning as
     # mousePressEvent's own use of _portAt: a port's own (tiny) drawn shape
     # can miss a slightly-imprecise click that's still unambiguously "at"
@@ -707,6 +729,7 @@ class DiagramView(QGraphicsView):
       addSystemAction = menu.addAction('Add System...')
       addComponentAction = menu.addAction('Add Component...')
       addConnectorAction = menu.addAction('Add Connector...')
+      addParameterFileAction = menu.addAction('Add Parameter File...')
       chosen = menu.exec(event.globalPos())
       if chosen == addSystemAction:
         self.addSystemRequested.emit(clickScenePos)
@@ -714,6 +737,19 @@ class DiagramView(QGraphicsView):
         self.addComponentRequested.emit(clickScenePos)
       elif chosen == addConnectorAction:
         self.addConnectorRequested.emit(clickScenePos)
+      elif chosen == addParameterFileAction:
+        self.addParameterFileRequested.emit('')
+      return
+
+    element = item
+    while element is not None and not isinstance(element, ElementIconItem):
+      element = element.parentItem()
+    if element is not None:
+      menu = QMenu(self)
+      addParameterFileAction = menu.addAction('Add Parameter File...')
+      chosen = menu.exec(event.globalPos())
+      if chosen == addParameterFileAction:
+        self.addParameterFileRequested.emit(element.name)
       return
 
     super().contextMenuEvent(event)

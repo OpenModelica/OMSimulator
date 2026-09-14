@@ -44,6 +44,7 @@ ranges fine via fitInView, so no rescaling is needed here.
 '''
 
 import math
+from pathlib import Path
 
 from PySide6.QtCore import QPointF, QRectF, Qt
 from PySide6.QtGui import QBrush, QColor, QFont, QPainterPath, QPainterPathStroker, QPen, QPolygonF
@@ -164,6 +165,49 @@ def _portScenePos(hostItem: QGraphicsItem, ports: dict, connectorName: str) -> Q
   return None if port is None else hostItem.mapToScene(port.pos())
 
 
+def _parameterFileNames(resources) -> list[str]:
+  '''Flattens a parameterResources list ([{ssvResource: ssmResourceOrNone}, ...],
+  see System/Component.addSSVReference) into display names, e.g.
+  "parameters2.ssv" or "parameters2.ssv (+ mapping1.ssm)".
+
+  removeSSVReference only deletes the dict *key*, leaving an empty {} behind
+  in the list (System/Component._remove) -- so an entry with nothing left in
+  it is simply skipped here rather than showing up as an empty name.'''
+  names = []
+  for entry in resources or []:
+    for ssv, ssm in entry.items():
+      names.append(f'{Path(ssv).name} (+ {Path(ssm).name})' if ssm else Path(ssv).name)
+  return names
+
+
+class ParameterFileBadgeItem(QGraphicsSimpleTextItem):
+  '''The "P" badge itself, as its own class purely so DiagramView's
+  mouseDoubleClickEvent can recognize "the user double-clicked the badge,
+  not the box behind it" via isinstance() rather than a fragile text=='P'
+  check.'''
+
+
+def _addParameterFileBadge(hostItem: QGraphicsItem, resources, rectWidth: float) -> ParameterFileBadgeItem | None:
+  '''A small "P" badge in the box's top-right corner when one or more SSV/SSM
+  files are attached (System.parameterResources / Component.parameterResources)
+  -- mirrors how the FMU-type label communicates FMU kind, just for parameter
+  files instead. Double-clicking it opens the values editor (see
+  DiagramView.mouseDoubleClickEvent); the tree is still where files are
+  actually added/removed.'''
+  names = _parameterFileNames(resources)
+  if not names:
+    return None
+  badge = ParameterFileBadgeItem('P', hostItem)
+  badgeFont = QFont()
+  badgeFont.setPointSizeF(6.0)
+  badgeFont.setBold(True)
+  badge.setFont(badgeFont)
+  badge.setBrush(QBrush(QColor(140, 40, 140)))
+  badge.setPos(max(0.0, rectWidth - 8.0), 1)
+  badge.setToolTip('Parameter files (double-click to edit values):\n' + '\n'.join(names))
+  return badge
+
+
 _RESIZE_MARGIN = 4.0
 _MIN_ICON_SIZE = 15.0
 
@@ -234,6 +278,8 @@ class ElementIconItem(QGraphicsRectItem):
     labelFont.setPointSizeF(6.5)
     self._label.setFont(labelFont)
     self._label.setPos(2, 1)
+
+    _addParameterFileBadge(self, getattr(element, 'parameterResources', None), sceneRect.width())
 
     self.ports = _createPorts(self, getattr(element, 'connectors', []), self.rect(), onMoved)
 
@@ -392,6 +438,9 @@ class SystemBoundaryItem(QGraphicsRectItem):
     self.setPen(pen)
     self.setBrush(QBrush(Qt.BrushStyle.NoBrush))
     self.setZValue(-1)
+
+    self.system = system
+    _addParameterFileBadge(self, system.parameterResources, sceneRect.width())
 
     localRect = QRectF(0, 0, sceneRect.width(), sceneRect.height())
     self.ports = _createPorts(self, system.connectors, localRect, onMoved, size=BOUNDARY_PORT_SIZE)

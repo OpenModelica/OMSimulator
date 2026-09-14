@@ -66,14 +66,16 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from OMSimulator import SSP, Connector, CRef, System
+from OMSimulator import SSM, SSP, SSV, Connector, CRef, System
 from OMSimulator.connection import ConnectionGeometry
 
 from OMSimulatorGui.dialogs.add_connector_dialog import AddConnectorDialog
+from OMSimulatorGui.dialogs.add_parameter_file_dialog import AddParameterFileDialog
 from OMSimulatorGui.dialogs.add_submodel_dialog import AddSubModelDialog
 from OMSimulatorGui.dialogs.add_system_dialog import AddSystemDialog
 from OMSimulatorGui.dialogs.connector_value_dialog import ConnectorValueDialog
 from OMSimulatorGui.dialogs.create_model_dialog import CreateModelDialog
+from OMSimulatorGui.dialogs.edit_parameter_file_dialog import EditParameterFileDialog
 from OMSimulatorGui.dialogs.element_properties_dialog import ElementPropertiesDialog
 from OMSimulatorGui.dialogs.simulation_settings_dialog import SimulationSettingsDialog
 from OMSimulatorGui.dialogs.variants_dialog import VariantsDialog
@@ -219,6 +221,9 @@ class MainWindow(QMainWindow):
     self._treeView.addSystemRequested.connect(self._onAddSystemRequested)
     self._treeView.addComponentRequested.connect(self._onAddComponentRequested)
     self._treeView.addConnectorRequested.connect(self._onAddConnectorRequested)
+    self._treeView.addParameterFileRequested.connect(self._onAddParameterFileRequested)
+    self._treeView.editParameterFileRequested.connect(self._onEditParameterFileRequested)
+    self._treeView.removeParameterFileRequested.connect(self._onRemoveParameterFileRequested)
     self._treeView.deleteRequested.connect(self._onDeleteRequested)
     self._treeView.renameRequested.connect(self._onRenameRequested)
     self._treeView.propertiesRequested.connect(self._onPropertiesRequested)
@@ -234,6 +239,8 @@ class MainWindow(QMainWindow):
     self._diagramView.elementDeleteRequested.connect(self._onCanvasElementDeleteRequested)
     self._diagramView.connectorDeleteRequested.connect(self._onCanvasConnectorDeleteRequested)
     self._diagramView.connectorValueRequested.connect(self._onCanvasConnectorValueRequested)
+    self._diagramView.addParameterFileRequested.connect(self._onCanvasAddParameterFileRequested)
+    self._diagramView.editParameterFileRequested.connect(self._onCanvasEditParameterFileRequested)
     # Fits/centers the empty default canvas immediately -- without this,
     # DiagramView.setSystem() (the only place that ever calls setSceneRect
     # and fitInView) never runs until a model is actually loaded, so the
@@ -762,6 +769,96 @@ class MainWindow(QMainWindow):
       self._ssp.addConnector(CRef(*path), connector)
     except Exception as e:
       QMessageBox.critical(self, 'Add Connector failed', str(e))
+      return
+    self._onModelChanged()
+
+  def _onAddParameterFileRequested(self, node) -> None:
+    if not self._activateModelForNode(node):
+      return
+    self._addParameterFileAtPath(self._crefPath(node))
+
+  def _onCanvasAddParameterFileRequested(self, elementName: str) -> None:
+    path = self._diagramLevelPath()
+    if not path:
+      return  # the model level's own root box isn't addressable
+    if elementName:
+      path = [*path, elementName]
+    self._addParameterFileAtPath(path)
+
+  def _addParameterFileAtPath(self, path: list[str]) -> None:
+    dialog = AddParameterFileDialog(self)
+    if dialog.exec() != QDialog.DialogCode.Accepted:
+      return
+    ssvPath, ssmPath = dialog.ssvPath(), dialog.ssmPath()
+    try:
+      ssvResource = f'resources/{Path(ssvPath).name}'
+      if ssvResource not in self._ssp.resources:
+        self._ssp.addResource(ssvPath, ssvResource)
+      ssmResource = None
+      if ssmPath:
+        ssmResource = f'resources/{Path(ssmPath).name}'
+        if ssmResource not in self._ssp.resources:
+          self._ssp.addResource(ssmPath, ssmResource)
+      self._ssp.addSSVReference(CRef(*path), ssvResource, ssmResource)
+    except Exception as e:
+      QMessageBox.critical(self, 'Add Parameter File failed', str(e))
+      return
+    self._onModelChanged()
+
+  def _onEditParameterFileRequested(self, node) -> None:
+    if not self._activateModelForNode(node):
+      return
+    ssvResource, ssmResource = node.obj
+    self._editParameterFileResource(ssvResource, ssmResource)
+
+  def _onCanvasEditParameterFileRequested(self, elementName: str) -> None:
+    path = self._diagramLevelPath()
+    if not path:
+      return
+    if elementName:
+      path = [*path, elementName]
+    # Badge-driven edit has no single TreeNode to read the resource pair off
+    # of (see _onEditParameterFileRequested) -- ask the model for whatever is
+    # attached at this cref instead. listSSVReference can still return
+    # already-empty {} entries left behind by a prior removeSSVReference (see
+    # _addParameterFileNodes's docstring); flattening via .items() skips
+    # those the same way (nothing to iterate in an empty dict).
+    entries = self._ssp.listSSVReference(CRef(*path))
+    pairs = [(ssvResource, ssmResource) for entry in entries for ssvResource, ssmResource in entry.items()]
+    if not pairs:
+      return
+    ssvResource, ssmResource = pairs[0]
+    if len(pairs) > 1:
+      choices = [ssv for ssv, _ssm in pairs]
+      chosen, ok = QInputDialog.getItem(self, 'Edit Parameter File', 'Choose a file to edit:', choices, editable=False)
+      if not ok:
+        return
+      ssvResource, ssmResource = next((ssv, ssm) for ssv, ssm in pairs if ssv == chosen)
+    self._editParameterFileResource(ssvResource, ssmResource)
+
+  def _editParameterFileResource(self, ssvResource: str, ssmResource: str | None) -> None:
+    ssv = self._ssp.resources.get(ssvResource)
+    if not isinstance(ssv, SSV):
+      return
+    ssm = self._ssp.resources.get(ssmResource) if ssmResource else None
+    dialog = EditParameterFileDialog(ssv, ssm if isinstance(ssm, SSM) else None, self)
+    if dialog.exec() != QDialog.DialogCode.Accepted:
+      return
+    self._onModelChanged()
+
+  def _onRemoveParameterFileRequested(self, node) -> None:
+    if not self._activateModelForNode(node):
+      return
+    ssvResource, _ssmResource = node.obj
+    if QMessageBox.question(self, 'Remove Parameter File', f'Remove "{node.label}"?') != QMessageBox.StandardButton.Yes:
+      return
+    try:
+      # node.parent is the "Parameter Files" group node; its parent is the
+      # owning System/Component -- same ancestor-skip _crefPath already does
+      # for KIND_CONNECTOR via its "Connectors" group parent.
+      self._ssp.removeSSVReference(CRef(*self._crefPath(node.parent.parent)), ssvResource)
+    except Exception as e:
+      QMessageBox.critical(self, 'Remove Parameter File failed', str(e))
       return
     self._onModelChanged()
 
