@@ -47,9 +47,9 @@ user edit, and it's purely a position, not a structural change.
 import math
 from collections import defaultdict
 
-from PySide6.QtCore import QPointF, QRectF, Qt, QTimer, Signal
+from PySide6.QtCore import QPointF, QRectF, QSizeF, Qt, QTimer, Signal
 from PySide6.QtGui import QColor, QPainter, QPainterPath, QPen
-from PySide6.QtWidgets import QGraphicsPathItem, QGraphicsScene, QGraphicsView, QMenu
+from PySide6.QtWidgets import QGraphicsPathItem, QGraphicsScene, QGraphicsSimpleTextItem, QGraphicsView, QMenu
 
 from OMSimulator import System
 from OMSimulator.component import Component
@@ -61,6 +61,7 @@ from OMSimulatorGui.views.diagram_items import (
     ConnectionItem,
     ElementIconItem,
     ParameterFileBadgeItem,
+    ParameterFileIconItem,
     PortItem,
     SystemBoundaryItem,
     geometryToSceneRect,
@@ -155,6 +156,13 @@ class DiagramScene(QGraphicsScene):
     self._elementItems: dict[str, ElementIconItem] = {}
     self._boundaryItem: SystemBoundaryItem | None = None
     self._canvasRect = QRectF(0, 0, _DEFAULT_CANVAS_WIDTH, _DEFAULT_CANVAS_HEIGHT)
+    # Session-local position memory for ParameterFileIconItem boxes, keyed by
+    # ssvResource path -- outlives individual setSystem() calls (which
+    # rebuild every QGraphicsItem via self.clear()) since it lives on this
+    # long-lived DiagramScene instance itself, but is never written to the
+    # .ssp file (there's no backing geometry field for it in the model at
+    # all -- see that class's own docstring).
+    self._parameterFileGeometry: dict[str, QPointF] = {}
 
   def drawBackground(self, painter, rect) -> None:
     # A bounded, fixed-size "page" like OMEdit's, not an endlessly-tiling
@@ -216,6 +224,25 @@ class DiagramScene(QGraphicsScene):
       item = ElementIconItem(str(name), element, rect, onMoved=self._onElementMoved)
       self.addItem(item)
       self._elementItems[str(name)] = item
+
+    # This *system's own* attached parameter files (as opposed to a child
+    # element's, shown via a "P" badge on that child's own box instead) --
+    # one small movable box per {ssvResource: ssmResourceOrNone} entry.
+    # Continues the same fallback grid the elements loop above uses, in
+    # plain scene coordinates (no SSD Y-up flip needed, since this position
+    # is GUI-only and never round-trips through ElementGeometry/the .ssp
+    # file -- see ParameterFileIconItem's own docstring).
+    for entry in system.parameterResources:
+      for ssvResource, ssmResource in entry.items():
+        topLeft = self._parameterFileGeometry.get(ssvResource)
+        if topLeft is None:
+          row, col = divmod(fallbackIndex, _FALLBACK_COLS)
+          fallbackIndex += 1
+          topLeft = QPointF(col * _FALLBACK_CELL_W, row * _FALLBACK_CELL_H)
+          self._parameterFileGeometry[ssvResource] = topLeft
+        rect = QRectF(topLeft, QSizeF(_FALLBACK_ELEMENT_W, _FALLBACK_ELEMENT_H))
+        rects.append(rect)
+        self.addItem(ParameterFileIconItem(ssvResource, ssmResource, rect, onCommit=self._onParameterFileMoved))
 
     if rects:
       union = rects[0]
@@ -304,12 +331,42 @@ class DiagramScene(QGraphicsScene):
             geometry.pointsY = [y + deltaModelY for y in geometry.pointsY]
     self.setSystem(self._system)
 
+  def _onParameterFileMoved(self, ssvResource: str, topLeft: QPointF) -> None:
+    '''A ParameterFileIconItem settled after a drag -- just remember where,
+    for setSystem's own lookup on the next rebuild. No rebuild needed here
+    itself (unlike _onElementMoved): these boxes have no ports/connections
+    of their own that could need reattaching.'''
+    self._parameterFileGeometry[ssvResource] = topLeft
+
 
 def _elementNameForPort(port: PortItem) -> str:
   '''Empty string means the port belongs to the current system's own
   boundary, matching Connection.startElement/endElement's convention.'''
   parent = port.parentItem()
   return parent.name if isinstance(parent, ElementIconItem) else ''
+
+
+def _parameterFileItemFor(item) -> ParameterFileIconItem | None:
+  '''Resolves whatever itemAt() returned to the ParameterFileIconItem it
+  belongs to, if any -- either directly, or via its one known child (the
+  box's own label, a QGraphicsSimpleTextItem, drawn on top of it).
+
+  Deliberately checks that one specific relationship instead of a generic
+  parentItem()-climbing loop: calling .parentItem() on an unrelated item
+  (e.g. a ConnectionItem near a double-clicked port) reproducibly disturbed
+  Qt's own event-dispatch state enough to silently drop that connection from
+  the scene -- the exact "connection vanishes" symptom this file's
+  mouseDoubleClickEvent already documents once elsewhere -- even though the
+  loop's own control flow traced out as entirely correct in isolation. Only
+  ever calling parentItem() on a label we already expect to be one avoids
+  the whole class of risk rather than explaining it.'''
+  if isinstance(item, ParameterFileIconItem):
+    return item
+  if isinstance(item, QGraphicsSimpleTextItem):
+    parent = item.parentItem()
+    if isinstance(parent, ParameterFileIconItem):
+      return parent
+  return None
 
 
 _DRAG_STEER_THRESHOLD = 8.0  # perpendicular deviation (scene units) before a new corner locks in
@@ -366,6 +423,13 @@ class DiagramView(QGraphicsView):
   # Double-click on a component/system's own "P" badge -- '' means the
   # current system level itself, same convention as addParameterFileRequested.
   editParameterFileRequested = Signal(str)
+  # Double-click / right-click "Remove" on the current system's own
+  # dedicated ParameterFileIconItem box (see that class) -- carries the
+  # ssvResource (and ssmResource, '' if none) directly rather than going
+  # through the elementName-then-listSSVReference lookup the badge-driven
+  # signals above use, since the box already knows exactly which entry it is.
+  editParameterFileResourceRequested = Signal(str, str)
+  removeParameterFileResourceRequested = Signal(str)
 
   def __init__(self, parent=None):
     super().__init__(parent)
@@ -446,6 +510,11 @@ class DiagramView(QGraphicsView):
       host = clickedItem.parentItem()
       elementName = host.name if isinstance(host, ElementIconItem) else ''
       self.editParameterFileRequested.emit(elementName)
+      return
+
+    parameterFileItem = _parameterFileItemFor(clickedItem)
+    if parameterFileItem is not None:
+      self.editParameterFileResourceRequested.emit(parameterFileItem.ssvResource, parameterFileItem.ssmResource or '')
       return
 
     # Radius-based fallback, not just an exact hit -- same reasoning as
@@ -680,6 +749,11 @@ class DiagramView(QGraphicsView):
         return True
       return False
 
+    parameterFile = _parameterFileItemFor(item)
+    if parameterFile is not None:
+      self.removeParameterFileResourceRequested.emit(parameterFile.ssvResource)
+      return True
+
     element = item
     while element is not None and not isinstance(element, ElementIconItem):
       element = element.parentItem()
@@ -739,6 +813,18 @@ class DiagramView(QGraphicsView):
         self.addConnectorRequested.emit(clickScenePos)
       elif chosen == addParameterFileAction:
         self.addParameterFileRequested.emit('')
+      return
+
+    parameterFile = _parameterFileItemFor(item)
+    if parameterFile is not None:
+      menu = QMenu(self)
+      editAction = menu.addAction('Edit Values...')
+      removeAction = menu.addAction('Remove')
+      chosen = menu.exec(event.globalPos())
+      if chosen == editAction:
+        self.editParameterFileResourceRequested.emit(parameterFile.ssvResource, parameterFile.ssmResource or '')
+      elif chosen == removeAction:
+        self.removeParameterFileResourceRequested.emit(parameterFile.ssvResource)
       return
 
     element = item

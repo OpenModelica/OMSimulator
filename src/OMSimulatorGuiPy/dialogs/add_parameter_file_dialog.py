@@ -223,11 +223,10 @@ class AddParameterFileDialog(QDialog):
       QMessageBox.critical(self, 'Add Parameter File', 'Add at least one parameter value.')
       return
 
-    savePath, _ = QFileDialog.getSaveFileName(self, 'Save SSV File', 'parameters.ssv', 'SSV files (*.ssv)')
-    if not savePath:
-      return
-
-    ssv = SSV()
+    # Validate and stage everything *before* prompting for either save path
+    # or writing anything -- so cancelling the SSM picker (below) can't leave
+    # a real .ssv already written to disk with the whole dialog still open.
+    values = []
     for row in range(self._valuesTable.rowCount()):
       nameItem = self._valuesTable.item(row, 0)
       valueItem = self._valuesTable.item(row, 1)
@@ -237,28 +236,46 @@ class AddParameterFileDialog(QDialog):
         continue
       valueText = valueItem.text().strip() if valueItem else ''
       try:
-        value = convertValue(valueText, typeCombo.currentText())
+        values.append((name, convertValue(valueText, typeCombo.currentText())))
       except ValueError:
         QMessageBox.critical(self, 'Add Parameter File',
                               f"'{valueText}' is not a valid {typeCombo.currentText()} value for '{name}'.")
         return
-      ssv.setValue(name, value)
-    ssv.export(savePath)
-    self._ssvPath = savePath
-    self._ssmPath = None
 
-    if self._mappingCheck.isChecked() and self._mappingTable.rowCount() > 0:
-      ssmSavePath, _ = QFileDialog.getSaveFileName(self, 'Save SSM File', 'mapping.ssm', 'SSM files (*.ssm)')
-      if not ssmSavePath:
-        return
-      ssm = SSM()
+    mappingRows = []
+    if self._mappingCheck.isChecked():
       for row in range(self._mappingTable.rowCount()):
         sourceItem = self._mappingTable.item(row, 0)
         targetItem = self._mappingTable.item(row, 1)
         source = sourceItem.text().strip() if sourceItem else ''
         target = targetItem.text().strip() if targetItem else ''
         if source and target:
-          ssm.mapParameter(source, target)
+          mappingRows.append((source, target))
+
+    savePath, _ = QFileDialog.getSaveFileName(self, 'Save SSV File', 'parameters.ssv', 'SSV files (*.ssv)')
+    if not savePath:
+      return
+
+    # Checking the box means "I want a mapping file", full stop -- prompt for
+    # where to save it even with zero rows, so an intentionally empty mapping
+    # can still be created (to fill in later, or attach as a stand-in).
+    ssmSavePath = None
+    if self._mappingCheck.isChecked():
+      ssmSavePath, _ = QFileDialog.getSaveFileName(self, 'Save SSM File', 'mapping.ssm', 'SSM files (*.ssm)')
+      if not ssmSavePath:
+        return
+
+    ssv = SSV()
+    for name, value in values:
+      ssv.setValue(name, value)
+    ssv.export(savePath)
+    self._ssvPath = savePath
+
+    self._ssmPath = None
+    if ssmSavePath is not None:
+      ssm = SSM()
+      for source, target in mappingRows:
+        ssm.mapParameter(source, target)
       ssm.export(ssmSavePath)
       self._ssmPath = ssmSavePath
 

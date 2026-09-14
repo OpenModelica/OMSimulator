@@ -427,7 +427,14 @@ class ElementIconItem(QGraphicsRectItem):
 class SystemBoundaryItem(QGraphicsRectItem):
   '''The currently displayed system's own boundary -- a dashed frame hosting
   ports for the system's own (top-level) connectors, i.e. the ports that
-  connect this system to its parent.'''
+  connect this system to its parent.
+
+  Doesn't show a "P" parameter-file badge itself: a system's own
+  parameterResources are shown as dedicated ParameterFileIconItem boxes
+  instead (see that class) -- this item only exists at all when the system
+  has top-level connectors, so a badge hosted here would stay invisible
+  whenever a system has parameter files but no connectors (a real, silent
+  gap this replaced).'''
 
   def __init__(self, system, sceneRect: QRectF, onMoved=None, parent=None):
     super().__init__(0, 0, sceneRect.width(), sceneRect.height(), parent)
@@ -440,13 +447,76 @@ class SystemBoundaryItem(QGraphicsRectItem):
     self.setZValue(-1)
 
     self.system = system
-    _addParameterFileBadge(self, system.parameterResources, sceneRect.width())
 
     localRect = QRectF(0, 0, sceneRect.width(), sceneRect.height())
     self.ports = _createPorts(self, system.connectors, localRect, onMoved, size=BOUNDARY_PORT_SIZE)
 
   def portScenePos(self, connectorName: str) -> QPointF | None:
     return _portScenePos(self, self.ports, connectorName)
+
+
+class ParameterFileIconItem(QGraphicsRectItem):
+  '''A small, movable box representing one SSV (+ optional SSM) reference
+  attached directly to the *currently displayed* system itself -- as
+  opposed to a child component/subsystem's own attached file, which is
+  shown via a "P" badge on that child's existing ElementIconItem instead
+  (see _addParameterFileBadge). A system-level file has no such natural
+  host to badge, and (per SystemBoundaryItem's own docstring) the boundary
+  itself doesn't always even exist, so it gets its own box here.
+
+  There's no backing geometry field for this in the SSP/SSD model
+  (System.parameterResources is just [{ssvResource: ssmResourceOrNone}, ...],
+  nothing about position) -- so, like DiagramScene's own fallback element
+  grid, its position is computed once and then remembered only for the rest
+  of this session (DiagramScene._parameterFileGeometry, keyed by ssvResource
+  path), never written to the .ssp file. Dragging it calls `onCommit` with
+  its new top-left scene position so the *next* unrelated rebuild
+  (DiagramScene.setSystem is called after every edit) doesn't snap it back
+  to a freshly-computed fallback slot.'''
+
+  def __init__(self, ssvResource: str, ssmResource: str | None, sceneRect: QRectF, onCommit=None, parent=None):
+    super().__init__(0, 0, sceneRect.width(), sceneRect.height(), parent)
+    self.setPos(sceneRect.topLeft())
+    self.ssvResource = ssvResource
+    self.ssmResource = ssmResource
+    self._onCommit = onCommit
+    self._dragStartScenePos = sceneRect.topLeft()
+
+    self.setBrush(QBrush(QColor(245, 230, 250)))
+    self.setPen(QPen(QColor(140, 40, 140)))
+    self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable, True)
+    self.setZValue(1)
+
+    # The box itself is already the "which file" indicator (its position is
+    # the whole point of it existing at all) -- the filename lives in the
+    # tooltip, same as the "P" badge on a component's own box; showing it as
+    # the on-canvas label too just repeats information already visible in
+    # the tree and made the box unreadably cramped for anything but a short
+    # name.
+    label = _parameterFileNames([{ssvResource: ssmResource}])[0]
+    self.setToolTip(f'Parameter file: {label}\nDouble-click to edit values.')
+
+    self._label = QGraphicsSimpleTextItem('P', self)
+    labelFont = QFont()
+    labelFont.setPointSizeF(10.0)
+    labelFont.setBold(True)
+    self._label.setFont(labelFont)
+    self._label.setBrush(QBrush(QColor(40, 40, 40)))
+    labelRect = self._label.boundingRect()
+    self._label.setPos((sceneRect.width() - labelRect.width()) / 2.0,
+                        (sceneRect.height() - labelRect.height()) / 2.0)
+
+  def mouseReleaseEvent(self, event) -> None:
+    super().mouseReleaseEvent(event)
+    self.commitPositionIfMoved()
+
+  def commitPositionIfMoved(self) -> None:
+    newScenePos = self.pos()
+    if newScenePos == self._dragStartScenePos:
+      return
+    self._dragStartScenePos = newScenePos
+    if self._onCommit is not None:
+      self._onCommit(self.ssvResource, newScenePos)
 
 
 _CONNECTION_HIT_MARGIN = 6.0  # widened click/hover tolerance around the (thin) drawn line

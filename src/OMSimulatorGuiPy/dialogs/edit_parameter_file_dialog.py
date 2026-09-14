@@ -42,15 +42,26 @@ SSP.addResource -- see ssp.py's _addResource) instead of starting empty.
 Writes back into those SAME instances and re-exports each to its own file
 (ssv.filename/ssm.filename) rather than creating new ones, so no
 SSP.addResource/addSSVReference bookkeeping is needed -- the references
-already point at these files, only their content changes.'''
+already point at these files, only their content changes.
+
+If there's no companion SSM yet, a checkbox offers to add one -- but a
+*brand-new* mapping resource needs an SSP.addResource + addSSVReference call
+to actually get attached (unlike editing an existing one, which is pure file
+content), and this dialog has no cref to call those with. So in that case it
+only exports the new .ssm to disk and exposes the path via newSsmPath();
+MainWindow._editParameterFileResource does the actual attach afterwards,
+the same division of labor AddParameterFileDialog already has with its own
+ssvPath()/ssmPath() accessors.'''
 
 from pathlib import Path
 
 from PySide6.QtWidgets import (
     QAbstractItemView,
+    QCheckBox,
     QComboBox,
     QDialog,
     QDialogButtonBox,
+    QFileDialog,
     QHBoxLayout,
     QLabel,
     QMessageBox,
@@ -59,6 +70,8 @@ from PySide6.QtWidgets import (
     QTableWidgetItem,
     QVBoxLayout,
 )
+
+from OMSimulator import SSM
 
 from OMSimulatorGui.dialogs.add_parameter_file_dialog import VALUE_TYPES, convertValue
 
@@ -89,9 +102,11 @@ class EditParameterFileDialog(QDialog):
     super().__init__(parent)
     self._ssv = ssv
     self._ssm = ssm
+    self._newSsmPath: str | None = None
+    self._mappingCheck = None
     title = Path(ssv.filename).name if ssv.filename else 'parameters.ssv'
     self.setWindowTitle(f'Edit Parameter Values - {title}')
-    self.resize(420, 480 if ssm is not None else 360)
+    self.resize(420, 480)
 
     self._table = QTableWidget(0, 3, self)
     self._table.setHorizontalHeaderLabels(['Name', 'Value', 'Type'])
@@ -113,27 +128,37 @@ class EditParameterFileDialog(QDialog):
     layout.addWidget(self._table)
     layout.addLayout(buttonsRow)
 
-    self._mappingTable = None
+    self._mappingTable = QTableWidget(0, 2, self)
+    self._mappingTable.setHorizontalHeaderLabels(['SSV Variable', 'Target Parameter'])
+    self._mappingTable.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
     if ssm is not None:
-      self._mappingTable = QTableWidget(0, 2, self)
-      self._mappingTable.setHorizontalHeaderLabels(['SSV Variable', 'Target Parameter'])
-      self._mappingTable.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
       for source, targets in ssm.mappingEntry.items():
         for entry in targets:
           self._addMappingRow(str(source), str(entry['target']))
+    else:
+      # No mapping attached yet -- offer to create one, same idea as
+      # AddParameterFileDialog's own optional-mapping checkbox. Starts
+      # disabled/empty so an untouched dialog can't accidentally attach a
+      # blank mapping.
+      self._mappingTable.setEnabled(False)
 
-      addMappingButton = QPushButton('Add Row', self)
-      addMappingButton.clicked.connect(lambda: self._addMappingRow('', ''))
-      removeMappingButton = QPushButton('Remove Row', self)
-      removeMappingButton.clicked.connect(self._removeSelectedMappingRow)
-      mappingButtonsRow = QHBoxLayout()
-      mappingButtonsRow.addWidget(addMappingButton)
-      mappingButtonsRow.addWidget(removeMappingButton)
-      mappingButtonsRow.addStretch(1)
+    addMappingButton = QPushButton('Add Row', self)
+    addMappingButton.clicked.connect(lambda: self._addMappingRow('', ''))
+    removeMappingButton = QPushButton('Remove Row', self)
+    removeMappingButton.clicked.connect(self._removeSelectedMappingRow)
+    mappingButtonsRow = QHBoxLayout()
+    mappingButtonsRow.addWidget(addMappingButton)
+    mappingButtonsRow.addWidget(removeMappingButton)
+    mappingButtonsRow.addStretch(1)
 
+    if ssm is not None:
       layout.addWidget(QLabel('Parameter mapping:', self))
-      layout.addWidget(self._mappingTable)
-      layout.addLayout(mappingButtonsRow)
+    else:
+      self._mappingCheck = QCheckBox('Add a parameter mapping (.ssm)', self)
+      self._mappingCheck.toggled.connect(self._mappingTable.setEnabled)
+      layout.addWidget(self._mappingCheck)
+    layout.addWidget(self._mappingTable)
+    layout.addLayout(mappingButtonsRow)
 
     buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel, self)
     buttons.accepted.connect(self._onAccept)
@@ -167,6 +192,10 @@ class EditParameterFileDialog(QDialog):
       self._mappingTable.removeRow(row)
 
   def _onAccept(self) -> None:
+    # Validate and stage everything *before* mutating/exporting anything --
+    # a cancelled "where should the new .ssm go?" picker (see below) must
+    # leave the dialog exactly as it was, not half-applied with the value
+    # edits already written to disk but the mapping silently dropped.
     newValues = {}
     for row in range(self._table.rowCount()):
       nameItem = self._table.item(row, 0)
@@ -182,6 +211,24 @@ class EditParameterFileDialog(QDialog):
         QMessageBox.critical(self, 'Edit Parameter Values',
                               f"'{valueText}' is not a valid {typeCombo.currentText()} value for '{name}'.")
         return
+
+    newSsm = None
+    savePath = None
+    if self._ssm is None and self._mappingCheck is not None and self._mappingCheck.isChecked():
+      newSsm = SSM()
+      for row in range(self._mappingTable.rowCount()):
+        sourceItem = self._mappingTable.item(row, 0)
+        targetItem = self._mappingTable.item(row, 1)
+        source = sourceItem.text().strip() if sourceItem else ''
+        target = targetItem.text().strip() if targetItem else ''
+        if source and target:
+          newSsm.mapParameter(source, target)
+      # Checking the box means "I want a mapping file", full stop -- prompt
+      # for where to save it even with zero rows, so an intentionally empty
+      # mapping can still be created (to fill in later).
+      savePath, _ = QFileDialog.getSaveFileName(self, 'Save SSM File', 'mapping.ssm', 'SSM files (*.ssm)')
+      if not savePath:
+        return  # cancelled -- nothing has been touched yet, leave the dialog open
 
     # Rebuilt wholesale rather than patched in place -- lets rows be renamed
     # or removed too, not just have their value edited, the same way the
@@ -201,10 +248,20 @@ class EditParameterFileDialog(QDialog):
         target = targetItem.text().strip() if targetItem else ''
         if source and target:
           self._ssm.mapParameter(source, target)
-      # SSM.export() is a no-op on an empty mappingEntry (see ssm.py) -- if
-      # every row was removed, the on-disk file deliberately keeps its last
-      # non-empty content rather than being overwritten with nothing.
-      if self._ssm.filename and self._ssm.mappingEntry:
+      # Written even if every row was removed -- SSM.export() now always
+      # writes (an emptied mapping table means "clear the mapping", not
+      # "leave the old file's content in place").
+      if self._ssm.filename:
         self._ssm.export(str(self._ssm.filename))
+    elif newSsm is not None and savePath is not None:
+      newSsm.export(savePath)
+      self._newSsmPath = savePath
 
     self.accept()
+
+  def newSsmPath(self) -> str | None:
+    '''Set only when the user checked "Add a parameter mapping" on a file
+    that had none and filled in at least one row -- MainWindow is
+    responsible for actually attaching it (SSP.addResource + swapping in the
+    new reference), since that needs a cref this dialog doesn't have.'''
+    return self._newSsmPath

@@ -161,6 +161,10 @@ class _RootBoxProxy:
   def connectors(self):
     return self.system.connectors
 
+  @property
+  def parameterResources(self):
+    return self.system.parameterResources
+
 
 class _OpenModel:
   '''One open SSP and its own diagram-navigation state. Any number of these
@@ -241,6 +245,8 @@ class MainWindow(QMainWindow):
     self._diagramView.connectorValueRequested.connect(self._onCanvasConnectorValueRequested)
     self._diagramView.addParameterFileRequested.connect(self._onCanvasAddParameterFileRequested)
     self._diagramView.editParameterFileRequested.connect(self._onCanvasEditParameterFileRequested)
+    self._diagramView.editParameterFileResourceRequested.connect(self._onCanvasEditParameterFileResourceRequested)
+    self._diagramView.removeParameterFileResourceRequested.connect(self._onCanvasRemoveParameterFileResourceRequested)
     # Fits/centers the empty default canvas immediately -- without this,
     # DiagramView.setSystem() (the only place that ever calls setSceneRect
     # and fitInView) never runs until a model is actually loaded, so the
@@ -809,7 +815,11 @@ class MainWindow(QMainWindow):
     if not self._activateModelForNode(node):
       return
     ssvResource, ssmResource = node.obj
-    self._editParameterFileResource(ssvResource, ssmResource)
+    # node.parent is the "Parameter Files" group node; its parent is the
+    # owning System/Component -- same ancestor-skip _crefPath already does
+    # for KIND_CONNECTOR via its "Connectors" group parent (see also
+    # _onRemoveParameterFileRequested).
+    self._editParameterFileResource(ssvResource, ssmResource, self._crefPath(node.parent.parent))
 
   def _onCanvasEditParameterFileRequested(self, elementName: str) -> None:
     path = self._diagramLevelPath()
@@ -834,15 +844,52 @@ class MainWindow(QMainWindow):
       if not ok:
         return
       ssvResource, ssmResource = next((ssv, ssm) for ssv, ssm in pairs if ssv == chosen)
-    self._editParameterFileResource(ssvResource, ssmResource)
+    self._editParameterFileResource(ssvResource, ssmResource, path)
 
-  def _editParameterFileResource(self, ssvResource: str, ssmResource: str | None) -> None:
+  def _editParameterFileResource(self, ssvResource: str, ssmResource: str | None, path: list[str]) -> None:
     ssv = self._ssp.resources.get(ssvResource)
     if not isinstance(ssv, SSV):
       return
     ssm = self._ssp.resources.get(ssmResource) if ssmResource else None
     dialog = EditParameterFileDialog(ssv, ssm if isinstance(ssm, SSM) else None, self)
     if dialog.exec() != QDialog.DialogCode.Accepted:
+      return
+
+    newSsmPath = dialog.newSsmPath()
+    if newSsmPath:
+      # A brand-new mapping was created for a file that had none -- attach it
+      # by re-adding the same ssv reference with the new ssm alongside it
+      # (removeSSVReference only clears the key, not the whole entry -- see
+      # _addParameterFileNodes's docstring -- so the follow-up addSSVReference
+      # below always appends a fresh, non-empty entry rather than colliding).
+      try:
+        ssmResourceName = f'resources/{Path(newSsmPath).name}'
+        if ssmResourceName not in self._ssp.resources:
+          self._ssp.addResource(newSsmPath, ssmResourceName)
+        self._ssp.removeSSVReference(CRef(*path), ssvResource)
+        self._ssp.addSSVReference(CRef(*path), ssvResource, ssmResourceName)
+      except Exception as e:
+        QMessageBox.critical(self, 'Add Parameter Mapping failed', str(e))
+        return
+
+    self._onModelChanged()
+
+  def _onCanvasEditParameterFileResourceRequested(self, ssvResource: str, ssmResource: str) -> None:
+    path = self._diagramLevelPath()
+    if not path:
+      return
+    self._editParameterFileResource(ssvResource, ssmResource or None, path)
+
+  def _onCanvasRemoveParameterFileResourceRequested(self, ssvResource: str) -> None:
+    path = self._diagramLevelPath()
+    if not path:
+      return
+    if QMessageBox.question(self, 'Remove Parameter File', f'Remove "{Path(ssvResource).name}"?') != QMessageBox.StandardButton.Yes:
+      return
+    try:
+      self._ssp.removeSSVReference(CRef(*path), ssvResource)
+    except Exception as e:
+      QMessageBox.critical(self, 'Remove Parameter File failed', str(e))
       return
     self._onModelChanged()
 
