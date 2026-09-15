@@ -33,13 +33,26 @@
 '''AddParameterFileDialog: attach an SSV (parameter values) file, optionally
 paired with an SSM (parameter mapping) file, to whichever System/Component
 the user picked in the tree or on the canvas -- the actual SSP.addResource +
-addSSVReference calls are made by MainWindow, keyed off ssvPath()/ssmPath().
+addSSVReference calls are made by MainWindow, keyed off ssvPath()/ssmPath()
+(a real filesystem file, not yet an SSP resource) or existingSsvResource()/
+existingSsmResource() (already an SSP resource -- see below).
 
 Two modes, switched by radio buttons: browse for files already exported
 elsewhere (the same shape SimpleSimulation10.py/SimpleSimulation11.py build
 by hand), or author a new SSV -- and, optionally, a companion SSM mapping --
 from scratch via a plain value table, exported to disk on accept so the rest
-of the attach flow never needs to know which mode produced the files.'''
+of the attach flow never needs to know which mode produced the files.
+
+The "browse" page also offers a shortcut for a file that's *already*
+registered as an SSP resource (e.g. one added earlier via "Add Resource...",
+or left over from a different attachment): a combo box per field listing
+every already-registered .ssv/.ssm, so the user doesn't have to know or
+navigate to wherever the SSP's own temp extraction directory put that file
+on disk just to point back at it. Picking one there takes over from the
+text+Browse row entirely (they're mutually exclusive per field) and is
+exposed via existingSsvResource()/existingSsmResource() instead of
+ssvPath()/ssmPath(), so MainWindow can skip the addResource call for it --
+it's already in the pool.'''
 
 from pathlib import Path
 
@@ -87,14 +100,21 @@ def _fileRow(edit: QLineEdit, browseButton: QPushButton) -> QWidget:
   return row
 
 
+_USE_BROWSED_FILE = None  # QComboBox item data sentinel for "use the text+Browse row" vs. an existing resource name
+
+
 class AddParameterFileDialog(QDialog):
-  def __init__(self, parent=None):
+  def __init__(self, availableSsvResources=None, availableSsmResources=None, parent=None):
     super().__init__(parent)
     self.setWindowTitle('Add Parameter File')
     self.resize(480, 420)
 
+    self._availableSsvResources = availableSsvResources or []
+    self._availableSsmResources = availableSsmResources or []
     self._ssvPath: str | None = None
     self._ssmPath: str | None = None
+    self._existingSsvResource: str | None = None
+    self._existingSsmResource: str | None = None
 
     self._browseRadio = QRadioButton('Use existing file(s)', self)
     self._createRadio = QRadioButton('Create new file', self)
@@ -126,15 +146,39 @@ class AddParameterFileDialog(QDialog):
     self._ssvEdit = QLineEdit(page)
     ssvBrowse = QPushButton('Browse...', page)
     ssvBrowse.clicked.connect(lambda: self._browseInto(self._ssvEdit, 'Select SSV File', 'SSV files (*.ssv)'))
+    self._ssvResourceCombo = self._buildResourceCombo(page, self._availableSsvResources, self._ssvEdit, ssvBrowse)
 
     self._ssmEdit = QLineEdit(page)
     ssmBrowse = QPushButton('Browse...', page)
     ssmBrowse.clicked.connect(lambda: self._browseInto(self._ssmEdit, 'Select SSM File', 'SSM files (*.ssm)'))
+    self._ssmResourceCombo = self._buildResourceCombo(page, self._availableSsmResources, self._ssmEdit, ssmBrowse)
 
     layout = QFormLayout(page)
     layout.addRow('SSV file:', _fileRow(self._ssvEdit, ssvBrowse))
+    layout.addRow('(Or) Existing resource:', self._ssvResourceCombo)
     layout.addRow('SSM file (optional):', _fileRow(self._ssmEdit, ssmBrowse))
+    layout.addRow('(Or) Existing resource:', self._ssmResourceCombo)
     return page
+
+  def _buildResourceCombo(self, parent: QWidget, resourceNames: list, edit: QLineEdit, browseButton: QPushButton) -> QComboBox:
+    '''A resource already registered in the SSP's own pool (e.g. added via
+    "Add Resource...") is picked here instead of browsing the filesystem for
+    it -- there'd be nothing sensible to browse to anyway, since the SSP's
+    own temp extraction directory isn't somewhere a user would navigate to
+    by hand. Picking one disables the text+Browse row for that same field
+    (mutually exclusive); going back to "Browse for a file..." re-enables
+    it.'''
+    combo = QComboBox(parent)
+    combo.addItem('Browse for a file...', _USE_BROWSED_FILE)
+    for resourceName in resourceNames:
+      combo.addItem(Path(resourceName).name, resourceName)
+    combo.currentIndexChanged.connect(lambda _index, e=edit, b=browseButton, c=combo: self._onResourceComboChanged(c, e, b))
+    return combo
+
+  def _onResourceComboChanged(self, combo: QComboBox, edit: QLineEdit, browseButton: QPushButton) -> None:
+    usingExisting = combo.currentData() is not _USE_BROWSED_FILE
+    edit.setEnabled(not usingExisting)
+    browseButton.setEnabled(not usingExisting)
 
   def _browseInto(self, edit: QLineEdit, title: str, filterStr: str) -> None:
     path, _ = QFileDialog.getOpenFileName(self, title, '', filterStr)
@@ -206,16 +250,24 @@ class AddParameterFileDialog(QDialog):
       self._acceptCreated()
 
   def _acceptBrowsed(self) -> None:
-    ssvPath = self._ssvEdit.text().strip()
-    if not ssvPath or not Path(ssvPath).is_file():
-      QMessageBox.critical(self, 'Add Parameter File', 'Select a valid SSV file.')
-      return
-    ssmPath = self._ssmEdit.text().strip() or None
-    if ssmPath and not Path(ssmPath).is_file():
-      QMessageBox.critical(self, 'Add Parameter File', 'Select a valid SSM file, or leave it empty.')
-      return
-    self._ssvPath = ssvPath
-    self._ssmPath = ssmPath
+    if self._ssvResourceCombo.currentData() is not _USE_BROWSED_FILE:
+      self._existingSsvResource = self._ssvResourceCombo.currentData()
+    else:
+      ssvPath = self._ssvEdit.text().strip()
+      if not ssvPath or not Path(ssvPath).is_file():
+        QMessageBox.critical(self, 'Add Parameter File', 'Select a valid SSV file, or pick an existing resource.')
+        return
+      self._ssvPath = ssvPath
+
+    if self._ssmResourceCombo.currentData() is not _USE_BROWSED_FILE:
+      self._existingSsmResource = self._ssmResourceCombo.currentData()
+    else:
+      ssmPath = self._ssmEdit.text().strip() or None
+      if ssmPath and not Path(ssmPath).is_file():
+        QMessageBox.critical(self, 'Add Parameter File', 'Select a valid SSM file, or leave it empty.')
+        return
+      self._ssmPath = ssmPath
+
     self.accept()
 
   def _acceptCreated(self) -> None:
@@ -286,3 +338,14 @@ class AddParameterFileDialog(QDialog):
 
   def ssmPath(self) -> str | None:
     return self._ssmPath
+
+  def existingSsvResource(self) -> str | None:
+    '''Set only in "Use existing file(s)" mode, when the SSV resource combo
+    was left on an already-registered resource rather than "Browse for a
+    file..." -- already in the SSP's pool, so MainWindow can addSSVReference
+    with it directly, no addResource call needed.'''
+    return self._existingSsvResource
+
+  def existingSsmResource(self) -> str | None:
+    '''Same idea as existingSsvResource(), for the optional SSM field.'''
+    return self._existingSsmResource

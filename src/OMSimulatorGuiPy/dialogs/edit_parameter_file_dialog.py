@@ -44,14 +44,21 @@ Writes back into those SAME instances and re-exports each to its own file
 SSP.addResource/addSSVReference bookkeeping is needed -- the references
 already point at these files, only their content changes.
 
-If there's no companion SSM yet, a checkbox offers to add one -- but a
+If there's no companion SSM yet, a checkbox offers to add one, either by
+authoring a new one inline or by picking one already sitting in the SSP's
+resource pool (e.g. one added via "Add Resource..." or left over from a
+previous attachment elsewhere -- see the screenshot-driven follow-up request
+this was added for: the user had a "mapping.ssm" already registered and
+wanted to reuse it instead of retyping the same rows into a new file). A
 *brand-new* mapping resource needs an SSP.addResource + addSSVReference call
 to actually get attached (unlike editing an existing one, which is pure file
-content), and this dialog has no cref to call those with. So in that case it
-only exports the new .ssm to disk and exposes the path via newSsmPath();
-MainWindow._editParameterFileResource does the actual attach afterwards,
-the same division of labor AddParameterFileDialog already has with its own
-ssvPath()/ssmPath() accessors.'''
+content), and this dialog has no cref to call those with -- so in that case
+it only exports the new .ssm to disk and exposes the path via newSsmPath().
+Picking an *existing* resource needs no export at all, just addSSVReference
+with the resource name already in hand -- exposed via existingSsmResource().
+Either way, MainWindow._editParameterFileResource does the actual attach
+afterwards, the same division of labor AddParameterFileDialog already has
+with its own ssvPath()/ssmPath() accessors.'''
 
 from pathlib import Path
 
@@ -97,13 +104,18 @@ def _typeName(value, valueType) -> str:
   return 'Real'
 
 
+_CREATE_NEW_SSM = None  # QComboBox item data sentinel for "author a new mapping" vs. an existing resource name
+
+
 class EditParameterFileDialog(QDialog):
-  def __init__(self, ssv, ssm=None, parent=None):
+  def __init__(self, ssv, ssm=None, availableSsmResources=None, parent=None):
     super().__init__(parent)
     self._ssv = ssv
     self._ssm = ssm
     self._newSsmPath: str | None = None
+    self._existingSsmResource: str | None = None
     self._mappingCheck = None
+    self._mappingSourceCombo = None
     title = Path(ssv.filename).name if ssv.filename else 'parameters.ssv'
     self.setWindowTitle(f'Edit Parameter Values - {title}')
     self.resize(420, 480)
@@ -142,21 +154,36 @@ class EditParameterFileDialog(QDialog):
       # blank mapping.
       self._mappingTable.setEnabled(False)
 
-    addMappingButton = QPushButton('Add Row', self)
-    addMappingButton.clicked.connect(lambda: self._addMappingRow('', ''))
-    removeMappingButton = QPushButton('Remove Row', self)
-    removeMappingButton.clicked.connect(self._removeSelectedMappingRow)
+    self._addMappingButton = QPushButton('Add Row', self)
+    self._addMappingButton.clicked.connect(lambda: self._addMappingRow('', ''))
+    self._removeMappingButton = QPushButton('Remove Row', self)
+    self._removeMappingButton.clicked.connect(self._removeSelectedMappingRow)
+    if ssm is None:
+      self._addMappingButton.setEnabled(False)
+      self._removeMappingButton.setEnabled(False)
     mappingButtonsRow = QHBoxLayout()
-    mappingButtonsRow.addWidget(addMappingButton)
-    mappingButtonsRow.addWidget(removeMappingButton)
+    mappingButtonsRow.addWidget(self._addMappingButton)
+    mappingButtonsRow.addWidget(self._removeMappingButton)
     mappingButtonsRow.addStretch(1)
 
     if ssm is not None:
       layout.addWidget(QLabel('Parameter mapping:', self))
     else:
       self._mappingCheck = QCheckBox('Add a parameter mapping (.ssm)', self)
-      self._mappingCheck.toggled.connect(self._mappingTable.setEnabled)
       layout.addWidget(self._mappingCheck)
+
+      self._mappingSourceCombo = QComboBox(self)
+      self._mappingSourceCombo.addItem('Create new...', _CREATE_NEW_SSM)
+      for resourceName in (availableSsmResources or []):
+        self._mappingSourceCombo.addItem(Path(resourceName).name, resourceName)
+      self._mappingSourceCombo.setEnabled(False)
+      self._mappingSourceCombo.currentIndexChanged.connect(self._onMappingSourceChanged)
+      sourceRow = QHBoxLayout()
+      sourceRow.addWidget(QLabel('Source:', self))
+      sourceRow.addWidget(self._mappingSourceCombo)
+      layout.addLayout(sourceRow)
+
+      self._mappingCheck.toggled.connect(self._onMappingCheckToggled)
     layout.addWidget(self._mappingTable)
     layout.addLayout(mappingButtonsRow)
 
@@ -179,6 +206,22 @@ class EditParameterFileDialog(QDialog):
     row = self._table.currentRow()
     if row >= 0:
       self._table.removeRow(row)
+
+  def _onMappingCheckToggled(self, checked: bool) -> None:
+    self._mappingSourceCombo.setEnabled(checked)
+    self._updateMappingTableEnabled()
+
+  def _onMappingSourceChanged(self, _index: int) -> None:
+    self._updateMappingTableEnabled()
+
+  def _updateMappingTableEnabled(self) -> None:
+    '''The table (and its Add/Remove Row buttons) are only for *authoring* a
+    new mapping -- picking an already-registered .ssm resource instead has
+    nothing to edit inline here, its content is whatever's already on disk.'''
+    isCreatingNew = self._mappingCheck.isChecked() and self._mappingSourceCombo.currentData() is _CREATE_NEW_SSM
+    self._mappingTable.setEnabled(isCreatingNew)
+    self._addMappingButton.setEnabled(isCreatingNew)
+    self._removeMappingButton.setEnabled(isCreatingNew)
 
   def _addMappingRow(self, source: str, target: str) -> None:
     row = self._mappingTable.rowCount()
@@ -214,21 +257,26 @@ class EditParameterFileDialog(QDialog):
 
     newSsm = None
     savePath = None
+    pickedExistingResource = None
     if self._ssm is None and self._mappingCheck is not None and self._mappingCheck.isChecked():
-      newSsm = SSM()
-      for row in range(self._mappingTable.rowCount()):
-        sourceItem = self._mappingTable.item(row, 0)
-        targetItem = self._mappingTable.item(row, 1)
-        source = sourceItem.text().strip() if sourceItem else ''
-        target = targetItem.text().strip() if targetItem else ''
-        if source and target:
-          newSsm.mapParameter(source, target)
-      # Checking the box means "I want a mapping file", full stop -- prompt
-      # for where to save it even with zero rows, so an intentionally empty
-      # mapping can still be created (to fill in later).
-      savePath, _ = QFileDialog.getSaveFileName(self, 'Save SSM File', 'mapping.ssm', 'SSM files (*.ssm)')
-      if not savePath:
-        return  # cancelled -- nothing has been touched yet, leave the dialog open
+      selectedResource = self._mappingSourceCombo.currentData()
+      if selectedResource is not _CREATE_NEW_SSM:
+        pickedExistingResource = selectedResource
+      else:
+        newSsm = SSM()
+        for row in range(self._mappingTable.rowCount()):
+          sourceItem = self._mappingTable.item(row, 0)
+          targetItem = self._mappingTable.item(row, 1)
+          source = sourceItem.text().strip() if sourceItem else ''
+          target = targetItem.text().strip() if targetItem else ''
+          if source and target:
+            newSsm.mapParameter(source, target)
+        # Checking the box means "I want a mapping file", full stop -- prompt
+        # for where to save it even with zero rows, so an intentionally empty
+        # mapping can still be created (to fill in later).
+        savePath, _ = QFileDialog.getSaveFileName(self, 'Save SSM File', 'mapping.ssm', 'SSM files (*.ssm)')
+        if not savePath:
+          return  # cancelled -- nothing has been touched yet, leave the dialog open
 
     # Rebuilt wholesale rather than patched in place -- lets rows be renamed
     # or removed too, not just have their value edited, the same way the
@@ -256,12 +304,21 @@ class EditParameterFileDialog(QDialog):
     elif newSsm is not None and savePath is not None:
       newSsm.export(savePath)
       self._newSsmPath = savePath
+    elif pickedExistingResource is not None:
+      self._existingSsmResource = pickedExistingResource
 
     self.accept()
 
   def newSsmPath(self) -> str | None:
-    '''Set only when the user checked "Add a parameter mapping" on a file
-    that had none and filled in at least one row -- MainWindow is
-    responsible for actually attaching it (SSP.addResource + swapping in the
-    new reference), since that needs a cref this dialog doesn't have.'''
+    '''Set only when the user checked "Add a parameter mapping", left the
+    source on "Create new...", and accepted -- MainWindow is responsible for
+    actually attaching it (SSP.addResource + addSSVReference), since that
+    needs a cref this dialog doesn't have.'''
     return self._newSsmPath
+
+  def existingSsmResource(self) -> str | None:
+    '''Set when the user checked "Add a parameter mapping" and picked an
+    already-registered .ssm resource instead of authoring a new one --
+    already in the SSP's resource pool, so MainWindow only needs to
+    addSSVReference with it directly, no addResource call first.'''
+    return self._existingSsmResource

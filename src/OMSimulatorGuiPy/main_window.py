@@ -801,19 +801,27 @@ class MainWindow(QMainWindow):
     self._addParameterFileAtPath(self._canvasElementPath(elementName))
 
   def _addParameterFileAtPath(self, path: list[str]) -> None:
-    dialog = AddParameterFileDialog(self)
+    availableSsvResources = [r for r in self._ssp.listResource() if r.endswith('.ssv')]
+    availableSsmResources = [r for r in self._ssp.listResource() if r.endswith('.ssm')]
+    dialog = AddParameterFileDialog(availableSsvResources, availableSsmResources, self)
     if dialog.exec() != QDialog.DialogCode.Accepted:
       return
-    ssvPath, ssmPath = dialog.ssvPath(), dialog.ssmPath()
     try:
-      ssvResource = f'resources/{Path(ssvPath).name}'
-      if ssvResource not in self._ssp.resources:
-        self._ssp.addResource(ssvPath, ssvResource)
-      ssmResource = None
-      if ssmPath:
-        ssmResource = f'resources/{Path(ssmPath).name}'
-        if ssmResource not in self._ssp.resources:
-          self._ssp.addResource(ssmPath, ssmResource)
+      ssvResource = dialog.existingSsvResource()
+      if ssvResource is None:
+        ssvPath = dialog.ssvPath()
+        ssvResource = f'resources/{Path(ssvPath).name}'
+        if ssvResource not in self._ssp.resources:
+          self._ssp.addResource(ssvPath, ssvResource)
+
+      ssmResource = dialog.existingSsmResource()
+      if ssmResource is None:
+        ssmPath = dialog.ssmPath()
+        if ssmPath:
+          ssmResource = f'resources/{Path(ssmPath).name}'
+          if ssmResource not in self._ssp.resources:
+            self._ssp.addResource(ssmPath, ssmResource)
+
       self._ssp.addSSVReference(CRef(*path), ssvResource, ssmResource)
     except Exception as e:
       QMessageBox.critical(self, 'Add Parameter File failed', str(e))
@@ -899,11 +907,13 @@ class MainWindow(QMainWindow):
     if not isinstance(ssv, SSV):
       return
     ssm = self._ssp.resources.get(ssmResource) if ssmResource else None
-    dialog = EditParameterFileDialog(ssv, ssm if isinstance(ssm, SSM) else None, self)
+    availableSsmResources = [r for r in self._ssp.listResource() if r.endswith('.ssm')]
+    dialog = EditParameterFileDialog(ssv, ssm if isinstance(ssm, SSM) else None, availableSsmResources, self)
     if dialog.exec() != QDialog.DialogCode.Accepted:
       return
 
     newSsmPath = dialog.newSsmPath()
+    existingSsmResource = dialog.existingSsmResource()
     if newSsmPath:
       # A brand-new mapping was created for a file that had none -- attach it
       # by re-adding the same ssv reference with the new ssm alongside it
@@ -916,6 +926,15 @@ class MainWindow(QMainWindow):
           self._ssp.addResource(newSsmPath, ssmResourceName)
         self._ssp.removeSSVReference(CRef(*path), ssvResource)
         self._ssp.addSSVReference(CRef(*path), ssvResource, ssmResourceName)
+      except Exception as e:
+        QMessageBox.critical(self, 'Add Parameter Mapping failed', str(e))
+        return
+    elif existingSsmResource:
+      # Picked an already-registered .ssm resource instead -- already in the
+      # pool, so no addResource call needed, just re-point the reference.
+      try:
+        self._ssp.removeSSVReference(CRef(*path), ssvResource)
+        self._ssp.addSSVReference(CRef(*path), ssvResource, existingSsmResource)
       except Exception as e:
         QMessageBox.critical(self, 'Add Parameter Mapping failed', str(e))
         return
