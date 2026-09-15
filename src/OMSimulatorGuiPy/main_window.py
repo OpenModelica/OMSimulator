@@ -227,6 +227,7 @@ class MainWindow(QMainWindow):
     self._treeView.addConnectorRequested.connect(self._onAddConnectorRequested)
     self._treeView.addParameterFileRequested.connect(self._onAddParameterFileRequested)
     self._treeView.editParameterFileRequested.connect(self._onEditParameterFileRequested)
+    self._treeView.swapParameterFileRequested.connect(self._onSwapParameterFileRequested)
     self._treeView.removeParameterFileRequested.connect(self._onRemoveParameterFileRequested)
     self._treeView.addResourceRequested.connect(self._onAddResourceRequested)
     self._treeView.removeResourceRequested.connect(self._onRemoveResourceRequested)
@@ -828,6 +829,49 @@ class MainWindow(QMainWindow):
     # for KIND_CONNECTOR via its "Connectors" group parent (see also
     # _onRemoveParameterFileRequested).
     self._editParameterFileResource(ssvResource, ssmResource, self._crefPath(node.parent.parent))
+
+  def _onSwapParameterFileRequested(self, node) -> None:
+    '''SSP.swapSSVReference(cref, resource1, resource2): re-points an
+    already-attached binding from resource1 (the currently-attached SSV) to
+    a DIFFERENT already-registered SSV resource, at the same cref -- unlike
+    "Edit Values...", which edits the current file's own content in place,
+    this changes *which* file is referenced (e.g. switching a component
+    between two alternate parameter presets both already added via
+    "Add Resource..."). Only ever offered on an already-attached entry, so
+    resource1 (the current one) always exists; resource2 must be picked
+    from other already-registered .ssv resources -- swapSSVReference itself
+    only warns (doesn't raise) if asked to swap in something unregistered,
+    but there's no "browse a new file" case here, only "pick another
+    resource that's already in the pool" (see [[project_omsimulatorguipy]]
+    for why this mirrors testsuite/tests/api/swapSSV4.py's own usage).'''
+    if not self._activateModelForNode(node):
+      return
+    ssvResource, ssmResource = node.obj
+    choices = [r for r in self._ssp.listResource() if r.endswith('.ssv') and r != ssvResource]
+    if not choices:
+      QMessageBox.information(self, 'Swap Resource',
+                               'No other .ssv resource is registered yet -- use "Add Resource..." first.')
+      return
+    chosen, ok = QInputDialog.getItem(self, 'Swap Resource', f'Replace "{Path(ssvResource).name}" with:', choices, editable=False)
+    if not ok:
+      return
+    if ssmResource is not None:
+      # Component/System.swapSSVReference always re-adds the new resource
+      # with no ssm (addSSVReference(resource2), no second arg) -- so an
+      # attached mapping is silently dropped by the swap itself. Surface
+      # that up front rather than letting it be a quiet surprise.
+      if QMessageBox.question(
+          self, 'Swap Resource',
+          f'"{Path(ssvResource).name}" has a parameter mapping ("{Path(ssmResource).name}") attached. '
+          'Swapping will drop that mapping -- the new file will have none until one is added back. Continue?'
+      ) != QMessageBox.StandardButton.Yes:
+        return
+    try:
+      self._ssp.swapSSVReference(CRef(*self._crefPath(node.parent.parent)), ssvResource, chosen)
+    except Exception as e:
+      QMessageBox.critical(self, 'Swap Resource failed', str(e))
+      return
+    self._onModelChanged()
 
   def _onCanvasEditParameterFileRequested(self, elementName: str) -> None:
     path = self._canvasElementPath(elementName)

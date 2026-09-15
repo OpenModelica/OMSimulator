@@ -60,6 +60,7 @@ class SystemTreeView(QTreeView):
   addParameterFileRequested = Signal(object)   # TreeNode: system/component to attach to
   editParameterFileRequested = Signal(object)  # TreeNode: the parameter-file entry to edit
   removeParameterFileRequested = Signal(object)  # TreeNode: the parameter-file entry to remove
+  swapParameterFileRequested = Signal(object)  # TreeNode: the parameter-file entry to swap
   addResourceRequested = Signal(object)        # TreeNode: the model row to add a resource to
   removeResourceRequested = Signal(object)     # TreeNode: the resource entry to remove
   deleteRequested = Signal(object)        # TreeNode: element/connector to delete
@@ -135,6 +136,7 @@ class SystemTreeView(QTreeView):
       menu.addAction('Delete', lambda: self.deleteRequested.emit(node))
     elif node.kind == KIND_PARAMETER_FILE:
       menu.addAction('Edit Values...', lambda: self.editParameterFileRequested.emit(node))
+      menu.addAction('Swap Resource...', lambda: self.swapParameterFileRequested.emit(node))
       menu.addAction('Remove', lambda: self.removeParameterFileRequested.emit(node))
     elif node.kind == KIND_MODEL:
       menu.addAction('Add Resource...', lambda: self.addResourceRequested.emit(node))
