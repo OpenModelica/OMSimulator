@@ -57,7 +57,9 @@ KIND_CONNECTIONS_GROUP = 'connections_group'
 KIND_CONNECTION = 'connection'
 KIND_PARAMETER_FILES_GROUP = 'parameter_files_group'
 KIND_PARAMETER_FILE = 'parameter_file'
-KIND_GROUP_KINDS = (KIND_CONNECTORS_GROUP, KIND_CONNECTIONS_GROUP, KIND_PARAMETER_FILES_GROUP)
+KIND_RESOURCES_GROUP = 'resources_group'
+KIND_RESOURCE = 'resource'
+KIND_GROUP_KINDS = (KIND_CONNECTORS_GROUP, KIND_CONNECTIONS_GROUP, KIND_PARAMETER_FILES_GROUP, KIND_RESOURCES_GROUP)
 KIND_INVISIBLE_ROOT = 'invisible_root'
 
 
@@ -129,6 +131,21 @@ def _addParameterFileNodes(node: TreeNode, element) -> None:
     group.addChild(TreeNode(KIND_PARAMETER_FILE, _parameterFileLabel(ssv, ssm), (ssv, ssm)))
 
 
+def _addResourcesGroupNode(modelNode: TreeNode, ssp) -> None:
+  '''Appends a "Resources" group under the model's own top-level row,
+  listing every resource registered in the SSP's shared pool (SSP.resources
+  / SSP.listResource()) -- unlike Parameter Files/Connectors/Connections,
+  this isn't scoped to any one System: SSP.addResource has no cref at all,
+  it's a single pool for the whole SSP (FMUs, SSVs, SSMs, result files, ...),
+  so it belongs on the model row, not inside the System subtree.'''
+  resourceNames = ssp.listResource()
+  if not resourceNames:
+    return
+  group = modelNode.addChild(TreeNode(KIND_RESOURCES_GROUP, 'Resources', None))
+  for name in resourceNames:
+    group.addChild(TreeNode(KIND_RESOURCE, Path(name).name, name))
+
+
 def _buildSystemNode(system: System, label: str, parent: TreeNode | None = None) -> TreeNode:
   node = TreeNode(KIND_SYSTEM, label, system, parent)
 
@@ -163,10 +180,16 @@ class SystemTreeModel(QAbstractItemModel):
   its root System nested one level below it as its own visible row --
   matching OMEdit's "model name > root system" shape, just repeated once per
   open model instead of assuming there is only ever one. This is purely a
-  display convention: a model wrapper row carries no operations of its own
-  (right-clicking it shows no menu) and every cref built for the API is
-  anchored at the *System*'s name, never the model name -- see
-  MainWindow._crefPath's KIND_SYSTEM-only ancestor walk.
+  display convention: every cref built for the API is anchored at the
+  *System*'s name, never the model name -- see MainWindow._crefPath's
+  KIND_SYSTEM-only ancestor walk. The model row itself does carry one
+  operation of its own though: "Add Resource...", since SSP.addResource has
+  no cref at all (a single pool for the whole SSP, not scoped to any System)
+  -- see _addResourcesGroupNode. TreeNode.obj for a KIND_MODEL row is the
+  SSP itself (not the root System -- nothing else needs that off this
+  particular row; _activateModelForNode looks models up by node.label, not
+  node.obj, and every structural-edit helper walks down into the System
+  subtree for its own object references).
 
   A root System itself is always a real row (not hidden) -- otherwise a
   brand-new, still-empty model would show nothing to right-click to start
@@ -175,26 +198,27 @@ class SystemTreeModel(QAbstractItemModel):
   def __init__(self, parent=None):
     super().__init__(parent)
     self._invisibleRoot = TreeNode(KIND_INVISIBLE_ROOT, '', None)
-    # Ordered (rootSystem, modelName) pairs -- the source of truth setModels()
-    # rebuilds from; refresh() just replays the same list.
-    self._models: list[tuple[System, str]] = []
+    # Ordered (rootSystem, modelName, ssp) triples -- the source of truth
+    # setModels() rebuilds from; refresh() just replays the same list.
+    self._models: list[tuple[System, str, object]] = []
 
-  def setModels(self, models: list[tuple[System, str]]) -> None:
-    '''Rebuild the whole tree from an ordered list of (rootSystem, modelName)
-    pairs -- one top-level row per open model.'''
+  def setModels(self, models: list[tuple[System, str, object]]) -> None:
+    '''Rebuild the whole tree from an ordered list of (rootSystem, modelName,
+    ssp) triples -- one top-level row per open model.'''
     self.beginResetModel()
     self._invisibleRoot = TreeNode(KIND_INVISIBLE_ROOT, '', None)
     self._models = list(models)
-    for system, modelName in self._models:
-      modelNode = TreeNode(KIND_MODEL, modelName, system)
+    for system, modelName, ssp in self._models:
+      modelNode = TreeNode(KIND_MODEL, modelName, ssp)
       self._invisibleRoot.addChild(modelNode)
       modelNode.addChild(_buildSystemNode(system, str(system.name)))
+      _addResourcesGroupNode(modelNode, ssp)
     self.endResetModel()
 
   def refresh(self) -> None:
-    '''Rebuild the whole tree from the same (rootSystem, modelName) pairs
-    last given to setModels() -- call after any structural edit anywhere,
-    in any open model.'''
+    '''Rebuild the whole tree from the same (rootSystem, modelName, ssp)
+    triples last given to setModels() -- call after any structural edit
+    anywhere, in any open model.'''
     self.setModels(self._models)
 
   def isTopLevelSystem(self, node: TreeNode) -> bool:

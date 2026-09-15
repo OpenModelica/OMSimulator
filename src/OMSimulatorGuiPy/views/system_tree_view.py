@@ -44,7 +44,9 @@ from OMSimulatorGui.models.system_tree_model import (
     KIND_COMPONENT,
     KIND_COMPONENT_TABLE,
     KIND_CONNECTOR,
+    KIND_MODEL,
     KIND_PARAMETER_FILE,
+    KIND_RESOURCE,
     KIND_SYSTEM,
 )
 
@@ -58,6 +60,8 @@ class SystemTreeView(QTreeView):
   addParameterFileRequested = Signal(object)   # TreeNode: system/component to attach to
   editParameterFileRequested = Signal(object)  # TreeNode: the parameter-file entry to edit
   removeParameterFileRequested = Signal(object)  # TreeNode: the parameter-file entry to remove
+  addResourceRequested = Signal(object)        # TreeNode: the model row to add a resource to
+  removeResourceRequested = Signal(object)     # TreeNode: the resource entry to remove
   deleteRequested = Signal(object)        # TreeNode: element/connector to delete
   renameRequested = Signal(object)        # TreeNode: element to rename
   propertiesRequested = Signal(object)    # TreeNode: FMU component to show properties for
@@ -85,6 +89,10 @@ class SystemTreeView(QTreeView):
       node = self.model().nodeFromIndex(self.currentIndex())
       if node is not None and node.kind == KIND_PARAMETER_FILE:
         self.removeParameterFileRequested.emit(node)
+        event.accept()
+        return
+      if node is not None and node.kind == KIND_RESOURCE:
+        self.removeResourceRequested.emit(node)
         event.accept()
         return
       # Same eligibility as the context menu's own "Delete" action -- see
@@ -128,6 +136,10 @@ class SystemTreeView(QTreeView):
     elif node.kind == KIND_PARAMETER_FILE:
       menu.addAction('Edit Values...', lambda: self.editParameterFileRequested.emit(node))
       menu.addAction('Remove', lambda: self.removeParameterFileRequested.emit(node))
+    elif node.kind == KIND_MODEL:
+      menu.addAction('Add Resource...', lambda: self.addResourceRequested.emit(node))
+    elif node.kind == KIND_RESOURCE:
+      menu.addAction('Remove', lambda: self.removeResourceRequested.emit(node))
     else:
       return
 

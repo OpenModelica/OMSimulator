@@ -228,6 +228,8 @@ class MainWindow(QMainWindow):
     self._treeView.addParameterFileRequested.connect(self._onAddParameterFileRequested)
     self._treeView.editParameterFileRequested.connect(self._onEditParameterFileRequested)
     self._treeView.removeParameterFileRequested.connect(self._onRemoveParameterFileRequested)
+    self._treeView.addResourceRequested.connect(self._onAddResourceRequested)
+    self._treeView.removeResourceRequested.connect(self._onRemoveResourceRequested)
     self._treeView.deleteRequested.connect(self._onDeleteRequested)
     self._treeView.renameRequested.connect(self._onRenameRequested)
     self._treeView.propertiesRequested.connect(self._onPropertiesRequested)
@@ -514,7 +516,7 @@ class MainWindow(QMainWindow):
     connectors as ports) -- double-clicking it drills in exactly like any
     nested subsystem, reusing the same ElementIconItem/drill-down machinery.
     The model level is never part of any cref -- see _diagramLevelPath.'''
-    models = [(model.ssp.activeVariant.system, name) for name, model in self._models.items()
+    models = [(model.ssp.activeVariant.system, name, model.ssp) for name, model in self._models.items()
               if model.ssp.activeVariant is not None and model.ssp.activeVariant.system is not None]
     self._treeModel.setModels(models)
     self._treeView.expandAll()
@@ -889,6 +891,37 @@ class MainWindow(QMainWindow):
       self._ssp.removeSSVReference(CRef(*self._crefPath(node.parent.parent)), ssvResource)
     except Exception as e:
       QMessageBox.critical(self, 'Remove Parameter File failed', str(e))
+      return
+    self._onModelChanged()
+
+  def _onAddResourceRequested(self, node) -> None:
+    '''Registers an arbitrary file in the SSP's shared resource pool
+    (SSP.addResource, no cref -- unlike every other add-flow in this file,
+    a resource isn't attached to anything by this action alone). Useful for
+    resource types with no dedicated attach-flow yet (a .csv/.mat lookup
+    table for a ComponentTable, a .dcp) or for staging a file before wiring
+    it up elsewhere.'''
+    if not self._activateModelForNode(node):
+      return
+    path, _ = QFileDialog.getOpenFileName(self, 'Add Resource', '')
+    if not path:
+      return
+    try:
+      self._ssp.addResource(path)
+    except Exception as e:
+      QMessageBox.critical(self, 'Add Resource failed', str(e))
+      return
+    self._onModelChanged()
+
+  def _onRemoveResourceRequested(self, node) -> None:
+    if not self._activateModelForNode(node):
+      return
+    if QMessageBox.question(self, 'Remove Resource', f'Remove "{node.label}"?') != QMessageBox.StandardButton.Yes:
+      return
+    try:
+      self._ssp.deleteResource(node.obj)
+    except Exception as e:
+      QMessageBox.critical(self, 'Remove Resource failed', str(e))
       return
     self._onModelChanged()
 
