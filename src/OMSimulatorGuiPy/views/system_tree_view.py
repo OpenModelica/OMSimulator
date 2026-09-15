@@ -137,6 +137,7 @@ class SystemTreeView(QTreeView):
     elif node.kind == KIND_MODEL:
       menu.addAction('Add Resource...', lambda: self.addResourceRequested.emit(node))
       menu.addSeparator()
+      menu.addAction('Rename...', lambda: self.renameRequested.emit(node))
       menu.addAction('Delete', lambda: self.deleteRequested.emit(node))
     elif node.kind == KIND_RESOURCE:
       menu.addAction('Remove', lambda: self.removeResourceRequested.emit(node))

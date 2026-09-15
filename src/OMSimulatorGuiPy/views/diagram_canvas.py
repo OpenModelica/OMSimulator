@@ -467,6 +467,26 @@ class DiagramView(QGraphicsView):
       self.connectorValueRequested.emit(str(port.connector.name))
       return
 
+    # Double-clicking a connection itself has no defined action -- consume
+    # it here (via the same widened-hit-tolerance _connectionAt() lookup
+    # contextMenuEvent already uses, not just itemAt()) rather than letting
+    # Qt's real double-click sequence (press, release, press, doubleclick,
+    # release) run its course: the first press+release already starts and
+    # cleanly ends its own reshape (inserting a waypoint at the click
+    # point); the second press starts a *second* reshape on the
+    # freshly-rebuilt ConnectionItem that first reshape's own rebuild
+    # produced; if the doubleclick event in between falls through to
+    # super().mouseDoubleClickEvent() (redispatching internally as a third
+    # mousePressEvent) rather than being consumed here, that second reshape
+    # ends up corrupted -- confirmed via a faithful manual replay of the
+    # exact real event sequence, reproducibly dropping the connection from
+    # the canvas (scene items) while the model itself, and the tree, stayed
+    # intact -- exactly the "gone from canvas, still in the tree" symptom
+    # reported. Returning here before that happens sidesteps the whole
+    # mechanism regardless of its precise internal cause.
+    if self._connectionAt(self.mapToScene(event.pos())) is not None:
+      return
+
     item = clickedItem
     while item is not None and not isinstance(item, ElementIconItem):
       item = item.parentItem()

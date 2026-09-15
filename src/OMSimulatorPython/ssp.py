@@ -443,6 +443,27 @@ class SSP:
   def export(self, filename: str):
     '''Exports the SSP to file'''
     logger.debug(f"Exporting SSP to {filename} using temp directory: {self.temp_dir}")
+
+    expected_ssd_paths = set()
+    for ssd in self.variants.values():
+      ssd_file_path = self.temp_dir / f'{ssd.name}.ssd'
+      if ssd.name == self.activeVariantName:
+        ssd_file_path = self.temp_dir / 'SystemStructure.ssd'
+      expected_ssd_paths.add(ssd_file_path)
+
+    # A variant's target file flips between 'SystemStructure.ssd' and
+    # '{name}.ssd' depending on whether it's active, and its target name
+    # changes on rename -- remove any top-level *.ssd file left behind by a
+    # previous export that no longer matches any current variant's target,
+    # otherwise the stale copy and the fresh one both end up in the archive
+    # with the same embedded variant name, and re-importing it later (e.g.
+    # the simulation subprocess loading the exported file) raises
+    # "Another variant with name '...' already exists in the SSP."
+    for existing in self.temp_dir.glob('*.ssd'):
+      if existing not in expected_ssd_paths:
+        existing.unlink()
+        logger.debug(f"Removed stale SSD file: {existing}")
+
     exported_count = 0
     for ssd in self.variants.values():
       if ssd.dirty:

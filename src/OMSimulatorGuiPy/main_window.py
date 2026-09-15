@@ -547,9 +547,38 @@ class MainWindow(QMainWindow):
   # --- Shared refresh after any edit -----------------------------------------
 
   def _onModelChanged(self) -> None:
+    self._syncModelWrapperKey()
     self._treeModel.refresh()
     self._treeView.expandAll()
     self._updateDiagram()
+
+  def _syncModelWrapperKey(self) -> None:
+    '''The model-level wrapper's single "element" entry (see
+    _makeModelWrapper) is keyed by the root system's name as of whenever
+    that wrapper was last (re)built -- initial load, or a variant switch
+    (_rebuildDiagramWrapper) -- not re-derived on every edit. Renaming the
+    root system changes rootSystem.name directly (SSD.rename's own
+    "renaming the root system itself" branch touches nothing else, there's
+    no parent elements dict to re-key for a root) but leaves that stale key
+    behind -- and DiagramScene.setSystem's element loop labels a box from
+    the dict key (`for name, element in system.elements.items()`), not
+    element.name, so the model-level box kept showing the old name after a
+    rename. Re-key in place (reusing the same _RootBoxProxy, so its
+    session-local position isn't lost) rather than a full
+    _rebuildDiagramWrapper, which would also reset diagramStack and discard
+    wherever the user is currently drilled into.'''
+    model = self._activeModel
+    wrapper = model.modelWrapperSystem if model is not None else None
+    if wrapper is None:
+      return
+    variant = model.ssp.activeVariant if model.ssp is not None else None
+    rootSystem = variant.system if variant is not None else None
+    if rootSystem is None:
+      return
+    currentKey = next(iter(wrapper.elements), None)
+    newKey = str(rootSystem.name)
+    if currentKey is not None and currentKey != newKey:
+      wrapper.elements = {newKey: wrapper.elements[currentKey]}
 
   # --- Diagram navigation ------------------------------------------------------
 
@@ -1072,6 +1101,9 @@ class MainWindow(QMainWindow):
   def _onRenameRequested(self, node) -> None:
     if not self._activateModelForNode(node):
       return
+    if node.kind == KIND_MODEL:
+      self._renameActiveModel()
+      return
     currentName = str(node.obj.name)
     newName, ok = QInputDialog.getText(self, 'Rename', 'New name:', text=currentName)
     newName = newName.strip()
@@ -1083,6 +1115,36 @@ class MainWindow(QMainWindow):
       QMessageBox.critical(self, 'Rename failed', str(e))
       return
     self._onModelChanged()
+
+  def _renameActiveModel(self) -> None:
+    '''Renames the open model itself (its tree row, e.g. "test") -- unlike
+    renaming a System/Component inside it, there's no cref for "the whole
+    SSP" to call SSP.rename() with. The model row's own name always tracks
+    its active variant's own name elsewhere (on open, and after switching
+    variants -- see _onVariantsTriggered), so renaming it here means
+    renaming that SSD directly, the same re-keying dance _onNewTriggered
+    does at creation time (SSD.name has no owning-SSP awareness on its
+    own: a plain assignment would leave ssp.variants' dict key and
+    ssp.activeVariantName pointing at the old name).'''
+    model = self._activeModel
+    ssd = model.ssp.activeVariant if model.ssp is not None else None
+    if ssd is None:
+      return
+    newName, ok = QInputDialog.getText(self, 'Rename Model', 'New name:', text=model.name)
+    newName = newName.strip()
+    if not ok or not newName or newName == model.name:
+      return
+
+    oldVariantName = ssd.name
+    ssd.name = newName
+    del model.ssp.variants[oldVariantName]
+    model.ssp.variants[ssd.name] = ssd
+    model.ssp.activeVariantName = ssd.name
+
+    self._renameModel(model, newName)
+    self._rebuildDiagramWrapper(model)
+    self._refreshTree()
+    self._updateDiagram()
 
   def _onPropertiesRequested(self, node) -> None:
     # Not strictly needed for correctness (the edit below operates directly
