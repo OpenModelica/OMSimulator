@@ -93,10 +93,13 @@ class SimulationClient(QObject):
   def isRunning(self) -> bool:
     return self._process is not None and self._process.state() != QProcess.ProcessState.NotRunning
 
-  def start(self, modelPath: str, workingDirectory: str) -> None:
+  def start(self, modelPath: str, workingDirectory: str, commandLineOptions: str = '') -> None:
     '''Launches sim_worker.py against the already-exported `modelPath`,
     with its working directory (and therefore any relatively-named result
-    file) set to `workingDirectory`.'''
+    file) set to `workingDirectory`. `commandLineOptions` is an optional raw
+    string of extra native flags (Tools > Options in MainWindow), forwarded
+    verbatim -- sim_worker.py does the shlex splitting and applies them via
+    Capi.setCommandLineOption() before the model is instantiated.'''
     if self.isRunning():
       raise RuntimeError('A simulation is already running.')
     self._finishedEmitted = False
@@ -105,6 +108,14 @@ class SimulationClient(QObject):
     args = ['-m', 'OMSimulatorGui.simulation.sim_worker',
             '--model', modelPath,
             '--working-directory', workingDirectory]
+    if commandLineOptions:
+      # Joined with '=' into one argv token, not passed as a separate
+      # following token: commandLineOptions is virtually always itself a
+      # string starting with '--' (e.g. "--suppressPath=true"), and argparse
+      # (on the receiving end, sim_worker.py) refuses to consume a following
+      # token that looks like another option as this option's value --
+      # "expected one argument" -- unless it's joined into the same token.
+      args.append(f'--command-line-options={commandLineOptions}')
 
     self._process = QProcess(self)
     self._process.setWorkingDirectory(workingDirectory)

@@ -47,10 +47,11 @@ Simulation and the XML viewer land in later milestones (see the plan this
 was built from).
 '''
 
+import os
 import tempfile
 from pathlib import Path
 
-from PySide6.QtCore import QPointF, Qt, QTimer
+from PySide6.QtCore import QPointF, QSettings, Qt, QTimer
 from PySide6.QtGui import QColor, QIcon, QPainter, QPixmap, QPolygonF
 from PySide6.QtWidgets import (
     QDialog,
@@ -77,6 +78,7 @@ from OMSimulatorGui.dialogs.connector_value_dialog import ConnectorValueDialog
 from OMSimulatorGui.dialogs.create_model_dialog import CreateModelDialog
 from OMSimulatorGui.dialogs.edit_parameter_file_dialog import EditParameterFileDialog
 from OMSimulatorGui.dialogs.element_properties_dialog import ElementPropertiesDialog
+from OMSimulatorGui.dialogs.options_dialog import OptionsDialog
 from OMSimulatorGui.dialogs.simulation_settings_dialog import SimulationSettingsDialog
 from OMSimulatorGui.dialogs.variants_dialog import VariantsDialog
 from OMSimulatorGui.models.system_tree_model import (
@@ -184,6 +186,14 @@ class _OpenModel:
     # MainWindow._makeModelWrapper) and is excluded from cref paths -- see
     # MainWindow._diagramLevelPath.
     self.diagramStack: list[tuple[System, str]] = []
+
+
+# Global (QSettings-persisted, Tools > Options) simulation preferences -- see
+# MainWindow._onOptionsTriggered/_onSimulateTriggered.
+_SETTINGS_ORG = 'OpenModelica'
+_SETTINGS_APP = 'OMSimulatorGuiPy'
+_SETTINGS_KEY_WORKING_DIR = 'simulation/workingDirectory'
+_SETTINGS_KEY_CLI_OPTIONS = 'simulation/commandLineOptions'
 
 
 class MainWindow(QMainWindow):
@@ -343,6 +353,10 @@ class MainWindow(QMainWindow):
     simulateAction = modelMenu.addAction('S&imulate')
     simulateAction.setShortcut('Ctrl+R')
     simulateAction.triggered.connect(self._onSimulateTriggered)
+
+    toolsMenu = self.menuBar().addMenu('&Tools')
+    optionsAction = toolsMenu.addAction('&Options...')
+    optionsAction.triggered.connect(self._onOptionsTriggered)
 
   # --- Active-model properties -------------------------------------------------
   # Thin accessors over self._activeModel, so the rest of this class can keep
@@ -1212,6 +1226,24 @@ class MainWindow(QMainWindow):
       # to apply here.
       self._onModelChanged()
 
+  # --- Options (Tools menu) -----------------------------------------------
+
+  def _onOptionsTriggered(self) -> None:
+    '''Global, app-wide preferences (persisted via QSettings, not per-model
+    or per-.ssp) -- mirrors OMEdit's own Tools > Options > OMSimulator/SSP
+    page. Read fresh here rather than cached on self, since QSettings is
+    already the single source of truth and nothing else in this class needs
+    to react to a change until the next simulation run picks it up.'''
+    settings = QSettings(_SETTINGS_ORG, _SETTINGS_APP)
+    dialog = OptionsDialog(
+        str(settings.value(_SETTINGS_KEY_WORKING_DIR, '')),
+        str(settings.value(_SETTINGS_KEY_CLI_OPTIONS, '')),
+        self)
+    if dialog.exec() != QDialog.DialogCode.Accepted:
+      return
+    settings.setValue(_SETTINGS_KEY_WORKING_DIR, dialog.workingDirectory())
+    settings.setValue(_SETTINGS_KEY_CLI_OPTIONS, dialog.commandLineOptions())
+
   # --- Variants -----------------------------------------------------------
 
   def _onVariantsTriggered(self) -> None:
@@ -1254,8 +1286,22 @@ class MainWindow(QMainWindow):
     # editing) -- export the *current* state of the active variant to a
     # scratch directory. Working directory is set to the same directory so
     # the model's own (usually relative) resultFile lands somewhere we know
-    # to look for it afterward.
-    tempDir = tempfile.mkdtemp(prefix='omsimulatorgui_')
+    # to look for it afterward. Tools > Options can override the default
+    # fresh-temp-dir-per-run behavior with a fixed directory of the user's
+    # choosing (results then land in a known place and get overwritten on
+    # each re-run, rather than scattered across a new temp dir every time).
+    settings = QSettings(_SETTINGS_ORG, _SETTINGS_APP)
+    configuredWorkingDir = str(settings.value(_SETTINGS_KEY_WORKING_DIR, '')).strip()
+    if configuredWorkingDir:
+      tempDir = configuredWorkingDir
+      try:
+        os.makedirs(tempDir, exist_ok=True)
+      except OSError as e:
+        QMessageBox.critical(self, 'Simulation failed',
+                              f'Could not create the configured working directory:\n{tempDir}\n{e}')
+        return
+    else:
+      tempDir = tempfile.mkdtemp(prefix='omsimulatorgui_')
     exportPath = str(Path(tempDir) / 'model.ssp')
     try:
       self._ssp.export(exportPath)
@@ -1264,10 +1310,11 @@ class MainWindow(QMainWindow):
       return
 
     resultPath = str(Path(tempDir) / self._ssp.activeVariant.resultFile)
+    commandLineOptions = str(settings.value(_SETTINGS_KEY_CLI_OPTIONS, '')).strip()
 
     client = SimulationClient(self)
     try:
-      client.start(exportPath, tempDir)
+      client.start(exportPath, tempDir, commandLineOptions)
     except Exception as e:
       QMessageBox.critical(self, 'Simulation failed', f'Could not start the simulation:\n{e}')
       return

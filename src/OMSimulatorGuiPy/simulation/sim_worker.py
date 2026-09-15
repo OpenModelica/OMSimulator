@@ -59,11 +59,13 @@ Protocol (one line each, stdout unless noted):
 
 import argparse
 import math
+import shlex
 import sys
 import threading
 import time
 
 from OMSimulator import SSP, Capi
+from OMSimulator.capi import Status
 
 _state = {'paused': False, 'alive': True}
 _lock = threading.Lock()
@@ -100,10 +102,23 @@ def _main() -> int:
   parser.add_argument('--model', required=True, help='the .ssp to simulate')
   parser.add_argument('--working-directory', default=None,
                        help='sets the native working directory (relative result files land here)')
+  parser.add_argument('--command-line-options', default=None,
+                       help='extra native flags forwarded verbatim to Capi.setCommandLineOption(), '
+                            'e.g. "--suppressPath=true --logLevel=1"')
   args = parser.parse_args()
 
   if args.working_directory:
     Capi.setWorkingDirectory(args.working_directory)
+
+  # Same mechanism (and the same native flags) OMSimulator's own CLI forwards
+  # its options through -- see cli.py's _NATIVE_OPTIONS loop. Must happen
+  # before the model is loaded/instantiated below.
+  if args.command_line_options:
+    for token in shlex.split(args.command_line_options):
+      status = Capi.setCommandLineOption(token)
+      if status != Status.ok:
+        print(f'ERROR Failed to set command line option {token!r}: {status}', flush=True)
+        return 1
 
   threading.Thread(target=_readCommands, daemon=True).start()
 
