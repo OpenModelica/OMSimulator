@@ -229,6 +229,8 @@ class MainWindow(QMainWindow):
     self._treeView.editParameterFileRequested.connect(self._onEditParameterFileRequested)
     self._treeView.swapParameterFileRequested.connect(self._onSwapParameterFileRequested)
     self._treeView.removeParameterFileRequested.connect(self._onRemoveParameterFileRequested)
+    self._treeView.exportSSVTemplateRequested.connect(self._onExportSSVTemplateRequested)
+    self._treeView.exportSSMTemplateRequested.connect(self._onExportSSMTemplateRequested)
     self._treeView.addResourceRequested.connect(self._onAddResourceRequested)
     self._treeView.removeResourceRequested.connect(self._onRemoveResourceRequested)
     self._treeView.deleteRequested.connect(self._onDeleteRequested)
@@ -812,6 +814,40 @@ class MainWindow(QMainWindow):
     if not self._activateModelForNode(node):
       return
     self._addParameterFileAtPath(self._crefPath(node))
+
+  def _onExportSSVTemplateRequested(self, node) -> None:
+    '''SSP.exportSSVTemplate(cref, filename): walks everything reachable
+    under `cref` (a system, subsystem, or component) and writes a ready-made
+    .ssv file with every connector/parameter target found there, using
+    whatever value each one currently has -- a scaffold to hand-edit or
+    attach later via "Add Parameter File... > existing resource", not a
+    reference that gets attached automatically (no model mutation happens
+    here at all, so no _onModelChanged() call is needed).'''
+    if not self._activateModelForNode(node):
+      return
+    path = self._crefPath(node)
+    savePath, _ = QFileDialog.getSaveFileName(self, 'Export SSV Template', f'{node.label}.ssv', 'SSV files (*.ssv)')
+    if not savePath:
+      return
+    try:
+      self._ssp.exportSSVTemplate(CRef(*path), savePath)
+    except Exception as e:
+      QMessageBox.critical(self, 'Export SSV Template failed', str(e))
+
+  def _onExportSSMTemplateRequested(self, node) -> None:
+    '''Same idea as _onExportSSVTemplateRequested but for a mapping skeleton
+    (every target listed with an empty source="", for the user to fill in
+    externally) -- SSP.exportSSMTemplate(cref, filename).'''
+    if not self._activateModelForNode(node):
+      return
+    path = self._crefPath(node)
+    savePath, _ = QFileDialog.getSaveFileName(self, 'Export SSM Template', f'{node.label}.ssm', 'SSM files (*.ssm)')
+    if not savePath:
+      return
+    try:
+      self._ssp.exportSSMTemplate(CRef(*path), savePath)
+    except Exception as e:
+      QMessageBox.critical(self, 'Export SSM Template failed', str(e))
 
   def _canvasElementPath(self, elementName: str) -> list[str]:
     '''cref path for a right-clicked canvas box named `elementName`. Usually

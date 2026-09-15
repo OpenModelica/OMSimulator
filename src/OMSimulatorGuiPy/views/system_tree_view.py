@@ -61,6 +61,8 @@ class SystemTreeView(QTreeView):
   editParameterFileRequested = Signal(object)  # TreeNode: the parameter-file entry to edit
   removeParameterFileRequested = Signal(object)  # TreeNode: the parameter-file entry to remove
   swapParameterFileRequested = Signal(object)  # TreeNode: the parameter-file entry to swap
+  exportSSVTemplateRequested = Signal(object)  # TreeNode: system/component to export a value template for
+  exportSSMTemplateRequested = Signal(object)  # TreeNode: system/component to export a mapping template for
   addResourceRequested = Signal(object)        # TreeNode: the model row to add a resource to
   removeResourceRequested = Signal(object)     # TreeNode: the resource entry to remove
   deleteRequested = Signal(object)        # TreeNode: element/connector to delete
@@ -118,6 +120,9 @@ class SystemTreeView(QTreeView):
       menu.addAction('Add Connector...', lambda: self.addConnectorRequested.emit(node))
       menu.addAction('Add Parameter File...', lambda: self.addParameterFileRequested.emit(node))
       menu.addSeparator()
+      menu.addAction('Export SSV Template...', lambda: self.exportSSVTemplateRequested.emit(node))
+      menu.addAction('Export SSM Template...', lambda: self.exportSSMTemplateRequested.emit(node))
+      menu.addSeparator()
       menu.addAction('Rename...', lambda: self.renameRequested.emit(node))
       menu.addAction('Delete', lambda: self.deleteRequested.emit(node))
     elif node.kind in (KIND_COMPONENT, KIND_COMPONENT_TABLE):
@@ -125,6 +130,9 @@ class SystemTreeView(QTreeView):
         menu.addAction('Properties...', lambda: self.propertiesRequested.emit(node))
         menu.addSeparator()
       menu.addAction('Add Parameter File...', lambda: self.addParameterFileRequested.emit(node))
+      menu.addSeparator()
+      menu.addAction('Export SSV Template...', lambda: self.exportSSVTemplateRequested.emit(node))
+      menu.addAction('Export SSM Template...', lambda: self.exportSSMTemplateRequested.emit(node))
       menu.addSeparator()
       menu.addAction('Rename...', lambda: self.renameRequested.emit(node))
       menu.addAction('Delete', lambda: self.deleteRequested.emit(node))
