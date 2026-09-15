@@ -991,7 +991,32 @@ class MainWindow(QMainWindow):
   def _onDeleteRequested(self, node) -> None:
     if not self._activateModelForNode(node):
       return
+    if node.kind == KIND_MODEL or (node.kind == KIND_SYSTEM and self._treeModel.isTopLevelSystem(node)):
+      # Neither the model's own row nor its root System has a cref
+      # SSP.delete() could act on (there's no cref for "the whole SSP" or
+      # for a system's own root) -- "Delete" here means closing the model
+      # entirely instead, the same result either row would give since
+      # nothing else exists at that level once the root system is gone.
+      self._closeModel(self._activeModel)
+      return
     self._deleteCref(self._crefPath(node), node.label)
+
+  def _closeModel(self, model: '_OpenModel') -> None:
+    '''Removes an open model from the GUI entirely -- a tab-close, not a
+    structural edit. Picks whatever open model happens to be next as the
+    new active one (arbitrary order, same as dict iteration order elsewhere
+    in this class); None if this was the last one, which every _activeModel
+    accessor already handles (the same state the app starts in before
+    anything is opened).'''
+    if QMessageBox.question(
+        self, 'Close Model', f'Close model "{model.name}"? Any changes not saved to disk will be lost.'
+    ) != QMessageBox.StandardButton.Yes:
+      return
+    del self._models[model.name]
+    if self._activeModel is model:
+      self._activeModel = next(iter(self._models.values()), None)
+    self._refreshTree()
+    self._updateDiagram()
 
   def _deleteCref(self, path: list[str], displayName: str) -> None:
     '''Shared by tree-driven deletes (Delete key or context menu, via

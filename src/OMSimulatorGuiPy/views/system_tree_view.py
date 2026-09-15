@@ -50,7 +50,7 @@ from OMSimulatorGui.models.system_tree_model import (
     KIND_SYSTEM,
 )
 
-_DELETABLE_KINDS = (KIND_SYSTEM, KIND_COMPONENT, KIND_COMPONENT_TABLE, KIND_CONNECTOR)
+_DELETABLE_KINDS = (KIND_MODEL, KIND_SYSTEM, KIND_COMPONENT, KIND_COMPONENT_TABLE, KIND_CONNECTOR)
 
 
 class SystemTreeView(QTreeView):
@@ -96,10 +96,7 @@ class SystemTreeView(QTreeView):
         self.removeResourceRequested.emit(node)
         event.accept()
         return
-      # Same eligibility as the context menu's own "Delete" action -- see
-      # _onContextMenuRequested (a top-level system can't delete itself).
-      if node is not None and node.kind in _DELETABLE_KINDS and not (
-          node.kind == KIND_SYSTEM and self.model().isTopLevelSystem(node)):
+      if node is not None and node.kind in _DELETABLE_KINDS:
         self.deleteRequested.emit(node)
         event.accept()
         return
@@ -122,8 +119,7 @@ class SystemTreeView(QTreeView):
       menu.addAction('Add Parameter File...', lambda: self.addParameterFileRequested.emit(node))
       menu.addSeparator()
       menu.addAction('Rename...', lambda: self.renameRequested.emit(node))
-      deleteAction = menu.addAction('Delete', lambda: self.deleteRequested.emit(node))
-      deleteAction.setEnabled(not self.model().isTopLevelSystem(node))
+      menu.addAction('Delete', lambda: self.deleteRequested.emit(node))
     elif node.kind in (KIND_COMPONENT, KIND_COMPONENT_TABLE):
       if node.kind == KIND_COMPONENT:
         menu.addAction('Properties...', lambda: self.propertiesRequested.emit(node))
@@ -140,6 +136,8 @@ class SystemTreeView(QTreeView):
       menu.addAction('Remove', lambda: self.removeParameterFileRequested.emit(node))
     elif node.kind == KIND_MODEL:
       menu.addAction('Add Resource...', lambda: self.addResourceRequested.emit(node))
+      menu.addSeparator()
+      menu.addAction('Delete', lambda: self.deleteRequested.emit(node))
     elif node.kind == KIND_RESOURCE:
       menu.addAction('Remove', lambda: self.removeResourceRequested.emit(node))
     else:

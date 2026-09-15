@@ -223,7 +223,10 @@ class SystemTreeModel(QAbstractItemModel):
 
   def isTopLevelSystem(self, node: TreeNode) -> bool:
     '''True if `node` is some open model's own root System (as opposed to a
-    nested one) -- used by the tree view to disable "Delete" on it.'''
+    nested one) -- "Delete" on it means closing the whole model instead of
+    SSP.delete(cref) (there's no cref that addresses a system's own root),
+    same as "Delete" on the model's own row one level up -- see
+    MainWindow._onDeleteRequested.'''
     return node.parent is not None and node.parent.kind == KIND_MODEL
 
   def nodeFromIndex(self, index: QModelIndex) -> TreeNode | None:
