@@ -53,6 +53,7 @@ from PySide6.QtWidgets import QGraphicsPathItem, QGraphicsScene, QGraphicsView, 
 
 from OMSimulator import System
 from OMSimulator.component import Component
+from OMSimulator.componenttable import ComponentTable
 from OMSimulator.connector import ConnectorGeometry
 from OMSimulator.elementgeometry import ElementGeometry
 from OMSimulator.variable import Causality
@@ -501,6 +502,14 @@ class DiagramView(QGraphicsView):
         return
       if isinstance(target, Component):
         self.elementPropertiesRequested.emit(target)
+        return
+      if isinstance(target, ComponentTable):
+        # A result-file lookup table has no editable metadata/parameters of
+        # its own (unlike an FMU Component) -- OMEdit has no double-click
+        # action for one either, and letting this fall through to
+        # super().mouseDoubleClickEvent() is exactly the same "unhandled
+        # double-click corrupts canvas state" hazard fixed above for
+        # connections; consume it here instead.
         return
 
     super().mouseDoubleClickEvent(event)

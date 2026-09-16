@@ -30,11 +30,21 @@
 #
 # See the full OSMC Public License conditions for more details.
 
-'''AddSubModelDialog: browse for an FMU and name the resulting component.'''
+'''AddSubModelDialog: browse for an FMU or a result-file lookup table
+(.csv/.mat) and name the resulting component -- matches OMEdit's own Add
+SubModel, which offers both file kinds through the same dialog/action rather
+than a separate "Add Component Table" action. SSP.addComponent already
+dispatches on the resource's own type (an FMU becomes a Component, a
+.csv/.mat becomes a ComponentTable via SSP._addResource constructing a
+ResultReader for it, whose signals are always Causality.output) -- this
+dialog only needed its file filter widened to actually let the user pick
+one.'''
 
 from pathlib import Path
 
 from PySide6.QtWidgets import QDialog, QDialogButtonBox, QFileDialog, QFormLayout, QHBoxLayout, QLineEdit, QPushButton, QWidget
+
+_FILE_FILTER = 'Component files (*.fmu *.csv *.mat);;FMU files (*.fmu);;Result files (*.csv *.mat)'
 
 
 class AddSubModelDialog(QDialog):
@@ -60,12 +70,12 @@ class AddSubModelDialog(QDialog):
     buttons.rejected.connect(self.reject)
 
     layout = QFormLayout(self)
-    layout.addRow('FMU:', pathRow)
+    layout.addRow('File:', pathRow)
     layout.addRow('Name:', self._nameEdit)
     layout.addRow(buttons)
 
   def _onBrowse(self) -> None:
-    path, _ = QFileDialog.getOpenFileName(self, 'Select FMU', '', 'FMU files (*.fmu)')
+    path, _ = QFileDialog.getOpenFileName(self, 'Select Component', '', _FILE_FILTER)
     if path:
       self._pathEdit.setText(path)
 
@@ -77,7 +87,7 @@ class AddSubModelDialog(QDialog):
     if self._pathEdit.text().strip() and self._nameEdit.text().strip():
       self.accept()
 
-  def fmuPath(self) -> str:
+  def filePath(self) -> str:
     return self._pathEdit.text().strip()
 
   def name(self) -> str:

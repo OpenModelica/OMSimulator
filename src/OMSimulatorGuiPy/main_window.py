@@ -787,9 +787,9 @@ class MainWindow(QMainWindow):
     if dialog.exec() != QDialog.DialogCode.Accepted:
       return
     try:
-      resourceName = f'resources/{Path(dialog.fmuPath()).name}'
+      resourceName = f'resources/{Path(dialog.filePath()).name}'
       if resourceName not in self._ssp.resources:
-        self._ssp.addResource(dialog.fmuPath())
+        self._ssp.addResource(dialog.filePath())
       self._ssp.addComponent(CRef(*path, dialog.name()), resourceName)
       if scenePos is not None:
         self._positionNewElement(dialog.name(), scenePos)
