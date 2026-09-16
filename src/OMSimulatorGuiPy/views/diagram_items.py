@@ -480,32 +480,44 @@ _ROUTE_DETOUR_MARGIN = 20.0  # clearance above both boxes for the "backward" det
 
 
 def defaultRoute(start: QPointF, end: QPointF) -> list[QPointF]:
-  '''The route a connection gets when it has no saved connectionGeometry yet
-  -- an immediate orthogonal elbow, not a raw diagonal, matching OMEdit's own
-  default routing. Also used for the live drag-preview while connecting two
-  ports (DiagramView.mouseMoveEvent recomputes it on every move), so this is
-  what makes the preview reroute itself as the cursor crosses back and forth
+  '''The route a connection gets when it has no saved connectionGeometry yet.
+  Also used for the live drag-preview while connecting two ports
+  (DiagramView.mouseMoveEvent recomputes it on every move), so this is what
+  makes the preview reroute itself as the cursor crosses back and forth
   relative to the source -- not a fixed shape, a function of wherever the
   target currently is.
 
   Ports are always drawn as small rightward-pointing arrows in this app
   regardless of which edge they actually sit on (see this module's
-  docstring). When the target is far enough to the right, a route that
-  leaves the start heading right and arrives at the end heading right too
-  (elbowing at the horizontal midpoint) reads correctly for every port pair,
+  docstring). When the target is far enough to the right, the route is a
+  short stub leaving the source (matching its arrow), a single straight
+  diagonal for the bulk of the distance, then a short stub entering the
+  target (matching its arrow too) -- reads correctly for every port pair,
   and ports already level with each other collapse this to a plain straight
-  line. But when the target sits behind the source (level with or to the
-  left of it -- e.g. connecting a later element's output back to an earlier
-  element's input), that same "exit right, enter right" shape would have to
-  double back through whichever box's own edge it just left. In that case,
-  route around instead: a short stub out of the source (matching its arrow),
-  a detour above both boxes, then a short stub into the target from its own
-  left (matching its arrow too, rather than backing into it from the right).'''
+  line with no stubs at all. A first attempt at this used a full orthogonal
+  elbow (horizontal-vertical-horizontal) instead of the middle diagonal,
+  matching a naive reading of "OMEdit does elbows, not raw diagonals" -- but
+  real user feedback after a demo ("the connection[s] are not straight,
+  omedit is doing something and the connection looks very nice") made clear
+  OMEdit's own default is much closer to this stub+diagonal+stub shape, not
+  a boxy elbow; it also happens to fan out multiple connections sharing one
+  source port cleanly with no special-casing needed, since only the (barely
+  visible, `_ROUTE_STUB`-long) stubs can ever coincide -- the diagonal itself
+  immediately diverges the moment the target's `y` differs.
+
+  When the target sits behind the source (level with or to the left of it --
+  e.g. connecting a later element's output back to an earlier element's
+  input), that same "exit right, enter right" shape would have to double
+  back through whichever box's own edge it just left. In that case, route
+  around instead: a short stub out of the source, a detour above both
+  boxes, then a short stub into the target from its own left (rather than
+  backing into it from the right).'''
   if end.x() >= start.x() + 2 * _ROUTE_STUB:
     if abs(start.y() - end.y()) < 1e-6:
       return [start, end]
-    midX = (start.x() + end.x()) / 2.0
-    return [start, QPointF(midX, start.y()), QPointF(midX, end.y()), end]
+    exitX = start.x() + _ROUTE_STUB
+    enterX = end.x() - _ROUTE_STUB
+    return [start, QPointF(exitX, start.y()), QPointF(enterX, end.y()), end]
 
   detourY = min(start.y(), end.y()) - _ROUTE_DETOUR_MARGIN
   exitX = start.x() + _ROUTE_STUB
