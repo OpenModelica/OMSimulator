@@ -67,7 +67,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from OMSimulator import SSM, SSP, SSV, Connector, CRef, System
+from OMSimulator import SSM, SSP, SSV, Capi, Connector, CRef, System
 from OMSimulator.connection import ConnectionGeometry
 
 from OMSimulatorGui.dialogs.add_connector_dialog import AddConnectorDialog
@@ -357,6 +357,24 @@ class MainWindow(QMainWindow):
     toolsMenu = self.menuBar().addMenu('&Tools')
     optionsAction = toolsMenu.addAction('&Options...')
     optionsAction.triggered.connect(self._onOptionsTriggered)
+
+    helpMenu = self.menuBar().addMenu('&Help')
+    aboutAction = helpMenu.addAction('&About OMSimulatorGui...')
+    aboutAction.triggered.connect(self._onAboutTriggered)
+
+  def _onAboutTriggered(self) -> None:
+    # Capi.getVersion() reads the loaded native library's own version
+    # string directly -- the same one `OMSimulator --version` reports on
+    # the CLI -- rather than OMSimulatorGui's own __version__ (a
+    # configure_file-substituted copy of the same value, kept in sync at
+    # build time but one step further from the actual running library).
+    QMessageBox.about(
+        self, 'About OMSimulatorGui',
+        f'<b>OMSimulatorGui connected to : </b> {Capi.getVersion()}'
+        '<p>Standalone PySide6 GUI for OMSimulator, calling the OMSimulator '
+        'Python API directly in-process -- no omc dependency.</p>'
+        '<p><a href="https://openmodelica.org/doc/OMSimulator/master/OMSimulator/UsersGuide/html/">'
+        "OMSimulator's User Guide</a></p>")
 
   # --- Active-model properties -------------------------------------------------
   # Thin accessors over self._activeModel, so the rest of this class can keep
