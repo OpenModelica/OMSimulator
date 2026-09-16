@@ -1,0 +1,8 @@
+# Extra dependencies for OMSimulatorGuiPy only -- deliberately not folded
+# into src/pip/pyproject.toml's core OMSimulator dependency list, since the
+# CLI/API should stay usable without pulling in a GUI toolkit and a
+# plotting library. No ZMQ dependency: the simulation subprocess
+# (simulation/sim_worker.py) talks plain text over stdin/stdout instead.
+PySide6
+pyqtgraph
+scipy
