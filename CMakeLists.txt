@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.14)
 project(OMSimulator)
 
 # Options to enable/disable specific components
-option(OMS_ENABLE_OMSimulatorGui "Enable OMSimulator GUI component" OFF)
+option(OMS_ENABLE_OMSimulatorGui "Enable the PySide6-based OMSimulator GUI" OFF)
 option(OMS_ENABLE_PIP "Enable pip component" OFF)
 option(OMS_ENABLE_LOCAL_PIP "Prepare pip package using local OMSimulator build" OFF)
 option(OMS_ENABLE_TESTSUITE "Enable the OMSimulator testsuite" OFF)

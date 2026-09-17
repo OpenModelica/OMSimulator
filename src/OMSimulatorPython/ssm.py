@@ -88,9 +88,6 @@ class SSM:
     if not filename:
       raise ValueError("Filename cannot be empty")
 
-    if not self.mappingEntry:
-      return
-
     ssm_node = ET.Element(namespace.tag("ssm", "ParameterMapping"),
                                    nsmap={"ssc": "http://ssp-standard.org/SSP1/SystemStructureCommon",
                                           "ssm": "http://ssp-standard.org/SSP1/SystemStructureParameterMapping"},

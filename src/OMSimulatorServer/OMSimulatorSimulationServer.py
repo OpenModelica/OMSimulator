@@ -178,7 +178,7 @@ class Server:
     #   print("enable signal", signal, flush=True)
     #   print(f"Value for signal {signal}: {inst_model.getValue(signal)}")
 
-    while True:
+    while self._alive:
       if self._pause:
         time.sleep(0.3)
       else:
@@ -204,12 +204,17 @@ class Server:
           inst_model.doStep()
           time_ = float(inst_model.getTime())
           #print(f"time: {time_} : {stopTime}", flush=True)
-          if time_ >= stopTime and self._alive:
+          if time_ >= stopTime:
             break
 
     inst_model.terminate()
     inst_model.delete()
-    self.pub_msg('status', {'progress': 100})
+    if self._alive:
+      # Only reached stopTime naturally exits with self._alive still True --
+      # an 'end' request clears it before the loop breaks (see the while
+      # loop above), so a deliberate Stop doesn't get reported as 100%
+      # complete.
+      self.pub_msg('status', {'progress': 100})
 
 def _main():
   # parse command-line arguments

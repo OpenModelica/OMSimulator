@@ -665,7 +665,11 @@ class System:
       (end_element, end_connector) = cref2.split()
 
       # Add the connections to top level system
-      self.addConnection(start_element, start_connector, end_element, end_connector)
+      # str()-convert: CRef.split() returns CRef objects, but Connection
+      # stores/compares startElement/startConnector as plain strings
+      # everywhere else (XML import, _deleteConnection) -- leaving these as
+      # CRef silently breaks deleteConnection's equality check later.
+      self.addConnection(str(start_element), str(start_connector), str(end_element), str(end_connector))
 
   def _deleteConnection(self, crefA: CRef, crefB: CRef) -> None:
     """Deletes a connection from the system."""

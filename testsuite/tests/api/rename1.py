@@ -31,9 +31,9 @@ model.addComponent(CRef('default', 'sub-system', 'Add1'), 'resources/Add.fmu')
 model.addComponent(CRef('default', 'sub-system', 'Gain1'), 'resources/Gain.fmu')
 
 model.addConnection(CRef('default', 'input1'), CRef('default', 'Add1', 'u1'))
-model.addConnection(CRef('default', 'Gain1', 'y'), CRef('default', 'Add1', 'u1'))
+model.addConnection(CRef('default', 'Gain1', 'y'), CRef('default', 'Add1', 'u2'))
 model.addConnection(CRef('default', 'sub-system', 'input2'), CRef('default', 'sub-system', 'Add1', 'u1'))
-model.addConnection(CRef('default', 'sub-system', 'Gain1', 'y'), CRef('default', 'sub-system', 'Add1', 'u1'))
+model.addConnection(CRef('default', 'sub-system', 'Gain1', 'y'), CRef('default', 'sub-system', 'Add1', 'u2'))
 
 model.list()
 model.rename(CRef('default', 'input1'), 'I1')
@@ -82,7 +82,7 @@ model.list()
 ## |-- |-- |-- |-- |-- |-- |-- |-- (k, Causality.parameter, SignalType.Real, 1, 'Gain value multiplied with input signal')
 ## |-- |-- |-- |-- |-- Connections:
 ## |-- |-- |-- |-- |-- |-- .input2 -> Add1.u1
-## |-- |-- |-- |-- |-- |-- Gain1.y -> Add1.u1
+## |-- |-- |-- |-- |-- |-- Gain1.y -> Add1.u2
 ## |-- |-- |-- |-- FMU: Add1 'None'
 ## |-- |-- |-- |-- |-- path: resources/Add.fmu
 ## |-- |-- |-- |-- |-- Connectors:
@@ -99,7 +99,7 @@ model.list()
 ## |-- |-- |-- |-- |-- |-- (k, Causality.parameter, SignalType.Real, 1, 'Gain value multiplied with input signal')
 ## |-- |-- |-- Connections:
 ## |-- |-- |-- |-- .input1 -> Add1.u1
-## |-- |-- |-- |-- Gain1.y -> Add1.u1
+## |-- |-- |-- |-- Gain1.y -> Add1.u2
 ## |-- UnitDefinitions:
 ## |-- |-- Unit: 1
 ## |-- |-- |-- BaseUnit:
@@ -142,7 +142,7 @@ model.list()
 ## |-- |-- |-- |-- |-- |-- |-- |-- (k, Causality.parameter, SignalType.Real, 1, 'Gain value multiplied with input signal')
 ## |-- |-- |-- |-- |-- Connections:
 ## |-- |-- |-- |-- |-- |-- .I2 -> Adder2.u1
-## |-- |-- |-- |-- |-- |-- Multiplier2.y -> Adder2.u1
+## |-- |-- |-- |-- |-- |-- Multiplier2.y -> Adder2.u2
 ## |-- |-- |-- |-- FMU: Adder1 'None'
 ## |-- |-- |-- |-- |-- path: resources/Add.fmu
 ## |-- |-- |-- |-- |-- Connectors:
@@ -159,7 +159,7 @@ model.list()
 ## |-- |-- |-- |-- |-- |-- (k, Causality.parameter, SignalType.Real, 1, 'Gain value multiplied with input signal')
 ## |-- |-- |-- Connections:
 ## |-- |-- |-- |-- .I1 -> Adder1.u1
-## |-- |-- |-- |-- Multiplier1.y -> Adder1.u1
+## |-- |-- |-- |-- Multiplier1.y -> Adder1.u2
 ## |-- UnitDefinitions:
 ## |-- |-- Unit: 1
 ## |-- |-- |-- BaseUnit:
