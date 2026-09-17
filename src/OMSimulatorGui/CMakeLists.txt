@@ -1,4 +1,4 @@
-project(OMSimulatorGuiPy)
+project(OMSimulatorGui)
 
 ## Pure Python, no compile step -- imports the already-installed OMSimulator
 ## package at runtime. Mirrors OMSimulatorPython/CMakeLists.txt's pattern.

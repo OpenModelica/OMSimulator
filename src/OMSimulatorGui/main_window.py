@@ -191,7 +191,7 @@ class _OpenModel:
 # Global (QSettings-persisted, Tools > Options) simulation preferences -- see
 # MainWindow._onOptionsTriggered/_onSimulateTriggered.
 _SETTINGS_ORG = 'OpenModelica'
-_SETTINGS_APP = 'OMSimulatorGuiPy'
+_SETTINGS_APP = 'OMSimulatorGui'
 _SETTINGS_KEY_WORKING_DIR = 'simulation/workingDirectory'
 _SETTINGS_KEY_CLI_OPTIONS = 'simulation/commandLineOptions'
 

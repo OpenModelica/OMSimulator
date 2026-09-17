@@ -30,7 +30,7 @@
 #
 # See the full OSMC Public License conditions for more details.
 
-'''Standalone simulation worker for OMSimulatorGuiPy: instantiates and steps
+'''Standalone simulation worker for OMSimulatorGui: instantiates and steps
 an already-exported .ssp directly via the OMSimulatorPython API, reporting
 progress as plain text lines on stdout and accepting PAUSE/RESUME/STOP
 commands as plain text lines on stdin.
@@ -98,7 +98,7 @@ def _isAlive() -> bool:
 
 
 def _main() -> int:
-  parser = argparse.ArgumentParser(description='OMSimulatorGuiPy simulation worker')
+  parser = argparse.ArgumentParser(description='OMSimulatorGui simulation worker')
   parser.add_argument('--model', required=True, help='the .ssp to simulate')
   parser.add_argument('--working-directory', default=None,
                        help='sets the native working directory (relative result files land here)')

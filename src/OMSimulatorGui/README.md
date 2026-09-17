@@ -24,7 +24,7 @@ requirements.txt          PySide6/pyqtgraph/scipy -- kept out of src/pip's core 
 Disabled by default. Enable it at configure time:
 
 ```bash
-cmake -S . -B build -DOMS_ENABLE_OMSimulatorGuiPy=ON
+cmake -S . -B build -DOMS_ENABLE_OMSimulatorGui=ON
 cmake --build build --target install
 ```
 
@@ -49,5 +49,5 @@ time (or after adding/removing a file, since that changes `CMakeLists.txt`'s own
 is enough and much faster:
 
 ```bash
-cmake -P src/OMSimulatorGuiPy/cmake_install.cmake
+cmake -P src/OMSimulatorGui/cmake_install.cmake
 ```
