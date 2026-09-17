@@ -81,7 +81,12 @@ class AddSubModelDialog(QDialog):
 
   def _onPathChanged(self, text: str) -> None:
     if not self._nameEdit.text().strip() and text.strip():
-      self._nameEdit.setText(Path(text).stem)
+      # Path(text).stem alone would default to the FMU's full dotted export
+      # name (e.g. "Modelica.Blocks.Math.Add3" for a Modelica-exported
+      # Add3.fmu), not just the class's own short name -- take the last
+      # dot-separated segment instead, matching what a user actually wants
+      # to see as a component name in the tree/canvas/connection labels.
+      self._nameEdit.setText(Path(text).stem.rsplit('.', 1)[-1])
 
   def _onAccept(self) -> None:
     if self._pathEdit.text().strip() and self._nameEdit.text().strip():
