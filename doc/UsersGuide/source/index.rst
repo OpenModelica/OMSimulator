@@ -16,7 +16,7 @@ OMSimulator's documentation
   OMSimulatorLib
   OMSimulatorPython3
   OpenModelicaScripting
-  OMEdit
+  GraphicalModelling
 
 .. only :: html
 

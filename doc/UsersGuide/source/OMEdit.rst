@@ -1,8 +1,8 @@
 .. index:: OMEdit
 .. _omedit-graphical-modelling :
 
-Graphical Modelling
-===================
+OMEdit
+======
 
 OMSimulator provides a graphical modelling environment through OMEdit, the
 OpenModelica Connection Editor. This feature requires a full OpenModelica
