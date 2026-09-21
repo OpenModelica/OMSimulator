@@ -71,6 +71,7 @@ class InstantiatedModel:
     self.modelName = "model" ## create random name, but we cannot commits test as jenkins will gerate new model name
     self.apiCall = []
     self.mappedCrefs = {}  # Store mapped CRefs associated with their export names
+    self.boundaryConnections = []  # system/subsystem boundary-connector pass-throughs, see _applyBoundaryConnections
     self.system = system
     self.ssdName = ssdName
     self.resources = resources
@@ -251,6 +252,13 @@ class InstantiatedModel:
     ## iterate start values from sub-system both inline and ssv files if exist
     self.setStartValuesFromElements(self.system.elements, self.system.name)
 
+    ## resolve boundary-connector pass-throughs (see System.processElements)
+    ## after start values are in place, so the copied value is the real one.
+    ## Kept as self.boundaryConnections so a later setValue() can re-resolve
+    ## them too (see setValue below).
+    self.boundaryConnections = config.get("boundary connections", [])
+    self._applyBoundaryConnections(self.boundaryConnections)
+
     self.apiCall.append(f'oms_instantiate("{self.modelName}")')
     status = Capi.instantiate(self.modelName)
     if status != Status.ok:
@@ -389,6 +397,60 @@ class InstantiatedModel:
       case _:
         raise TypeError(f"Unsupported type: {type}")
 
+  def _applyBoundaryConnections(self, boundary_connections: list):
+    """Resolve pure system/subsystem boundary-connector connections (see
+    System.processElements) by copying the value across instead of a live
+    oms_addConnection, which OMSimulator's WC master algorithm rejects for
+    an edge between two connectors that aren't a component's own.
+
+    Applied once per connection, repeated len(boundary_connections) times so
+    a chain of nested pass-throughs (root -> subsystem -> subsystem) fully
+    settles regardless of declaration order; safe since the connection graph
+    is a DAG (SSP connections cannot form a cycle back to their own start)."""
+    for _ in range(len(boundary_connections)):
+      for connection in boundary_connections:
+        start = ".".join(connection["start element"] + [connection["start connector"]])
+        end = ".".join(connection["end element"] + [connection["end connector"]])
+        if start not in self.mappedCrefs:
+          raise KeyError(f"No mapping found for {start}")
+        if end not in self.mappedCrefs:
+          raise KeyError(f"No mapping found for {end}")
+        self._copyValue(self.mappedCrefs[start], self.mappedCrefs[end])
+
+  def _copyValue(self, source_path: str, target_path: str):
+    type, status = Capi.getVariableType(source_path)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to get variable type for {source_path}: {status}")
+
+    match SignalType(type):
+      case SignalType.Real | SignalType.Float32 | SignalType.Float64:
+        value, status = Capi.getReal(source_path)
+        if status != Status.ok:
+          raise RuntimeError(f"Failed to get real value for {source_path}: {status}")
+        self._setReal(target_path, value)
+      case SignalType.Integer | SignalType.Int8 | SignalType.UInt8 | SignalType.Int16 | SignalType.UInt16 | SignalType.Int32 | SignalType.UInt32 | SignalType.Int64 | SignalType.UInt64:
+        value, status = Capi.getInteger(source_path)
+        if status != Status.ok:
+          raise RuntimeError(f"Failed to get integer value for {source_path}: {status}")
+        self._setInteger(target_path, value)
+      case SignalType.Boolean:
+        value, status = Capi.getBoolean(source_path)
+        if status != Status.ok:
+          raise RuntimeError(f"Failed to get boolean value for {source_path}: {status}")
+        self._setBoolean(target_path, value)
+      case SignalType.String:
+        value, status = Capi.getString(source_path)
+        if status != Status.ok:
+          raise RuntimeError(f"Failed to get string value for {source_path}: {status}")
+        self._setString(target_path, value)
+      case SignalType.Enumeration:
+        value, status = Capi.getInteger(source_path)
+        if status != Status.ok:
+          raise RuntimeError(f"Failed to get enumeration value for {source_path}: {status}")
+        self._setInteger(target_path, value)
+      case _:
+        raise TypeError(f"Unsupported type: {type}")
+
   def _addConnectorsRecursive(self, system: System, system_name: str):
     """Walk the system tree and add connectors for every system/subsystem
     that was actually instantiated (i.e. present in mappedCrefs)."""
@@ -511,17 +573,23 @@ class InstantiatedModel:
     ## TODO handle FMi3 data types directly, like Float64, Int32,etc..
     match SignalType(type):
       case SignalType.Real:  # oms_signal_type_real
-        return self._setReal(value_path, float(value_))
+        result = self._setReal(value_path, float(value_))
       case SignalType.Integer:  # oms_signal_type_integer
-        return self._setInteger(value_path, int(value_))
+        result = self._setInteger(value_path, int(value_))
       case SignalType.Boolean:  # oms_signal_type_boolean
-        return self._setBoolean(value_path, bool(value_))
+        result = self._setBoolean(value_path, bool(value_))
       case SignalType.String:  # oms_signal_type_string
-        return self._setString(value_path, str(value_))
+        result = self._setString(value_path, str(value_))
       case SignalType.Enumeration:  # oms_signal_type_enumeration
-        return self._setInteger(value_path, int(value_))  # Treat enumeration as integer
+        result = self._setInteger(value_path, int(value_))  # Treat enumeration as integer
       case _:
         raise TypeError(f"Unsupported type: {type}")
+
+    ## re-resolve boundary-connector pass-throughs (see System.processElements
+    ## and _applyBoundaryConnections) in case `cref` feeds one -- a one-time
+    ## copy at instantiate() time alone would go stale for a later setValue().
+    self._applyBoundaryConnections(self.boundaryConnections)
+    return result
 
   def _setReal(self, mapped_cref: str, value: float):
     self.apiCall.append(f'oms_setReal("{mapped_cref}", {value})')

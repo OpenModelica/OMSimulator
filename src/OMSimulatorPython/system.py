@@ -51,6 +51,11 @@ from OMSimulator import Capi, CRef, namespace, utils
 
 logger = logging.getLogger(__name__)
 
+# Solver methods that produce a WC (weak coupling / master algorithm) unit;
+# shared by generateJson's own-unit validation and processElements' fallback
+# routing of connections that cannot be tied to a single component solver.
+_WC_METHODS = {"oms_ma", "oms_mav", "oms_mav2"}
+
 class SystemGeometry:
   def __init__(self, x1 : float | None = None, y1 : float | None = None, x2 : float | None = None, y2 : float | None = None):
     self._x1 = x1
@@ -936,9 +941,13 @@ class System:
     componentSolver = {}
     # dict to group connections by solver unit
     solver_connections = defaultdict(list)
+    # connections where neither endpoint is a component (a pure system/
+    # subsystem boundary-connector pass-through); resolved by value-copy
+    # instead of a live oms_addConnection, see the loop in processElements
+    boundary_connections = []
 
     # process the elements
-    self.processElements(self.elements, self.connections, data, solver_groups, componentSolver, solver_connections, resources, tempdir)
+    self.processElements(self.elements, self.connections, data, solver_groups, componentSolver, solver_connections, resources, tempdir, boundary_connections)
 
     ## group the simulation units
     for solver, components in solver_groups.items():
@@ -965,8 +974,9 @@ class System:
           raise ValueError(f"Solver '{solver}' not found in solver list.")
       data["simulation units"].append(unit)
 
+    data["boundary connections"] = boundary_connections
+
     # Validate: at most one WC-method solver unit is allowed (nested WC under WC is not supported)
-    _WC_METHODS = {"oms_ma", "oms_mav", "oms_mav2"}
     wc_units = [u for u in data["simulation units"] if u.get("solver", {}).get("method") in _WC_METHODS]
     if len(wc_units) > 1:
       wc_names = [u["solver"]["name"] for u in wc_units]
@@ -989,7 +999,7 @@ class System:
     json_string = json.dumps(data, indent=2)
     return json_string
 
-  def processElements(self, elements_dict: dict, connections: list, data: dict, solver_groups : defaultdict, componentSolver : dict, solver_connections : defaultdict, resources :dict, tempdir : str, systemName = None):
+  def processElements(self, elements_dict: dict, connections: list, data: dict, solver_groups : defaultdict, componentSolver : dict, solver_connections : defaultdict, resources :dict, tempdir : str, boundary_connections: list, systemName = None):
     """Processes the elements and connections in the system."""
     for key, element in elements_dict.items():
       if isinstance(element, Component):
@@ -1071,7 +1081,7 @@ class System:
         })
       elif isinstance(element, System):
         # recurse into subsystems
-        self.processElements(element.elements, element.connections, data, solver_groups, componentSolver, solver_connections, resources, tempdir, systemName=str(element.name))
+        self.processElements(element.elements, element.connections, data, solver_groups, componentSolver, solver_connections, resources, tempdir, boundary_connections, systemName=str(element.name))
 
     for connection in connections:
       startElement = str(connection.startElement)
@@ -1079,6 +1089,29 @@ class System:
       startSolver = componentSolver.get(startElement, None)
       endSolver = componentSolver.get(endElement, None)
 
+      connection_info = {
+            "start element": [self.name] + ([systemName] if systemName else []) + ([startElement] if startElement else []),
+            "start connector": str(connection.startConnector),
+            "end element": [self.name] + ([systemName] if systemName else []) + ([endElement] if endElement else []),
+            "end connector": str(connection.endConnector)
+        }
+
+      if startSolver is None and endSolver is None:
+        # Neither endpoint is a component -- a pure top-level/subsystem
+        # boundary-connector pass-through (e.g. a top-level input exposing a
+        # subsystem's own input). OMSimulator's WC master algorithm has no
+        # concept of an input-to-input edge and rejects it outright
+        # ("[updateDependencyGraphs] failed for ..." at initialize, confirmed
+        # by direct Capi testing), so this is never turned into a live
+        # oms_addConnection. Resolved instead in InstantiatedModel by
+        # copying the value across after start values are applied.
+        boundary_connections.append(connection_info)
+        continue
+
+      ##TODO: connections between components on two DIFFERENT solver units
+      ## (a genuine cross-unit connection) still resolve startSolver !=
+      ## endSolver here and fall through to solver=None below, which is
+      ## silently dropped -- same underlying gap, not covered by this fix.
       solver = None
       if startSolver == endSolver and startSolver is not None:
         solver = startSolver
@@ -1086,13 +1119,7 @@ class System:
         solver = endSolver
       elif endSolver is None and startSolver is not None:
         solver = startSolver
-      ##TODO group components and connection without solver information, right now they are grouped under NONE category
-      connection_info = {
-            "start element": [self.name] + ([systemName] if systemName else []) + ([startElement] if startElement else []),
-            "start connector": str(connection.startConnector),
-            "end element": [self.name] + ([systemName] if systemName else []) + ([endElement] if endElement else []),
-            "end connector": str(connection.endConnector)
-        }
+
       ## add linear transformation info if available
       if connection.linearTransformation:
         connection_info["linear transformation"] = {
