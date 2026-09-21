@@ -44,12 +44,18 @@ from enum import Enum
 import warnings
 
 class SolverType(Enum):
-  '''Enumeration for solver method to map with c api.'''
+  '''Enumeration for solver method to map with c api.
+
+  These are the values of oms_solver_enu_t in include/OMSimulator/Types.h and
+  have to be kept in step with it: inserting a solver there renumbers the ones
+  after it, and setSolver() then quietly selects the wrong one.
+  '''
   euler = 2
   cvode = 3
-  oms_ma = 6
-  oms_mav = 7
-  oms_mav2 = 8
+  ida = 4       # DAE mode (fmi-ls-dae)
+  oms_ma = 7
+  oms_mav = 8
+  oms_mav2 = 9
 class SystemType(Enum):
   '''Enumeration for system type to map with c api.'''
   wc = 1

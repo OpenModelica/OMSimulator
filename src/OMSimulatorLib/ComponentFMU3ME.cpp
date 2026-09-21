@@ -188,6 +188,23 @@ oms::Component* oms::ComponentFMU3ME::NewComponent(const oms::ComRef& cref, oms:
     return NULL;
   }
 
+  // fmi-ls-dae: a Model Exchange FMU may carry a DAE formulation beside its ODE
+  // face. Nothing changes until the system asks for DAE mode; here we only learn
+  // that the FMU has one, and remember the state derivatives it pairs with its
+  // states (the model description's own <ContinuousStateDerivative> order, which
+  // is the order fmi3GetContinuousStates uses).
+  if (component->lsDae.load(tempDir.generic_string()))
+  {
+    const int n = fmi3_getNumberOfModelStructureContinuousStateDerivatives(component->fmu);
+    for (int i = 0; i < n; ++i)
+      component->derivativeVrs.push_back(
+          fmi3_getModelStructureValueReference(fmi3_getModelStructureContinuousStateDerivative(component->fmu, i)));
+    logInfo("FMU \"" + std::string(cref) + "\" carries a DAE formulation (fmi-ls-dae " +
+            component->lsDae.getVersion() + "): " + std::to_string(component->lsDae.getResiduals().size()) +
+            " residuals over " + std::to_string(component->derivativeVrs.size()) + " states and " +
+            std::to_string(component->lsDae.getAlgebraicVariables().size()) + " algebraic variables");
+  }
+
   // update FMU info
   component->fmuInfo.update(oms_component_fmu3, component->fmu);
   component->omsfmi3logger = oms::fmi3logger;
@@ -472,6 +489,22 @@ void oms::ComponentFMU3ME::dumpInitialUnknowns()
   logInfo("[" + std::string(getCref()) + ": " + getPath() + "] The FMU contains " + std::to_string(n) + " initial unknowns: " + str);
 }
 
+/**
+ * \\brief The variable a ModelStructure dependency names.
+ *
+ * FMI 3.0 changed this from FMI 2.0: a `dependencies` list holds **value
+ * references**, not one-based indices into the variable list. Reading them as
+ * indices silently wires the dependency graph to the wrong variables, and fails
+ * outright on value reference 0, which is a perfectly ordinary one.
+ */
+const oms::Variable* oms::ComponentFMU3ME::variableByFMI3ValueReference(unsigned int vr) const
+{
+  for (const auto& v : allVariables)
+    if (v.getValueReferenceFMI3() == vr)
+      return &v;
+  return nullptr;
+}
+
 oms_status_enu_t oms::ComponentFMU3ME::initializeDependencyGraph_initialUnknowns()
 {
   if (initialUnknownsGraph.getEdges().connections.size() > 0)
@@ -558,15 +591,16 @@ oms_status_enu_t oms::ComponentFMU3ME::initializeDependencyGraph_initialUnknowns
     else
     {
       //dependency exist
-      for (const auto &index : it.second)
+      for (const auto &vr : it.second)
       {
-        if (index < 1 || index > allVariables.size())
+        const Variable* dependency = variableByFMI3ValueReference(vr);
+        if (!dependency)
         {
-          logWarning("Initial unknown " + std::string(initialUnknownsGraph.getNodes()[i]) + " has bad dependency on variable with index " + std::to_string(index) + " which couldn't be resolved");
+          logWarning("Initial unknown " + std::string(initialUnknownsGraph.getNodes()[i]) + " has a dependency on value reference " + std::to_string(vr) + " which couldn't be resolved");
           return logError(std::string(getCref()) + ": Erroneous initial unknowns detected in modelDescription.xml\nUse flag --ignoreInitialUnknowns=true to ignore all initial unknowns, but this can cause inflated loop size.");
         }
-        logDebug(std::string(getCref()) + ": " + getPath() + " initial unknown " + std::string(initialUnknownsGraph.getNodes()[i]) + " depends on " + std::string(allVariables[index - 1]));
-        initialUnknownsGraph.addEdge(allVariables[index - 1].makeConnector(this->getFullCref()), initialUnknownsGraph.getNodes()[i]);
+        logDebug(std::string(getCref()) + ": " + getPath() + " initial unknown " + std::string(initialUnknownsGraph.getNodes()[i]) + " depends on " + std::string(*dependency));
+        initialUnknownsGraph.addEdge(dependency->makeConnector(this->getFullCref()), initialUnknownsGraph.getNodes()[i]);
       }
     }
     i = i + 1;
@@ -608,15 +642,16 @@ oms_status_enu_t oms::ComponentFMU3ME::initializeDependencyGraph_outputs()
     }
     else
     {
-      for (const auto &index : it.second)
+      for (const auto &vr : it.second)
       {
-        if (index < 1 || index > allVariables.size())
+        const Variable* dependency = variableByFMI3ValueReference(vr);
+        if (!dependency)
         {
-          logWarning("Output " + std::string(output) + " has bad dependency on variable with index " + std::to_string(index) + " which couldn't be resolved");
+          logWarning("Output " + std::string(output) + " has a dependency on value reference " + std::to_string(vr) + " which couldn't be resolved");
           return logError(std::string(getCref()) + ": erroneous dependencies detected in modelDescription.xml");
         }
-        logDebug(std::string(getCref()) + ": " + getPath() + " output " + std::string(output) + " depends on " + std::string(allVariables[index - 1]));
-        outputsGraph.addEdge(allVariables[index - 1].makeConnector(this->getFullCref()), output.makeConnector(this->getFullCref()));
+        logDebug(std::string(getCref()) + ": " + getPath() + " output " + std::string(output) + " depends on " + std::string(*dependency));
+        outputsGraph.addEdge(dependency->makeConnector(this->getFullCref()), output.makeConnector(this->getFullCref()));
       }
     }
     i = i + 1;
@@ -633,6 +668,13 @@ oms_status_enu_t oms::ComponentFMU3ME::instantiate()
     logInfo("fmi3Instantiate() failed");
     exit(1);
   }
+
+  // fmi-ls-dae: the switch is a structural parameter, so Configuration Mode is
+  // where it goes — before the start values and before initialization. An FMU
+  // that declares a DAE formulation is used as one: its residuals are what it
+  // has, and its ODE face need not even be implemented.
+  if (lsDae.isValid() && oms_status_ok != enableDaeMode())
+    return oms_status_error;
 
   // set start values from local resources
   if (values.hasResources())
@@ -881,6 +923,10 @@ oms_status_enu_t oms::ComponentFMU3ME::initialize()
   // get number of event indicators after initialize
   fmistatus = fmi3_getNumberOfEventIndicators(fmu, &nEventIndicators);
   if (fmi3OK != fmistatus) return logError_FMUCall("fmi3_getNumberOfEventIndicators", this);
+
+  // fmi-ls-dae: now that the state count is known, the DAE system can be checked
+  if (oms_status_ok != validateDaeMode())
+    return oms_status_error;
 
   // fmi3_exitInitialization_mode leaves FMU in event mode
   if (oms_status_ok != doEventIteration())
@@ -2050,6 +2096,147 @@ oms_status_enu_t oms::ComponentFMU3ME::getDerivatives(double* derivatives)
   fmi3Status fmistatus = fmi3_getContinuousStateDerivatives(fmu, derivatives, getNumberOfContinuousStates());
   if (fmi3OK != fmistatus)
     return logError_FMUCall("fmi3_getContinuousStateDerivatives", this);
+  return oms_status_ok;
+}
+
+/**
+ * \brief fmi-ls-dae: switch the FMU into DAE mode.
+ *
+ * The switch is a structural parameter, so Configuration Mode is where it is
+ * set — before initialization, and only once. After this the FMU no longer owes
+ * the derivatives and the algebraic variables: the master sets them and reads
+ * the residuals of F(t, x, x', z) = 0 back.
+ */
+oms_status_enu_t oms::ComponentFMU3ME::enableDaeMode()
+{
+  CallClock callClock(clock);
+
+  if (!lsDae.isValid())
+    return logError("FMU \"" + std::string(getFullCref()) + "\" carries no fmi-ls-dae manifest, so it has no DAE mode");
+
+  if (daeMode)
+    return oms_status_ok;
+
+  if (!lsDae.isFullyImplicit())
+    return logError("fmi-ls-dae: FMU \"" + std::string(getFullCref()) +
+                    "\" states a semi-explicit DAE, which is not supported yet");
+
+  // The number of continuous states is only known once the FMU has left
+  // Initialization Mode, which is long after Configuration Mode; the checks that
+  // need it are in validateDaeMode(), called from initialize().
+
+  if (fmi3OK != fmi3_enterConfigurationMode(fmu))
+    return logError_FMUCall("fmi3_enterConfigurationMode", this);
+
+  const fmi3ValueReference vr = lsDae.getEnableValueReference();
+  const fmi3Boolean on = fmi3True;
+  if (fmi3OK != fmi3_setBoolean(fmu, &vr, 1, &on, 1))
+  {
+    fmi3_exitConfigurationMode(fmu);
+    return logError_FMUCall("fmi3_setBoolean (the fmi-ls-dae DAE-mode parameter)", this);
+  }
+
+  if (fmi3OK != fmi3_exitConfigurationMode(fmu))
+    return logError_FMUCall("fmi3_exitConfigurationMode", this);
+
+  daeMode = true;
+  return oms_status_ok;
+}
+
+/**
+ * \brief The fmi-ls-dae checks that need the state count, which the FMU only
+ *        reports once it has left Initialization Mode.
+ */
+oms_status_enu_t oms::ComponentFMU3ME::validateDaeMode()
+{
+  if (!daeMode)
+    return oms_status_ok;
+
+  // The state each derivative belongs to: a residual's dependency on a state and
+  // on its derivative are the same column of the Jacobian, because one
+  // difference quotient carries dF/dx + cj*dF/dder(x) together.
+  // The `derivative` attribute is a value reference in FMI 3.0, where FMI 2.0 had
+  // an index — the same change as the ModelStructure dependencies. fmi4c hands
+  // the raw attribute through under its FMI 2.0 name, so what Variable calls the
+  // state index is the state's value reference here.
+  stateVrs.clear();
+  for (const fmi3ValueReference vr : derivativeVrs)
+  {
+    const Variable* der = variableByFMI3ValueReference(vr);
+    const Variable* state = der ? variableByFMI3ValueReference(der->getStateIndex()) : nullptr;
+    if (!state)
+    {
+      logWarning("fmi-ls-dae: FMU \"" + std::string(getFullCref()) + "\" does not say which state the derivative at value reference " +
+                 std::to_string(vr) + " belongs to; the DAE Jacobian will be treated as dense");
+      stateVrs.clear();
+      break;
+    }
+    stateVrs.push_back(state->getValueReferenceFMI3());
+  }
+
+  if (derivativeVrs.size() != getNumberOfContinuousStates())
+    return logError("fmi-ls-dae: FMU \"" + std::string(getFullCref()) + "\" has " +
+                    std::to_string(getNumberOfContinuousStates()) + " continuous states but its <ModelStructure> lists " +
+                    std::to_string(derivativeVrs.size()) + " state derivatives");
+
+  // The implicit form's residuals cover the state rows too, so a square system
+  // wants one residual per state and per algebraic variable.
+  const size_t wanted = getNumberOfContinuousStates() + lsDae.getAlgebraicVariables().size();
+  if (lsDae.getResiduals().size() != wanted)
+    return logError("fmi-ls-dae: FMU \"" + std::string(getFullCref()) + "\" states an implicit DAE with " +
+                    std::to_string(getNumberOfContinuousStates()) + " states and " +
+                    std::to_string(lsDae.getAlgebraicVariables().size()) + " algebraic variables, which wants " +
+                    std::to_string(wanted) + " residuals, but lists " + std::to_string(lsDae.getResiduals().size()) +
+                    "; only a square system can be integrated");
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::ComponentFMU3ME::getDaeResiduals(double* residuals)
+{
+  CallClock callClock(clock);
+  const std::vector<uint32_t>& vrs = lsDae.getResiduals();
+  if (vrs.empty())
+    return oms_status_ok;
+  fmi3Status fmistatus = fmi3_getFloat64(fmu, vrs.data(), vrs.size(), residuals, vrs.size());
+  if (fmi3OK != fmistatus)
+    return logError_FMUCall("fmi3_getFloat64 (fmi-ls-dae residuals)", this);
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::ComponentFMU3ME::getAlgebraicVariables(double* values)
+{
+  CallClock callClock(clock);
+  const std::vector<uint32_t>& vrs = lsDae.getAlgebraicVariables();
+  if (vrs.empty())
+    return oms_status_ok;
+  fmi3Status fmistatus = fmi3_getFloat64(fmu, vrs.data(), vrs.size(), values, vrs.size());
+  if (fmi3OK != fmistatus)
+    return logError_FMUCall("fmi3_getFloat64 (fmi-ls-dae algebraic variables)", this);
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::ComponentFMU3ME::setAlgebraicVariables(const double* values)
+{
+  CallClock callClock(clock);
+  const std::vector<uint32_t>& vrs = lsDae.getAlgebraicVariables();
+  if (vrs.empty())
+    return oms_status_ok;
+  fmi3Status fmistatus = fmi3_setFloat64(fmu, vrs.data(), vrs.size(), values, vrs.size());
+  if (fmi3OK != fmistatus)
+    return logError_FMUCall("fmi3_setFloat64 (fmi-ls-dae algebraic variables)", this);
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::ComponentFMU3ME::setDerivatives(const double* derivativeValues)
+{
+  CallClock callClock(clock);
+  if (derivativeVrs.empty())
+    return oms_status_ok;
+  fmi3Status fmistatus = fmi3_setFloat64(fmu, derivativeVrs.data(), derivativeVrs.size(),
+                                         derivativeValues, derivativeVrs.size());
+  if (fmi3OK != fmistatus)
+    return logError_FMUCall("fmi3_setFloat64 (state derivatives)", this);
   return oms_status_ok;
 }
 

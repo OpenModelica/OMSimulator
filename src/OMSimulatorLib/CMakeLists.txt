@@ -65,6 +65,7 @@ set(OMSIMULATORLIB_SOURCES
       Flags.cpp
       FMUInfo.cpp
       Logging.cpp
+      LsDae.cpp
       MatReader.cpp
       MatVer4.cpp
       MATWriter.cpp
@@ -118,6 +119,8 @@ target_link_libraries(OMSimulatorLib
                           oms::public_includes
                           oms::3rd::sundials::kinsol
                           oms::3rd::sundials::cvode
+                          oms::3rd::sundials::ida
+                          oms::3rd::sundials::sunlinsolklu
                           oms::3rd::fmi4c
                           oms::3rd::minizip
                           oms::3rd::zlib
@@ -150,6 +153,8 @@ target_link_libraries(OMSimulatorLib_static
                           oms::public_includes
                           oms::3rd::sundials::kinsol
                           oms::3rd::sundials::cvode
+                          oms::3rd::sundials::ida
+                          oms::3rd::sundials::sunlinsolklu
                           oms::3rd::fmi4c
                           oms::3rd::minizip
                           oms::3rd::zlib
