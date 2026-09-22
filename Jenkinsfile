@@ -437,7 +437,7 @@ EXIT /b 1
             unstash name: 'jammy-amd64-zip'   // includes: "OMSimulator-linux-jammy-amd64-*.tar.gz"
             unstash name: 'mingw-ucrt64-zip'  // includes: "OMSimulator-mingw-ucrt64-*.zip"
             unstash name: 'win64-zip'         // includes: "OMSimulator-win64-*.zip"
-            // unstash name: 'osx-zip'           // includes: "OMSimulator-osx-*.zip"
+            unstash name: 'osx-zip'           // includes: "OMSimulator-osx-*.zip"
 
             sh "ls *.zip *.tar.gz"
 
@@ -455,9 +455,9 @@ EXIT /b 1
                     sshTransfer(
                       remoteDirectory: "${DEPLOYMENT_PREFIX}win-mingw-ucrt64/",
                       sourceFiles: 'OMSimulator-mingw-ucrt64-*.zip'),
-                    //sshTransfer(
-                    //  remoteDirectory: "${DEPLOYMENT_PREFIX}osx/",
-                    //  sourceFiles: 'OMSimulator-osx-*.zip'),
+                    sshTransfer(
+                      remoteDirectory: "${DEPLOYMENT_PREFIX}osx/",
+                      sourceFiles: 'OMSimulator-osx-*.zip'),
                     sshTransfer(
                       remoteDirectory: "${DEPLOYMENT_PREFIX}win-msvc64/",
                       sourceFiles: 'OMSimulator-win64-*.zip')
@@ -617,10 +617,6 @@ def shouldWeUpdateSubmodules() {
 }
 
 def shouldWeBuildMacOSArm64() {
-  /* M1 Mac takes 4h to do a 10 seconds cmake configure!!!!!
-   * disable the M1 until we find out what the issue is
-   */
-  return false
   if (isPR()) {
     if (pullRequest.labels.contains("CI/macOS-arm64")) {
       return true
