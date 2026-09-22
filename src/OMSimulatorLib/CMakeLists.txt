@@ -103,13 +103,13 @@ add_library(dcplib INTERFACE)
 # DCPLib headers live in the top-level 3rdParty directory
 target_include_directories(dcplib 
                            INTERFACE 
-                           ${CMAKE_SOURCE_DIR}/3rdParty/DCPLib/include/core
-                           ${CMAKE_SOURCE_DIR}/3rdParty/DCPLib/include/ethernet
-                           ${CMAKE_SOURCE_DIR}/3rdParty/DCPLib/include/master
-                           ${CMAKE_SOURCE_DIR}/3rdParty/DCPLib/include/slave
-                           ${CMAKE_SOURCE_DIR}/3rdParty/DCPLib/include/xml
-                           ${CMAKE_SOURCE_DIR}/3rdParty/DCPLib/include/zip
-                           ${CMAKE_SOURCE_DIR}/3rdParty/asio/include)
+                           ${OMSimulator_SOURCE_DIR}/3rdParty/DCPLib/include/core
+                           ${OMSimulator_SOURCE_DIR}/3rdParty/DCPLib/include/ethernet
+                           ${OMSimulator_SOURCE_DIR}/3rdParty/DCPLib/include/master
+                           ${OMSimulator_SOURCE_DIR}/3rdParty/DCPLib/include/slave
+                           ${OMSimulator_SOURCE_DIR}/3rdParty/DCPLib/include/xml
+                           ${OMSimulator_SOURCE_DIR}/3rdParty/DCPLib/include/zip
+                           ${OMSimulator_SOURCE_DIR}/3rdParty/asio/include)
 target_link_libraries(OMSimulatorLib PRIVATE dcplib)
 if(WIN32)
   target_link_libraries(OMSimulatorLib PUBLIC ws2_32)
