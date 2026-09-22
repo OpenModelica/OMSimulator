@@ -150,10 +150,6 @@ pipeline {
         }
 
         stage('arm64-macOS') {
-          when {
-            expression { return shouldWeBuildMacOSArm64() }
-            beforeAgent true
-          }
           stages {
             stage('build-M1') {
               agent {
