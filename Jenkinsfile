@@ -154,23 +154,18 @@ pipeline {
             expression { return shouldWeBuildMacOSArm64() }
             beforeAgent true
           }
-          // Shared by build-M1 and test-M1: the latter reconfigures and builds
-          // the testsuite fixture from scratch (see runCTest()), so it needs
-          // the same Homebrew PATH/ICU setup as the build, not just the build
-          // stage -- otherwise `cmake` itself isn't found on that agent's
-          // default PATH.
-          environment {
-            PATH="/opt/homebrew/bin:/opt/homebrew/opt/openjdk/bin:/opt/homebrew/opt/icu4c/bin:/opt/homebrew/opt/icu4c/sbin:/usr/local/bin:${env.PATH}"
-            PKG_CONFIG_PATH="/opt/homebrew/opt/icu4c/lib/pkgconfig"
-            LDFLAGS="-L/opt/homebrew/opt/icu4c/lib"
-            CPPFLAGS="-I/opt/homebrew/opt/icu4c/include"
-            // CMake ignores CPPFLAGS; xerces's FindICU.cmake only looks at ICU_ROOT.
-            ICU_ROOT="/opt/homebrew/opt/icu4c"
-          }
           stages {
             stage('build-M1') {
               agent {
                 label 'M1'
+              }
+              environment {
+                PATH="/opt/homebrew/bin:/opt/homebrew/opt/openjdk/bin:/opt/homebrew/opt/icu4c/bin:/opt/homebrew/opt/icu4c/sbin:/usr/local/bin:${env.PATH}"
+                PKG_CONFIG_PATH="/opt/homebrew/opt/icu4c/lib/pkgconfig"
+                LDFLAGS="-L/opt/homebrew/opt/icu4c/lib"
+                CPPFLAGS="-I/opt/homebrew/opt/icu4c/include"
+                // CMake ignores CPPFLAGS; xerces's FindICU.cmake only looks at ICU_ROOT.
+                ICU_ROOT="/opt/homebrew/opt/icu4c"
               }
               steps {
                 buildOMS()
@@ -184,6 +179,17 @@ pipeline {
             stage('test-M1') {
               agent {
                 label 'M1'
+              }
+              // runCTest() reconfigures and builds the testsuite fixture from
+              // scratch on this (separate) agent, so it needs the same
+              // Homebrew PATH as build-M1 -- otherwise `cmake` itself isn't
+              // found on this agent's default PATH.
+              environment {
+                PATH="/opt/homebrew/bin:/opt/homebrew/opt/openjdk/bin:/opt/homebrew/opt/icu4c/bin:/opt/homebrew/opt/icu4c/sbin:/usr/local/bin:${env.PATH}"
+                PKG_CONFIG_PATH="/opt/homebrew/opt/icu4c/lib/pkgconfig"
+                LDFLAGS="-L/opt/homebrew/opt/icu4c/lib"
+                CPPFLAGS="-I/opt/homebrew/opt/icu4c/include"
+                ICU_ROOT="/opt/homebrew/opt/icu4c"
               }
               steps {
                 unstash name: 'osx-install'
