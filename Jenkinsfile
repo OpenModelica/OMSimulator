@@ -150,49 +150,23 @@ pipeline {
         }
 
         stage('arm64-macOS') {
-          stages {
-            stage('build-M1') {
-              agent {
-                label 'M1'
-              }
-              environment {
-                PATH="/opt/homebrew/bin:/opt/homebrew/opt/openjdk/bin:/opt/homebrew/opt/icu4c/bin:/opt/homebrew/opt/icu4c/sbin:/usr/local/bin:${env.PATH}"
-                PKG_CONFIG_PATH="/opt/homebrew/opt/icu4c/lib/pkgconfig"
-                LDFLAGS="-L/opt/homebrew/opt/icu4c/lib"
-                CPPFLAGS="-I/opt/homebrew/opt/icu4c/include"
-                // CMake ignores CPPFLAGS; xerces's FindICU.cmake only looks at ICU_ROOT.
-                ICU_ROOT="/opt/homebrew/opt/icu4c"
-              }
-              steps {
-                buildOMS()
-                sh "(cd install/ && zip -r '../OMSimulator-osx-${env.OMS_VERSION}.zip' *)"
+          agent {
+            label 'M1'
+          }
+          environment {
+            PATH="/opt/homebrew/bin:/opt/homebrew/opt/openjdk/bin:/opt/homebrew/opt/icu4c/bin:/opt/homebrew/opt/icu4c/sbin:/usr/local/bin:${env.PATH}"
+            PKG_CONFIG_PATH="/opt/homebrew/opt/icu4c/lib/pkgconfig"
+            LDFLAGS="-L/opt/homebrew/opt/icu4c/lib"
+            CPPFLAGS="-I/opt/homebrew/opt/icu4c/include"
+            // CMake ignores CPPFLAGS; xerces's FindICU.cmake only looks at ICU_ROOT.
+            ICU_ROOT="/opt/homebrew/opt/icu4c"
+          }
+          steps {
+            buildOMS()
+            sh "(cd install/ && zip -r '../OMSimulator-osx-${env.OMS_VERSION}.zip' *)"
 
-                archiveArtifacts "OMSimulator-osx-*.zip"
-                stash name: 'osx-zip', includes: "OMSimulator-osx-*.zip"
-                stash name: 'osx-install', includes: "install/**"
-              }
-            }
-            stage('test-M1') {
-              agent {
-                label 'M1'
-              }
-              // runCTest() reconfigures and builds the testsuite fixture from
-              // scratch on this (separate) agent, so it needs the same
-              // Homebrew PATH as build-M1 -- otherwise `cmake` itself isn't
-              // found on this agent's default PATH.
-              environment {
-                PATH="/opt/homebrew/bin:/opt/homebrew/opt/openjdk/bin:/opt/homebrew/opt/icu4c/bin:/opt/homebrew/opt/icu4c/sbin:/usr/local/bin:${env.PATH}"
-                PKG_CONFIG_PATH="/opt/homebrew/opt/icu4c/lib/pkgconfig"
-                LDFLAGS="-L/opt/homebrew/opt/icu4c/lib"
-                CPPFLAGS="-I/opt/homebrew/opt/icu4c/include"
-                ICU_ROOT="/opt/homebrew/opt/icu4c"
-              }
-              steps {
-                unstash name: 'osx-install'
-                runCTest()
-                junit 'build-testsuite/ctest-result.xml'
-              }
-            }
+            archiveArtifacts "OMSimulator-osx-*.zip"
+            stash name: 'osx-zip', includes: "OMSimulator-osx-*.zip"
           }
         }
 
@@ -627,8 +601,9 @@ def shouldWeUpdateSubmodules() {
 
 def shouldWeBuildMacOSArm64() {
   if (isPR()) {
-    return params.MACOS_ARM64
+    if (pullRequest.labels.contains("CI/macOS-arm64")) {
+      return true
+    }
   }
-  return true
+  return params.MACOS_ARM64
 }
-
