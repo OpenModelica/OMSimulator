@@ -5,7 +5,7 @@ pipeline {
     buildDiscarder(logRotator(numToKeepStr: "100", artifactNumToKeepStr: "5"))
   }
   parameters {
-    booleanParam(name: 'MACOS_ARM64', defaultValue: false, description: 'Build with macOS-arm64 (M1 mac)')
+    booleanParam(name: 'MACOS_ARM64', defaultValue: true, description: 'Build with macOS-arm64 (M1 mac). Turn off if the M1 agent is broken.')
     booleanParam(name: 'SUBMODULE_UPDATE', defaultValue: false, description: 'Allow pull request to update submodules (disabled by default due to common user errors)')
     booleanParam(name: 'UPLOAD_BUILD_OPENMODELICA', defaultValue: false, description: 'Upload install artifacts to build.openmodelica.org/omsimulator. Activates MINGW_UCRT64 as well.')
     string(name: 'CTEST_FLAGS', defaultValue: '', description: 'Extra flags passed to ctest, e.g. -R api')
@@ -631,10 +631,8 @@ def shouldWeUpdateSubmodules() {
 
 def shouldWeBuildMacOSArm64() {
   if (isPR()) {
-    if (pullRequest.labels.contains("CI/macOS-arm64")) {
-      return true
-    }
     return params.MACOS_ARM64
   }
   return true
 }
+
