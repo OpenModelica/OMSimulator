@@ -164,6 +164,13 @@ pipeline {
                 PKG_CONFIG_PATH="/opt/homebrew/opt/icu4c/lib/pkgconfig"
                 LDFLAGS="-L/opt/homebrew/opt/icu4c/lib"
                 CPPFLAGS="-I/opt/homebrew/opt/icu4c/include"
+                // CMake doesn't read CPPFLAGS (only CFLAGS/CXXFLAGS/LDFLAGS get
+                // auto-seeded into its own flags), and 3rdParty/xerces's own
+                // cmake/FindICU.cmake doesn't consult pkg-config or
+                // CMAKE_PREFIX_PATH either -- only this ICU_ROOT hint. Without
+                // it, xerces's keg-only Homebrew icu4c is never found and
+                // regx/RangeToken.cpp's `#include <unicode/uset.h>` fails.
+                ICU_ROOT="/opt/homebrew/opt/icu4c"
               }
               steps {
                 buildOMS()
