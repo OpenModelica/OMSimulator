@@ -20,7 +20,10 @@ if (ASAN)
   link_libraries("-fsanitize=address")
 endif ()
 
-# Be pedantic about potential memory issues
+# Be pedantic about potential memory issues. These are attached to the targets
+# rather than to CMAKE_CXX_FLAGS: CMake also puts CMAKE_CXX_FLAGS on the link
+# line, where -flto hands them to lto1, which then applies them to every
+# translation unit linked in, including the third-party C code.
 if (MSVC)
   # MSVC doesn't know -Werror=<name>, its warnings only have numbers.
   set(OMS_MSVC_MEMORY_WARNINGS
@@ -34,12 +37,12 @@ if (MSVC)
   foreach (warning IN LISTS OMS_MSVC_MEMORY_WARNINGS)
     # /w1<n> reports the warning at the default warning level (C4701 and C4703
     # are level 4 and would stay silent otherwise), /we<n> turns it into an error.
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /w1${warning} /we${warning}")
+    list(APPEND OMS_MEMORY_WARNING_FLAGS /w1${warning} /we${warning})
   endforeach ()
 else ()
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror=uninitialized")
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror=return-type")
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror=return-local-addr")
+  set(OMS_MEMORY_WARNING_FLAGS -Werror=uninitialized
+                               -Werror=return-type
+                               -Werror=return-local-addr)
 endif ()
 
 set(OMSIMULATORLIB_SOURCES
@@ -94,6 +97,7 @@ list(APPEND OMSIMULATORLIB_SOURCES "${CMAKE_CURRENT_BINARY_DIR}/Version.cpp")
 # Shared library version
 add_library(OMSimulatorLib SHARED ${OMSIMULATORLIB_SOURCES})
 set_target_properties(OMSimulatorLib PROPERTIES OUTPUT_NAME OMSimulator)
+target_compile_options(OMSimulatorLib PRIVATE ${OMS_MEMORY_WARNING_FLAGS})
 
 add_library(dcplib INTERFACE)
 # DCPLib headers live in the top-level 3rdParty directory
@@ -135,6 +139,7 @@ endif()
 
 # Static library version
 add_library(OMSimulatorLib_static STATIC ${OMSIMULATORLIB_SOURCES})
+target_compile_options(OMSimulatorLib_static PRIVATE ${OMS_MEMORY_WARNING_FLAGS})
 if(MSVC)
   set_target_properties(OMSimulatorLib_static PROPERTIES OUTPUT_NAME OMSimulator_static)
 else()
