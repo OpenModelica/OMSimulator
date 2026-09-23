@@ -5,7 +5,7 @@ pipeline {
     buildDiscarder(logRotator(numToKeepStr: "100", artifactNumToKeepStr: "5"))
   }
   parameters {
-    booleanParam(name: 'MACOS_ARM64', defaultValue: false, description: 'Build with macOS-arm64 (M1 mac)')
+    booleanParam(name: 'MACOS_ARM64', defaultValue: true, description: 'Build with macOS-arm64 (M1 mac). Turn off if the M1 agent is broken.')
     booleanParam(name: 'SUBMODULE_UPDATE', defaultValue: false, description: 'Allow pull request to update submodules (disabled by default due to common user errors)')
     booleanParam(name: 'UPLOAD_BUILD_OPENMODELICA', defaultValue: false, description: 'Upload install artifacts to build.openmodelica.org/omsimulator. Activates MINGW_UCRT64 as well.')
     string(name: 'CTEST_FLAGS', defaultValue: '', description: 'Extra flags passed to ctest, e.g. -R api')
@@ -150,40 +150,23 @@ pipeline {
         }
 
         stage('arm64-macOS') {
-          when {
-            expression { return shouldWeBuildMacOSArm64() }
-            beforeAgent true
+          agent {
+            label 'M1'
           }
-          stages {
-            stage('build-M1') {
-              agent {
-                label 'M1'
-              }
-              environment {
-                PATH="/opt/homebrew/bin:/opt/homebrew/opt/openjdk/bin:/opt/homebrew/opt/icu4c/bin:/opt/homebrew/opt/icu4c/sbin:/usr/local/bin:${env.PATH}"
-                PKG_CONFIG_PATH="/opt/homebrew/opt/icu4c/lib/pkgconfig"
-                LDFLAGS="-L/opt/homebrew/opt/icu4c/lib"
-                CPPFLAGS="-I/opt/homebrew/opt/icu4c/include"
-              }
-              steps {
-                buildOMS()
-                sh "(cd install/ && zip -r '../OMSimulator-osx-${env.OMS_VERSION}.zip' *)"
+          environment {
+            PATH="/opt/homebrew/bin:/opt/homebrew/opt/openjdk/bin:/opt/homebrew/opt/icu4c/bin:/opt/homebrew/opt/icu4c/sbin:/usr/local/bin:${env.PATH}"
+            PKG_CONFIG_PATH="/opt/homebrew/opt/icu4c/lib/pkgconfig"
+            LDFLAGS="-L/opt/homebrew/opt/icu4c/lib"
+            CPPFLAGS="-I/opt/homebrew/opt/icu4c/include"
+            // CMake ignores CPPFLAGS; xerces's FindICU.cmake only looks at ICU_ROOT.
+            ICU_ROOT="/opt/homebrew/opt/icu4c"
+          }
+          steps {
+            buildOMS()
+            sh "(cd install/ && zip -r '../OMSimulator-osx-${env.OMS_VERSION}.zip' *)"
 
-                archiveArtifacts "OMSimulator-osx-*.zip"
-                stash name: 'osx-zip', includes: "OMSimulator-osx-*.zip"
-                stash name: 'osx-install', includes: "install/**"
-              }
-            }
-            stage('test-M1') {
-              agent {
-                label 'M1'
-              }
-              steps {
-                unstash name: 'osx-install'
-                runCTest()
-                junit 'build-testsuite/ctest-result.xml'
-              }
-            }
+            archiveArtifacts "OMSimulator-osx-*.zip"
+            stash name: 'osx-zip', includes: "OMSimulator-osx-*.zip"
           }
         }
 
@@ -437,7 +420,7 @@ EXIT /b 1
             unstash name: 'jammy-amd64-zip'   // includes: "OMSimulator-linux-jammy-amd64-*.tar.gz"
             unstash name: 'mingw-ucrt64-zip'  // includes: "OMSimulator-mingw-ucrt64-*.zip"
             unstash name: 'win64-zip'         // includes: "OMSimulator-win64-*.zip"
-            // unstash name: 'osx-zip'           // includes: "OMSimulator-osx-*.zip"
+            unstash name: 'osx-zip'           // includes: "OMSimulator-osx-*.zip"
 
             sh "ls *.zip *.tar.gz"
 
@@ -455,9 +438,9 @@ EXIT /b 1
                     sshTransfer(
                       remoteDirectory: "${DEPLOYMENT_PREFIX}win-mingw-ucrt64/",
                       sourceFiles: 'OMSimulator-mingw-ucrt64-*.zip'),
-                    //sshTransfer(
-                    //  remoteDirectory: "${DEPLOYMENT_PREFIX}osx/",
-                    //  sourceFiles: 'OMSimulator-osx-*.zip'),
+                    sshTransfer(
+                      remoteDirectory: "${DEPLOYMENT_PREFIX}osx/",
+                      sourceFiles: 'OMSimulator-osx-*.zip'),
                     sshTransfer(
                       remoteDirectory: "${DEPLOYMENT_PREFIX}win-msvc64/",
                       sourceFiles: 'OMSimulator-win64-*.zip')
@@ -617,15 +600,10 @@ def shouldWeUpdateSubmodules() {
 }
 
 def shouldWeBuildMacOSArm64() {
-  /* M1 Mac takes 4h to do a 10 seconds cmake configure!!!!!
-   * disable the M1 until we find out what the issue is
-   */
-  return false
   if (isPR()) {
     if (pullRequest.labels.contains("CI/macOS-arm64")) {
       return true
     }
-    return params.MACOS_ARM64
   }
-  return true
+  return params.MACOS_ARM64
 }
