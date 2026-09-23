@@ -666,6 +666,7 @@ class InstantiatedModel:
     status = Capi.reset(self.modelName)
     if status != Status.ok:
       raise RuntimeError(f"Failed to reset model: {status}")
+    self.fmuInitialized = False
 
   def simulate(self):
     status = Capi.simulate(self.modelName)
