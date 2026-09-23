@@ -21,10 +21,11 @@ requirements.txt          PySide6/pyqtgraph/scipy -- kept out of src/pip's core 
 
 ## Building and running
 
-Disabled by default. Enable it at configure time:
+Built by default. To disable it (e.g. to skip its extra Python package
+requirements below), configure with:
 
 ```bash
-cmake -S . -B build -DOMS_ENABLE_OMSimulatorGui=ON
+cmake -S . -B build -DOMS_ENABLE_OMSimulatorGui=OFF
 cmake --build build --target install
 ```
 
