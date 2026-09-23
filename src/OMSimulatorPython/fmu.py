@@ -617,6 +617,9 @@ class FMU:
 
     if self.instanceName is None:
       self.instanceName = self.splitModelName()
+    # OMS model/submodel names must be valid idents; dots are the cref
+    # hierarchy separator and are not allowed within a single segment.
+    self.instanceName = self.instanceName.replace('.', '_')
 
     # Create a new model
     status = Capi.newModel(self.instanceName)
