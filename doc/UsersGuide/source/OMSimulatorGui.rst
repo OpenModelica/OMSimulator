@@ -25,12 +25,12 @@ underlying SSD/SSV/SSM files -- see :ref:`omsimulatorgui-limitations` below.
 Requirements and Enabling the Build
 ------------------------------------
 
-OMSimulatorGui is optional and disabled by default, Enable it
-at configure time with:
+OMSimulatorGui is built by default. To disable it (e.g. to skip its extra
+Python package requirements below), configure with:
 
 .. code-block:: bash
 
-   cmake -S . -B build -DOMS_ENABLE_OMSimulatorGui=ON
+   cmake -S . -B build -DOMS_ENABLE_OMSimulatorGui=OFF
    cmake --build build --target install
 
 It has no compiled component -- it is pure Python, installed alongside the
@@ -55,7 +55,7 @@ under:
 Launching
 ---------
 
-A build with ``OMS_ENABLE_OMSimulatorGui=ON`` installs an
+A build with OMSimulatorGui enabled installs an
 ``OMSimulatorGui`` launcher script next to ``OMSimulator`` itself:
 
 .. code-block:: bash

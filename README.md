@@ -18,6 +18,7 @@ OMSimulator can be used as:
 - **Stand-alone application**
 - **C library** for integration into custom applications
 - **Python package** (`pip install OMSimulator`)
+- **OMSimulatorGui** -- a lightweight, standalone PySide6 GUI for editing and simulating SSP models, built directly on the Python package with no `omc` dependency. See [its own README](src/OMSimulatorGui/README.md) or the [User's Guide](https://openmodelica.org/doc/OMSimulator/master/OMSimulator/UsersGuide/html/OMSimulatorGui.html).
 
 OMSimulator is also included with the OpenModelica installer, which includes OMEdit, a graphical editor.
 
