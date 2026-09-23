@@ -66,6 +66,10 @@ message(STATUS "Platform string: ${PLATFORM_STRING}")
 
 ################################################################################
 
+# Keep xerces (DCP) from linking curl, nsl and ICU into libOMSimulator
+set(network OFF CACHE BOOL "xerces network support")
+set(CMAKE_DISABLE_FIND_PACKAGE_ICU ON)
+
 # Add third-party dependencies
 add_subdirectory(3rdParty)
 
