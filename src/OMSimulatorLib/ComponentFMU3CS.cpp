@@ -1524,8 +1524,7 @@ oms_status_enu_t oms::ComponentFMU3CS::getRealOutputDerivative(const ComRef& cre
   if (!fmu || j < 0)
     return logError_UnknownSignal(getFullCref() + cref);
 
-  der = SignalDerivative(getFMUInfo()->getMaxOutputDerivativeOrder(), instance, allVariables[j].getValueReferenceFMI3());
-  return oms_status_ok;
+  return der.getRealOutputDerivatives(getFMUInfo()->getMaxOutputDerivativeOrder(), instance, allVariables[j].getValueReferenceFMI3());
 }
 
 oms_status_enu_t oms::ComponentFMU3CS::setRealInputDerivative(const ComRef& cref, const SignalDerivative& der)
