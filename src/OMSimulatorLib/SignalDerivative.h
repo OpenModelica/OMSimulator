@@ -47,8 +47,6 @@ namespace oms
   public:
     SignalDerivative();
     SignalDerivative(double der);
-    SignalDerivative(unsigned int order, fmi2InstanceHandle* instance, fmi2ValueReference vr);
-    SignalDerivative(unsigned int order, fmi3InstanceHandle* instance, fmi3ValueReference vr);
     ~SignalDerivative();
 
     // methods to copy the object
@@ -57,11 +55,16 @@ namespace oms
 
     const unsigned int getMaxDerivativeOrder() const {return order;}
     const double* getDerivatives() const {return values;}
+    oms_status_enu_t getRealOutputDerivatives(unsigned int order, fmi2InstanceHandle* instance, fmi2ValueReference vr);
+    oms_status_enu_t getRealOutputDerivatives(unsigned int order, fmi3InstanceHandle* instance, fmi3ValueReference vr);
     oms_status_enu_t setRealInputDerivatives(fmi2InstanceHandle* instance, fmi2ValueReference vr) const;
 
     operator std::string() const;
 
   private:
+    void resize(unsigned int order);
+    void replaceNonFinite(const char* function);
+
     unsigned int order;
     double* values;
   };
