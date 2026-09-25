@@ -5,6 +5,7 @@ project(OMSimulatorGui)
 
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/__init__.py" "${CMAKE_CURRENT_BINARY_DIR}/__init__.py" @ONLY)
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/OMSimulatorGui.in" "${CMAKE_CURRENT_BINARY_DIR}/OMSimulatorGui" @ONLY)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/OMSimulatorGui.bat.in" "${CMAKE_CURRENT_BINARY_DIR}/OMSimulatorGui.bat" @ONLY)
 
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/__init__.py"
               "${CMAKE_CURRENT_SOURCE_DIR}/__main__.py"
@@ -51,12 +52,12 @@ install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/results/__init__.py"
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/OMSimulatorGui/results)
 
 if(MSVC)
-  install(FILES OMSimulatorGui.bat TYPE BIN
+  install(FILES "${CMAKE_CURRENT_BINARY_DIR}/OMSimulatorGui.bat" TYPE BIN
           PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
                       GROUP_EXECUTE GROUP_READ
                       WORLD_EXECUTE WORLD_READ)
 elseif(MINGW)
-  install(FILES "${CMAKE_CURRENT_BINARY_DIR}/OMSimulatorGui" OMSimulatorGui.bat
+  install(FILES "${CMAKE_CURRENT_BINARY_DIR}/OMSimulatorGui" "${CMAKE_CURRENT_BINARY_DIR}/OMSimulatorGui.bat"
           TYPE BIN
           PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
                       GROUP_EXECUTE GROUP_READ

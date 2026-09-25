@@ -10,21 +10,34 @@ ELSE ()
   set(OMSIMULATORLIB_STRING "libOMSimulator.so")
 ENDIF ()
 
-## If OMSimulator is being built as part of OpenModelica Cmake and that is set by "OPENMODELICA_NEW_CMAKE_BUILD"
-## or OMSimulator is being built as part of OpenModelica Makefile  and that is set by "OPENMODELICA_MAKEFILE_BUILD"
-## account for the "omc" directory added in the lib dir (lib/omc/OMSimulator versus lib/OMSimulator)
-## currently this sets the path only for windows
-## TODO fix the paths for linux
-if(OPENMODELICA_NEW_CMAKE_BUILD OR "${OPENMODELICA_MAKEFILE_BUILD}" STREQUAL "true")
-  set(OMSIMULATOR_PYTHON_RELATIVE_DLL_DIR "../../../bin")
+## On Windows the DLL is a RUNTIME artifact installed under CMAKE_INSTALL_BINDIR
+## (plain "bin"), while this package installs under CMAKE_INSTALL_LIBDIR/OMSimulator,
+## which nests an extra "<OM_LIBRARY_ARCH>/omc" (see top-level CMakeLists.txt) -- so
+## the number of ".." segments between the two depends on that layout and must not be
+## hardcoded here (it drifted out of sync with the lib/omc layout once already).
+## Compute it instead, so it stays correct however deep CMAKE_INSTALL_LIBDIR nests.
+##
+## CMAKE_INSTALL_FULL_BINDIR is safe to use as-is: GNUInstallDirs computes it once,
+## at include(GNUInstallDirs) time, and nothing touches CMAKE_INSTALL_BINDIR afterwards.
+## CMAKE_INSTALL_FULL_LIBDIR is NOT safe: the top-level CMakeLists.txt appends the
+## arch/omc suffix onto CMAKE_INSTALL_LIBDIR *after* that include(), so the cached
+## FULL_LIBDIR value would still reflect the pre-suffix "lib" -- rebuild that one
+## from the final CMAKE_INSTALL_LIBDIR instead of trusting the stale FULL_ variable.
+if(IS_ABSOLUTE "${CMAKE_INSTALL_LIBDIR}")
+  set(_omsimulator_full_libdir "${CMAKE_INSTALL_LIBDIR}")
 else()
-  set(OMSIMULATOR_PYTHON_RELATIVE_DLL_DIR "../../bin")
+  set(_omsimulator_full_libdir "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}")
 endif()
+
+file(RELATIVE_PATH OMSIMULATOR_PYTHON_RELATIVE_DLL_DIR
+     "${_omsimulator_full_libdir}/OMSimulator"
+     "${CMAKE_INSTALL_FULL_BINDIR}")
 
 
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/__init__.py" "${CMAKE_CURRENT_BINARY_DIR}/__init__.py" @ONLY)
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/capi.py" "${CMAKE_CURRENT_BINARY_DIR}/capi.py" @ONLY)
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/OMSimulator.in" "${CMAKE_CURRENT_BINARY_DIR}/OMSimulator" @ONLY)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/OMSimulator.bat.in" "${CMAKE_CURRENT_BINARY_DIR}/OMSimulator.bat" @ONLY)
 
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/__init__.py"
               "${CMAKE_CURRENT_SOURCE_DIR}/__main__.py"
@@ -54,12 +67,12 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/__init__.py"
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/OMSimulator)
 
 if(MSVC)
-  install(FILES OMSimulator.bat TYPE BIN
+  install(FILES "${CMAKE_CURRENT_BINARY_DIR}/OMSimulator.bat" TYPE BIN
           PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
                       GROUP_EXECUTE GROUP_READ
                       WORLD_EXECUTE WORLD_READ)
 elseif(MINGW)
-  install(FILES "${CMAKE_CURRENT_BINARY_DIR}/OMSimulator" OMSimulator.bat
+  install(FILES "${CMAKE_CURRENT_BINARY_DIR}/OMSimulator" "${CMAKE_CURRENT_BINARY_DIR}/OMSimulator.bat"
           TYPE BIN
           PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
                       GROUP_EXECUTE GROUP_READ
