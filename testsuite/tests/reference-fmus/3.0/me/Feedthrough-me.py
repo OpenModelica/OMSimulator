@@ -60,7 +60,6 @@ instantiated_model.delete()
 ## Result:
 ## warning: Unknown FMI3 base type for var : Binary_input
 ## warning: Unknown FMI3 base type for var : Binary_output
-## Loading FMI version 3...
 ## info:    model doesn't contain any continuous state
 ## info:    maximum step size for 'model.root': 0.001000
 ## info:    No result file will be created

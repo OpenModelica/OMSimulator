@@ -121,7 +121,7 @@ namespace oms
     oms_status_enu_t enterEventMode();
     oms_status_enu_t enterContinuousTimeMode();
 
-    fmiHandle* getFMU() {return fmu;}
+    fmuHandle* getFMU() {return fmu;}
     fmi2EventInfo* getEventInfo() {return &eventInfo;}
 
     bool getCanGetAndSetState() {return getFMUInfo()->getCanGetAndSetFMUstate();}
@@ -156,7 +156,8 @@ namespace oms
 
   private:
     fmi2CallbackLogger omsfmi2logger;
-    fmiHandle *fmu = NULL;
+    fmuHandle *fmu = NULL;
+    fmi2InstanceHandle *instance = NULL;
 
     fmi2EventInfo eventInfo;
     size_t nEventIndicators;
