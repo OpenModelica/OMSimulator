@@ -48,17 +48,49 @@ class capi:
   def __init__(self):
     self._suppressPathSet = False
     dirname = os.path.dirname(__file__)
-    ## look for dll in the current directory for the python pip package
-    omslib = os.path.join(dirname, "@OMSIMULATORLIB_STRING@")
+    libname = "@OMSIMULATORLIB_STRING@"
 
-    ## look for dll in the OpenModelica top level directory or OMSimulator stand alone directory
+    ## 1. next to this file -- the pip package layout
+    omslib = os.path.join(dirname, libname)
+
+    ## 2. the relative path CMake computed for the install layout this file was
+    ## configured for (see OMSimulatorPython/CMakeLists.txt)
     if not os.path.exists(omslib):
       if os.name == 'nt': # Windows
-        omslib = os.path.join(dirname, "@OMSIMULATOR_PYTHON_RELATIVE_DLL_DIR@", "@OMSIMULATORLIB_STRING@")
-        self._dllDir = os.add_dll_directory(os.path.dirname(omslib))
+        omslib = os.path.join(dirname, "@OMSIMULATOR_PYTHON_RELATIVE_DLL_DIR@", libname)
       else:
         # attempt to fix #8163 on Linux
-        omslib = os.path.join(dirname, "..", "@OMSIMULATORLIB_STRING@")
+        omslib = os.path.join(dirname, "..", libname)
+
+    ## 3. last resort: the baked-in relative path only holds for the exact install
+    ## layout it was computed for. If the tree was moved, repackaged, or the layout
+    ## changed since this file was configured, walk up from this file looking for a
+    ## "bin" (Windows) or lib (elsewhere) directory that actually has the library,
+    ## instead of failing outright.
+    if not os.path.exists(omslib):
+      search_dir = dirname
+      for _ in range(6):
+        parent = os.path.dirname(search_dir)
+        if not parent or parent == search_dir:
+          break
+        search_dir = parent
+        for candidate in (os.path.join(search_dir, "bin", libname), os.path.join(search_dir, libname)):
+          if os.path.exists(candidate):
+            omslib = candidate
+            break
+        else:
+          continue
+        break
+
+    if not os.path.exists(omslib):
+      raise FileNotFoundError(
+        f"Could not locate {libname} near {dirname}; the OMSimulator installation "
+        "may be incomplete or the tree may have been partially moved."
+      )
+
+    if os.name == 'nt': # Windows needs the DLL's own directory on the search path
+                         # for its own runtime dependencies (Qt/MSYS2 DLLs etc.)
+      self._dllDir = os.add_dll_directory(os.path.dirname(omslib))
 
     self.obj=ctypes.CDLL(omslib)
 
