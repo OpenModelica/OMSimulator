@@ -130,7 +130,7 @@ namespace oms
     virtual oms_status_enu_t getEventindicators(double* eventindicators) {return logError_NotImplemented;}
     virtual oms_status_enu_t getEventindicators(double* eventindicators, size_t size) {return logError_NotImplemented;}
 
-    virtual fmiHandle* getFMU() {return nullptr;  }
+    virtual fmuHandle* getFMU() {return nullptr;  }
     virtual fmi2EventInfo* getEventInfo() {return nullptr;}
     virtual oms_status_enu_t doEventIteration() {return logError_NotImplemented;}
     virtual oms_status_enu_t completedIntegratorStep(bool noSetFMUStatePriorToCurrentPoint, bool& enterEventMode, bool& terminateSimulation) {return logError_NotImplemented;}

@@ -38,6 +38,7 @@
 #include "Logging.h"
 #include <cmath>
 #include <cstring>
+#include <vector>
 
 oms::SignalDerivative::SignalDerivative()
 {
@@ -50,35 +51,6 @@ oms::SignalDerivative::SignalDerivative(double der)
   order = 1;
   values = new double[order];
   values[0] = der;
-}
-
-oms::SignalDerivative::SignalDerivative(unsigned int order, fmiHandle* fmu, fmi2ValueReference vr)
-{
-  this->order = order;
-  if (this->order == 0)
-    values = nullptr;
-  else
-  {
-    values = new double[order];
-    if (fmi2OK != fmi2_getRealOutputDerivatives(fmu, &vr, 1, (fmi2Integer*)&this->order, values))
-      logError("fmi2_getRealOutputDerivatives failed");
-    else
-    {
-      for (int i=0; i<order; ++i)
-      {
-        if (std::isnan(values[i]))
-        {
-          logWarning("fmi2_getRealOutputDerivatives returned NAN");
-          values[i] = 0.0;
-        }
-        if (std::isinf(values[i]))
-        {
-          logWarning("fmi2_getRealOutputDerivatives returned +/-inf");
-          values[i] = 0.0;
-        }
-      }
-    }
-  }
 }
 
 oms::SignalDerivative::~SignalDerivative()
@@ -123,11 +95,79 @@ oms::SignalDerivative& oms::SignalDerivative::operator=(const oms::SignalDerivat
   return *this;
 }
 
-oms_status_enu_t oms::SignalDerivative::setRealInputDerivatives(fmiHandle* fmu, fmi2ValueReference vr) const
+void oms::SignalDerivative::resize(unsigned int order)
+{
+  if (this->order == order)
+    return;
+
+  if (values)
+    delete[] values;
+
+  this->order = order;
+  values = order == 0 ? nullptr : new double[order];
+}
+
+void oms::SignalDerivative::replaceNonFinite(const char* function)
+{
+  for (unsigned int i=0; i<order; ++i)
+  {
+    if (std::isnan(values[i]))
+    {
+      logWarning(std::string(function) + " returned NAN");
+      values[i] = 0.0;
+    }
+    if (std::isinf(values[i]))
+    {
+      logWarning(std::string(function) + " returned +/-inf");
+      values[i] = 0.0;
+    }
+  }
+}
+
+oms_status_enu_t oms::SignalDerivative::getRealOutputDerivatives(unsigned int order, fmi2InstanceHandle* instance, fmi2ValueReference vr)
+{
+  resize(order);
+  if (order == 0)
+    return oms_status_ok;
+
+  if (fmi2OK != fmi2_getRealOutputDerivatives(instance, &vr, 1, (fmi2Integer*)&this->order, values))
+  {
+    resize(0);
+    return logError("fmi2_getRealOutputDerivatives failed");
+  }
+
+  replaceNonFinite("fmi2_getRealOutputDerivatives");
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::SignalDerivative::getRealOutputDerivatives(unsigned int order, fmi3InstanceHandle* instance, fmi3ValueReference vr)
+{
+  resize(order);
+  if (order == 0)
+    return oms_status_ok;
+
+  // fmi3GetOutputDerivatives takes one derivative order per value reference,
+  // so the same value reference is requested once for each order 1..order
+  std::vector<fmi3ValueReference> vrs(order, vr);
+  std::vector<fmi3Int32> orders(order);
+  for (unsigned int i=0; i<order; ++i)
+    orders[i] = i+1;
+
+  if (fmi3OK != fmi3_getOutputDerivatives(instance, vrs.data(), order, orders.data(), values, order))
+  {
+    resize(0);
+    return logError("fmi3_getOutputDerivatives failed");
+  }
+
+  replaceNonFinite("fmi3_getOutputDerivatives");
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::SignalDerivative::setRealInputDerivatives(fmi2InstanceHandle* instance, fmi2ValueReference vr) const
 {
   if (order > 0 && values)
   {
-    if (fmi2OK != fmi2_setRealInputDerivatives(fmu, &vr, 1, (fmi2Integer*)&order, (fmi2Real*)values))
+    if (fmi2OK != fmi2_setRealInputDerivatives(instance, &vr, 1, (fmi2Integer*)&order, (fmi2Real*)values))
       return oms_status_error;
   }
   return oms_status_ok;

@@ -56,8 +56,8 @@ oms::ComponentFMUME::ComponentFMUME(const ComRef& cref, System* parentSystem, co
 
 oms::ComponentFMUME::~ComponentFMUME()
 {
-  if (oms_modelState_virgin != getModel().getModelState())
-    fmi2_freeInstance(fmu);
+  if (instance && oms_modelState_virgin != getModel().getModelState())
+    fmi2_freeInstance(instance);
 
   fmi4c_freeFmu(fmu);
 }
@@ -658,7 +658,8 @@ oms_status_enu_t oms::ComponentFMUME::initializeDependencyGraph_outputs()
 
 oms_status_enu_t oms::ComponentFMUME::instantiate()
 {
-  if (!fmi2_instantiate(fmu, fmi2ModelExchange, omsfmi2logger, calloc, free, NULL, NULL, fmi2True, fmi2True))
+  instance = fmi2_instantiate(fmu, fmi2ModelExchange, omsfmi2logger, calloc, free, NULL, NULL, fmi2True, fmi2True);
+  if (!instance)
   {
     logInfo("fmi2Instantiate() failed");
     exit(1);
@@ -706,10 +707,10 @@ oms_status_enu_t oms::ComponentFMUME::instantiate()
   double relativeTolerance = 0.0;
   getParentSystem()->getTolerance(&relativeTolerance);
 
-  fmi2Status status = fmi2_setupExperiment(fmu, fmi2True, relativeTolerance, startTime, fmi2False, 1.0);
+  fmi2Status status = fmi2_setupExperiment(instance, fmi2True, relativeTolerance, startTime, fmi2False, 1.0);
   if (fmi2OK != status) return logError_FMUCall("fmi2_setupExperiment", this);
 
-  fmi2Status status_ = fmi2_enterInitializationMode(fmu);
+  fmi2Status status_ = fmi2_enterInitializationMode(instance);
   if (fmi2OK != status_) return logError_FMUCall("fmi2_enterInitializationMode", this);
 
   eventInfo.newDiscreteStatesNeeded = fmi2False;
@@ -824,7 +825,7 @@ oms_status_enu_t oms::ComponentFMUME::doEventIteration()
   eventInfo.terminateSimulation = fmi2False;
   while (eventInfo.newDiscreteStatesNeeded && !eventInfo.terminateSimulation)
   {
-    fmistatus = fmi2_newDiscreteStates(fmu, &eventInfo);
+    fmistatus = fmi2_newDiscreteStates(instance, &eventInfo);
     if (fmi2OK != fmistatus) return logError_FMUCall("fmi2_import_new_discrete_states", this);
 
     if (++iterations >= maxIterations)
@@ -897,14 +898,14 @@ oms_status_enu_t oms::ComponentFMUME::initialize()
   fmi2Status fmistatus;
 
   // exitInitialization
-  fmistatus = fmi2_exitInitializationMode(fmu);
+  fmistatus = fmi2_exitInitializationMode(instance);
   if (fmi2OK != fmistatus) return logError_FMUCall("fmi2_import_exit_initialization_mode", this);
 
   // fmi2_import_exit_initialization_mode leaves FMU in event mode
   if (oms_status_ok != doEventIteration())
     return oms_status_error;
 
-  fmistatus = fmi2_enterContinuousTimeMode(fmu);
+  fmistatus = fmi2_enterContinuousTimeMode(instance);
   if (fmi2OK != fmistatus) return logError_FMUCall("fmi2_import_enter_continuous_time_mode", this);
 
   return oms_status_ok;
@@ -912,18 +913,19 @@ oms_status_enu_t oms::ComponentFMUME::initialize()
 
 oms_status_enu_t oms::ComponentFMUME::terminate()
 {
-  fmi2Status fmistatus = fmi2_terminate(fmu);
+  fmi2Status fmistatus = fmi2_terminate(instance);
   if (fmi2OK != fmistatus)
     return logError_Termination(getCref());
 
-  fmi2_freeInstance(fmu);
+  fmi2_freeInstance(instance);
+  instance = NULL;
 
   return oms_status_ok;
 }
 
 oms_status_enu_t oms::ComponentFMUME::reset()
 {
-  fmi2Status fmistatus = fmi2_reset(fmu);
+  fmi2Status fmistatus = fmi2_reset(instance);
   if (fmi2OK != fmistatus)
     return logError_ResetFailed(getCref());
 
@@ -931,10 +933,10 @@ oms_status_enu_t oms::ComponentFMUME::reset()
   const double& startTime = getModel().getStartTime();
   double relativeTolerance = 0.0;
   getParentSystem()->getTolerance(&relativeTolerance);
-  fmistatus = fmi2_setupExperiment(fmu, fmi2True, relativeTolerance, startTime, fmi2False, 1.0);
+  fmistatus = fmi2_setupExperiment(instance, fmi2True, relativeTolerance, startTime, fmi2False, 1.0);
   if (fmi2OK != fmistatus) return logError_FMUCall("fmi2_setupExperiment", this);
 
-  fmistatus = fmi2_enterInitializationMode(fmu);
+  fmistatus = fmi2_enterInitializationMode(instance);
   if (fmi2OK != fmistatus) return logError_FMUCall("fmi2_enterInitializationMode", this);
 
   eventInfo.newDiscreteStatesNeeded = fmi2False;
@@ -952,7 +954,7 @@ oms_status_enu_t oms::ComponentFMUME::getBoolean(const fmi2ValueReference& vr, b
   CallClock callClock(clock);
 
   int value_;
-  if (fmi2OK != fmi2_getBoolean(fmu, &vr, 1, &value_))
+  if (fmi2OK != fmi2_getBoolean(instance, &vr, 1, &value_))
     return oms_status_error;
 
   value = value_ ? true : false;
@@ -1043,7 +1045,7 @@ oms_status_enu_t oms::ComponentFMUME::getInteger(const fmi2ValueReference& vr, i
 {
   CallClock callClock(clock);
 
-  if (fmi2OK != fmi2_getInteger(fmu, &vr, 1, &value))
+  if (fmi2OK != fmi2_getInteger(instance, &vr, 1, &value))
     return oms_status_error;
 
   return oms_status_ok;
@@ -1051,7 +1053,7 @@ oms_status_enu_t oms::ComponentFMUME::getInteger(const fmi2ValueReference& vr, i
 
 oms_status_enu_t oms::ComponentFMUME::setTime(double time)
 {
-  fmi2Status fmistatus = fmi2_setTime(fmu, time);
+  fmi2Status fmistatus = fmi2_setTime(instance, time);
   if (fmi2OK != fmistatus)
     return logError_FMUCall("fmi2_setTime", this);
   return oms_status_ok;
@@ -1152,7 +1154,7 @@ oms_status_enu_t oms::ComponentFMUME::getReal(const fmi2ValueReference& vr, doub
 {
   CallClock callClock(clock);
 
-  if (fmi2OK != fmi2_getReal(fmu, &vr, 1, &value))
+  if (fmi2OK != fmi2_getReal(instance, &vr, 1, &value))
     return oms_status_error;
 
   if (std::isnan(value))
@@ -1247,7 +1249,7 @@ oms_status_enu_t oms::ComponentFMUME::getString(const fmi2ValueReference& vr, st
 {
   CallClock callClock(clock);
   fmi2String str;
-  if (fmi2OK != fmi2_getString(fmu, &vr, 1, &str))
+  if (fmi2OK != fmi2_getString(instance, &vr, 1, &str))
     return oms_status_error;
 
   value = std::string(str);
@@ -1437,7 +1439,7 @@ oms_status_enu_t oms::ComponentFMUME::getDirectionalDerivativeHeper(const int un
       dvknown[i] = 0.0;
   }
 
-  fmi2_getDirectionalDerivative(fmu, &vr_unknown, 1, vr_known, dependencyList.size(), dvknown, &value);
+  fmi2_getDirectionalDerivative(instance, &vr_unknown, 1, vr_known, dependencyList.size(), dvknown, &value);
 
   free(vr_known);
   free(dvknown);
@@ -1490,7 +1492,7 @@ oms_status_enu_t oms::ComponentFMUME::setBoolean(const ComRef& cref, bool value)
   {
     fmi2ValueReference vr = allVariables[j].getValueReference();
     int value_ = value ? 1 : 0;
-    if (fmi2OK != fmi2_setBoolean(fmu, &vr, 1, &value_))
+    if (fmi2OK != fmi2_setBoolean(instance, &vr, 1, &value_))
       return oms_status_error;
   }
 
@@ -1541,7 +1543,7 @@ oms_status_enu_t oms::ComponentFMUME::setInteger(const ComRef& cref, int value)
   else
   {
     fmi2ValueReference vr = allVariables[j].getValueReference();
-    if (fmi2OK != fmi2_setInteger(fmu, &vr, 1, &value))
+    if (fmi2OK != fmi2_setInteger(instance, &vr, 1, &value))
       return oms_status_error;
   }
 
@@ -1663,7 +1665,7 @@ oms_status_enu_t oms::ComponentFMUME::setReal(const ComRef& cref, double value)
   else
   {
     fmi2ValueReference vr = allVariables[j].getValueReference();
-    if (fmi2OK != fmi2_setReal(fmu, &vr, 1, &value))
+    if (fmi2OK != fmi2_setReal(instance, &vr, 1, &value))
       return oms_status_error;
   }
 
@@ -1719,7 +1721,7 @@ oms_status_enu_t oms::ComponentFMUME::setString(const ComRef& cref, const std::s
   {
     fmi2ValueReference vr = allVariables[j].getValueReference();
     fmi2String value_ = value.c_str();
-    if (fmi2OK != fmi2_setString(fmu, &vr, 1, &value_))
+    if (fmi2OK != fmi2_setString(instance, &vr, 1, &value_))
       return oms_status_error;
   }
 
@@ -1883,7 +1885,7 @@ oms_status_enu_t oms::ComponentFMUME::updateSignals(ResultWriter& resultWriter)
 oms_status_enu_t oms::ComponentFMUME::getContinuousStates(double* states)
 {
   CallClock callClock(clock);
-  fmi2Status fmistatus = fmi2_getContinuousStates(fmu, states, getNumberOfContinuousStates());
+  fmi2Status fmistatus = fmi2_getContinuousStates(instance, states, getNumberOfContinuousStates());
   if (fmi2OK != fmistatus)
     return logError_FMUCall("fmi2_getContinuousStates", this);
   return oms_status_ok;
@@ -1892,7 +1894,7 @@ oms_status_enu_t oms::ComponentFMUME::getContinuousStates(double* states)
 oms_status_enu_t oms::ComponentFMUME::setContinuousStates(double* states)
 {
   CallClock callClock(clock);
-  fmi2Status fmistatus = fmi2_setContinuousStates(fmu, states, getNumberOfContinuousStates());
+  fmi2Status fmistatus = fmi2_setContinuousStates(instance, states, getNumberOfContinuousStates());
   if (fmi2OK != fmistatus)
     return logError_FMUCall("fmi2_setContinuousStates", this);
   return oms_status_ok;
@@ -1901,7 +1903,7 @@ oms_status_enu_t oms::ComponentFMUME::setContinuousStates(double* states)
 oms_status_enu_t oms::ComponentFMUME::getDerivatives(double* derivatives)
 {
   CallClock callClock(clock);
-  fmi2Status fmistatus = fmi2_getDerivatives(fmu, derivatives, getNumberOfContinuousStates());
+  fmi2Status fmistatus = fmi2_getDerivatives(instance, derivatives, getNumberOfContinuousStates());
   if (fmi2OK != fmistatus)
     return logError_FMUCall("fmi2_getDerivatives", this);
   return oms_status_ok;
@@ -1910,7 +1912,7 @@ oms_status_enu_t oms::ComponentFMUME::getDerivatives(double* derivatives)
 oms_status_enu_t oms::ComponentFMUME::getNominalsOfContinuousStates(double* nominals)
 {
   CallClock callClock(clock);
-  fmi2Status fmistatus = fmi2_getNominalsOfContinuousStates(fmu, nominals, getNumberOfContinuousStates());
+  fmi2Status fmistatus = fmi2_getNominalsOfContinuousStates(instance, nominals, getNumberOfContinuousStates());
   if (fmi2OK != fmistatus)
     return logError_FMUCall("fmi2_getNominalsOfContinuousStates", this);
   return oms_status_ok;
@@ -1919,7 +1921,7 @@ oms_status_enu_t oms::ComponentFMUME::getNominalsOfContinuousStates(double* nomi
 oms_status_enu_t oms::ComponentFMUME::getEventindicators(double* eventindicators)
 {
   CallClock callClock(clock);
-  fmi2Status fmistatus = fmi2_getEventIndicators(fmu, eventindicators, nEventIndicators);
+  fmi2Status fmistatus = fmi2_getEventIndicators(instance, eventindicators, nEventIndicators);
   if (fmi2OK != fmistatus)
     return logError_FMUCall("fmi2_getEventIndicators", this);
   return oms_status_ok;
@@ -1928,7 +1930,7 @@ oms_status_enu_t oms::ComponentFMUME::getEventindicators(double* eventindicators
 oms_status_enu_t oms::ComponentFMUME::getEventindicators(double* eventindicators, size_t size)
 {
   CallClock callClock(clock);
-  fmi2Status fmistatus = fmi2_getEventIndicators(fmu, eventindicators, size);
+  fmi2Status fmistatus = fmi2_getEventIndicators(instance, eventindicators, size);
   if (fmi2OK != fmistatus)
     return logError_FMUCall("fmi2_getEventIndicators", this);
   return oms_status_ok;
@@ -1941,7 +1943,7 @@ oms_status_enu_t oms::ComponentFMUME::completedIntegratorStep(bool noSetFMUState
   fmi2Boolean fmiEnterEventMode = fmi2False;
   fmi2Boolean fmiTerminateSimulation = fmi2False;
 
-  fmi2Status status = fmi2_completedIntegratorStep(fmu,
+  fmi2Status status = fmi2_completedIntegratorStep(instance,
                                                    noSetFMUStatePriorToCurrentPoint ? fmi2True : fmi2False,
                                                    &fmiEnterEventMode,
                                                    &fmiTerminateSimulation);
@@ -1958,7 +1960,7 @@ oms_status_enu_t oms::ComponentFMUME::completedIntegratorStep(bool noSetFMUState
 oms_status_enu_t oms::ComponentFMUME::enterEventMode()
 {
   CallClock callClock(clock);
-  fmi2Status status = fmi2_enterEventMode(fmu);
+  fmi2Status status = fmi2_enterEventMode(instance);
   if (status != fmi2OK)
     return logError_FMUCall("fmi2_enterEventMode", this);
   return oms_status_ok;
@@ -1967,7 +1969,7 @@ oms_status_enu_t oms::ComponentFMUME::enterEventMode()
 oms_status_enu_t oms::ComponentFMUME::enterContinuousTimeMode()
 {
   CallClock callClock(clock);
-  fmi2Status status = fmi2_enterContinuousTimeMode(fmu);
+  fmi2Status status = fmi2_enterContinuousTimeMode(instance);
   if (status != fmi2OK)
     return logError_FMUCall("fmi2_enterContinuousTimeMode", this);
   return oms_status_ok;
