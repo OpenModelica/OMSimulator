@@ -51,14 +51,13 @@ logger = logging.getLogger(__name__)
 
 
 class SSD:
-  def __init__(self, name: str):
-    '''Initialize an SSD object.'''
+  def __init__(self, name: str, system_name: str | None = None):
+    '''Initialize an SSD object. The root system is named `system_name`, defaulting to `name`.'''
     from OMSimulator.ssp import SSP
 
     self._name = name
     self._filename = None
-    ## TODO change the System name to "root" or "default" or "main" or "top" or something
-    self.system = System(name)
+    self.system = System(system_name if system_name is not None else name)
     self.startTime = 0.0
     self.stopTime = 1.0
     self.resultFile = self._name + "_res.mat"

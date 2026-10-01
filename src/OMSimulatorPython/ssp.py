@@ -52,7 +52,9 @@ from lxml import etree as ET
 logger = logging.getLogger(__name__)
 
 class SSP:
-  def __init__(self, path: str | None = None, temp_dir: str | None = None):
+  def __init__(self, path: str | None = None, temp_dir: str | None = None, model_name: str = 'default', system_name: str | None = None):
+    '''Creates an empty SSP with a model (variant) `model_name` and root system `system_name`
+    (defaults to `model_name`). Both are ignored when `path` is given.'''
     self._activeVariantName = None
     self.variants = {}
     self.resources = {}
@@ -68,7 +70,7 @@ class SSP:
 
     # Ensure at least one variant exists
     if self.activeVariantName is None:
-      self.add(SSD('default'))
+      self.add(SSD(model_name, system_name))
 
   def __del__(self):
     '''Cleans up temporary files upon deletion'''
