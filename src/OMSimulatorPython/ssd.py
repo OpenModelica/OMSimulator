@@ -71,6 +71,8 @@ class SSD:
     self.tolerance = 1e-4
     self.unitDefinitions = list()
     self.enumerationDefinitions = list()
+    ## MetaData of the SystemStructureDescription itself, see addMetaDataReference
+    self.metaDataResources = []
 
   @staticmethod
   def importFromFile(filename: Path, resources = None):
@@ -107,6 +109,7 @@ class SSD:
       raise ValueError(f"Invalid SSD file: Missing <ssd:System> in {filename}")
     ssd.system = System.importFromNode(system, ssd, resources)
     utils.parseDefaultExperiment(root, ssd)
+    utils.parseMetaData(root, ssd, resources)
     Unit.importFromNode(root, ssd)
     Enumeration.importFromNode(root, ssd)
     logger.debug(f"SSD '{variant_name}' successfully imported from {filename}")
@@ -170,7 +173,10 @@ class SSD:
     subcref = self._validateCref(cref)
     self.system.addSSVReference(subcref, resource1, resource2)
 
-  def addMetaDataReference(self, cref: CRef, resource: str, kind: str, type: str):
+  def addMetaDataReference(self, cref: CRef | None, resource: str, kind: str, type: str):
+    if cref is None:
+      self.metaDataResources.append({"source": resource, "kind": kind, "type": type})
+      return
     subcref = self._validateCref(cref)
     self.system.addMetaDataReference(subcref, resource, kind, type)
 
@@ -297,6 +303,9 @@ class SSD:
     print(f"{prefix} |-- startTime: {self.startTime}")
     print(f"{prefix} |-- stopTime: {self.stopTime}")
 
+    for resource in self.metaDataResources:
+      print(f"{prefix} MetaData: {resource.get('source')}")
+
   def export(self, filename: str | None = None):
     '''Exports the SSD as an XML file.'''
     root = ET.Element(
@@ -314,6 +323,7 @@ class SSD:
       self._exportUnitDefinitions(root)
 
     self._exportDefaultExperiment(root)
+    utils.exportMetaData(root, self.metaDataResources)
 
     xml_content = ET.tostring(root, encoding="utf-8", xml_declaration=True, pretty_print=True).decode("utf-8")
 

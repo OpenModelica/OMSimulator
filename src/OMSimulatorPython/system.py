@@ -1156,12 +1156,7 @@ class System:
             parameter_mapping_node.set("source", value)
 
     ## export MetaData resources to ssd file
-    if len(self.metaDataResources) > 0:
-      for resource in self.metaDataResources:
-        meta_data_node = ET.SubElement(node, namespace.tag("ssc", "MetaData"))
-        meta_data_node.set("kind", resource.get("kind"))
-        meta_data_node.set("type", resource.get("type"))
-        meta_data_node.set("source", resource.get("source"))
+    utils.exportMetaData(node, self.metaDataResources)
 
     ## export elements
     if len(self.elements) > 0:

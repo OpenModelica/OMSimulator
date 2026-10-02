@@ -207,7 +207,8 @@ class SSP:
 
     self.activeVariant.addSSVReference(cref, resource1, resource2)
 
-  def addMetaDataReference(self, cref: CRef, resource: str, kind = "general", type = "application/octet-stream"):
+  def addMetaDataReference(self, cref: CRef | None, resource: str, kind = "general", type = "application/octet-stream"):
+    '''Adds a MetaData reference to an element, or to the SSD itself when cref is None.'''
     if self.activeVariant is None:
       raise ValueError("No active variant set in the SSP.")
 
