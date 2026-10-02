@@ -115,14 +115,7 @@ class OMSGuiServer:
     # These methods don't require an existing model — handle before _get_model().
     if method == "newModel":
       name = args.get("name", "default")
-      ssp = SSP()
-      # SSP() always creates a variant keyed as "default" — re-key it to the requested name.
-      ssd = ssp.variants.pop("default")
-      ssd.name = name
-      ssd.resultFile = name + "_res.mat"
-      ssp.variants[name] = ssd
-      ssp.activeVariantName = name
-      ssp.activeVariant.system.name = args.get("system_name", "default")
+      ssp = SSP(model_name=name, system_name=args.get("system_name", "default"))
       self.models[name] = ssp
       return {"status": "ok", "method": method}
 

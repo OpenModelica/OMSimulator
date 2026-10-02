@@ -462,21 +462,7 @@ class MainWindow(QMainWindow):
     if dialog.exec() != QDialog.DialogCode.Accepted:
       return
 
-    ssp = SSP()
-    # SSD.name has no owning-SSP awareness: a plain assignment leaves
-    # ssp.variants' dict key and ssp.activeVariantName pointing at the old
-    # ('default') name, and SSP.export() decides which SSD becomes the
-    # required SystemStructure.ssd by comparing ssd.name == activeVariantName
-    # -- so an un-re-keyed rename silently breaks export/reload. Re-key by
-    # hand since the library has no renameVariant().
-    ssd = ssp.activeVariant
-    oldVariantName = ssd.name
-    ssd.name = dialog.modelName()
-    del ssp.variants[oldVariantName]
-    ssp.variants[ssd.name] = ssd
-    ssp.activeVariantName = ssd.name
-
-    ssd.system.name = dialog.rootSystemName()
+    ssp = SSP(model_name=dialog.modelName(), system_name=dialog.rootSystemName())
     self._addModel(ssp)
     self.setWindowTitle(f'OMSimulatorGui - {self._activeModel.name}')
     self.statusBar().showMessage('New model created', 5000)
