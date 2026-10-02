@@ -30,6 +30,7 @@
 #
 # See the full OSMC Public License conditions for more details.
 
+import copy
 import logging
 import warnings
 from lxml import etree as ET
@@ -138,13 +139,27 @@ def parseElements(node, resources = None):
   return elements
 
 def parseMetaData(node, obj, resources):
-  ssc_meta_node = node.find("ssc:MetaData", namespaces=namespace.ns)
-  if ssc_meta_node is not None:
+  for ssc_meta_node in node.findall("ssc:MetaData", namespaces=namespace.ns):
     source = ssc_meta_node.get("source", "")
     kind = ssc_meta_node.get("kind", "general")
     type = ssc_meta_node.get("type", "application/octet-stream")
-    ## TODO check for other attributes
-    obj.metaDataResources.append({"source": source, "kind":kind, "type":type})
+    ## keep the element itself, so that attributes and inline content this
+    ## class does not model (id, description, Content, Signature, ...) are
+    ## written back unchanged on export
+    obj.metaDataResources.append({"source": source, "kind":kind, "type":type, "node": copy.deepcopy(ssc_meta_node)})
+
+def exportMetaData(node, metaDataResources):
+  for resource in metaDataResources:
+    meta_data_node = resource.get("node")
+    if meta_data_node is not None:
+      meta_data_node = copy.deepcopy(meta_data_node)
+      meta_data_node.tail = None
+      node.append(meta_data_node)
+    else:
+      meta_data_node = ET.SubElement(node, namespace.tag("ssc", "MetaData"))
+      meta_data_node.set("kind", resource.get("kind"))
+      meta_data_node.set("type", resource.get("type"))
+      meta_data_node.set("source", resource.get("source"))
 
 def parseParameterBindings(node, obj, resources):
   """Extract and print system parameters"""

@@ -195,12 +195,8 @@ class Component:
             parameter_mapping_node.set("source", value)
 
     ## export MetaData resources to ssd file
-    if len(self.metaDataResources) > 0:
-      for resource in self.metaDataResources:
-        meta_data_node = ET.SubElement(component_node, namespace.tag("ssc", "MetaData"))
-        meta_data_node.set("kind", resource.get("kind"))
-        meta_data_node.set("type", resource.get("type"))
-        meta_data_node.set("source", resource.get("source"))
+    from OMSimulator import utils
+    utils.exportMetaData(component_node, self.metaDataResources)
 
     ## export Annotations
     if self.solver:

@@ -40,4 +40,5 @@ oms_add_test(
   swapSSV3.py
   swapSSV4.py
   addMetaData.py
+  addMetaData2.py
 )
