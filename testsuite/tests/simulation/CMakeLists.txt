@@ -31,6 +31,7 @@ oms_add_test(
   SimpleSimulation16.py
   SimpleSimulation17.py
   SimpleSimulation18.py
+  SimpleSimulation19.py
   stepUntil.py
   FMI3_SimpleSimulation1.py
   FMI3_SimpleSimulation2.py
