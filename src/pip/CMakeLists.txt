@@ -32,3 +32,35 @@ if(OMS_ENABLE_LOCAL_PIP)
     USES_TERMINAL
   )
 endif()
+
+# Source distribution only (no wheels): the sdist carries pyproject.toml,
+# build_helpers.py and the license/readme; the binaries are downloaded when the
+# package is installed. It is assembled straight from the build tree, so it
+# needs neither `cmake --install` nor a compiled OMSimulator.
+#   cmake -S . -B build -DOMS_ENABLE_PIP=ON
+#   cmake --build build                         # also: --target pip_sdist -> build/src/pip/dist/*.tar.gz
+if(NOT OMS_ENABLE_LOCAL_PIP)
+  find_package(Python COMPONENTS Interpreter REQUIRED)
+  execute_process(COMMAND "${Python_EXECUTABLE}" -c "import build"
+                  RESULT_VARIABLE OMS_PIP_HAVE_BUILD OUTPUT_QUIET ERROR_QUIET)
+  if(NOT OMS_PIP_HAVE_BUILD EQUAL 0)
+    message(FATAL_ERROR "OMS_ENABLE_PIP needs the Python 'build' module, which is missing from ${Python_EXECUTABLE}. "
+                        "Install it (pip install build, or pacman -S mingw-w64-ucrt-x86_64-python-build on MSYS2) "
+                        "or select another interpreter with -DPython_EXECUTABLE=<path>.")
+  endif()
+  set(OMS_PIP_SDIST_DIR "${CMAKE_CURRENT_BINARY_DIR}/sdist")
+  add_custom_target(pip_sdist ALL
+    COMMAND ${CMAKE_COMMAND} -E rm -rf "${OMS_PIP_SDIST_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/dist"
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${OMS_PIP_SDIST_DIR}"
+    COMMAND ${CMAKE_COMMAND} -E copy
+            "${CMAKE_CURRENT_BINARY_DIR}/build_helpers.py"
+            "${CMAKE_CURRENT_BINARY_DIR}/pyproject.toml"
+            "${CMAKE_CURRENT_SOURCE_DIR}/MANIFEST.in"
+            "${CMAKE_CURRENT_SOURCE_DIR}/README.md"
+            "${CMAKE_SOURCE_DIR}/OSMC-License.txt"
+            "${OMS_PIP_SDIST_DIR}"
+    COMMAND "${Python_EXECUTABLE}" -m build --sdist --outdir "${CMAKE_CURRENT_BINARY_DIR}/dist" "${OMS_PIP_SDIST_DIR}"
+    COMMENT "Building the OMSimulator sdist"
+    USES_TERMINAL
+  )
+endif()

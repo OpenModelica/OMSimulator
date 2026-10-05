@@ -20,6 +20,17 @@ dependencies = [
     "lxml>=5.3.1"
 ]
 
+[project.optional-dependencies]
+# pip install OMSimulator[gui]
+gui = [
+    "PySide6",
+    "pyqtgraph",
+    "scipy"
+]
+
+[project.gui-scripts]
+OMSimulatorGui = "OMSimulatorGui.app:main"
+
 [project.urls]
 Homepage = "http://openmodelica.org/"
 Documentation = "https://openmodelica.org/doc/OMSimulator/master/OMSimulator/UsersGuide/html/"
@@ -29,7 +40,7 @@ Issues = "https://github.com/OpenModelica/OMSimulator/issues"
 Download = "https://pypi.org/project/OMSimulator/#files"
 
 [tool.setuptools]
-packages = ["OMSimulator"] ## dynamically created
+packages = ["OMSimulator", "OMSimulatorGui"] ## dynamically created
 zip-safe = false
 
 [tool.setuptools.package-data]

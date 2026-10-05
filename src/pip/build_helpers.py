@@ -59,6 +59,10 @@ class OMSInstaller(build_py):
 
     # recreate it, so that setuptools creates the package directory
     os.mkdir(topdir)
+    guidir = os.path.join(os.getcwd(), 'OMSimulatorGui')
+    if os.path.isdir(guidir):
+      shutil.rmtree(guidir)
+    os.mkdir(guidir)
      # initialize parent
     super().__init__(dist)
 
@@ -111,6 +115,11 @@ class OMSInstaller(build_py):
 
     # Copy package
     shutil.copytree(os.path.join(extract_dir, source_path), target_dir, dirs_exist_ok=True)
+    # Copy the GUI, which is installed next to the OMSimulator package
+    gui_src = os.path.join(extract_dir, source_path + "Gui")
+    if os.path.exists(gui_src):
+      shutil.copytree(gui_src, os.path.join(self.build_lib, "OMSimulatorGui"), dirs_exist_ok=True,
+                      ignore=shutil.ignore_patterns("__pycache__"))
     # Copy schema if exists
     schema_src = os.path.join(extract_dir, "share/OMSimulator/schema")
     if os.path.exists(schema_src):
