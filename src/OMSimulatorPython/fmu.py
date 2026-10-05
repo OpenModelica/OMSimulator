@@ -876,6 +876,16 @@ class FMU:
       raise RuntimeError(f"Failed to initialize model: {status}")
     self.fmuInitialized = True
 
+  def reset(self):
+    '''Reset the model to the state right after instantiation, discarding initialization/simulation progress.'''
+    if self.fmuInstantiated is False:
+      raise RuntimeError("FMU must be instantiated before reset")
+
+    status = Capi.reset(self.instanceName)
+    if status != Status.ok:
+      raise RuntimeError(f"Failed to reset model: {status}")
+    self.fmuInitialized = False
+
   def simulate(self):
     if self.fmuInstantiated is False:
       raise RuntimeError("FMU must be instantiated before simulation")
