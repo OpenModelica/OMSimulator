@@ -60,6 +60,7 @@ from OMSimulator.variable import Causality
 
 from OMSimulatorGui.views.diagram_items import (
     ConnectionItem,
+    manhattanize,
     ElementIconItem,
     ParameterFileBadgeItem,
     PortItem,
@@ -644,12 +645,16 @@ class DiagramView(QGraphicsView):
       # Interior corners actually steered through, excluding the start
       # anchor (that's always the port's own live position, recomputed on
       # render like any other connection's endpoints).
+      startPos = self._connectDragPoints[0]
       waypoints = self._connectDragPoints[1:]
       self._connectDragPoints = []
       self._connectDragAxis = None
 
       targetItem = self.itemAt(event.pos())
       if isinstance(targetItem, PortItem) and targetItem is not startPort:
+        if waypoints:
+          # Straighten the leg into the target port, like OMEdit does.
+          waypoints = manhattanize([startPos, *waypoints, targetItem.scenePos()])[1:-1]
         self.connectionRequested.emit(
             _elementNameForPort(startPort), str(startPort.connector.name),
             _elementNameForPort(targetItem), str(targetItem.connector.name), waypoints)

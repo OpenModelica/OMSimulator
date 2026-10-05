@@ -475,6 +475,39 @@ def _pointSegmentDistance(p: QPointF, a: QPointF, b: QPointF) -> float:
   return math.hypot(p.x() - projection.x(), p.y() - projection.y())
 
 
+def manhattanize(points: list[QPointF]) -> list[QPointF]:
+  '''Snaps a route to horizontal/vertical segments, as OMEdit does: the
+  first and last points (the ports) stay where they are, and the interior
+  waypoints are corrected so every segment is axis-aligned. The segments
+  alternate between horizontal and vertical starting with the first
+  segment's dominant direction, which fixes the waypoint next to the end
+  port onto the end port's own row/column -- that is what straightens the
+  last leg of a connection steered towards a port it isn't level with.
+  A route with no waypoints is returned unchanged (it falls back to
+  defaultRoute).'''
+  if len(points) < 3:
+    return list(points)
+  pts = [QPointF(p) for p in points]
+  last = len(pts) - 1
+  first = pts[1] - pts[0]
+  horizontal = abs(first.x()) >= abs(first.y())
+  for i in range(1, last):
+    prev = pts[i - 1]
+    if i == last - 1:
+      # The segment after this point reaches the end port, so it alternates
+      # with the one before it: take the free coordinate from the end port.
+      if horizontal:
+        pts[i] = QPointF(pts[last].x(), prev.y())
+      else:
+        pts[i] = QPointF(prev.x(), pts[last].y())
+    elif horizontal:
+      pts[i] = QPointF(pts[i].x(), prev.y())
+    else:
+      pts[i] = QPointF(prev.x(), pts[i].y())
+    horizontal = not horizontal
+  return pts
+
+
 _ROUTE_STUB = 15.0          # short leg leaving/entering a port, in its own arrow direction
 _ROUTE_DETOUR_MARGIN = 20.0  # clearance above both boxes for the "backward" detour
 
@@ -667,6 +700,8 @@ class ConnectionItem(QGraphicsPathItem):
     self._commitGeometry()
 
   def _commitGeometry(self) -> None:
+    self._points = manhattanize(self._points)
+    self._rebuildPath()
     interior = self._points[1:-1]
     if interior:
       self.connection.connectionGeometry = ConnectionGeometry(
