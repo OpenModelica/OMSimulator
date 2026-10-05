@@ -475,6 +475,48 @@ def _pointSegmentDistance(p: QPointF, a: QPointF, b: QPointF) -> float:
   return math.hypot(p.x() - projection.x(), p.y() - projection.y())
 
 
+def manhattanize(points: list[QPointF]) -> list[QPointF]:
+  '''Snaps a route to horizontal/vertical segments, as OMEdit does: the
+  first and last points (the ports) stay where they are, and the interior
+  waypoints are corrected so every segment is axis-aligned. The segments
+  alternate between horizontal and vertical starting with the first
+  segment's dominant direction, which fixes the waypoint next to the end
+  port onto the end port's own row/column -- that is what straightens the
+  last leg of a connection steered towards a port it isn't level with.
+  A route with no waypoints is returned unchanged (it falls back to
+  defaultRoute).'''
+  if len(points) < 3:
+    return list(points)
+  pts = [QPointF(p) for p in points]
+  last = len(pts) - 1
+  if last >= 3:
+    # The waypoints themselves say which way the route runs: the segment
+    # between the first two is vertical when the first leg is horizontal.
+    inner = pts[2] - pts[1]
+    horizontal = abs(inner.x()) <= abs(inner.y()) if abs(inner.x()) != abs(inner.y()) else                  abs((pts[1] - pts[0]).x()) >= abs((pts[1] - pts[0]).y())
+  else:
+    # A single waypoint: take the orientation that moves it the least.
+    wp = pts[1]
+    costH = abs(wp.y() - pts[0].y()) + abs(wp.x() - pts[last].x())
+    costV = abs(wp.x() - pts[0].x()) + abs(wp.y() - pts[last].y())
+    horizontal = costH <= costV
+  for i in range(1, last):
+    prev = pts[i - 1]
+    if i == last - 1:
+      # The segment after this point reaches the end port, so it alternates
+      # with the one before it: take the free coordinate from the end port.
+      if horizontal:
+        pts[i] = QPointF(pts[last].x(), prev.y())
+      else:
+        pts[i] = QPointF(prev.x(), pts[last].y())
+    elif horizontal:
+      pts[i] = QPointF(pts[i].x(), prev.y())
+    else:
+      pts[i] = QPointF(prev.x(), pts[i].y())
+    horizontal = not horizontal
+  return pts
+
+
 _ROUTE_STUB = 15.0          # short leg leaving/entering a port, in its own arrow direction
 _ROUTE_DETOUR_MARGIN = 20.0  # clearance above both boxes for the "backward" detour
 
@@ -566,12 +608,34 @@ class ConnectionItem(QGraphicsPathItem):
     else:
       self._points = defaultRoute(startPos, endPos)
 
+    self._realignToPorts()
+
     self.setPen(QPen(QColor(60, 60, 60), 0.5))
     self.setZValue(0)
     self.setAcceptHoverEvents(True)
     self.setToolTip(f'{connection.startElement}.{connection.startConnector} -> '
                      f'{connection.endElement}.{connection.endConnector}')
     self._rebuildPath()
+
+  def _realignToPorts(self) -> None:
+    '''Ports move on their own -- e.g. a system's boundary grows around a
+    newly added element and its connectors move with it -- while saved
+    waypoints are absolute, which leaves the legs next to such a port
+    slanted. Waypoints that were drawn orthogonal are snapped back against
+    the current port positions and saved; routes with deliberately
+    diagonal waypoints (e.g. imported from another tool) are left alone.'''
+    interior = self._points[1:-1]
+    if not interior or self.connection.connectionGeometry is None:
+      return
+    for a, b in zip(interior, interior[1:]):
+      if abs(a.x() - b.x()) > 1e-6 and abs(a.y() - b.y()) > 1e-6:
+        return
+    aligned = manhattanize(self._points)
+    if all(abs(p.x() - q.x()) < 1e-6 and abs(p.y() - q.y()) < 1e-6 for p, q in zip(aligned, self._points)):
+      return
+    self._points = aligned
+    self.connection.connectionGeometry = ConnectionGeometry(
+        pointsX=[p.x() for p in aligned[1:-1]], pointsY=[-p.y() for p in aligned[1:-1]])
 
   def _rebuildPath(self) -> None:
     path = QPainterPath(self._points[0])
@@ -667,6 +731,8 @@ class ConnectionItem(QGraphicsPathItem):
     self._commitGeometry()
 
   def _commitGeometry(self) -> None:
+    self._points = manhattanize(self._points)
+    self._rebuildPath()
     interior = self._points[1:-1]
     if interior:
       self.connection.connectionGeometry = ConnectionGeometry(
