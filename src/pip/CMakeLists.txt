@@ -38,7 +38,7 @@ endif()
 # package is installed. It is assembled straight from the build tree, so it
 # needs neither `cmake --install` nor a compiled OMSimulator.
 #   cmake -S . -B build -DOMS_ENABLE_PIP=ON
-#   cmake --build build                         # also: --target pip_sdist -> build/src/pip/dist/*.tar.gz
+#   cmake --build build                         # also: --target pip_sdist -> src/pip/install/dist/*.tar.gz
 if(NOT OMS_ENABLE_LOCAL_PIP)
   find_package(Python COMPONENTS Interpreter REQUIRED)
   execute_process(COMMAND "${Python_EXECUTABLE}" -c "import build"
@@ -49,8 +49,10 @@ if(NOT OMS_ENABLE_LOCAL_PIP)
                         "or select another interpreter with -DPython_EXECUTABLE=<path>.")
   endif()
   set(OMS_PIP_SDIST_DIR "${CMAKE_CURRENT_BINARY_DIR}/sdist")
+  # The finished sdist goes next to the local pip package, in src/pip/install/dist.
+  set(OMS_PIP_DIST_DIR "${CMAKE_CURRENT_SOURCE_DIR}/install/dist")
   add_custom_target(pip_sdist ALL
-    COMMAND ${CMAKE_COMMAND} -E rm -rf "${OMS_PIP_SDIST_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/dist"
+    COMMAND ${CMAKE_COMMAND} -E rm -rf "${OMS_PIP_SDIST_DIR}" "${OMS_PIP_DIST_DIR}"
     COMMAND ${CMAKE_COMMAND} -E make_directory "${OMS_PIP_SDIST_DIR}"
     COMMAND ${CMAKE_COMMAND} -E copy
             "${CMAKE_CURRENT_BINARY_DIR}/build_helpers.py"
@@ -59,7 +61,7 @@ if(NOT OMS_ENABLE_LOCAL_PIP)
             "${CMAKE_CURRENT_SOURCE_DIR}/README.md"
             "${CMAKE_SOURCE_DIR}/OSMC-License.txt"
             "${OMS_PIP_SDIST_DIR}"
-    COMMAND "${Python_EXECUTABLE}" -m build --sdist --outdir "${CMAKE_CURRENT_BINARY_DIR}/dist" "${OMS_PIP_SDIST_DIR}"
+    COMMAND "${Python_EXECUTABLE}" -m build --sdist --outdir "${OMS_PIP_DIST_DIR}" "${OMS_PIP_SDIST_DIR}"
     COMMENT "Building the OMSimulator sdist"
     USES_TERMINAL
   )

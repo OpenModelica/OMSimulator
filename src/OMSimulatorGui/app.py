@@ -32,9 +32,19 @@
 
 import sys
 
-from PySide6.QtWidgets import QApplication
+# The GUI's own dependencies come with `pip install OMSimulator[gui]`; the
+# files themselves are always installed, so a missing one is reported as such
+# in main() instead of failing with a bare ModuleNotFoundError at import time.
+_GUI_DEPENDENCIES = ('PySide6', 'pyqtgraph', 'scipy')
+_missingDependency = None
+try:
+  from PySide6.QtWidgets import QApplication
 
-from OMSimulatorGui.main_window import MainWindow
+  from OMSimulatorGui.main_window import MainWindow
+except ImportError as e:
+  if (e.name or '').split('.')[0] not in _GUI_DEPENDENCIES:
+    raise
+  _missingDependency = e.name.split('.')[0]
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -42,6 +52,12 @@ def main(argv: list[str] | None = None) -> int:
 
   argv may optionally contain a single .ssp path to open on startup.
   '''
+  if _missingDependency is not None:
+    print(f"The OMSimulator GUI needs the Python package '{_missingDependency}', which is not installed.\n"
+          "Install the GUI dependencies with:\n\n"
+          "  pip install OMSimulator[gui]", file=sys.stderr)
+    return 1
+
   argv = list(sys.argv) if argv is None else [sys.argv[0], *argv]
 
   app = QApplication(argv)
