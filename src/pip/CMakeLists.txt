@@ -22,6 +22,11 @@ install(FILES "${CMAKE_SOURCE_DIR}/OSMC-License.txt" DESTINATION ${CMAKE_CURRENT
 if(OMS_ENABLE_LOCAL_PIP)
   message(STATUS "Local pip package enabled")
   install(DIRECTORY "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/OMSimulator/" DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/install/OMSimulator/")
+  if(OMS_ENABLE_OMSimulatorGui)
+    # pyproject.toml lists OMSimulatorGui as a package, so it has to be there.
+    install(DIRECTORY "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/OMSimulatorGui/" DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/install/OMSimulatorGui/"
+            PATTERN "__pycache__" EXCLUDE)
+  endif()
   # Copy the platform-specific OMSimulator shared library
   install(FILES "$<TARGET_FILE:OMSimulatorLib>" DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/install/OMSimulator/")
 

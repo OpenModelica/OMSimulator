@@ -50,6 +50,34 @@ under:
 
    pip install -r src/OMSimulatorGui/requirements.txt
 
+.. index:: OMSimulatorGui; pip
+
+Installing with pip
+-------------------
+
+The ``OMSimulator`` package on PyPI already contains the GUI: the
+``OMSimulatorGui`` Python package is installed next to ``OMSimulator`` in
+``site-packages``.
+
+.. code-block:: bash
+
+   pip install OMSimulator
+
+The GUI's own requirements (PySide6, pyqtgraph and scipy) are *not* installed
+by default, so the core package stays small. If you start the GUI without
+them, it tells you what is missing. Install them with the ``gui`` extra:
+
+.. code-block:: bash
+
+   pip install OMSimulator[gui]
+
+Installing the extra is also enough when ``OMSimulator`` is already
+installed: pip only adds the missing requirements. Then start the GUI with:
+
+.. code-block:: bash
+
+   python -m OMSimulatorGui
+
 .. index:: OMSimulatorGui; Launching
 
 Launching
