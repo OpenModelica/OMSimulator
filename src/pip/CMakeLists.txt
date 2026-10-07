@@ -22,11 +22,9 @@ install(FILES "${CMAKE_SOURCE_DIR}/OSMC-License.txt" DESTINATION ${CMAKE_CURRENT
 if(OMS_ENABLE_LOCAL_PIP)
   message(STATUS "Local pip package enabled")
   install(DIRECTORY "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/OMSimulator/" DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/install/OMSimulator/")
-  if(OMS_ENABLE_OMSimulatorGui)
-    # pyproject.toml lists OMSimulatorGui as a package, so it has to be there.
-    install(DIRECTORY "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/OMSimulatorGui/" DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/install/OMSimulatorGui/"
-            PATTERN "__pycache__" EXCLUDE)
-  endif()
+  # pyproject.toml lists OMSimulatorGui as a package, so it has to be there.
+  install(DIRECTORY "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/OMSimulatorGui/" DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/install/OMSimulatorGui/"
+          PATTERN "__pycache__" EXCLUDE)
   # Copy the platform-specific OMSimulator shared library
   install(FILES "$<TARGET_FILE:OMSimulatorLib>" DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/install/OMSimulator/")
 
@@ -43,7 +41,7 @@ endif()
 # package is installed. It is assembled straight from the build tree, so it
 # needs neither `cmake --install` nor a compiled OMSimulator.
 #   cmake -S . -B build -DOMS_ENABLE_PIP=ON
-#   cmake --build build                         # also: --target pip_sdist -> src/pip/install/dist/*.tar.gz
+#   cmake --build build # also: --target pip_sdist -> src/pip/install/dist/*.tar.gz
 if(NOT OMS_ENABLE_LOCAL_PIP)
   find_package(Python COMPONENTS Interpreter REQUIRED)
   execute_process(COMMAND "${Python_EXECUTABLE}" -c "import build"

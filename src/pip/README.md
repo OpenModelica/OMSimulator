@@ -64,7 +64,7 @@ a locally built version.
 src/pip/install/     prepared local pip package
 pyproject.toml       Python package configuration
 OMSimulator/         Python package and native OMSimulator library
-OMSimulatorGui/      the standalone GUI (when OMS_ENABLE_OMSimulatorGui is ON)
+OMSimulatorGui/      the standalone GUI
 schema/              OMSimulator schema files
 ```
 
