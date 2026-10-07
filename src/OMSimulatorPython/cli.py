@@ -237,12 +237,14 @@ def main(argv=None) -> int:
 
   # A zero step size makes the solver loop forever or crash, so catch it here with a
   # usage error instead of after the model was already instantiated.
-  for name in ('stepSize', 'initialStepSize'):
+  for name in ('stepSize', 'initialStepSize', 'tolerance'):
     value = getattr(args, name)
     if value is not None and not value > 0.0:
       parser.error(f"--{name} must be greater than 0, but got {value}")
   if args.minimumStepSize is not None and not args.minimumStepSize >= 0.0:
     parser.error(f"--minimumStepSize must not be negative, but got {args.minimumStepSize}")
+  if args.intervals is not None and not args.intervals > 1:
+    parser.error(f"--intervals must be greater than 1, but got {args.intervals}")
 
   # Claim the flag before the FMU/SSP layers, which suppress paths themselves.
   Capi.setSuppressPath(True if args.suppressPath is None else args.suppressPath)
