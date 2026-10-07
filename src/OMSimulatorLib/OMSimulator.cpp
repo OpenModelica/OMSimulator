@@ -1658,6 +1658,9 @@ oms_status_enu_t oms_getTime(const char* cref, double* time)
 
 oms_status_enu_t oms_setFixedStepSize(const char* cref, double stepSize)
 {
+  if (!(stepSize > 0.0))
+    return logError("The step size must be greater than 0, but got " + std::to_string(stepSize));
+
   oms::ComRef tail(cref);
   oms::ComRef front = tail.pop_front();
 
@@ -1686,6 +1689,13 @@ OMSAPI oms_status_enu_t OMSCALL oms_setDcpPorts(const char *cref, int masterPort
 
 oms_status_enu_t oms_setVariableStepSize(const char *cref, double initialStepSize, double minimumStepSize, double maximumStepSize)
 {
+  if (!(initialStepSize > 0.0))
+    return logError("The initial step size must be greater than 0, but got " + std::to_string(initialStepSize));
+  if (!(minimumStepSize >= 0.0))
+    return logError("The minimum step size must not be negative, but got " + std::to_string(minimumStepSize));
+  if (!(maximumStepSize > 0.0))
+    return logError("The maximum step size must be greater than 0, but got " + std::to_string(maximumStepSize));
+
   oms::ComRef tail(cref);
   oms::ComRef front = tail.pop_front();
 
