@@ -14,6 +14,40 @@ The package can be installed in two ways:
 ```bash
 pip install OMSimulator
 ```
+
+The package also contains the standalone OMSimulatorGui. Its own requirements
+(PySide6, pyqtgraph and scipy) are not installed by default; install them with
+the `gui` extra, which is also enough when OMSimulator is already installed:
+
+```bash
+pip install OMSimulator[gui]
+```
+
+Then start the GUI with:
+
+```bash
+python -m OMSimulatorGui
+```
+
+If the requirements are missing, the GUI says so and prints this install command.
+# Building the source distribution (sdist)
+
+The sdist is built by CMake; the binaries are not part of it, they are downloaded
+when the package is installed.
+
+```bash
+cmake -S . -B build -DOMS_ENABLE_PIP=ON
+cmake --build build
+```
+
+The sdist is written to `src/pip/install/dist/`. Building it needs the Python
+`build` module (`pip install build`). Test it in a fresh virtual environment:
+
+```bash
+python -m venv oms-pip-test
+oms-pip-test/bin/python -m pip install "src/pip/install/dist/<file>.tar.gz[gui]"
+```
+
 # OMSimulator-local-pip
 
 The local pip installation builds the OMSimulator Python package from the
@@ -30,6 +64,7 @@ a locally built version.
 src/pip/install/     prepared local pip package
 pyproject.toml       Python package configuration
 OMSimulator/         Python package and native OMSimulator library
+OMSimulatorGui/      the standalone GUI
 schema/              OMSimulator schema files
 ```
 

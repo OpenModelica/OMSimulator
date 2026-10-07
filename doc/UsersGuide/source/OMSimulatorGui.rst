@@ -25,12 +25,11 @@ underlying SSD/SSV/SSM files -- see :ref:`omsimulatorgui-limitations` below.
 Requirements and Enabling the Build
 ------------------------------------
 
-OMSimulatorGui is built by default. To disable it (e.g. to skip its extra
-Python package requirements below), configure with:
+OMSimulatorGui is installed together with OMSimulator:
 
 .. code-block:: bash
 
-   cmake -S . -B build -DOMS_ENABLE_OMSimulatorGui=OFF
+   cmake -S . -B build
    cmake --build build --target install
 
 It has no compiled component -- it is pure Python, installed alongside the
@@ -49,6 +48,34 @@ under:
 .. code-block:: bash
 
    pip install -r src/OMSimulatorGui/requirements.txt
+
+.. index:: OMSimulatorGui; pip
+
+Installing with pip
+-------------------
+
+The ``OMSimulator`` package on PyPI already contains the GUI: the
+``OMSimulatorGui`` Python package is installed next to ``OMSimulator`` in
+``site-packages``.
+
+.. code-block:: bash
+
+   pip install OMSimulator
+
+The GUI's own requirements (PySide6, pyqtgraph and scipy) are *not* installed
+by default, so the core package stays small. If you start the GUI without
+them, it tells you what is missing. Install them with the ``gui`` extra:
+
+.. code-block:: bash
+
+   pip install OMSimulator[gui]
+
+Installing the extra is also enough when ``OMSimulator`` is already
+installed: pip only adds the missing requirements. Then start the GUI with:
+
+.. code-block:: bash
+
+   python -m OMSimulatorGui
 
 .. index:: OMSimulatorGui; Launching
 
