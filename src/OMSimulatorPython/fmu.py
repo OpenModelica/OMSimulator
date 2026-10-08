@@ -659,6 +659,11 @@ class FMU:
       'tolerance': self.tolerance if self.tolerance is not None else self.defaultExperiment.get('tolerance'),
       'stepSize': self.stepSize if self.stepSize is not None else self.defaultExperiment.get('stepSize'),
     }
+    # fmu.tolerance / fmu.stepSize are plain attributes, so they are checked here, where they are used.
+    for name in ('tolerance', 'stepSize'):
+      value = self.appliedExperiment[name]
+      if value is not None and not value > 0.0:
+        raise ValueError(f"The {name} must be greater than 0, but got {value}")
     status = Capi.setStartTime(self.instanceName, self.appliedExperiment['startTime'])
     if status != Status.ok:
       raise RuntimeError(f"Failed to set start time: {status}")
@@ -697,6 +702,8 @@ class FMU:
   def setTolerance(self, tolerance: float):
     if self.fmuInstantiated is False:
       raise RuntimeError("FMU must be instantiated before setting tolerance")
+    if not tolerance > 0.0:
+      raise ValueError(f"The tolerance must be greater than 0, but got {tolerance}")
     status = Capi.setTolerance(self.instanceName, tolerance)
     if status != Status.ok:
       raise RuntimeError(f"Failed to set tolerance: {status}")
@@ -704,6 +711,8 @@ class FMU:
   def setStepSize(self, stepSize: float):
     if self.fmuInstantiated is False:
       raise RuntimeError("FMU must be instantiated before setting variable step size")
+    if not stepSize > 0.0:
+      raise ValueError(f"The step size must be greater than 0, but got {stepSize}")
     status = Capi.setVariableStepSize(self.instanceName, 1e-6, 1e-12, stepSize)
     if status != Status.ok:
       raise RuntimeError(f"Failed to set variable step size: {status}")
