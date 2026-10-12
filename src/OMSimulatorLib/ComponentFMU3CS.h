@@ -167,6 +167,15 @@ namespace oms
     fmi3FMUState fmuState = NULL;
     double fmuStateTime;
 
+    /// The FMU declares hasEventMode, so it was instantiated with eventModeUsed and
+    /// early return allowed: events inside fmi3DoStep are reported (not lost) and the
+    /// FMU leaves Initialization Mode into Event Mode instead of Step Mode.
+    bool eventModeUsed = false;
+
+    /// fmi3UpdateDiscreteStates until no more updates are needed, then fmi3EnterStepMode.
+    /// The FMU must be in Event Mode.
+    oms_status_enu_t doEventIteration(bool& terminateSimulation);
+
     oms::ComRef getValidCref(ComRef cref);
   };
 }

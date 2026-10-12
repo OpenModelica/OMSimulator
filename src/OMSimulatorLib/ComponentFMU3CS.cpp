@@ -642,8 +642,12 @@ oms_status_enu_t oms::ComponentFMU3CS::setExportName(const std::string& exportNa
 
 oms_status_enu_t oms::ComponentFMU3CS::instantiate()
 {
+  // check if event mode is used in the FMU, if yes then request event mode during instantiation
+  // TODO early return follows hasEventMode here; use mightReturnEarlyFromDoStep once fmi4c exposes it
+  eventModeUsed = fmi3cs_getHasEventMode(fmu);
+  const fmi3Boolean useEventMode = eventModeUsed ? fmi3True : fmi3False;
   // TODO investigate fmi3IntermediateUpdateCallback = NULL
-  instance = fmi3_instantiateCoSimulation(fmu, fmi3False, fmi3True, fmi3False, fmi3False, NULL, 0, fmu, omsfmi3logger, NULL);
+  instance = fmi3_instantiateCoSimulation(fmu, fmi3False, fmi3True, useEventMode, useEventMode, NULL, 0, fmu, omsfmi3logger, NULL);
   if (!instance)
   {
     logInfo("fmi3Instantiate() failed");
@@ -857,7 +861,53 @@ oms_status_enu_t oms::ComponentFMU3CS::initialize()
 
   if (fmi3OK != status) return logError_FMUCall("fmi3_exitInitializationMode", this);
 
+  // With eventModeUsed the FMU leaves Initialization Mode into Event Mode, and has to be
+  // brought into Step Mode before the first fmi3DoStep.
+  if (eventModeUsed)
+  {
+    bool terminateSimulation = false;
+    if (oms_status_ok != doEventIteration(terminateSimulation))
+      return oms_status_error;
+  }
+
   //logInfo("FMI3 initialization successfull");
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::ComponentFMU3CS::doEventIteration(bool& terminateSimulation)
+{
+  const int maxIterations = Flags::MaxEventIteration();
+  int iterations = 0;
+
+  fmi3Boolean discreteStatesNeedUpdate = fmi3True;
+  fmi3Boolean terminate = fmi3False;
+  fmi3Boolean nominalsOfContinuousStatesChanged = fmi3False;
+  fmi3Boolean valuesOfContinuousStatesChanged = fmi3False;
+  fmi3Boolean nextEventTimeDefined = fmi3False;
+  fmi3Float64 nextEventTime = 0.0;
+
+  while (discreteStatesNeedUpdate && !terminate)
+  {
+    fmi3Status status = fmi3_updateDiscreteStates(instance,
+                                                  &discreteStatesNeedUpdate,
+                                                  &terminate,
+                                                  &nominalsOfContinuousStatesChanged,
+                                                  &valuesOfContinuousStatesChanged,
+                                                  &nextEventTimeDefined,
+                                                  &nextEventTime);
+    if (fmi3OK != status) return logError_FMUCall("fmi3_updateDiscreteStates", this);
+
+    if (++iterations >= maxIterations)
+      return logError("Event iteration reached max number of iterations (" + std::to_string(maxIterations) + ") for FMU " + std::string(getCref()));
+  }
+
+  terminateSimulation = (terminate == fmi3True);
+  if (!terminateSimulation)
+  {
+    fmi3Status status = fmi3_enterStepMode(instance);
+    if (fmi3OK != status) return logError_FMUCall("fmi3_enterStepMode", this);
+  }
 
   return oms_status_ok;
 }
@@ -887,7 +937,7 @@ oms_status_enu_t oms::ComponentFMU3CS::reset()
   getParentSystem()->getTolerance(&relativeTolerance);
 
   fmi3Status status_ = fmi3_enterInitializationMode(instance, fmi3False, relativeTolerance, time, fmi3True, getModel().getStopTime());
-  if (fmi3OK != fmistatus) return logError_FMUCall("fmi3_enterInitializationMode", this);
+  if (fmi3OK != status_) return logError_FMUCall("fmi3_enterInitializationMode", this);
 
   return oms_status_ok;
 }
@@ -897,23 +947,62 @@ oms_status_enu_t oms::ComponentFMU3CS::stepUntil(double stopTime)
   CallClock callClock(clock);
   System *topLevelSystem = getModel().getTopLevelSystem();
 
-  double hdef = (stopTime-time) / 1.0;
-  bool eventEncountered, terminateSimulation, earlyReturn;
-  double lastT;
+  const int maxIterations = Flags::MaxEventIteration();
+  int stalledSteps = 0;
 
   while (time < stopTime)
   {
-    fmi3Status status = fmi3_doStep(instance,  time, hdef, fmi3True, &eventEncountered, &terminateSimulation, &earlyReturn, &lastT);
-    time += hdef;
+    const double hdef = stopTime - time;
+    bool eventEncountered = false, terminateSimulation = false, earlyReturn = false;
+    double lastT = time;
+
+    fmi3Status status = fmi3_doStep(instance, time, hdef, fmi3True, &eventEncountered, &terminateSimulation, &earlyReturn, &lastT);
 
     if (status == fmi3Discard)
     {
+      time += hdef;
       getModel().setStopTime(time);
       logInfo("fmi3_doStep discarded for FMU \"" + std::string(getFullCref()) + "\"");
       return oms_status_ok;
     }
     else if (status != fmi3OK)
       return logError_FMUCall("fmi3_doStep", this);
+
+    // An FMU that returned early only got as far as lastT, e.g. to the time of an event.
+    const double reached = earlyReturn ? lastT : time + hdef;
+    stalledSteps = (reached > time) ? 0 : stalledSteps + 1;
+    if (stalledSteps >= maxIterations)
+      return logError("FMU \"" + std::string(getFullCref()) + "\" does not advance in time, stuck at t=" + std::to_string(time));
+    time = reached;
+
+    if (terminateSimulation)
+    {
+      getModel().setStopTime(time);
+      logInfo("FMU \"" + std::string(getFullCref()) + "\" requested to terminate the simulation");
+      return oms_status_ok;
+    }
+
+    if (eventEncountered && eventModeUsed)
+    {
+      // Emit the values before and after the event at the same time stamp, so the result
+      // file shows the discontinuity instead of a slope smeared over one time step.
+      getModel().emit(time, true);
+
+      fmi3Status eventStatus = fmi3_enterEventMode(instance);
+      if (fmi3OK != eventStatus) return logError_FMUCall("fmi3_enterEventMode", this);
+
+      if (oms_status_ok != doEventIteration(terminateSimulation))
+        return oms_status_error;
+
+      getModel().emit(time, true);
+
+      if (terminateSimulation)
+      {
+        getModel().setStopTime(time);
+        logInfo("FMU \"" + std::string(getFullCref()) + "\" requested to terminate the simulation");
+        return oms_status_ok;
+      }
+    }
   }
   time = stopTime;
   return oms_status_ok;

@@ -33,5 +33,6 @@ else:
 
 ## Result:
 ## info:    Result file: Stair-cs3.mat (bufferSize=10)
+## info:    FMU "model.root.Stair" requested to terminate the simulation
 ## signal counter is equal
 ## endResult

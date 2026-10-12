@@ -51,6 +51,7 @@
 #include "minizip.h"
 #include <thread>
 #include <algorithm> /* std::unique and std::find are defined here */
+#include <cmath>
 #include <fstream>  //Only for debug output, can remove later
 
 #include <dcp/xml/DcpSlaveDescriptionElements.hpp>
@@ -1667,7 +1668,9 @@ oms_status_enu_t oms::Model::emit(double time, bool force, bool* emitted)
     return oms_status_ok;
   if (!force && time < lastEmit + loggingInterval)
     return oms_status_ok;
-  if (!force && time <= lastEmit)
+  // Times that only differ by round-off (e.g. an accumulated communication point and the
+  // exact time of an event) are the same time stamp, so they must not be emitted twice.
+  if (!force && time <= lastEmit + 1e-12 * std::max(1.0, std::fabs(time)))
     return oms_status_ok;
 
   // Skip rhs of events unless --emitEvents=true
