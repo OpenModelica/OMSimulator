@@ -4,5 +4,6 @@ oms_add_test(
   Feedthrough-cs.py
   Resource-cs.py
   Stair-cs.py
+  Stair-cs-event.py
   VanDerPol-cs.py
 )
