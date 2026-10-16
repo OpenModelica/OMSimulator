@@ -93,6 +93,7 @@ const char* oms::ssp::Version1_0::ssc::binary_type                     = "ssc:Bi
 const char* oms::ssp::Version1_0::ssc::unit                            = "ssc:Unit";
 const char* oms::ssp::Version1_0::ssc::base_unit                       = "ssc:BaseUnit";
 const char* oms::ssp::Version1_0::ssc::enum_item                       = "ssc:Item";
+const char* oms::ssp::Version1_0::ssc::meta_data                       = "ssc:MetaData";
 
 const char* oms::ssp::Version1_0::ssv::real_type                       = "ssv:Real";
 const char* oms::ssp::Version1_0::ssv::integer_type                    = "ssv:Integer";

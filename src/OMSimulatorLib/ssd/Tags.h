@@ -95,6 +95,7 @@ namespace oms
         extern const char* unit;
         extern const char* base_unit;
         extern const char* enum_item;
+        extern const char* meta_data;
       }
     }
 
