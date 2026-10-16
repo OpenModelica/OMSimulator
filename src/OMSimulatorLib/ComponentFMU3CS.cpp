@@ -643,11 +643,12 @@ oms_status_enu_t oms::ComponentFMU3CS::setExportName(const std::string& exportNa
 oms_status_enu_t oms::ComponentFMU3CS::instantiate()
 {
   // check if event mode is used in the FMU, if yes then request event mode during instantiation
-  // TODO early return follows hasEventMode here; use mightReturnEarlyFromDoStep once fmi4c exposes it
   eventModeUsed = fmi3cs_getHasEventMode(fmu);
   const fmi3Boolean useEventMode = eventModeUsed ? fmi3True : fmi3False;
+  // check if early return is used in the FMU, if yes then request early return during instantiation
+  const fmi3Boolean useEarlyReturn = fmi3cs_getMightReturnEarlyFromDoStep(fmu) ? fmi3True : fmi3False;
   // TODO investigate fmi3IntermediateUpdateCallback = NULL
-  instance = fmi3_instantiateCoSimulation(fmu, fmi3False, fmi3True, useEventMode, useEventMode, NULL, 0, fmu, omsfmi3logger, NULL);
+  instance = fmi3_instantiateCoSimulation(fmu, fmi3False, fmi3True, useEventMode, useEarlyReturn, NULL, 0, fmu, omsfmi3logger, NULL);
   if (!instance)
   {
     logInfo("fmi3Instantiate() failed");
@@ -970,6 +971,8 @@ oms_status_enu_t oms::ComponentFMU3CS::stepUntil(double stopTime)
 
     // An FMU that returned early only got as far as lastT, e.g. to the time of an event.
     const double reached = earlyReturn ? lastT : time + hdef;
+    if (earlyReturn)
+      logDebug("fmi3_doStep returned early for FMU \"" + std::string(getFullCref()) + "\" at t=" + std::to_string(lastT) + " (requested " + std::to_string(time + hdef) + ", eventHandlingNeeded=" + (eventEncountered ? "true" : "false") + ")");
     stalledSteps = (reached > time) ? 0 : stalledSteps + 1;
     if (stalledSteps >= maxIterations)
       return logError("FMU \"" + std::string(getFullCref()) + "\" does not advance in time, stuck at t=" + std::to_string(time));
