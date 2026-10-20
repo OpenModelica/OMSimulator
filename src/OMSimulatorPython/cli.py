@@ -111,7 +111,12 @@ def _calibrateSSP(ssp: SSP, path: Path, args: argparse.Namespace) -> None:
       _logInfo(f"evaluation {evaluation}: cost {cost:.6g}")
 
   output = args.calibrationOutput or path.with_name(f"{path.stem}.calibrated.ssp")
-  result = calibrateSSP(ssp, args.calibrate or None, args.uqFile, output, progress)
+  try:
+    result = calibrateSSP(ssp, args.calibrate or None, args.uqFile, output, progress)
+  except (ValueError, KeyError) as e:
+    # an invalid calibration problem is a user error, not a crash
+    print(f"error: {e.args[0] if e.args else e}", file=sys.stderr, flush=True)
+    sys.exit(1)
   _logInfo(
     '*** Calibration Info ***\n'
     f'- status     : {"converged" if result.success else "not converged"} ({result.message})\n'
