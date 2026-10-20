@@ -5,7 +5,7 @@ pipeline {
     buildDiscarder(logRotator(numToKeepStr: "100", artifactNumToKeepStr: "5"))
   }
   parameters {
-    booleanParam(name: 'MACOS_ARM64', defaultValue: true, description: 'Build with macOS-arm64 (M1 mac). Turn off if the M1 agent is broken.')
+    booleanParam(name: 'MACOS_ARM64', defaultValue: true, description: 'Build with macOS-arm64 (M1 mac). Turn off if the M1 agent is broken; on a pull request, the "CI/disable macOS-arm64" label does the same.')
     booleanParam(name: 'SUBMODULE_UPDATE', defaultValue: false, description: 'Allow pull request to update submodules (disabled by default due to common user errors)')
     booleanParam(name: 'UPLOAD_BUILD_OPENMODELICA', defaultValue: false, description: 'Upload install artifacts to build.openmodelica.org/omsimulator. Activates MINGW_UCRT64 as well.')
     string(name: 'CTEST_FLAGS', defaultValue: '', description: 'Extra flags passed to ctest, e.g. -R api')
@@ -150,6 +150,10 @@ pipeline {
         }
 
         stage('arm64-macOS') {
+          when {
+            expression { return shouldWeBuildMacOSArm64() }
+            beforeAgent true
+          }
           agent {
             label 'M1'
           }
@@ -420,34 +424,41 @@ EXIT /b 1
             unstash name: 'jammy-amd64-zip'   // includes: "OMSimulator-linux-jammy-amd64-*.tar.gz"
             unstash name: 'mingw-ucrt64-zip'  // includes: "OMSimulator-mingw-ucrt64-*.zip"
             unstash name: 'win64-zip'         // includes: "OMSimulator-win64-*.zip"
-            unstash name: 'osx-zip'           // includes: "OMSimulator-osx-*.zip"
 
-            sh "ls *.zip *.tar.gz"
-
-            sshPublisher (
-              publishers: [
-                sshPublisherDesc(
-                  configName: 'OMSimulator',
-                  transfers: [
-                    sshTransfer(
-                      remoteDirectory: "${DEPLOYMENT_PREFIX}linux-amd64/",
-                      sourceFiles: 'OMSimulator-linux-amd64-*.tar.gz'),
-                    sshTransfer(
-                      remoteDirectory: "${DEPLOYMENT_PREFIX}linux-jammy-amd64/",
-                      sourceFiles: 'OMSimulator-linux-jammy-amd64-*.tar.gz'),
-                    sshTransfer(
-                      remoteDirectory: "${DEPLOYMENT_PREFIX}win-mingw-ucrt64/",
-                      sourceFiles: 'OMSimulator-mingw-ucrt64-*.zip'),
-                    sshTransfer(
-                      remoteDirectory: "${DEPLOYMENT_PREFIX}osx/",
-                      sourceFiles: 'OMSimulator-osx-*.zip'),
-                    sshTransfer(
-                      remoteDirectory: "${DEPLOYMENT_PREFIX}win-msvc64/",
-                      sourceFiles: 'OMSimulator-win64-*.zip')
-                  ]
-                )
+            script {
+              def transfers = [
+                sshTransfer(
+                  remoteDirectory: "${DEPLOYMENT_PREFIX}linux-amd64/",
+                  sourceFiles: 'OMSimulator-linux-amd64-*.tar.gz'),
+                sshTransfer(
+                  remoteDirectory: "${DEPLOYMENT_PREFIX}linux-jammy-amd64/",
+                  sourceFiles: 'OMSimulator-linux-jammy-amd64-*.tar.gz'),
+                sshTransfer(
+                  remoteDirectory: "${DEPLOYMENT_PREFIX}win-mingw-ucrt64/",
+                  sourceFiles: 'OMSimulator-mingw-ucrt64-*.zip'),
+                sshTransfer(
+                  remoteDirectory: "${DEPLOYMENT_PREFIX}win-msvc64/",
+                  sourceFiles: 'OMSimulator-win64-*.zip')
               ]
-            )
+              // The arm64-macOS stage is skipped when shouldWeBuildMacOSArm64() is false.
+              if (shouldWeBuildMacOSArm64()) {
+                unstash name: 'osx-zip'       // includes: "OMSimulator-osx-*.zip"
+                transfers << sshTransfer(
+                  remoteDirectory: "${DEPLOYMENT_PREFIX}osx/",
+                  sourceFiles: 'OMSimulator-osx-*.zip')
+              }
+
+              sh "ls *.zip *.tar.gz"
+
+              sshPublisher (
+                publishers: [
+                  sshPublisherDesc(
+                    configName: 'OMSimulator',
+                    transfers: transfers
+                  )
+                ]
+              )
+            }
           }
         }
       }
@@ -601,8 +612,8 @@ def shouldWeUpdateSubmodules() {
 
 def shouldWeBuildMacOSArm64() {
   if (isPR()) {
-    if (pullRequest.labels.contains("CI/macOS-arm64")) {
-      return true
+    if (pullRequest.labels.contains("CI/disable macOS-arm64")) {
+      return false
     }
   }
   return params.MACOS_ARM64
