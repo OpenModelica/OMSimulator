@@ -90,13 +90,22 @@ A build with OMSimulatorGui enabled installs an
    OMSimulatorGui
 
 This sets up ``PYTHONPATH``/``PATH`` the same way ``OMSimulator.bat``/``.sh``
-does for the CLI, then runs ``python3 -m OMSimulatorGui``. It can also be
-invoked directly once the ``OMSimulator``/``OMSimulatorGui`` packages are
-importable:
+does for the CLI, then runs ``python3 -m OMSimulatorGui`` (``python`` on
+Windows). It can also be invoked directly once the
+``OMSimulator``/``OMSimulatorGui`` packages are importable:
 
 .. code-block:: bash
 
    python -m OMSimulatorGui
+
+Either way, the GUI runs under whichever ``python`` comes first on ``PATH``,
+which must be one with the packages listed above. On Windows, the
+OpenModelica installer bundles a Python that already has them. Start
+``OMSimulatorGui`` from OMEdit's *Tools > OpenModelica Command Prompt*,
+which puts the bundled Python first on ``PATH`` (or OMDev's Python, if
+``OMDEV`` is set). From a plain command prompt, ``python`` may instead be
+another Python installed on the machine, and the GUI then fails with an
+error such as ``No module named 'PySide6'``.
 
 .. index:: OMSimulatorGui; Main Window
 

@@ -38,3 +38,14 @@ Standalone PySide6 GUI for OMSimulator, calling the OMSimulator Python API
 '''
 
 __version__ = '@OMS_SHORT_VERSION_STRING@'
+
+import os
+
+## The OpenModelica installer ships PySide6's Qt6 DLLs and plugins in its bin
+## directory, which Python >= 3.8 does not search on Windows. Register it here so it
+## applies however the GUI is started. No-op for pip installs (no Qt6Core.dll there).
+if os.name == 'nt':
+  bindir = os.path.normpath(os.path.join(os.path.dirname(__file__), "@OMSIMULATORGUI_RELATIVE_BIN_DIR@"))
+  if os.path.isfile(os.path.join(bindir, "Qt6Core.dll")):
+    os.add_dll_directory(bindir)
+    os.environ.setdefault('QT_PLUGIN_PATH', bindir)
