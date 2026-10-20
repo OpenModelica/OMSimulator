@@ -18,18 +18,16 @@ jobs:
   coverage:
     runs-on: ubuntu-24.04
     timeout-minutes: 60
+    # The image the linux64-noble Jenkins stage uses: compilers, flex for
+    # omc-diff, ccache, gcovr and the Python packages of the testsuite.
+    # Everything else OMSimulator needs is vendored in 3rdParty/.
+    container:
+      image: docker.openmodelica.org/build-deps:ubuntu-24.04-omsimulator
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: recursive
-
-      # Everything else OMSimulator needs is vendored in 3rdParty/. flex is for
-      # omc-diff, which the testsuite compares result files with.
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y cmake g++ flex python3 gcovr ccache
 
       # Only 3rdParty benefits much: the instrumented sources are rebuilt at -O0
       # anyway. It still takes the bulk of a cold build off the critical path.
