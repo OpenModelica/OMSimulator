@@ -21,6 +21,11 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+# pip install OMSimulator[calibration]
+calibration = [
+    "numpy",
+    "scipy"
+]
 # pip install OMSimulator[gui]
 gui = [
     "PySide6",

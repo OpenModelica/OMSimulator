@@ -41,6 +41,7 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/OMSimulator.bat.in" "${CMAKE_CURRENT
 
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/__init__.py"
               "${CMAKE_CURRENT_SOURCE_DIR}/__main__.py"
+              "${CMAKE_CURRENT_SOURCE_DIR}/calibration.py"
               "${CMAKE_CURRENT_SOURCE_DIR}/cli.py"
               "${CMAKE_CURRENT_BINARY_DIR}/capi.py"
               "${CMAKE_CURRENT_SOURCE_DIR}/component.py"

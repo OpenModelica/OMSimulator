@@ -1,5 +1,6 @@
 add_subdirectory(api)
 add_subdirectory(AircraftVehicleDemonstrator)
+add_subdirectory(calibration)
 add_subdirectory(CompositeModels)
 add_subdirectory(dcmotor)
 add_subdirectory(parker)

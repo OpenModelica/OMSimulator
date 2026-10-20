@@ -50,6 +50,11 @@ before simulation; pass --validate to only validate the file and skip
 simulation e.g.:
   OMSimulator --validate test.ssp
   OMSimulator --validate model.fmu
+
+For an SSP with a UQ layered standard file (see OMSimulator.calibration),
+pass --calibrate to fit the parameters of a Calibration activity to its
+reference data instead of simulating, e.g.:
+  OMSimulator --calibrate cal_01 --calibrationOutput calibrated.ssp test.ssp
 '''
 
 import argparse
@@ -76,6 +81,10 @@ def _runSSP(path: Path, args: argparse.Namespace) -> None:
     return
 
   ssp = SSP(str(path))
+  if args.calibrate is not None:
+    _calibrateSSP(ssp, path, args)
+    return
+
   model = ssp.instantiate()
 
   if args.startTime is not None:
@@ -91,6 +100,28 @@ def _runSSP(path: Path, args: argparse.Namespace) -> None:
   model.simulate()
   model.terminate()
   model.delete()
+
+def _calibrateSSP(ssp: SSP, path: Path, args: argparse.Namespace) -> None:
+  from OMSimulator.calibration import calibrateSSP
+
+  best = [float('inf')]
+  def progress(evaluation: int, parameters: dict, cost: float) -> None:
+    if cost < best[0]:
+      best[0] = cost
+      _logInfo(f"evaluation {evaluation}: cost {cost:.6g}")
+
+  output = args.calibrationOutput or path.with_name(f"{path.stem}.calibrated.ssp")
+  result = calibrateSSP(ssp, args.calibrate or None, args.uqFile, output, progress)
+  _logInfo(
+    '*** Calibration Info ***\n'
+    f'- status     : {"converged" if result.success else "not converged"} ({result.message})\n'
+    f'- evaluations: {result.evaluations} ({result.failedEvaluations} failed)\n'
+    f'- cost       : {result.cost:.6g}\n'
+    f'- time       : {result.elapsed:.2f}s\n'
+    '- parameters :\n' + '\n'.join(f'    {name} = {value:.6g}' for name, value in result.parameters.items()) + '\n'
+    '- RMSE       :\n' + '\n'.join(f'    {name} = {value:.6g}' for name, value in result.rmse.items()) + '\n'
+    f'- output     : {output}'
+  )
 
 def _logInfo(msg: str) -> None:
   '''Print a message using the "info: " style of the OMSimulator log output.'''
@@ -185,6 +216,9 @@ def main(argv=None) -> int:
   parser = argparse.ArgumentParser(prog='OMSimulator', description=__doc__)
   parser.add_argument('model', type=Path, help='Path to a .ssp or .fmu file to simulate')
   parser.add_argument('--validate', action='store_true', help='Only validate the file against its schema; do not simulate')
+  parser.add_argument('--calibrate', nargs='?', const='', default=None, metavar='ACTIVITY', help='Fit the parameters of a Calibration activity of the UQ file of the SSP to its reference data instead of simulating; ACTIVITY is the activity id, needed if there are several (.ssp only)')
+  parser.add_argument('--calibrationOutput', type=Path, default=None, help='SSP file to write the calibrated model to (default: the input name plus .calibrated.ssp)')
+  parser.add_argument('--uqFile', default=None, help='Path of the UQ file inside the SSP (default: the one referenced by ssc:MetaData of type application/x-uncertainty-quantification)')
   parser.add_argument('--version', action='version', version=f'{Capi.getVersion()}')
   _addOption(parser, '--addParametersToCSV', 'false', 'Export parameters to a .csv file', action=argparse.BooleanOptionalAction)
   _addOption(parser, '--algLoopSolver', 'kinsol', 'Specifies the loop solver method used for algebraic loops spanning multiple components', choices=['fixedpoint', 'kinsol'])
@@ -234,6 +268,9 @@ def main(argv=None) -> int:
 
   if not args.model.is_file():
     parser.error(f"File not found: {args.model}")
+
+  if (args.calibrate is not None or args.calibrationOutput or args.uqFile) and handler is not _runSSP:
+    parser.error("--calibrate, --calibrationOutput and --uqFile are only supported for .ssp files")
 
   # A zero step size makes the solver loop forever or crash, so catch it here with a
   # usage error instead of after the model was already instantiated.

@@ -109,6 +109,16 @@ refer to :ref:`OMSimulator Flags <omsimulator-flags>`.
    * - ``--validate``
      - ``.fmu`` | ``.ssp``
      - Only validate the file against its schema; do not simulate.
+   * - ``--calibrate``
+     - ``[ACTIVITY]``
+     - Fit the parameters of a Calibration activity instead of simulating
+       (``.ssp`` only), see :ref:`oms3-calibration`.
+   * - ``--calibrationOutput``
+     - ``FILE``
+     - SSP file the calibrated model is written to.
+   * - ``--uqFile``
+     - ``PATH``
+     - UQ file inside the SSP, if the SSP does not reference it.
 
 .. index:: OMSimulator; Command Line Interface Examples
 
@@ -133,6 +143,78 @@ Examples
   # Drop the "model.root" prefix from exported signal names (.fmu or .ssp)
   OMSimulator model.fmu --stripRoot
   OMSimulator model.ssp --stripRoot
+
+  # Calibrate the parameters of activity cal_01 against its reference data
+  OMSimulator model.ssp --calibrate cal_01 --calibrationOutput calibrated.ssp
+
+.. index:: OMSimulatorPython3; Parameter Calibration
+
+.. _oms3-calibration :
+
+Parameter Calibration
+---------------------
+
+The ``OMSimulator.calibration`` module fits parameters of an SSP model to
+reference data. The problem is described by a ``Calibration`` activity of the
+OpenSCALING UQ layered standard, in a UQ file inside the SSP that the SSD
+references with an ``ssc:MetaData`` element of type
+``application/x-uncertainty-quantification``:
+
+- ``CalibrationTargets``: the parameters to fit, with initial value and bounds
+- ``ObservedVariables``: the simulated variables compared to the reference data
+- ``ReferenceData``: a CSV file; the first column is the time
+- ``ParameterSet``: further parameter values to set
+- ``SimulationSetting``: stop time and tolerance
+
+The fit is a bounded nonlinear least squares problem solved with
+``scipy.optimize.least_squares``, so it needs numpy and scipy
+(``pip install OMSimulator[calibration]``). Each evaluation resets the model,
+sets the parameters, initializes it and steps through the time points of the
+reference data, so the FMUs are instantiated only once.
+
+The standard does not yet define how observed variables map to the reference
+data, their weights, the calibration time window or optimizer options. These
+are read from an optional ``KeyValues`` element of type
+``org.openmodelica.omsimulator.calibration`` in the ``SimulationSetting``:
+
+.. list-table:: Calibration options
+   :header-rows: 1
+   :widths: 30 70
+
+   * - Key
+     - Description
+   * - ``startTime``, ``stopTime``
+     - Calibration time window (default: the reference data up to the
+       ``stopTime`` of the ``SimulationSetting``).
+   * - ``dataName:<variable>``
+     - Reference data column of an observed variable (default: the column
+       named like the variable, optionally followed by ``|unit``).
+   * - ``weight:<variable>``
+     - Residual weight of an observed variable (default: 1).
+   * - ``scaling``
+     - ``none`` (default), ``range`` or ``std``: divide the residuals of
+       each observed variable by the range or standard deviation of its
+       reference data.
+   * - ``relativeTolerance``
+     - Optimizer tolerance on cost, step and gradient (default: 1e-8).
+   * - ``maxEvaluations``
+     - Maximum number of model evaluations.
+   * - ``diffStep``
+     - Relative finite difference step for the Jacobian.
+
+The calibrated values are written to ``<activity>_calibrated.ssv`` next to
+the UQ file and the ``ResultSet`` of the activity gets one ``ErrorMetric``
+of type ``RMSE`` per observed variable, referring to that parameter set.
+
+.. code-block:: python
+
+  from OMSimulator.calibration import calibrateSSP
+
+  result = calibrateSSP("model.ssp", "cal_01", output="calibrated.ssp")
+  print(result.parameters, result.rmse)
+
+``CalibrationProblem.fromXML`` and ``Calibration`` run the same fit on an
+already instantiated model, e.g., to set further values before calibrating.
 
 Quick start Example
 -------------------
