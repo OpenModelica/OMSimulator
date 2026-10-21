@@ -35,6 +35,7 @@ oms_add_test(
   setValueSSV1.py
   setValueSSV2.py
   setValueSSV3.py
+  suppressUnitConversion1.py
   swapSSV1.py
   swapSSV2.py
   swapSSV3.py

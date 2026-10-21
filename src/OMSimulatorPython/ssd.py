@@ -211,11 +211,11 @@ class SSD:
     subcref = self._validateCref(cref)
     self.system.removeSSVReference(subcref, resource)
 
-  def addConnection(self, cref1: CRef, cref2: CRef):
+  def addConnection(self, cref1: CRef, cref2: CRef, suppressUnitConversion: bool = False):
     subcref1 = self._validateCref(cref1)
     subcref2 = self._validateCref(cref2)
     #logger.debug(f"Adding connection from {subcref1} to {subcref2}")
-    self.system._addConnection(subcref1, subcref2)
+    self.system._addConnection(subcref1, subcref2, suppressUnitConversion)
 
   def deleteConnection(self, cref1: CRef, cref2: CRef):
     subcref1 = self._validateCref(cref1)
