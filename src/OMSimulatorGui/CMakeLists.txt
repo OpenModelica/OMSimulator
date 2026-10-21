@@ -3,6 +3,21 @@ project(OMSimulatorGui)
 ## Pure Python, no compile step -- imports the already-installed OMSimulator
 ## package at runtime. Mirrors OMSimulatorPython/CMakeLists.txt's pattern.
 
+## On Windows the installer ships the Qt6 DLLs PySide6 links against (and the Qt
+## plugins) in CMAKE_INSTALL_BINDIR, not next to python.exe. Python >= 3.8 ignores
+## PATH for extension-module dependencies, so the package's __init__.py registers
+## that directory via os.add_dll_directory(). Compute the relative path the same way
+## OMSimulatorPython does for capi.py instead of hardcoding the ".." count.
+if(IS_ABSOLUTE "${CMAKE_INSTALL_LIBDIR}")
+  set(_omsimulatorgui_full_libdir "${CMAKE_INSTALL_LIBDIR}")
+else()
+  set(_omsimulatorgui_full_libdir "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}")
+endif()
+
+file(RELATIVE_PATH OMSIMULATORGUI_RELATIVE_BIN_DIR
+     "${_omsimulatorgui_full_libdir}/OMSimulatorGui"
+     "${CMAKE_INSTALL_FULL_BINDIR}")
+
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/__init__.py" "${CMAKE_CURRENT_BINARY_DIR}/__init__.py" @ONLY)
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/OMSimulatorGui.in" "${CMAKE_CURRENT_BINARY_DIR}/OMSimulatorGui" @ONLY)
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/OMSimulatorGui.bat.in" "${CMAKE_CURRENT_BINARY_DIR}/OMSimulatorGui.bat" @ONLY)
