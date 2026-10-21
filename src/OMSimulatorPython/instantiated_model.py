@@ -232,8 +232,9 @@ class InstantiatedModel:
 
         start = self.mappedCrefs[start_element]
         end = self.mappedCrefs[end_element]
-        self.apiCall.append(f'oms_addConnection("{start}", "{end}")')
-        status = Capi.addConnection(start, end)
+        suppressUnitConversion = connection.get("suppress unit conversion", False)
+        self.apiCall.append(f'oms_addConnection("{start}", "{end}", {str(suppressUnitConversion).lower()})')
+        status = Capi.addConnection(start, end, suppressUnitConversion)
         if status != Status.ok:
           raise RuntimeError(f"Failed to add oms_addConnection: {status}")
         ## add linear transformation if exist

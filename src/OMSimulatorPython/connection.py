@@ -65,11 +65,12 @@ class LinearTransformation:
     return "LinearTransformation (factor: %s, offset: %s)" % (self.factor, self.offset)
 
 class Connection:
-  def __init__(self, startElement : str, startConnector : str, endElement : str, endConnector : str):
+  def __init__(self, startElement : str, startConnector : str, endElement : str, endConnector : str, suppressUnitConversion : bool = False):
     self.startElement = startElement
     self.startConnector = startConnector
     self.endElement = endElement
     self.endConnector = endConnector
+    self.suppressUnitConversion = suppressUnitConversion
     self.description = None
     self.connectionGeometry = None
     ## GTTransformation Optional support
@@ -78,6 +79,8 @@ class Connection:
 
   def list(self, prefix=""):
     print(f"{prefix} {self.startElement}.{self.startConnector} -> {self.endElement}.{self.endConnector}")
+    if self.suppressUnitConversion:
+      print(f"{prefix} |-- suppressUnitConversion: true")
     if self.connectionGeometry:
       self.connectionGeometry.list(prefix + " |--")
     if self.linearTransformation:
@@ -89,6 +92,8 @@ class Connection:
     connection_node.set("startConnector", str(self.startConnector))
     connection_node.set("endElement", str(self.endElement))
     connection_node.set("endConnector", str(self.endConnector))
+    if self.suppressUnitConversion:
+      connection_node.set("suppressUnitConversion", "true")
     if self.description:
       connection_node.set("description", self.description)
     if self.connectionGeometry:
@@ -107,7 +112,8 @@ class Connection:
       endElement = connection.get("endElement", '')
       endConnector = connection.get("endConnector")
       description = connection.get("description")
-      root.addConnection(startElement, startConnector, endElement, endConnector)
+      suppressUnitConversion = connection.get("suppressUnitConversion", "false") in ("true", "1")
+      root.addConnection(startElement, startConnector, endElement, endConnector, suppressUnitConversion)
       if description:
         root.connections[-1].description = description
       connection_geometry = connection.find("ssd:ConnectionGeometry", namespaces=namespace.ns)

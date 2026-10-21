@@ -653,7 +653,7 @@ class System:
       case _:
         raise ValueError(f"Element '{first}' in system '{self.name}' is neither a System nor a Component")
 
-  def _addConnection(self, cref1: CRef, cref2: CRef) -> None:
+  def _addConnection(self, cref1: CRef, cref2: CRef, suppressUnitConversion: bool = False) -> None:
     first1 = cref1.first()
     first2 = cref2.first()
 
@@ -663,7 +663,7 @@ class System:
         raise ValueError(f"System '{first1}' not found in '{self.name}'")
 
       # Add the connection inside the subsystem
-      self.elements[first1]._addConnection(cref1.pop_first(), cref2.pop_first())
+      self.elements[first1]._addConnection(cref1.pop_first(), cref2.pop_first(), suppressUnitConversion)
     # Top level system connections
     else:
       (start_element, start_connector) = cref1.split()
@@ -674,7 +674,7 @@ class System:
       # stores/compares startElement/startConnector as plain strings
       # everywhere else (XML import, _deleteConnection) -- leaving these as
       # CRef silently breaks deleteConnection's equality check later.
-      self.addConnection(str(start_element), str(start_connector), str(end_element), str(end_connector))
+      self.addConnection(str(start_element), str(start_connector), str(end_element), str(end_connector), suppressUnitConversion)
 
   def _deleteConnection(self, crefA: CRef, crefB: CRef) -> None:
     """Deletes a connection from the system."""
@@ -718,7 +718,7 @@ class System:
 
     raise ValueError(f"Connector '{connector_name}' not found in element '{element_name or self.name}'")
 
-  def addConnection(self, startElement : str, startConnector : str, endElement : str, endConnector : str):
+  def addConnection(self, startElement : str, startConnector : str, endElement : str, endConnector : str, suppressUnitConversion : bool = False):
     """Adds a connection to the system."""
     # Resolve source connector owner and causality
     (source_owner, source_kind) = self._findConnector(startElement, startConnector)
@@ -727,11 +727,11 @@ class System:
 
     if Connection.is_validConnection(source_owner, source_kind, dest_owner, dest_kind):
       self.isConnectorAlreadyConnected(startElement, startConnector, endElement, endConnector)
-      self.connections.append(Connection(startElement, startConnector, endElement, endConnector))
+      self.connections.append(Connection(startElement, startConnector, endElement, endConnector, suppressUnitConversion))
     # flipped connection
     elif Connection.is_validConnection(dest_owner, dest_kind, source_owner, source_kind):
       self.isConnectorAlreadyConnected(endElement, endConnector, startElement, startConnector)
-      self.connections.append(Connection(endElement, endConnector, startElement, startConnector))
+      self.connections.append(Connection(endElement, endConnector, startElement, startConnector, suppressUnitConversion))
     else:
       raise ValueError(f"info: Invalid connection from '{startElement}.{startConnector}'->'{endElement}.{endConnector}' as causality are violated with '{source_owner}.{source_kind.name}' -> '{dest_owner}.{dest_kind.name}'")
 
@@ -1119,6 +1119,9 @@ class System:
         solver = endSolver
       elif endSolver is None and startSolver is not None:
         solver = startSolver
+
+      if connection.suppressUnitConversion:
+        connection_info["suppress unit conversion"] = True
 
       ## add linear transformation info if available
       if connection.linearTransformation:

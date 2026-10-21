@@ -304,11 +304,11 @@ class SSP:
 
     self.activeVariant.removeSSVReference(cref, resource)
 
-  def addConnection(self, cref1: CRef, cref2: CRef):
+  def addConnection(self, cref1: CRef, cref2: CRef, suppressUnitConversion: bool = False):
     if self.activeVariant is None:
       raise ValueError("No active variant set in the SSP.")
 
-    self.activeVariant.addConnection(cref1, cref2)
+    self.activeVariant.addConnection(cref1, cref2, suppressUnitConversion)
 
   def deleteConnection(self, cref1: CRef, cref2: CRef):
     if self.activeVariant is None:
