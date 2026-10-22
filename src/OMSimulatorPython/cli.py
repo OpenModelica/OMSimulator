@@ -188,7 +188,7 @@ _NATIVE_OPTIONS = (
   'clearAllOptions', 'addParametersToCSV', 'algLoopSolver', 'CVODEMaxErrTestFails',
   'CVODEMaxNLSFailures', 'CVODEMaxNLSIterations', 'CVODEMaxSteps', 'deleteTempFiles',
   'directionalDerivatives', 'dumpAlgLoops', 'emitEvents', 'ignoreInitialUnknowns',
-  'initialStepSize', 'inputExtrapolation', 'intervals', 'logFile', 'logLevel',
+  'ignoreUnitMismatch', 'initialStepSize', 'inputExtrapolation', 'intervals', 'logFile', 'logLevel',
   'master', 'maxEventIteration', 'maxLoopIteration', 'minimumStepSize', 'numProcs',
   'progressBar', 'realTime', 'skipCSVHeader', 'solverStats', 'stripRoot',
   'tempDir', 'timeout', 'wallTime', 'workingDir', 'zeroNominal',
@@ -237,6 +237,7 @@ def main(argv=None) -> int:
   _addOption(parser, '--dumpAlgLoops', 'false', 'Dump information for algebraic loops', action=argparse.BooleanOptionalAction)
   _addOption(parser, '--emitEvents', 'true', 'Emit events during simulation', action=argparse.BooleanOptionalAction)
   _addOption(parser, '--ignoreInitialUnknowns', 'false', 'Ignore initial unknowns from the modelDescription.xml', action=argparse.BooleanOptionalAction)
+  _addOption(parser, '--ignoreUnitMismatch', 'false', 'Allow connections between connectors with incompatible units; values are passed without unit conversion', action=argparse.BooleanOptionalAction)
   _addOption(parser, '--initialStepSize', 1e-6, 'Specify the initial step size', type=float)
   _addOption(parser, '--inputExtrapolation', 'false', 'Enable input extrapolation using derivative information', action=argparse.BooleanOptionalAction)
   _addOption(parser, '--intervals', 500, 'Specify the number of communication points (arg > 1)', type=int)

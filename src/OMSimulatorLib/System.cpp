@@ -1106,7 +1106,7 @@ oms::Connector* oms::System::getConnector(const oms::ComRef& cref)
     return subsystem->second->getConnector(tail);
 
   auto component = components.find(head);
-  if (component != components.end()) 
+  if (component != components.end())
     return component->second->getConnector(tail);
 
   for (auto& connector : connectors)
@@ -1230,16 +1230,21 @@ oms_status_enu_t oms::System::addConnection(const oms::ComRef& crefA, const oms:
   // check units in connection
   if (!oms::Connection::isValidUnits(crefA, crefB, *conA, *conB))
   {
-    return logError("Unit mismatch in connection: " + std::string(crefA) + " -> " + std::string(crefB));
+    const std::string mismatch = "Unit mismatch in connection: " + std::string(crefA) + " [" + conA->connectorUnits.begin()->first + "] -> " + std::string(crefB) + " [" + conB->connectorUnits.begin()->first + "]";
+    if (!Flags::IgnoreUnitMismatch())
+      return logError(mismatch + "; use --ignoreUnitMismatch=true to connect them anyway");
+    // the conversion factor between units of different dimensions is meaningless
+    logWarning(mismatch + "; ignored due to --ignoreUnitMismatch, the value is passed without unit conversion");
+    suppressUnitConversion = true;
   }
 
   auto componentB = getComponent(headB);
-  if ((componentA && oms_component_dcp == componentA->getType()) || (componentB && oms_component_dcp == componentB->getType())) 
+  if ((componentA && oms_component_dcp == componentA->getType()) || (componentB && oms_component_dcp == componentB->getType()))
   {
     //DCP connections should not be used by OMSimulator solver for data exchange, only for setting up the DCP simulation.
-    dcpConnections.back() = new oms::Connection(crefA, crefB, suppressUnitConversion);   
+    dcpConnections.back() = new oms::Connection(crefA, crefB, suppressUnitConversion);
     dcpConnections.push_back(NULL);
-  } 
+  }
   else {
     // connection are checked in the python side, directly add the connection
     connections.back() = new oms::Connection(crefA, crefB, suppressUnitConversion);
@@ -2802,9 +2807,9 @@ oms_status_enu_t oms::System::renameConnectors()
 
 oms_status_enu_t oms::System::configureDcpSlave(port_t port)
 {
-    std::string host = "127.0.0.1"; 
+    std::string host = "127.0.0.1";
     dcpTimeStep = this->getMaximumStepSize();
-    std::string targetFile = "OMSimulatorSystem_slave_description.dcp"; 
+    std::string targetFile = "OMSimulatorSystem_slave_description.dcp";
 
     dcpInputs.clear();
     dcpOutputs.clear();
@@ -2834,7 +2839,7 @@ oms_status_enu_t oms::System::configureDcpSlave(port_t port)
 
     int i = 0;
     for(const auto& connection : this->getDcpConnections()) {
-      if(NULL == connection) {  
+      if(NULL == connection) {
         break;  //Vector is null terminated, break the loop
       }
 
@@ -2867,7 +2872,7 @@ oms_status_enu_t oms::System::configureDcpSlave(port_t port)
           causality->Float64->start->push_back(0.0);
           slaveDescription.Variables.push_back(make_Variable_input(connector2->getFullName(), valueReference_t(i), causality));
           dcpInputValueReferences.insert(std::make_pair(connector2->getFullName(), valueReference_t(i)));
-          
+
           ++i;
         }
       }
@@ -2937,7 +2942,7 @@ oms_status_enu_t oms::System::startDcpSlave()
   return dcpSlaveThreadReturnValue;
 }
 
-void oms::System::startDcpSlaveThread() 
+void oms::System::startDcpSlaveThread()
 {
   dcpSlaveThreadReturnValue = oms_status_ok;
   try {
@@ -2954,7 +2959,7 @@ void oms::System::dcpConfigure()
   for(const auto input : dcpInputValueReferences) {
     dcpInputs.insert(std::make_pair(input.first, dcpManager->getInput<double*>(input.second)));
   }
-  
+
   for(const auto output : dcpOutputValueReferences)
     dcpOutputs.insert(std::make_pair(output.first, dcpManager->getOutput<double*>(output.second)));
 }
