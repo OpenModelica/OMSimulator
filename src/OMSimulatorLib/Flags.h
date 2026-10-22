@@ -67,6 +67,7 @@ namespace oms
     static bool DumpAlgLoops() { return GetInstance().FlagDumpAlgLoops.value == "true"; }
     static bool EmitEvents() { return GetInstance().FlagEmitEvents.value == "true"; }
     static bool IgnoreInitialUnknowns() { return GetInstance().FlagIgnoreInitialUnknowns.value == "true"; }
+    static bool IgnoreUnitMismatch() { return GetInstance().FlagIgnoreUnitMismatch.value == "true"; }
     static bool InputExtrapolation() { return GetInstance().FlagInputExtrapolation.value == "true"; }
     static bool ProgressBar() { return GetInstance().FlagProgressBar.value == "true"; }
     static bool RealTime() { return GetInstance().FlagRealTime.value == "true"; }
@@ -138,6 +139,7 @@ namespace oms
     Flag FlagEmitEvents{"--emitEvents", "", "", "true", "Emit events during simulation", re_bool, nullptr, false, false, false};
     Flag FlagHelp{"--help", "-h", "", "", "Display the help text", re_void, Flags::Help, true, false, false};
     Flag FlagIgnoreInitialUnknowns{"--ignoreInitialUnknowns", "", "", "false", "Ignore initial unknowns from the modelDescription.xml", re_bool, nullptr, false, false, false};
+    Flag FlagIgnoreUnitMismatch{"--ignoreUnitMismatch", "", "", "false", "Allow connections between connectors with incompatible units; values are passed without unit conversion", re_bool, nullptr, false, false, false};
     Flag FlagInitialStepSize{"--initialStepSize", "", "", "1e-6", "Specify the initial step size", re_double, nullptr, false, false, false};
     Flag FlagInputExtrapolation{"--inputExtrapolation", "", "", "false", "Enable input extrapolation using derivative information", re_bool, nullptr, false, false, false};
     Flag FlagIntervals{"--intervals", "-i", "", "500", "Specify the number of communication points (arg > 1)", re_number, nullptr, false, false, false};
@@ -169,7 +171,7 @@ namespace oms
     Flag FlagZeroNominal{"--zeroNominal", "", "", "false", "Accept FMUs with invalid nominal values and replace the invalid nominal values with 1.0", re_bool, nullptr, false, false, false};
 
   private:
-    std::array<Flag *, 43> flags = {
+    std::array<Flag *, 44> flags = {
         &FlagFilename,
         &FlagAddParametersToCSV,
         &FlagAlgLoopSolver,
@@ -184,6 +186,7 @@ namespace oms
         &FlagEmitEvents,
         &FlagHelp,
         &FlagIgnoreInitialUnknowns,
+        &FlagIgnoreUnitMismatch,
         &FlagInitialStepSize,
         &FlagInputExtrapolation,
         &FlagIntervals,
