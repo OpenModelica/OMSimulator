@@ -80,11 +80,23 @@ read_file('exportSSVTemplate4.ssv')
 ##     <ssv:Parameter name="sub-system.input2">
 ##       <ssv:Real value="500.0"/>
 ##     </ssv:Parameter>
+##     <ssv:Parameter name="Add1.u1" description="Connector of Real input signal 1">
+##       <ssv:Real value="0.0"/>
+##     </ssv:Parameter>
+##     <ssv:Parameter name="Add1.u2" description="Connector of Real input signal 2">
+##       <ssv:Real value="0.0"/>
+##     </ssv:Parameter>
 ##     <ssv:Parameter name="Add1.k1">
 ##       <ssv:Real value="2.0"/>
 ##     </ssv:Parameter>
 ##     <ssv:Parameter name="Add1.k2">
 ##       <ssv:Real value="3.0"/>
+##     </ssv:Parameter>
+##     <ssv:Parameter name="Add2.u1" description="Connector of Real input signal 1">
+##       <ssv:Real value="0.0"/>
+##     </ssv:Parameter>
+##     <ssv:Parameter name="Add2.u2" description="Connector of Real input signal 2">
+##       <ssv:Real value="0.0"/>
 ##     </ssv:Parameter>
 ##     <ssv:Parameter name="Add2.k1">
 ##       <ssv:Real value="100.0"/>
@@ -110,6 +122,12 @@ read_file('exportSSVTemplate4.ssv')
 ## <?xml version='1.0' encoding='utf-8'?>
 ## <ssv:ParameterSet xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" version="2.0" name="parameters">
 ##   <ssv:Parameters>
+##     <ssv:Parameter name="u1" description="Connector of Real input signal 1">
+##       <ssv:Real value="0.0"/>
+##     </ssv:Parameter>
+##     <ssv:Parameter name="u2" description="Connector of Real input signal 2">
+##       <ssv:Real value="0.0"/>
+##     </ssv:Parameter>
 ##     <ssv:Parameter name="k1">
 ##       <ssv:Real value="2.0"/>
 ##     </ssv:Parameter>
@@ -122,6 +140,12 @@ read_file('exportSSVTemplate4.ssv')
 ## <?xml version='1.0' encoding='utf-8'?>
 ## <ssv:ParameterSet xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" version="2.0" name="parameters">
 ##   <ssv:Parameters>
+##     <ssv:Parameter name="u1" description="Connector of Real input signal 1">
+##       <ssv:Real value="0.0"/>
+##     </ssv:Parameter>
+##     <ssv:Parameter name="u2" description="Connector of Real input signal 2">
+##       <ssv:Real value="0.0"/>
+##     </ssv:Parameter>
 ##     <ssv:Parameter name="k1">
 ##       <ssv:Real value="100.0"/>
 ##     </ssv:Parameter>

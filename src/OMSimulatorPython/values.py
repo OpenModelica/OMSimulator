@@ -99,27 +99,37 @@ class Values:
 
   def add_parameters(self, parameters_node, prefix = None):
     """Generic function to add XML parameters based on the value type."""
-    for key, (value, type, unit, description) in self.start_values.items():
-      parameter_node = ET.SubElement(parameters_node, namespace.tag("ssv", "Parameter"))
-      if prefix:
-        parameter_node.set("name", str(prefix) + "." + str(key))
-      else:
-        parameter_node.set("name", str(key))
-      if description:
-        parameter_node.set("description", description)
+    for key in self.start_values:
+      self.add_parameter(parameters_node, key, prefix)
 
-      if type:
-        type_tag = type.name
-      else:
-        type_tag = self._getVariableType(value)
+  def add_parameter(self, parameters_node, key, prefix = None):
+    """Adds the XML parameter for the start value of key."""
+    (value, type, unit, description) = self.start_values[key]
+    if type:
+      type_tag = type.name
+    else:
+      type_tag = self._getVariableType(value)
 
-      parameter_type = ET.SubElement(parameter_node, namespace.tag("ssv", type_tag))
-      value_ = str(value.value if hasattr(value, 'value') else value)
-      if type_tag == "Boolean":
-        value_ = "true" if value else "false"
-      parameter_type.set("value", value_)
-      if unit is not None:
-        parameter_type.set("unit", unit)
+    value_ = str(value.value if hasattr(value, 'value') else value)
+    if type_tag == "Boolean":
+      value_ = "true" if value else "false"
+    Values.write_parameter(parameters_node, key, type_tag, value_, unit, description, prefix)
+
+  @staticmethod
+  def write_parameter(parameters_node, key, type_tag: str, value: str, unit=None, description=None, prefix=None):
+    """Adds an XML parameter with the value already formatted as a string."""
+    parameter_node = ET.SubElement(parameters_node, namespace.tag("ssv", "Parameter"))
+    if prefix:
+      parameter_node.set("name", str(prefix) + "." + str(key))
+    else:
+      parameter_node.set("name", str(key))
+    if description:
+      parameter_node.set("description", description)
+
+    parameter_type = ET.SubElement(parameter_node, namespace.tag("ssv", type_tag))
+    parameter_type.set("value", value)
+    if unit is not None:
+      parameter_type.set("unit", str(unit))
 
   def _getVariableType(self, value):
     match value:

@@ -11,6 +11,7 @@ oms_add_test(
   exportSSMTemplate2.py
   exportSSVTemplate1.py
   exportSSVTemplate2.py
+  exportSSVTemplate3.py
   fmuinfo.py
   ignoreUnitMismatch1.py
   invalidSSD.py
