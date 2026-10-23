@@ -94,7 +94,27 @@ class Component:
     return self.parameterResources
 
   def exportSSVTemplate(self, node, prefix=None):
-    self.value.add_parameters(node, prefix)
+    """Exports the start values set by the user and, for the other inputs and
+    parameters of the FMU, the start values from its modelDescription.xml."""
+    user_keys = {str(key): key for key in self.value.getAllParameters()}
+    exported = set()
+    if self.fmu is not None:
+      for var in self.fmu.variables:
+        if not (var.isInput() or var.isParameter() or var.isCalculatedParameter()):
+          continue
+        name = str(var.name)
+        if name in user_keys:
+          self.value.add_parameter(node, user_keys[name], prefix)
+        elif var.modelDescriptionStartValue is not None:
+          Values.write_parameter(node, name, var.signal_type.name, str(var.modelDescriptionStartValue), var.unit, var.description, prefix)
+        else:
+          continue
+        exported.add(name)
+
+    ## values set for names that are not variables of the FMU
+    for name, key in user_keys.items():
+      if name not in exported:
+        self.value.add_parameter(node, key, prefix)
 
   def exportSSMTemplate(self, node, prefix=None):
     self.parameterMapping.exportSSMTemplate(node, self.connectors, prefix)
