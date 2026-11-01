@@ -15,6 +15,7 @@ set(OM_OMS_TESTSUITE_RESOURCES_FMUS
         ${CMAKE_CURRENT_SOURCE_DIR}/ClockedStepBoundary
         ${CMAKE_CURRENT_SOURCE_DIR}/Dahlquist
         ${CMAKE_CURRENT_SOURCE_DIR}/Dahlquist3
+        ${CMAKE_CURRENT_SOURCE_DIR}/DaeLoopA
         ${CMAKE_CURRENT_SOURCE_DIR}/DualMassOscillator.System1
         ${CMAKE_CURRENT_SOURCE_DIR}/DualMassOscillator.System2
         ${CMAKE_CURRENT_SOURCE_DIR}/Enum1
@@ -28,6 +29,7 @@ set(OM_OMS_TESTSUITE_RESOURCES_FMUS
         ${CMAKE_CURRENT_SOURCE_DIR}/HelloWorldWithInput
         ${CMAKE_CURRENT_SOURCE_DIR}/Int1
         ${CMAKE_CURRENT_SOURCE_DIR}/Lin2DimODE
+        ${CMAKE_CURRENT_SOURCE_DIR}/LoopB
         ${CMAKE_CURRENT_SOURCE_DIR}/Modelica.Blocks.Continuous.Integrator
         ${CMAKE_CURRENT_SOURCE_DIR}/Modelica.Blocks.Math.Add
         ${CMAKE_CURRENT_SOURCE_DIR}/Modelica.Blocks.Math.Add3
