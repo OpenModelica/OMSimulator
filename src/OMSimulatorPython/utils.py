@@ -272,15 +272,23 @@ def validateSSP(root, filename : str, schema_file : str) -> bool:
   return _validateAgainstSchema(root, filename, 'ssp', schema_file)
 
 _FMU_SCHEMA_BY_VERSION = {
-  '2.0': ('fmi2', 'fmi2ModelDescription.xsd'),
-  '3.0': ('fmi3', 'fmi3ModelDescription.xsd'),
+  '2': ('fmi2', 'fmi2ModelDescription.xsd'),
+  '3': ('fmi3', 'fmi3ModelDescription.xsd'),
 }
 
+def fmiMajorVersion(fmiVersion: str) -> str | None:
+  """The major version of an fmiVersion attribute: '3' for '3.0', '3.0.1' or
+  '3.1-dev' (FMI 3 writes the patch release there), '2' for '2.0' (FMI 2.0.x
+  always writes '2.0'); None if it is not one of those."""
+  major = (fmiVersion or '').split('.')[0]
+  return major if major in _FMU_SCHEMA_BY_VERSION and fmiVersion.startswith(major + '.') else None
+
 def validateFMU(root, filename: str, fmiVersion: str) -> bool:
-  if fmiVersion not in _FMU_SCHEMA_BY_VERSION:
+  major = fmiMajorVersion(fmiVersion)
+  if major is None:
     warnings.warn(f"Cannot validate {Path(filename).name}: unsupported FMI version '{fmiVersion}'", UserWarning)
     return False
-  schema_dir, schema_file = _FMU_SCHEMA_BY_VERSION[fmiVersion]
+  schema_dir, schema_file = _FMU_SCHEMA_BY_VERSION[major]
   return _validateAgainstSchema(root, filename, schema_dir, schema_file)
 
 def exportSimulationInformation(node, simulationInformation):
