@@ -1,5 +1,7 @@
 oms_add_test(
   clockedStepBoundary.py
+  DaeMode1.py
+  DaeMode2.py
   DualMassOscillator1.py
   DualMassOscillator2.py
   exportJson1.py
@@ -7,6 +9,7 @@ oms_add_test(
   exportJson4.py
   fmuSimulation1.py
   fmuSimulation2.py
+  fmuSimulation3.py
   LinearTransformation1.py
   LinearTransformation2.py
   LinearTransformation3.py

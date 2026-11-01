@@ -474,6 +474,22 @@ void oms::ComponentFMU3CS::dumpInitialUnknowns()
   logInfo("[" + std::string(getCref()) + ": " + getPath() + "] The FMU contains " + std::to_string(n) + " initial unknowns: " + str);
 }
 
+/**
+ * \\brief The variable a ModelStructure dependency names.
+ *
+ * FMI 3.0 changed this from FMI 2.0: a `dependencies` list holds **value
+ * references**, not one-based indices into the variable list. Reading them as
+ * indices silently wires the dependency graph to the wrong variables, and fails
+ * outright on value reference 0, which is a perfectly ordinary one.
+ */
+const oms::Variable* oms::ComponentFMU3CS::variableByFMI3ValueReference(unsigned int vr) const
+{
+  for (const auto& v : allVariables)
+    if (v.getValueReferenceFMI3() == vr)
+      return &v;
+  return nullptr;
+}
+
 oms_status_enu_t oms::ComponentFMU3CS::initializeDependencyGraph_initialUnknowns()
 {
   if (initialUnknownsGraph.getEdges().connections.size() > 0)
@@ -560,15 +576,16 @@ oms_status_enu_t oms::ComponentFMU3CS::initializeDependencyGraph_initialUnknowns
     else
     {
       //dependency exist
-      for (const auto &index : it.second)
+      for (const auto &vr : it.second)
       {
-        if (index < 1 || index > allVariables.size())
+        const Variable* dependency = variableByFMI3ValueReference(vr);
+        if (!dependency)
         {
-          logWarning("Initial unknown " + std::string(initialUnknownsGraph.getNodes()[i]) + " has bad dependency on variable with index " + std::to_string(index) + " which couldn't be resolved");
+          logWarning("Initial unknown " + std::string(initialUnknownsGraph.getNodes()[i]) + " has a dependency on value reference " + std::to_string(vr) + " which couldn't be resolved");
           return logError(std::string(getCref()) + ": Erroneous initial unknowns detected in modelDescription.xml\nUse flag --ignoreInitialUnknowns=true to ignore all initial unknowns, but this can cause inflated loop size.");
         }
-        logDebug(std::string(getCref()) + ": " + getPath() + " initial unknown " + std::string(initialUnknownsGraph.getNodes()[i]) + " depends on " + std::string(allVariables[index - 1]));
-        initialUnknownsGraph.addEdge(allVariables[index - 1].makeConnector(this->getFullCref()), initialUnknownsGraph.getNodes()[i]);
+        logDebug(std::string(getCref()) + ": " + getPath() + " initial unknown " + std::string(initialUnknownsGraph.getNodes()[i]) + " depends on " + std::string(*dependency));
+        initialUnknownsGraph.addEdge(dependency->makeConnector(this->getFullCref()), initialUnknownsGraph.getNodes()[i]);
       }
     }
     i = i + 1;
@@ -610,15 +627,16 @@ oms_status_enu_t oms::ComponentFMU3CS::initializeDependencyGraph_outputs()
     }
     else
     {
-      for (const auto &index : it.second)
+      for (const auto &vr : it.second)
       {
-        if (index < 1 || index > allVariables.size())
+        const Variable* dependency = variableByFMI3ValueReference(vr);
+        if (!dependency)
         {
-          logWarning("Output " + std::string(output) + " has bad dependency on variable with index " + std::to_string(index) + " which couldn't be resolved");
+          logWarning("Output " + std::string(output) + " has a dependency on value reference " + std::to_string(vr) + " which couldn't be resolved");
           return logError(std::string(getCref()) + ": erroneous dependencies detected in modelDescription.xml");
         }
-        logDebug(std::string(getCref()) + ": " + getPath() + " output " + std::string(output) + " depends on " + std::string(allVariables[index - 1]));
-        outputsGraph.addEdge(allVariables[index - 1].makeConnector(this->getFullCref()), output.makeConnector(this->getFullCref()));
+        logDebug(std::string(getCref()) + ": " + getPath() + " output " + std::string(output) + " depends on " + std::string(*dependency));
+        outputsGraph.addEdge(dependency->makeConnector(this->getFullCref()), output.makeConnector(this->getFullCref()));
       }
     }
     i = i + 1;

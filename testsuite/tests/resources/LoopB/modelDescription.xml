@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription
+  fmiVersion="3.0"
+  modelName="LoopB"
+  instantiationToken="{d9ba22ec-f3dd-46e1-9d2f-f66d29ff842a}"
+  description="an ordinary feedthrough component closing the loop"
+  version=""
+  generationTool="OpenModelica Compiler v1.28.0-dev.1645+g59e78f0ee8.cmake"
+  generationDateAndTime="2026-11-01T11:17:20Z"
+  variableNamingConvention="structured"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/modelica/fmi-standard/main/schema/fmi3ModelDescription.xsd">
+  <ModelExchange
+    modelIdentifier="LoopB"
+    needsExecutionTool="false"
+    canBeInstantiatedOnlyOncePerProcess="false"
+    canGetAndSetFMUState="true"
+    canSerializeFMUState="true"
+    providesDirectionalDerivatives="false"
+    providesAdjointDerivatives="false"
+    providesPerElementDependencies="false"
+    needsCompletedIntegratorStep="true"/>
+  <LogCategories>
+    <Category name="logEvents" />
+    <Category name="logSingularLinearSystems" />
+    <Category name="logNonlinearSystems" />
+    <Category name="logDynamicStateSelection" />
+    <Category name="logStatusWarning" />
+    <Category name="logStatusDiscard" />
+    <Category name="logStatusError" />
+    <Category name="logStatusFatal" />
+    <Category name="logStatusPending" />
+    <Category name="logAll" />
+    <Category name="logFmi3Call" />
+  </LogCategories>
+  <DefaultExperiment startTime="0.0" stopTime="1.0" tolerance="1e-6" stepSize="0.002"/>
+  <ModelVariables>
+    <Float64 name="time" valueReference="3" causality="independent" variability="continuous" description="Simulation time"/>
+    <Float64 name="p" valueReference="0" causality="input"  start="0.0"/>
+    <Float64 name="q" valueReference="1" causality="output" />
+  </ModelVariables>
+  <ModelStructure>
+    <Output valueReference="1" dependencies="0" dependenciesKind="dependent"/>
+    <InitialUnknown valueReference="1" dependencies="0" dependenciesKind="dependent"/>
+  </ModelStructure>
+</fmiModelDescription>
