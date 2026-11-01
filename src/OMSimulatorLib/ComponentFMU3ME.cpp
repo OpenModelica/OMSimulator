@@ -203,6 +203,25 @@ oms::Component* oms::ComponentFMU3ME::NewComponent(const oms::ComRef& cref, oms:
             component->lsDae.getVersion() + "): " + std::to_string(component->lsDae.getResiduals().size()) +
             " residuals over " + std::to_string(component->derivativeVrs.size()) + " states and " +
             std::to_string(component->lsDae.getAlgebraicVariables().size()) + " algebraic variables");
+
+    // An acausal component: its terminals are connected here, and the
+    // residuals that stand for their flows are replaced by the equations of
+    // those connections.
+    if (component->lsDaeAcausal.load(tempDir.generic_string()))
+    {
+      if (!component->terminals.load(tempDir.generic_string()))
+      {
+        logWarning("FMU \"" + std::string(cref) + "\" carries an acausal manifest (" + LsDaeAcausalManifest::name() +
+                   ") but no terminals; it cannot be connected acausally");
+        component->lsDaeAcausal = LsDaeAcausalManifest();
+      }
+      else
+        logInfo("FMU \"" + std::string(cref) + "\" is an acausal component (" + LsDaeAcausalManifest::name() + " " +
+                component->lsDaeAcausal.getVersion() + "): " + std::to_string(component->terminals.getTerminals().size()) +
+                " terminal(s), " + std::to_string(component->lsDaeAcausal.getConnectorResiduals().size()) +
+                " connector residual(s)" + (component->lsDaeAcausal.getStreamResiduals().empty() ? std::string() :
+                ", " + std::to_string(component->lsDaeAcausal.getStreamResiduals().size()) + " stream residual(s)"));
+    }
   }
 
   // update FMU info
@@ -288,6 +307,43 @@ oms::Component* oms::ComponentFMU3ME::NewComponent(const oms::ComRef& cref, oms:
     component->connectors.push_back(new Connector(oms_causality_calculatedParameter, component->allVariables[i].getType(), component->allVariables[i].getCref(), component->getFullCref()));
     component->connectors.back()->setNumericType(component->allVariables[i].getNumericType());
   }
+  // The members of an acausal component's terminals that are not inputs or
+  // outputs, connected acausally (SSP kind "unspecified"). A stream member is
+  // connected by its stream variable; the variable that stands for its inStream
+  // is the importer's to compute.
+  if (component->lsDaeAcausal.isValid())
+  {
+    auto addConnector = [&](const Terminals::Terminal& terminal, const std::string& variableName) {
+      const std::string resolved = component->terminals.resolveAlias(variableName);
+      const Variable* v = component->getVariable(ComRef(resolved));
+      if (!v)
+      {
+        logWarning("FMU \"" + std::string(cref) + "\": terminal \"" + terminal.name + "\" names an unknown variable \"" + variableName + "\"");
+        return;
+      }
+      if (resolved == variableName && (v->isInput() || v->isOutput()))
+        return;   // a causal signal, already a connector
+      // A (calculated) parameter of a terminal, e.g. the fixed pressure of a
+      // boundary, is connected acausally like the other members.
+      for (auto it = component->connectors.begin(); it != component->connectors.end(); ++it)
+        if ((*it)->getName() == ComRef(variableName))
+        {
+          delete *it;
+          component->connectors.erase(it);
+          break;
+        }
+      component->connectors.push_back(new Connector(oms_causality_bidir, v->getType(), ComRef(variableName), component->getFullCref()));
+      component->connectors.back()->setNumericType(v->getNumericType());
+    };
+    for (const Terminals::Terminal& terminal : component->terminals.getTerminals())
+    {
+      for (const Terminals::Member& member : terminal.members)
+        addConnector(terminal, member.variableName);
+      for (const Terminals::StreamMember& member : terminal.streamMembers)
+        addConnector(terminal, member.outStreamVariableName);
+    }
+  }
+
   component->connectors.push_back(NULL);
   component->element.setConnectors(&component->connectors[0]);
 
@@ -2203,6 +2259,17 @@ oms_status_enu_t oms::ComponentFMU3ME::getDaeResiduals(double* residuals)
   fmi3Status fmistatus = fmi3_getFloat64(instance, vrs.data(), vrs.size(), residuals, vrs.size());
   if (fmi3OK != fmistatus)
     return logError_FMUCall("fmi3_getFloat64 (fmi-ls-dae residuals)", this);
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::ComponentFMU3ME::getFloat64(const std::vector<fmi3ValueReference>& vrs, double* values)
+{
+  CallClock callClock(clock);
+  if (vrs.empty())
+    return oms_status_ok;
+  fmi3Status fmistatus = fmi3_getFloat64(instance, vrs.data(), vrs.size(), values, vrs.size());
+  if (fmi3OK != fmistatus)
+    return logError_FMUCall("fmi3_getFloat64", this);
   return oms_status_ok;
 }
 

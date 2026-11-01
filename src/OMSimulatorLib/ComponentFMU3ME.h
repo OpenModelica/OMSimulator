@@ -134,6 +134,16 @@ namespace oms
     size_t getNumberOfDaeResiduals() const {return lsDae.getResiduals().size();}
     size_t getNumberOfAlgebraicVariables() const {return lsDae.getAlgebraicVariables().size();}
     oms_status_enu_t getDaeResiduals(double* residuals);
+    /**
+     * \brief Whether the FMU is an acausal component: one whose terminals are
+     *        connected by the importer, which then replaces the residuals the
+     *        acausal manifest names with the equations of its connections.
+     */
+    bool isAcausalComponent() const {return lsDaeAcausal.isValid();}
+    const LsDaeAcausalManifest& getLsDaeAcausal() const {return lsDaeAcausal;}
+    const Terminals& getTerminals() const {return terminals;}
+    /// Read Float64 variables by value reference, in one call into the FMU.
+    oms_status_enu_t getFloat64(const std::vector<fmi3ValueReference>& vrs, double* values);
     /// The value references of the continuous states, in the order
     /// fmi3GetContinuousStates uses — that of <ContinuousStateDerivative>.
     const std::vector<fmi3ValueReference>& getStateValueReferences() const {return stateVrs;}
@@ -196,6 +206,9 @@ namespace oms
     /// fmi-ls-dae: the manifest, and whether this instance runs in DAE mode.
     LsDaeManifest lsDae;
     bool daeMode = false;
+    /// The acausal extension of the manifest, and the terminals it refers to.
+    LsDaeAcausalManifest lsDaeAcausal;
+    Terminals terminals;
     /// The <ContinuousStateDerivative> value references of the model
     /// description, in the order fmi3GetContinuousStates uses for the states.
     std::vector<fmi3ValueReference> derivativeVrs;

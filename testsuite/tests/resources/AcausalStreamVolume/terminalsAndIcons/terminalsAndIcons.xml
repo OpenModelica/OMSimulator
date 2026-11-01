@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiTerminalsAndIcons fmiVersion="3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/modelica/fmi-standard/v3.0.2/schema/fmi3TerminalsAndIcons.xsd">
+  <Terminals>
+    <Terminal name="a" matchingRule="plug" terminalKind="Fluid.Port">
+      <TerminalMemberVariable variableName="a.m_flow" memberName="m_flow" variableKind="inflow"/>
+      <TerminalMemberVariable variableName="a.p" memberName="p" variableKind="signal"/>
+      <TerminalStreamMemberVariable inStreamMemberName="inStream(h_outflow)" outStreamMemberName="h_outflow" inStreamVariableName="'inStream(a.h_outflow)'" outStreamVariableName="a.h_outflow"/>
+    </Terminal>
+    <Terminal name="b" matchingRule="plug" terminalKind="Fluid.Port">
+      <TerminalMemberVariable variableName="b.p" memberName="p" variableKind="signal"/>
+      <TerminalMemberVariable variableName="b.m_flow" memberName="m_flow" variableKind="inflow"/>
+      <TerminalStreamMemberVariable inStreamMemberName="inStream(h_outflow)" outStreamMemberName="h_outflow" inStreamVariableName="'inStream(b.h_outflow)'" outStreamVariableName="b.h_outflow"/>
+    </Terminal>
+  </Terminals>
+</fmiTerminalsAndIcons>

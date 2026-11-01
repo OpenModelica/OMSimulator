@@ -139,6 +139,8 @@ oms::Connector* oms::Connector::NewConnector(const pugi::xml_node& node, const s
     causality = oms_causality_parameter;
   else if (causalityString == "calculatedParameter")
     causality = oms_causality_calculatedParameter;
+  else if (causalityString == "unspecified")
+    causality = oms_causality_bidir;   // an acausal connector (SSP 2.0)
   else
   {
     logError("Failed to import connector \"" + std::string(cref) + "\" with causality \"" + causalityString + "\"");
@@ -231,6 +233,10 @@ oms_status_enu_t oms::Connector::exportToSSD(pugi::xml_node &root) const
     node.append_attribute("kind") = "calculatedParameter";
     break;
   case oms_causality_bidir:
+    // SSP 2.0: a connector whose direction is given by the connections, as
+    // for an acausal connection of Modelica models
+    node.append_attribute("kind") = "unspecified";
+    break;
   case oms_causality_undefined:
     break;
   }
@@ -358,6 +364,9 @@ std::string oms::Connector::getCausalityString() const
 
   case oms_causality_calculatedParameter:
     return "calculatedParameter";
+
+  case oms_causality_bidir:
+    return "unspecified";
 
   default:
     return std::string("unknown");

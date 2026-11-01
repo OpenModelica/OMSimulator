@@ -135,6 +135,11 @@ class Connection:
   def is_validConnection(source_owner: str, source_kind: Causality, dest_owner: str, dest_kind: Causality) -> bool:
     """Return True if the connection is allowed according to SSP 2.0 table."""
 
+    # An acausal connection: two connectors of kind "unspecified" of elements,
+    # neither one driving the other.
+    if source_kind == Causality.unspecified or dest_kind == Causality.unspecified:
+      return source_owner == "Element" and dest_owner == "Element" and source_kind == dest_kind
+
     # Allowed causality by owner type
     allowed_source_by_owner = {
       "System":  {Causality.input, Causality.parameter},
