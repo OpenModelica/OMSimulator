@@ -44,6 +44,7 @@
 #include "ssd/Tags.h"
 
 #include <algorithm>
+#include <functional>
 #include <cmath>
 #include <set>
 #include <map>
@@ -256,6 +257,236 @@ static bool componentOwnsNode(const oms::Component* component, const oms::ComRef
   return false;
 }
 
+oms_status_enu_t oms::SystemSC::collectAcausalConnections()
+{
+  acausalRows.clear();
+  streamRows.clear();
+
+  // The members of the terminals of the components, by the name a connection
+  // of this system gives them ("R.p.v").
+  struct Member
+  {
+    size_t component;
+    fmi3ValueReference vr;
+    bool flow;
+    double sign;              ///< +1 for an inflow, -1 for an outflow, which the flow sum negates
+    int column;               ///< its column if it is an unknown, else -1
+    int residualRow;          ///< for a flow or a stream, the row of the residual that stands for it, else -1
+    std::string terminal;     ///< "R.p", to find the rows of its terminal
+    bool stream = false;      ///< a stream variable, connected by its outStream variable
+    fmi3ValueReference inStreamVr = 0;  ///< for a stream, the variable that stands for its inStream
+    int inStreamColumn = -1;  ///< and its column if it is an unknown
+  };
+  std::map<std::string, Member> members;
+  std::map<std::string, std::vector<int>> rowsOfTerminal;
+  std::map<std::string, std::vector<std::string>> flowsOfTerminal;
+
+  bool anyAcausalComponent = false;
+  for (size_t i = 0, j = 0; i < fmus.size(); ++i)
+  {
+    const size_t base = j;
+    j += nStates[i] + nAlgebraic[i];
+
+    ComponentFMU3ME* fmu3 = dynamic_cast<ComponentFMU3ME*>(fmus[i]);
+    if (!fmu3 || !fmu3->isAcausalComponent())
+      continue;
+    anyAcausalComponent = true;
+    const std::string prefix = std::string(fmus[i]->getCref()) + ".";
+
+    // The unknowns of the component a member may be.
+    std::map<fmi3ValueReference, int> columnOf;
+    if (daeFmus[i])
+    {
+      const std::vector<fmi3ValueReference>& stateVrs = daeFmus[i]->getStateValueReferences();
+      for (size_t k = 0; k < stateVrs.size() && k < nStates[i]; ++k)
+        columnOf[stateVrs[k]] = static_cast<int>(base + k);
+      const std::vector<uint32_t>& algVrs = daeFmus[i]->getLsDae().getAlgebraicVariables();
+      for (size_t k = 0; k < algVrs.size(); ++k)
+        columnOf[algVrs[k]] = static_cast<int>(base + nStates[i] + k);
+    }
+
+    // The row of each residual, and which of them stand for a flow.
+    std::map<uint32_t, int> rowOfResidual;
+    const std::vector<uint32_t>& residualVrs = fmu3->getLsDae().getResiduals();
+    for (size_t k = 0; k < residualVrs.size(); ++k)
+      rowOfResidual[residualVrs[k]] = static_cast<int>(base + k);
+    std::map<std::string, int> rowOfFlow;
+    for (const LsDaeAcausalManifest::ConnectorResidual& r : fmu3->getLsDaeAcausal().getConnectorResiduals())
+    {
+      const auto it = rowOfResidual.find(r.valueReference);
+      if (it == rowOfResidual.end())
+        return logError("system \"" + std::string(getFullCref()) + "\": the acausal manifest of \"" + std::string(fmus[i]->getFullCref()) +
+                        "\" names residual " + std::to_string(r.valueReference) + " for \"" + r.variableName + "\", which is not one of its fmi-ls-dae residuals");
+      rowOfFlow[r.variableName] = it->second;
+      rowsOfTerminal[prefix + r.terminal].push_back(it->second);
+    }
+    std::map<std::string, int> rowOfStream;
+    for (const LsDaeAcausalManifest::ConnectorResidual& r : fmu3->getLsDaeAcausal().getStreamResiduals())
+    {
+      const auto it = rowOfResidual.find(r.valueReference);
+      if (it == rowOfResidual.end())
+        return logError("system \"" + std::string(getFullCref()) + "\": the acausal manifest of \"" + std::string(fmus[i]->getFullCref()) +
+                        "\" names residual " + std::to_string(r.valueReference) + " for inStream of \"" + r.variableName + "\", which is not one of its fmi-ls-dae residuals");
+      rowOfStream[r.variableName] = it->second;
+      rowsOfTerminal[prefix + r.terminal].push_back(it->second);
+    }
+
+    for (const Terminals::Terminal& terminal : fmu3->getTerminals().getTerminals())
+    {
+      for (const Terminals::Member& m : terminal.members)
+      {
+        const Variable* v = fmu3->getVariable(ComRef(fmu3->getTerminals().resolveAlias(m.variableName)));
+        if (!v)
+          continue;
+        const fmi3ValueReference vr = v->getValueReferenceFMI3();
+        const auto column = columnOf.find(vr);
+        const auto row = rowOfFlow.find(m.variableName);
+        members[prefix + m.variableName] = {i, vr, m.isFlow(), m.variableKind == "outflow" ? -1.0 : 1.0,
+                                            column == columnOf.end() ? -1 : column->second,
+                                            row == rowOfFlow.end() ? -1 : row->second,
+                                            prefix + terminal.name};
+        if (m.isFlow())
+          flowsOfTerminal[prefix + terminal.name].push_back(prefix + m.variableName);
+      }
+      for (const Terminals::StreamMember& m : terminal.streamMembers)
+      {
+        const Variable* out = fmu3->getVariable(ComRef(fmu3->getTerminals().resolveAlias(m.outStreamVariableName)));
+        const Variable* in = fmu3->getVariable(ComRef(fmu3->getTerminals().resolveAlias(m.inStreamVariableName)));
+        if (!out || !in)
+          continue;
+        const fmi3ValueReference vr = out->getValueReferenceFMI3();
+        const fmi3ValueReference inVr = in->getValueReferenceFMI3();
+        const auto column = columnOf.find(vr);
+        const auto inColumn = columnOf.find(inVr);
+        const auto row = rowOfStream.find(m.outStreamVariableName);
+        Member member = {i, vr, false, 1.0, column == columnOf.end() ? -1 : column->second,
+                         row == rowOfStream.end() ? -1 : row->second, prefix + terminal.name};
+        member.stream = true;
+        member.inStreamVr = inVr;
+        member.inStreamColumn = inColumn == columnOf.end() ? -1 : inColumn->second;
+        members[prefix + m.outStreamVariableName] = member;
+      }
+    }
+  }
+
+  // The connection sets: the members joined by acausal connections.
+  std::map<std::string, std::string> parent;
+  std::function<std::string(const std::string&)> find = [&](const std::string& x) -> std::string {
+    auto it = parent.find(x);
+    if (it == parent.end() || it->second == x)
+      return x;
+    return it->second = find(it->second);
+  };
+
+  size_t nAcausalConnections = 0;
+  for (const Connection* connection : getConnections())
+  {
+    if (!connection || connection->getType() != oms_connection_acausal)
+      continue;
+    ++nAcausalConnections;
+    const std::string a = std::string(connection->getSignalA());
+    const std::string b = std::string(connection->getSignalB());
+    for (const std::string& name : {a, b})
+    {
+      const auto it = members.find(name);
+      if (it == members.end())
+        return logError("system \"" + std::string(getFullCref()) + "\": \"" + name + "\" is acausally connected but is not a terminal member of an acausal component");
+      if (!daeFmus[it->second.component])
+        return logError("system \"" + std::string(getFullCref()) + "\": \"" + name + "\" is acausally connected but its component does not run in DAE mode (fmi-ls-dae)");
+      if (parent.find(name) == parent.end())
+        parent[name] = name;
+    }
+    if (members[a].flow != members[b].flow)
+      return logError("system \"" + std::string(getFullCref()) + "\": acausal connection between a flow and a potential: " + a + " -> " + b);
+    if (members[a].stream != members[b].stream)
+      return logError("system \"" + std::string(getFullCref()) + "\": acausal connection between a stream variable and a potential: " + a + " -> " + b);
+    parent[find(a)] = find(b);
+  }
+
+  if (0 == nAcausalConnections)
+  {
+    if (anyAcausalComponent)
+      logInfo("system \"" + std::string(getFullCref()) + "\": no acausal connections; the terminals of its acausal components stay unconnected (flow = 0)");
+    return oms_status_ok;
+  }
+
+  std::map<std::string, std::vector<std::string>> sets;
+  for (const auto& p : parent)
+    sets[find(p.first)].push_back(p.first);
+
+  // The rows the connected flows free, and the equations that take them.
+  std::vector<int> freedRows;
+  std::vector<AcausalRow> rows;
+  auto termOf = [&](const Member& m, double factor) -> AcausalTerm {
+    return {m.component, m.vr, factor, m.column, rowsOfTerminal[m.terminal]};
+  };
+  for (const auto& set : sets)
+  {
+    const std::vector<std::string>& names = set.second;
+    const Member& first = members[names.front()];
+    if (first.flow)
+    {
+      AcausalRow row{0, {}};
+      for (const std::string& name : names)
+      {
+        const Member& m = members[name];
+        if (m.residualRow < 0)
+          return logError("system \"" + std::string(getFullCref()) + "\": the flow \"" + name + "\" is connected, but its component's acausal manifest names no residual for it");
+        freedRows.push_back(m.residualRow);
+        row.terms.push_back(termOf(m, m.sign));
+      }
+      rows.push_back(row);
+    }
+    else if (first.stream)
+    {
+      // Each stream variable gets the mixing rule of the others, in the row of
+      // the residual that stood for its own inStream.
+      for (const std::string& name : names)
+      {
+        const Member& m = members[name];
+        if (m.residualRow < 0)
+          return logError("system \"" + std::string(getFullCref()) + "\": the stream variable \"" + name + "\" is connected, but its component's acausal manifest names no residual for its inStream");
+        StreamRow row{static_cast<size_t>(m.residualRow), {m.component, m.inStreamVr, 1.0, m.inStreamColumn, rowsOfTerminal[m.terminal]}, {}};
+        for (const std::string& other : names)
+        {
+          if (other == name)
+            continue;
+          const Member& o = members[other];
+          const std::vector<std::string>& flows = flowsOfTerminal[o.terminal];
+          if (flows.size() != 1)
+            return logError("system \"" + std::string(getFullCref()) + "\": the stream variable \"" + other + "\" is connected, but its terminal has " +
+                            std::to_string(flows.size()) + " flow variables; the mixing rule needs exactly one");
+          const Member& f = members[flows.front()];
+          row.others.push_back({termOf(o, 1.0), termOf(f, f.sign)});
+        }
+        streamRows.push_back(row);
+      }
+    }
+    else
+    {
+      for (size_t k = 1; k < names.size(); ++k)
+        rows.push_back({0, {termOf(first, 1.0), termOf(members[names[k]], -1.0)}});
+    }
+  }
+
+  if (rows.size() != freedRows.size())
+    return logError("system \"" + std::string(getFullCref()) + "\": the acausal connections give " + std::to_string(rows.size()) +
+                    " equation(s) for the " + std::to_string(freedRows.size()) + " residual(s) of the connected flows; "
+                    "every connection set of a terminal needs as many potentials as flows");
+
+  std::sort(freedRows.begin(), freedRows.end());
+  for (size_t k = 0; k < rows.size(); ++k)
+  {
+    rows[k].row = static_cast<size_t>(freedRows[k]);
+    acausalRows.push_back(rows[k]);
+  }
+
+  logInfo("system \"" + std::string(getFullCref()) + "\": " + std::to_string(nAcausalConnections) + " acausal connection(s) in " +
+          std::to_string(sets.size()) + " connection set(s) replace " + std::to_string(freedRows.size()) + " connector residual(s)" +
+          (streamRows.empty() ? std::string() : " and " + std::to_string(streamRows.size()) + " stream residual(s)"));
+  return oms_status_ok;
+}
+
 void oms::SystemSC::buildDaeJacobianSparsity()
 {
   daeJacRowsByColumn.clear();
@@ -400,6 +631,44 @@ void oms::SystemSC::buildDaeJacobianSparsity()
     else
       for (size_t c = 0; c < n; ++c)
         columnsByRow[row].push_back(static_cast<int>(c));
+  }
+
+  // An acausal connection row reaches the members it sums: each one's own
+  // column if it is an unknown, and whatever the residuals of its terminal
+  // reached — those take the flow and the potentials as arguments, so their
+  // dependencies cover what a member that is computed by the component (an
+  // alias, a constant) depends on.
+  // A stream row reaches the same for its inStream variable and for the stream
+  // and flow variables of the other members.
+  if (!acausalRows.empty() || !streamRows.empty())
+  {
+    const std::vector<std::vector<int>> componentColumnsByRow = columnsByRow;
+    auto addColumns = [&](const AcausalTerm& term, std::vector<int>& columns) {
+      if (term.column >= 0)
+        columns.push_back(term.column);
+      if (term.terminalRows.empty())
+        columnsAround(term.component, columns);
+      for (const int r : term.terminalRows)
+        columns.insert(columns.end(), componentColumnsByRow[r].begin(), componentColumnsByRow[r].end());
+    };
+    for (const AcausalRow& acausal : acausalRows)
+    {
+      std::vector<int>& columns = columnsByRow[acausal.row];
+      columns.clear();
+      for (const AcausalTerm& term : acausal.terms)
+        addColumns(term, columns);
+    }
+    for (const StreamRow& stream : streamRows)
+    {
+      std::vector<int>& columns = columnsByRow[stream.row];
+      columns.clear();
+      addColumns(stream.inStream, columns);
+      for (const StreamTerm& other : stream.others)
+      {
+        addColumns(other.stream, columns);
+        addColumns(other.flow, columns);
+      }
+    }
   }
 
   // Transpose, and drop the duplicates a conservative row may have collected.
@@ -682,6 +951,55 @@ int oms::ida_res(sunrealtype t, N_Vector yy, N_Vector yp, N_Vector rr, void* use
     NV_Ith_S(rr, j) = value - NV_Ith_S(yy, j);
   }
 
+  // The acausal connection rows, in place of the residuals of the connected
+  // flows: what the terminal members now hold, summed.
+  for (const SystemSC::AcausalRow& acausal : system->acausalRows)
+  {
+    double sum = 0.0;
+    for (const SystemSC::AcausalTerm& term : acausal.terms)
+    {
+      double value = 0.0;
+      if (oms_status_ok != system->daeFmus[term.component]->getFloat64({term.vr}, &value))
+        return -1;
+      sum += term.factor * value;
+    }
+    NV_Ith_S(rr, acausal.row) = sum;
+  }
+
+  // The stream rows, in place of the residuals of the connected streams'
+  // inStream: the mixing rule of the other members of the set.
+  for (const SystemSC::StreamRow& stream : system->streamRows)
+  {
+    double inStream = 0.0;
+    if (oms_status_ok != system->daeFmus[stream.inStream.component]->getFloat64({stream.inStream.vr}, &inStream))
+      return -1;
+    double mixed = 0.0;
+    if (stream.others.size() == 1)
+    {
+      if (oms_status_ok != system->daeFmus[stream.others[0].stream.component]->getFloat64({stream.others[0].stream.vr}, &mixed))
+        return -1;
+    }
+    else
+    {
+      // The regularization of OpenModelica's flowThreshold, so that a set
+      // without flow out of the others still has a mixing temperature.
+      const double eps = 1e-7;
+      double num = 0.0, den = 0.0;
+      for (const SystemSC::StreamTerm& other : stream.others)
+      {
+        double h = 0.0, m = 0.0;
+        if (oms_status_ok != system->daeFmus[other.stream.component]->getFloat64({other.stream.vr}, &h) ||
+            oms_status_ok != system->daeFmus[other.flow.component]->getFloat64({other.flow.vr}, &m))
+          return -1;
+        const double w = std::max(-other.flow.factor * m, eps);
+        num += w * h;
+        den += w;
+      }
+      mixed = num / den;
+    }
+    NV_Ith_S(rr, stream.row) = inStream - mixed;
+  }
+
   return 0;
 }
 
@@ -906,6 +1224,21 @@ oms_status_enu_t oms::SystemSC::initialize()
   {
     collectLiftedLoops();
     nDaeUnknowns += liftedConnections.size();
+  }
+
+  // Acausal connections are rows of the DAE system, so they need one; and
+  // without them an acausal component simply keeps flow = 0 at its terminals.
+  if (daeMode)
+  {
+    if (oms_status_ok != collectAcausalConnections())
+      return oms_status_error;
+  }
+  else
+  {
+    for (const Connection* connection : getConnections())
+      if (connection && connection->getType() == oms_connection_acausal)
+        return logError("system "" + std::string(getFullCref()) + "": acausal connection " + std::string(connection->getSignalA()) + " -> " +
+                        std::string(connection->getSignalB()) + " needs its components in DAE mode (fmi-ls-dae)");
   }
 
   if (daeMode && oms_solver_sc_ida != solverMethod)
@@ -1304,6 +1637,8 @@ oms_status_enu_t oms::SystemSC::terminate()
   daeMode = false;
   nDaeUnknowns = 0;
   liftedConnections.clear();
+  acausalRows.clear();
+  streamRows.clear();
   liftedLoops.clear();
   daeJacRowsByColumn.clear();
   daeJacColorOfColumn.clear();
@@ -1415,6 +1750,8 @@ oms_status_enu_t oms::SystemSC::reset()
   daeMode = false;
   nDaeUnknowns = 0;
   liftedConnections.clear();
+  acausalRows.clear();
+  streamRows.clear();
   liftedLoops.clear();
   daeJacRowsByColumn.clear();
   daeJacColorOfColumn.clear();

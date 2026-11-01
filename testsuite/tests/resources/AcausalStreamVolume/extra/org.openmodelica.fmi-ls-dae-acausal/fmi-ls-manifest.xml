@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiDAEAcausalManifest
+  xmlns:fmi-ls="http://fmi-standard.org/fmi-ls-manifest"
+  fmi-ls:fmi-ls-name="org.openmodelica.fmi-ls-dae-acausal"
+  fmi-ls:fmi-ls-version="0.1.0"
+  fmi-ls:fmi-ls-description="OpenModelica extension of fmi-ls-dae: a component connected through its terminals.">
+  <ConnectorResiduals>
+    <ConnectorResidual valueReference="17" terminal="b" variableName="b.m_flow"/>
+    <ConnectorResidual valueReference="16" terminal="a" variableName="a.m_flow"/>
+    <StreamResidual valueReference="15" terminal="b" variableName="b.h_outflow"/>
+    <StreamResidual valueReference="14" terminal="a" variableName="a.h_outflow"/>
+  </ConnectorResiduals>
+</fmiDAEAcausalManifest>
