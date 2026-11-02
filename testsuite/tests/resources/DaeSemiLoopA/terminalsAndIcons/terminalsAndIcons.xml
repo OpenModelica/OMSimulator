@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiTerminalsAndIcons fmiVersion="3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/modelica/fmi-standard/v3.0.2/schema/fmi3TerminalsAndIcons.xsd">
+  <Terminals>
+    <Terminal name="u" matchingRule="plug">
+      <TerminalMemberVariable variableName="u" memberName="u" variableKind="signal"/>
+    </Terminal>
+    <Terminal name="y" matchingRule="plug">
+      <TerminalMemberVariable variableName="y" memberName="y" variableKind="signal"/>
+    </Terminal>
+  </Terminals>
+</fmiTerminalsAndIcons>

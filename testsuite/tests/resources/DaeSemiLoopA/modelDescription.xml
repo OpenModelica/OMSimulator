@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription
+  fmiVersion="3.0"
+  modelName="DaeSemiLoopA"
+  instantiationToken="{4a6b5fe3-0ea0-44fb-a589-2e1bb9b5076e}"
+  description=""
+  version=""
+  generationTool="OpenModelica Compiler v1.28.0-dev.1647+g74284d6cab.cmake"
+  generationDateAndTime="2026-11-02T14:14:00Z"
+  variableNamingConvention="structured"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/modelica/fmi-standard/main/schema/fmi3ModelDescription.xsd">
+  <ModelExchange
+    modelIdentifier="DaeSemiLoopA"
+    needsExecutionTool="false"
+    canBeInstantiatedOnlyOncePerProcess="false"
+    canGetAndSetFMUState="true"
+    canSerializeFMUState="true"
+    providesDirectionalDerivatives="false"
+    providesAdjointDerivatives="false"
+    providesPerElementDependencies="false"
+    needsCompletedIntegratorStep="true"/>
+  <LogCategories>
+    <Category name="logEvents" />
+    <Category name="logSingularLinearSystems" />
+    <Category name="logNonlinearSystems" />
+    <Category name="logDynamicStateSelection" />
+    <Category name="logStatusWarning" />
+    <Category name="logStatusDiscard" />
+    <Category name="logStatusError" />
+    <Category name="logStatusFatal" />
+    <Category name="logStatusPending" />
+    <Category name="logAll" />
+    <Category name="logFmi3Call" />
+  </LogCategories>
+  <DefaultExperiment startTime="0.0" stopTime="1.0" tolerance="1e-6" stepSize="0.002"/>
+  <ModelVariables>
+    <Float64 name="time" valueReference="6" causality="independent" variability="continuous" description="Simulation time"/>
+    <Float64 name="x" valueReference="0" initial="exact"  start="1.0"/>
+    <Float64 name="der(x)" valueReference="1"  derivative="0"/>
+    <Float64 name="u" valueReference="2" causality="input"  start="0.0"/>
+    <Float64 name="y" valueReference="3" causality="output" />
+    <Float64 name="z" valueReference="4" initial="approx"  start="0.0"/>
+    <Boolean name="_D_daeMode" valueReference="7" causality="structuralParameter" variability="fixed" start="false" description="Set to true to enable DAE mode as defined by FMI-LS-DAE."/>
+    <Float64 name="_D_DAEres0" valueReference="8" causality="local" variability="continuous" initial="calculated" description="DAE-mode residual 0"/>
+    <Float64 name="_D_DAEres1" valueReference="9" causality="local" variability="continuous" initial="calculated" description="DAE-mode residual 1"/>
+    <Float64 name="_D_DAEres2" valueReference="10" causality="local" variability="continuous" initial="calculated" description="DAE-mode residual 2"/>
+  </ModelVariables>
+  <ModelStructure>
+    <Output valueReference="3"/>
+    <ContinuousStateDerivative valueReference="1"/>
+    <InitialUnknown valueReference="3"/>
+    <InitialUnknown valueReference="1"/>
+  </ModelStructure>
+</fmiModelDescription>
