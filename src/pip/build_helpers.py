@@ -96,7 +96,7 @@ class OMSInstaller(build_py):
     else:
       raise Exception("Platform not supported for {} ".format(sysconfig.get_platform()))
 
-    response = requests.get(url, verify=False)
+    response = requests.get(url, verify=False, timeout=30)
     if response.status_code != 200:
       raise Exception(f"Failed to download {url}")
 
