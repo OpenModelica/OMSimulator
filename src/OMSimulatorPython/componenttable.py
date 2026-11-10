@@ -88,7 +88,8 @@ class ComponentTable:
     component_node = ET.SubElement(node, namespace.tag("ssd", "Component"))
     component_node.set("name", str(self.name))
     component_node.set("type", "text/csv")
-    component_node.set("source", str(self.filePath))
+    if self.filePath:
+      component_node.set("source", str(self.filePath))
 
     if len(self.connectors) > 0:
       connectors_node = ET.SubElement(component_node, namespace.tag("ssd", "Connectors"))
