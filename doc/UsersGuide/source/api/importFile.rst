@@ -21,4 +21,14 @@ Imports a composite model from a SSP file.
 #END#
 
 #DESCRIPTION#
+.. warning::
+
+  This function is deprecated and will be removed in a future version.
+  Use the Python API instead:
+
+  .. code-block:: python
+
+    import OMSimulator
+    model = OMSimulator.SSP("xxx.ssp")
+
 #END#

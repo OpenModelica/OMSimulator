@@ -235,6 +235,7 @@ oms_status_enu_t oms_export(const char* cref, const char* filename)
 
 oms_status_enu_t oms_importFile(const char* filename, char** cref)
 {
+  logWarning("oms_importFile is deprecated and will be removed in a future version. Use the Python API instead: import OMSimulator; OMSimulator.SSP(\"xxx.ssp\")");
   return oms::Scope::GetInstance().importModel(std::string(filename), cref);
 }
 

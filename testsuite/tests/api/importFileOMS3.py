@@ -13,6 +13,7 @@ import ctypes
 from OMSimulator import SSP, CRef, Settings, Capi
 
 Settings.suppressPath = True
+Capi.setSuppressPath()
 
 lib = Capi.obj
 lib.oms_importFile.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_char_p)]
@@ -65,4 +66,33 @@ export('importFileOMS3_3.ssp', 'sub', False)
 importAndSimulate('importFileOMS3_3.ssp', 'default.sub.Gain2.y')
 
 ## Result:
+## info:    oms_importFile: 0
+## info:    oms_instantiate: 0
+## info:    Result file: importFileOMS3_1.ssp_res.mat (bufferSize=1)
+## info:    oms_initialize: 0
+## info:    oms_simulate: 0
+## info:    default.Gain2.y: 6.0
+## info:    oms_terminate: 0
+## info:    oms_delete: 0
+## info:    oms_importFile: 0
+## info:    oms_instantiate: 0
+## info:    Result file: importFileOMS3_2.ssp_res.mat (bufferSize=1)
+## info:    oms_initialize: 0
+## info:    oms_simulate: 0
+## info:    default.Gain2.y: 6.0
+## info:    oms_terminate: 0
+## info:    oms_delete: 0
+## info:    oms_importFile: 0
+## info:    oms_instantiate: 0
+## info:    model doesn't contain any continuous state
+## info:    maximum step size for 'default.default.sub': 0.001000
+## info:    Result file: importFileOMS3_3.ssp_res.mat (bufferSize=1)
+## info:    oms_initialize: 0
+## info:    oms_simulate: 0
+## info:    default.sub.Gain2.y: 6.0
+## info:    Final Statistics for 'default.default.sub':
+##          NumSteps = 1001 NumRhsEvals  = 1002 NumLinSolvSetups = 51
+##          NumNonlinSolvIters = 1001 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
+## info:    oms_terminate: 0
+## info:    oms_delete: 0
 ## endResult
