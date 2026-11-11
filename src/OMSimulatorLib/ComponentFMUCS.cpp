@@ -360,6 +360,10 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const pugi::xml_node& node, om
       resources.importFromSnapshot(*it, sspVersion, snapshot, variantName);
       component->values.parameterResources.push_back(resources);
     }
+    else if(name == oms::ssp::Draft20180219::ssd::annotations)
+    {
+      // vendor annotations, e.g. the solver of OMSimulator 3, are not used
+    }
     else
     {
       logError_WrongSchema(name);
