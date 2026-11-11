@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription
+  fmiVersion="3.0"
+  modelName="Fluid.Boundary"
+  instantiationToken="{913427ce-522d-4511-9bd8-5e9cb297a3aa}"
+  description="a fixed pressure and specific enthalpy"
+  version=""
+  generationTool="OpenModelica Compiler v1.28.0-dev.1647+g74284d6cab.cmake"
+  generationDateAndTime="2026-11-01T20:37:09Z"
+  variableNamingConvention="structured"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/modelica/fmi-standard/main/schema/fmi3ModelDescription.xsd">
+  <ModelExchange
+    modelIdentifier="AcausalStreamBoundary"
+    needsExecutionTool="false"
+    canBeInstantiatedOnlyOncePerProcess="false"
+    canGetAndSetFMUState="true"
+    canSerializeFMUState="true"
+    providesDirectionalDerivatives="false"
+    providesAdjointDerivatives="false"
+    providesPerElementDependencies="false"
+    needsCompletedIntegratorStep="true"/>
+  <LogCategories>
+    <Category name="logEvents" />
+    <Category name="logSingularLinearSystems" />
+    <Category name="logNonlinearSystems" />
+    <Category name="logDynamicStateSelection" />
+    <Category name="logStatusWarning" />
+    <Category name="logStatusDiscard" />
+    <Category name="logStatusError" />
+    <Category name="logStatusFatal" />
+    <Category name="logStatusPending" />
+    <Category name="logAll" />
+    <Category name="logFmi3Call" />
+  </LogCategories>
+  <DefaultExperiment startTime="0.0" stopTime="1.0" tolerance="1e-6" stepSize="0.002"/>
+  <ModelVariables>
+    <Float64 name="time" valueReference="7" causality="independent" variability="continuous" description="Simulation time"/>
+    <Float64 name="hIn" valueReference="0" initial="approx"  start="0.0">
+        <Alias name="'inStream(port.h_outflow)'"/>
+      </Float64>
+    <Float64 name="port.m_flow" valueReference="1" initial="approx"  start="0.0"/>
+    <Float64 name="h" valueReference="2" causality="parameter" variability="fixed"  start="0.0"/>
+    <Float64 name="p" valueReference="3" causality="parameter" variability="fixed"  start="1.0"/>
+    <Float64 name="port.h_outflow" valueReference="4" causality="calculatedParameter" variability="fixed" />
+    <Float64 name="port.p" valueReference="5" causality="calculatedParameter" variability="fixed" />
+    <Boolean name="_D_daeMode" valueReference="8" causality="structuralParameter" variability="fixed" start="false" description="Set to true to enable DAE mode as defined by FMI-LS-DAE."/>
+    <Float64 name="_D_DAEres1" valueReference="9" causality="local" variability="continuous" initial="calculated" description="DAE-mode residual 0"/>
+    <Float64 name="_D_DAEres0" valueReference="10" causality="local" variability="continuous" initial="calculated" description="DAE-mode residual 1"/>
+  </ModelVariables>
+  <ModelStructure>
+    <InitialUnknown valueReference="4"/>
+    <InitialUnknown valueReference="5"/>
+  </ModelStructure>
+</fmiModelDescription>

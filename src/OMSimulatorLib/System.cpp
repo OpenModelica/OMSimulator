@@ -776,7 +776,7 @@ oms_status_enu_t oms::System::exportToSSD(pugi::xml_node& node, Snapshot& snapsh
 
   for (const auto& connection : connections)
   {
-    if (connection && connection->getType() == oms_connection_single)
+    if (connection && (connection->getType() == oms_connection_single || connection->getType() == oms_connection_acausal))
       ssdconnections.push_back(connection);
     else if (connection)
       busconnections.push_back(connection);
@@ -1202,6 +1202,20 @@ oms_status_enu_t oms::System::addConnection(const oms::ComRef& crefA, const oms:
 
   if (getConnection(crefA, crefB))
     return logError_ConnectionExistsAlready(crefA, crefB, this);
+
+  // An acausal connection: two members of terminals, neither one driving the
+  // other. A member may be connected any number of times; the system builds
+  // the connection sets from these and adds their equations itself.
+  if (conA->getCausality() == oms_causality_bidir || conB->getCausality() == oms_causality_bidir)
+  {
+    if (conA->getCausality() != conB->getCausality())
+      return logError("Acausal connection between an acausal and a causal connector: " + std::string(crefA) + " -> " + std::string(crefB));
+    if (conA->getType() != oms_signal_type_real || conB->getType() != oms_signal_type_real)
+      return logError("Acausal connection of a non-real connector: " + std::string(crefA) + " -> " + std::string(crefB));
+    connections.back() = new oms::Connection(crefA, crefB, suppressUnitConversion, oms_connection_acausal);
+    connections.push_back(NULL);
+    return oms_status_ok;
+  }
 
   auto componentA = getComponent(headA);
   if(componentA && componentA->getType() == oms_component_table)

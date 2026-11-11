@@ -140,6 +140,7 @@ typedef enum {
 typedef enum {
   oms_connection_single, ///< FMI conncection (directed & undelayed signal connection)
   oms_connection_bus,    ///< Bus connection
+  oms_connection_acausal, ///< acausal connection between terminal members (potentials equal, flows sum to zero)
 } oms_connection_type_enu_t;
 
 /**
