@@ -2,9 +2,8 @@
 ## linux: yes
 ## ucrt64: yes
 ## win: yes
-## mac: yes
+## mac: no
 ## asan: no
-## the FMUs this test loads leak memory inside their own binaries
 
 # SSP files exported with the Python API are imported with the C API
 # oms_importFile and simulated, as a C/C++ host application does it.

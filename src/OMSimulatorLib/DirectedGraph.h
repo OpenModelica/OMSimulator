@@ -58,13 +58,13 @@ namespace oms
   struct scc_t
   {
     std::vector< std::pair<int, int> > connections;
-    bool thisIsALoop; // needed because a SSC with just one connection can be a loop! fmu.y -> fmu.u
-    unsigned int size;
-    unsigned int size_including_internal;
+    bool thisIsALoop = false; // needed because a SSC with just one connection can be a loop! fmu.y -> fmu.u
+    unsigned int size = 0;
+    unsigned int size_including_internal = 0;
     std::set<oms::ComRef> component_names;
-    double factor;
-    bool suppressUnitConversion;
-    oms_linear_transformation_t linearTransformation;
+    double factor = 1.0;
+    bool suppressUnitConversion = false;
+    oms_linear_transformation_t linearTransformation = {1.0, 0.0, false};
   };
 
   class DirectedGraph
