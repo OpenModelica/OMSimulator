@@ -909,6 +909,8 @@ oms_status_enu_t oms::Model::importFromSnapshot(const Snapshot& snapshot)
 
       // lochel: I guess that can somehow be improved
       oms_system_enu_t systemType = getSystemType(*it, sspVersion);
+      if (oms_system_none == systemType)
+        systemType = oms_system_wc;
 
       if (oms_status_ok != addSystem(systemCref, systemType))
         return logError("Unable to add System \"" + std::string(systemCref.c_str()) + "\"");
@@ -1030,7 +1032,8 @@ oms_system_enu_t oms::Model::getSystemType(const pugi::xml_node& node, const std
 
 oms_system_enu_t oms::Model::getSystemTypeHelper(const pugi::xml_node& node, const std::string& sspVersion)
 {
-  oms_system_enu_t systemType = oms_system_wc;
+  // OMSimulator 3 writes oms:SimulationInformation without a solver child
+  oms_system_enu_t systemType = oms_system_none;
   if (std::string(node.child(oms::ssp::Version1_0::VariableStepSolver).attribute("description").as_string()) != "" || std::string(node.child("VariableStepSolver").attribute("description").as_string()) !="")
   {
     systemType = oms_system_sc;

@@ -1,0 +1,68 @@
+## status: correct
+## linux: yes
+## ucrt64: yes
+## win: yes
+## mac: yes
+## asan: no
+## the FMUs this test loads leak memory inside their own binaries
+
+# SSP files exported with the Python API are imported with the C API
+# oms_importFile and simulated, as a C/C++ host application does it.
+
+import ctypes
+from OMSimulator import SSP, CRef, Settings, Capi
+
+Settings.suppressPath = True
+
+lib = Capi.obj
+lib.oms_importFile.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_char_p)]
+lib.oms_getReal.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_double)]
+lib.oms_setResultFile.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int]
+for f in ('oms_instantiate', 'oms_initialize', 'oms_simulate', 'oms_terminate', 'oms_delete'):
+  getattr(lib, f).argtypes = [ctypes.c_char_p]
+
+def export(filename, system, solver):
+  model = SSP()
+  model.addResource('../resources/Modelica.Blocks.Math.Gain.fmu', new_name='resources/Gain.fmu')
+  if system:
+    model.addSystem(CRef('default', system))
+  prefix = ['default'] + ([system] if system else [])
+  model.addComponent(CRef(*prefix, 'Gain1'), 'resources/Gain.fmu')
+  model.addComponent(CRef(*prefix, 'Gain2'), 'resources/Gain.fmu')
+  model.addConnection(CRef(*prefix, 'Gain1', 'y'), CRef(*prefix, 'Gain2', 'u'))
+  model.setValue(CRef(*prefix, 'Gain1', 'u'), 3.0)
+  model.setValue(CRef(*prefix, 'Gain1', 'k'), 2.0)
+  if solver:
+    model.newSolver({'name': 'solver1', 'method': 'euler', 'stepSize': 0.005})
+    model.setSolver(CRef(*prefix, 'Gain1'), 'solver1')
+    model.setSolver(CRef(*prefix, 'Gain2'), 'solver1')
+  model.export(filename)
+
+def importAndSimulate(filename, signal):
+  cref = ctypes.c_char_p()
+  status = lib.oms_importFile(filename.encode(), ctypes.byref(cref))
+  print(f"info:    oms_importFile: {status}", flush=True)
+  model = cref.value
+  lib.oms_setResultFile(model, (filename + '_res.mat').encode(), 1)
+  for f in ('oms_instantiate', 'oms_initialize', 'oms_simulate'):
+    print(f"info:    {f}: {getattr(lib, f)(model)}", flush=True)
+  value = ctypes.c_double()
+  lib.oms_getReal(model + b'.' + signal.encode(), ctypes.byref(value))
+  print(f"info:    {signal}: {value.value}", flush=True)
+  for f in ('oms_terminate', 'oms_delete'):
+    print(f"info:    {f}: {getattr(lib, f)(model)}", flush=True)
+
+## root system without solver settings: weakly coupled
+export('importFileOMS3_1.ssp', None, False)
+importAndSimulate('importFileOMS3_1.ssp', 'default.Gain2.y')
+
+## solver settings of OMSimulator 3 on the system and the components are ignored
+export('importFileOMS3_2.ssp', None, True)
+importAndSimulate('importFileOMS3_2.ssp', 'default.Gain2.y')
+
+## nested system: strongly coupled
+export('importFileOMS3_3.ssp', 'sub', False)
+importAndSimulate('importFileOMS3_3.ssp', 'default.sub.Gain2.y')
+
+## Result:
+## endResult

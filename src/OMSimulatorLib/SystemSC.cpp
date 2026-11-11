@@ -793,11 +793,13 @@ oms_status_enu_t oms::SystemSC::importFromSSD_SimulationInformation(const pugi::
     solverName = variableStepSolver.attribute("description").as_string();
     VariableStepSolver = oms::ssp::Version1_0::VariableStepSolver;
   }
-  else
+  else if (node.child("VariableStepSolver"))
   {
     solverName = node.child("VariableStepSolver").attribute("description").as_string();
     VariableStepSolver = "VariableStepSolver";
   }
+  else // no solver settings from OMSimulator 3; keep the default solver
+    return oms_status_ok;
 
   if (oms_status_ok != setSolverMethod(solverName))
     return oms_status_error;

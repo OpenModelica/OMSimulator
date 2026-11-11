@@ -170,6 +170,10 @@ oms_status_enu_t oms::SystemWC::importFromSSD_SimulationInformation(const pugi::
     relativeTolerance = node.child(VariableStepMaster).attribute("relativeTolerance").as_double();
   }
 
+  // no solver settings from OMSimulator 3; keep the default solver
+  if (!fixedStepMaster && !variableStepMaster && !node.child("FixedStepMaster") && !node.child("VariableStepMaster"))
+    return oms_status_ok;
+
   if (oms_status_ok != setSolverMethod(solverName))
     return oms_status_error;
 

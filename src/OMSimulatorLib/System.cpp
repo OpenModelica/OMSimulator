@@ -920,6 +920,8 @@ oms_status_enu_t oms::System::importFromSnapshot(const pugi::xml_node& node, con
 
           // lochel: I guess that can somehow be improved
           oms_system_enu_t systemType = getModel().getSystemType(*itElements, sspVersion);
+          if (oms_system_none == systemType)
+            systemType = oms_system_sc;
 
           if (oms_status_ok != addSubSystem(systemCref, systemType))
             return oms_status_error;
