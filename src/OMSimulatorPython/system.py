@@ -1003,6 +1003,8 @@ class System:
     """Processes the elements and connections in the system."""
     for key, element in elements_dict.items():
       if isinstance(element, Component):
+        if element.fmuPath is None:
+          raise ValueError(f"Component '{element.name}' has no source FMU and cannot be simulated")
         if element.implementation is None:
           # get the fmuType from the resources
           fmu = resources.get(str(element.fmuPath))
@@ -1056,6 +1058,8 @@ class System:
         })
         componentSolver[str(element.name)] = element.solver
       elif isinstance(element, ComponentTable):
+        if element.filePath is None:
+          raise ValueError(f"Table '{element.name}' has no source file and cannot be simulated")
         ## default tables with no solver to oms_ma
         if element.solver is None:
           solver_name = "oms_ma_default"

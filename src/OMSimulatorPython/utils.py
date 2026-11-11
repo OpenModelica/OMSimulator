@@ -104,6 +104,10 @@ def parseElements(node, resources = None):
     comp_type = component.get("type")
     name = CRef(component.get("name"))
     source = component.get("source")
+    # a component without a source has no source attribute; older OMSimulator
+    # versions wrote "." and other tools write "", read both as no source
+    if source in ("", "."):
+      source = None
     description = component.get("description")
     if (comp_type == "application/x-fmu-sharedlibrary"):
       ## check implementation
@@ -120,7 +124,7 @@ def parseElements(node, resources = None):
       elements[name] = Component(name, source)
       elements[name].implementation = implementation
       elements[name].description = description
-      if resources is not None:
+      if resources is not None and source is not None:
         elements[name].fmu = resources.get(source)  # attach FMU for modeldescription start value fallback in getValue
       elements[name].connectors = Connector.importFromNode(component)
       elements[name].elementgeometry = ElementGeometry.importFromNode(component)

@@ -1,4 +1,6 @@
 oms_add_test(
+  componentNoSource1.py
+  componentNoSource2.py
   create_ssp_file.py
   cref.py
   deleteConnector1.py

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" name="componentNoSource" version="2.0">
+  <ssd:System name="default">
+    <ssd:Elements>
+      <ssd:Component name="emptySource" type="application/x-fmu-sharedlibrary" source="" implementation="any">
+        <ssd:Connectors>
+          <ssd:Connector name="y" kind="output">
+            <ssc:Real/>
+          </ssd:Connector>
+        </ssd:Connectors>
+      </ssd:Component>
+      <ssd:Component name="noSource" type="application/x-fmu-sharedlibrary" implementation="any">
+        <ssd:Connectors>
+          <ssd:Connector name="u" kind="input">
+            <ssc:Real/>
+          </ssd:Connector>
+          <ssd:Connector name="y" kind="output">
+            <ssc:Real/>
+          </ssd:Connector>
+        </ssd:Connectors>
+      </ssd:Component>
+      <ssd:Component name="dotSource" type="application/x-fmu-sharedlibrary" source="." implementation="any">
+        <ssd:Connectors>
+          <ssd:Connector name="u" kind="input">
+            <ssc:Real/>
+          </ssd:Connector>
+        </ssd:Connectors>
+      </ssd:Component>
+    </ssd:Elements>
+    <ssd:Connections>
+      <ssd:Connection startElement="emptySource" startConnector="y" endElement="noSource" endConnector="u"/>
+      <ssd:Connection startElement="noSource" startConnector="y" endElement="dotSource" endConnector="u"/>
+    </ssd:Connections>
+  </ssd:System>
+</ssd:SystemStructureDescription>

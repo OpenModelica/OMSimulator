@@ -39,10 +39,11 @@ from OMSimulator.elementgeometry import ElementGeometry
 from OMSimulator import namespace
 
 class Component:
-  def __init__(self, name: CRef, fmuPath: Path | str, implementation=None, connectors=None, unitDefinitions=None, enumerationDefinitions=None):
+  def __init__(self, name: CRef, fmuPath: Path | str | None, implementation=None, connectors=None, unitDefinitions=None, enumerationDefinitions=None):
     from OMSimulator.ssm import SSM
     self.name = CRef(name)
-    self.fmuPath = Path(fmuPath).as_posix()
+    # None for a component without a source (e.g. an architecture placeholder)
+    self.fmuPath = Path(fmuPath).as_posix() if fmuPath else None
     self.connectors = connectors or list()
     self.unitDefinitions = unitDefinitions or list()
     self.enumerationDefinitions = enumerationDefinitions or list()
@@ -179,7 +180,10 @@ class Component:
     component_node = ET.SubElement(node, namespace.tag("ssd", "Component"))
     component_node.set("name", str(self.name))
     component_node.set("type", "application/x-fmu-sharedlibrary")
-    component_node.set("source", str(self.fmuPath))
+    # SSP: a component without a source has no source attribute; an empty or
+    # "." source would be a relative URI pointing to the SSD or its directory
+    if self.fmuPath:
+      component_node.set("source", str(self.fmuPath))
     if self.implementation == "me":
       component_node.set("implementation", "ModelExchange")
     elif self.implementation == "cs":
