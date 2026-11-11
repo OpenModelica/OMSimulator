@@ -951,6 +951,8 @@ oms_status_enu_t oms::System::importFromSnapshot(const pugi::xml_node& node, con
               component = ComponentFMU3CS::NewComponent(*itElements, this, sspVersion, snapshot, variantName);
             else if (getType() == oms_system_sc && fmiVersion == "2.0")
               component = ComponentFMUME::NewComponent(*itElements, this, sspVersion, snapshot, variantName);
+            else if (getType() == oms_system_sc && fmiVersion == "3.0")
+              component = ComponentFMU3ME::NewComponent(*itElements, this, sspVersion, snapshot, variantName);
             else
               return logError("wrong xml schema detected: " + name);
           }

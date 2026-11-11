@@ -66,6 +66,7 @@ export('importFileOMS3_3.ssp', 'sub', False)
 importAndSimulate('importFileOMS3_3.ssp', 'default.sub.Gain2.y')
 
 ## Result:
+## warning: oms_importFile is deprecated and will be removed in a future version. Use the Python API instead: import OMSimulator; OMSimulator.SSP("xxx.ssp")
 ## info:    oms_importFile: 0
 ## info:    oms_instantiate: 0
 ## info:    Result file: importFileOMS3_1.ssp_res.mat (bufferSize=1)
@@ -74,6 +75,7 @@ importAndSimulate('importFileOMS3_3.ssp', 'default.sub.Gain2.y')
 ## info:    default.Gain2.y: 6.0
 ## info:    oms_terminate: 0
 ## info:    oms_delete: 0
+## warning: oms_importFile is deprecated and will be removed in a future version. Use the Python API instead: import OMSimulator; OMSimulator.SSP("xxx.ssp")
 ## info:    oms_importFile: 0
 ## info:    oms_instantiate: 0
 ## info:    Result file: importFileOMS3_2.ssp_res.mat (bufferSize=1)
@@ -82,6 +84,7 @@ importAndSimulate('importFileOMS3_3.ssp', 'default.sub.Gain2.y')
 ## info:    default.Gain2.y: 6.0
 ## info:    oms_terminate: 0
 ## info:    oms_delete: 0
+## warning: oms_importFile is deprecated and will be removed in a future version. Use the Python API instead: import OMSimulator; OMSimulator.SSP("xxx.ssp")
 ## info:    oms_importFile: 0
 ## info:    oms_instantiate: 0
 ## info:    model doesn't contain any continuous state
@@ -95,4 +98,6 @@ importAndSimulate('importFileOMS3_3.ssp', 'default.sub.Gain2.y')
 ##          NumNonlinSolvIters = 1001 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
 ## info:    oms_terminate: 0
 ## info:    oms_delete: 0
+## info:    3 warnings
+## info:    0 errors
 ## endResult

@@ -376,7 +376,7 @@ oms::Component* oms::ComponentFMU3CS::NewComponent(const pugi::xml_node& node, o
     }
     else if(name == oms::ssp::Draft20180219::ssd::annotations)
     {
-      // the solver assignment of OMSimulator 3 is not used here
+      // vendor annotations, e.g. the solver of OMSimulator 3, are not used
     }
     else
     {
