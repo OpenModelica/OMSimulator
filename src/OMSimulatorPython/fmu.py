@@ -577,15 +577,15 @@ class FMU:
 
       match SignalType(type):
         case SignalType.Real:  # oms_signal_type_real
-          return self._setReal(mappedCrefs, value)
+          self._setReal(mappedCrefs, value)
         case SignalType.Integer:  # oms_signal_type_integer
-          return self._setInteger(mappedCrefs, value)
+          self._setInteger(mappedCrefs, value)
         case SignalType.Boolean:  # oms_signal_type_boolean
-          return self._setBoolean(mappedCrefs, value)
+          self._setBoolean(mappedCrefs, value)
         case SignalType.String:  # oms_signal_type_string
-          return self._setString(mappedCrefs, value)
+          self._setString(mappedCrefs, value)
         case SignalType.Enumeration:  # oms_signal_type_enumeration
-          return self._setInteger(mappedCrefs, value)  # Treat enumeration as integer
+          self._setInteger(mappedCrefs, value)  # Treat enumeration as integer
         case _:
           raise TypeError(f"Unsupported type: {type}")
 
@@ -820,7 +820,7 @@ class FMU:
       raise KeyError(f"Variable '{cref}' does not exist in the FMU")
 
     if self.fmuInstantiated is False:
-      return self.value.setValue(cref, value, unit, description)
+      return self.value.setValue(cref, value, self.getVariableByName(str(cref)).signal_type, unit, description)
 
     if not self.checkfmiRequirements(CRef(cref)):
       return  # Skip setting the value if FMI requirements are not met
