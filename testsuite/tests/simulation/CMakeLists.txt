@@ -10,6 +10,7 @@ oms_add_test(
   fmuSimulation1.py
   fmuSimulation2.py
   fmuSimulation3.py
+  fmuSimulation4.py
   LinearTransformation1.py
   LinearTransformation2.py
   LinearTransformation3.py
