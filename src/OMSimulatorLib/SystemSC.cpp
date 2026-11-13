@@ -159,9 +159,10 @@ int oms::cvode_roots(sunrealtype t, N_Vector y, sunrealtype *gout, void *user_da
  * fmi-ls-dae: the system as one implicit DAE
  *
  * The unknowns are laid out per component, [x_i | z_i], and so are the rows: a
- * component in DAE mode contributes the residuals it declares, an ODE component
- * the explicit rows x'_i - f_i(x, u, t). Both blocks are square, so the system
- * is, and a system may mix the two.
+ * component in DAE mode contributes the residuals it declares — after the rows
+ * x'_i - f_i(t, x, z, u) of its derivatives, in the semi-explicit form — and an
+ * ODE component the explicit rows x'_i - f_i(x, u, t). Every block is square,
+ * so the system is, and a system may mix them.
  *
  * The coupling is where it was for CVODE: updateInputs() propagates connected
  * outputs into inputs before the rows are evaluated, so the residuals see a
@@ -269,8 +270,9 @@ void oms::SystemSC::buildDaeJacobianSparsity()
     return;
 
   // Where each component's unknowns sit, and which column a value reference of
-  // it stands for. A state and its derivative share a column: one difference
-  // quotient carries dF/dx + cj*dF/dder(x) together.
+  // it stands for. In the fully implicit form a state and its derivative share
+  // a column: one difference quotient carries dF/dx + cj*dF/dder(x) together.
+  // In the semi-explicit form a derivative is not a known of any row.
   std::vector<size_t> columnOfComponent(fmus.size(), 0);
   std::vector<std::map<fmi3ValueReference, int>> columnOfValueReference(fmus.size());
   const size_t loopBase = n - liftedConnections.size();
@@ -290,10 +292,12 @@ void oms::SystemSC::buildDaeJacobianSparsity()
                 std::string(fmus[i]->getFullCref()) + "\" has no usable structure; differencing it densely");
         return;
       }
+      const bool implicit = daeFmus[i]->getLsDae().isFullyImplicit();
       for (size_t k = 0; k < nStates[i]; ++k)
       {
         columnOfValueReference[i][stateVrs[k]] = static_cast<int>(j + k);
-        columnOfValueReference[i][derVrs[k]] = static_cast<int>(j + k);
+        if (implicit)
+          columnOfValueReference[i][derVrs[k]] = static_cast<int>(j + k);
       }
       const std::vector<uint32_t>& algVrs = daeFmus[i]->getLsDae().getAlgebraicVariables();
       for (size_t k = 0; k < algVrs.size(); ++k)
@@ -352,9 +356,21 @@ void oms::SystemSC::buildDaeJacobianSparsity()
   {
     if (daeFmus[i])
     {
-      const std::vector<std::vector<uint32_t>>& dependencies = daeFmus[i]->getLsDae().getResidualDependencies();
+      // Semi-explicit: the rows x' - f first. A row reaches its own state through
+      // x', whatever f depends on.
+      std::vector<std::vector<uint32_t>> dependencies;
+      if (!daeFmus[i]->getLsDae().isFullyImplicit())
+      {
+        dependencies = daeFmus[i]->getLsDae().getContinuousStateDerivativeDependencies();
+        dependencies.resize(nStates[i]);
+      }
+      const size_t nDerivativeRows = dependencies.size();
+      const std::vector<std::vector<uint32_t>>& residualDependencies = daeFmus[i]->getLsDae().getResidualDependencies();
+      dependencies.insert(dependencies.end(), residualDependencies.begin(), residualDependencies.end());
       for (size_t k = 0; k < nStates[i] + nAlgebraic[i]; ++k, ++row)
       {
+        if (k < nDerivativeRows)
+          columnsByRow[row].push_back(static_cast<int>(columnOfComponent[i] + k));
         bool exact = k < dependencies.size() && !dependencies[k].empty();
         if (exact)
         {
@@ -565,9 +581,10 @@ oms_status_enu_t oms::SystemSC::setDaePoint(double t, N_Vector yy, N_Vector yp)
 
     if (daeFmus[i])
     {
-      // The implicit form's residuals are a function of (t, x, x', z), so the
-      // derivatives are knowns the master hands over, not something the FMU owes.
-      if (nStates[i] > 0)
+      // The fully implicit form's residuals are a function of (t, x, x', z), so
+      // the derivatives are knowns the master hands over; in the semi-explicit
+      // form the FMU computes them.
+      if (nStates[i] > 0 && daeFmus[i]->getLsDae().isFullyImplicit())
       {
         for (size_t k = 0; k < nStates[i]; ++k)
           states_der[i][k] = NV_Ith_S(yp, xoff + k);
@@ -651,7 +668,15 @@ int oms::ida_res(sunrealtype t, N_Vector yy, N_Vector yp, N_Vector rr, void* use
   {
     if (system->daeFmus[i])
     {
-      const size_t n = system->nStates[i] + system->nAlgebraic[i];
+      // Semi-explicit: x' - f(t, x, z) first, then the residuals g(t, x, z).
+      if (!system->daeFmus[i]->getLsDae().isFullyImplicit() && system->nStates[i] > 0)
+      {
+        if (oms_status_ok != system->fmus[i]->getDerivatives(system->states_der[i]))
+          return -1;
+        for (size_t k = 0; k < system->nStates[i]; ++k, ++j)
+          NV_Ith_S(rr, j) = NV_Ith_S(yp, j) - system->states_der[i][k];
+      }
+      const size_t n = system->daeFmus[i]->getNumberOfDaeResiduals();
       if (n == 0)
         continue;
       if (oms_status_ok != system->daeFmus[i]->getDaeResiduals(system->residuals[i]))

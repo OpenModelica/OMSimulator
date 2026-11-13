@@ -191,14 +191,20 @@ oms::Component* oms::ComponentFMU3ME::NewComponent(const oms::ComRef& cref, oms:
   // fmi-ls-dae: a Model Exchange FMU may carry a DAE formulation beside its ODE
   // face. Nothing changes until the system asks for DAE mode; here we only learn
   // that the FMU has one, and remember the state derivatives it pairs with its
-  // states (the model description's own <ContinuousStateDerivative> order, which
-  // is the order fmi3GetContinuousStates uses).
+  // states, in the order fmi3GetContinuousStates uses: the manifest's
+  // <ContinuousStateDerivative> list, which replaces the model description's in
+  // DAE mode, or the model description's for the fully implicit form.
   if (component->lsDae.load(tempDir.generic_string()))
   {
-    const int n = fmi3_getNumberOfModelStructureContinuousStateDerivatives(component->fmu);
-    for (int i = 0; i < n; ++i)
-      component->derivativeVrs.push_back(
-          fmi3_getModelStructureValueReference(fmi3_getModelStructureContinuousStateDerivative(component->fmu, i)));
+    if (component->lsDae.isFullyImplicit())
+    {
+      const int n = fmi3_getNumberOfModelStructureContinuousStateDerivatives(component->fmu);
+      for (int i = 0; i < n; ++i)
+        component->derivativeVrs.push_back(
+            fmi3_getModelStructureValueReference(fmi3_getModelStructureContinuousStateDerivative(component->fmu, i)));
+    }
+    else
+      component->derivativeVrs = component->lsDae.getContinuousStateDerivatives();
     logInfo("FMU \"" + std::string(cref) + "\" carries a DAE formulation (fmi-ls-dae " +
             component->lsDae.getVersion() + "): " + std::to_string(component->lsDae.getResiduals().size()) +
             " residuals over " + std::to_string(component->derivativeVrs.size()) + " states and " +
@@ -2110,8 +2116,10 @@ oms_status_enu_t oms::ComponentFMU3ME::getDerivatives(double* derivatives)
  *
  * The switch is a structural parameter, so Configuration Mode is where it is
  * set — before initialization, and only once. After this the FMU no longer owes
- * the derivatives and the algebraic variables: the master sets them and reads
- * the residuals of F(t, x, x', z) = 0 back.
+ * the algebraic variables: the master sets them and reads the residuals back.
+ * In the semi-explicit form x' = f(t, x, z), 0 = g(t, x, z) the FMU still
+ * answers with the derivatives; in the fully implicit form F(t, x, x', z) = 0
+ * the master sets them too.
  */
 oms_status_enu_t oms::ComponentFMU3ME::enableDaeMode()
 {
@@ -2122,10 +2130,6 @@ oms_status_enu_t oms::ComponentFMU3ME::enableDaeMode()
 
   if (daeMode)
     return oms_status_ok;
-
-  if (!lsDae.isFullyImplicit())
-    return logError("fmi-ls-dae: FMU \"" + std::string(getFullCref()) +
-                    "\" states a semi-explicit DAE, which is not supported yet");
 
   // The number of continuous states is only known once the FMU has left
   // Initialization Mode, which is long after Configuration Mode; the checks that
@@ -2185,11 +2189,13 @@ oms_status_enu_t oms::ComponentFMU3ME::validateDaeMode()
                     std::to_string(getNumberOfContinuousStates()) + " continuous states but its <ModelStructure> lists " +
                     std::to_string(derivativeVrs.size()) + " state derivatives");
 
-  // The implicit form's residuals cover the state rows too, so a square system
-  // wants one residual per state and per algebraic variable.
-  const size_t wanted = getNumberOfContinuousStates() + lsDae.getAlgebraicVariables().size();
+  // A square system wants one residual per algebraic variable, and in the fully
+  // implicit form, whose residuals cover the state rows too, one per state.
+  const bool implicit = lsDae.isFullyImplicit();
+  const size_t wanted = (implicit ? getNumberOfContinuousStates() : 0) + lsDae.getAlgebraicVariables().size();
   if (lsDae.getResiduals().size() != wanted)
-    return logError("fmi-ls-dae: FMU \"" + std::string(getFullCref()) + "\" states an implicit DAE with " +
+    return logError("fmi-ls-dae: FMU \"" + std::string(getFullCref()) + "\" states " +
+                    (implicit ? "a fully implicit" : "a semi-explicit") + " DAE with " +
                     std::to_string(getNumberOfContinuousStates()) + " states and " +
                     std::to_string(lsDae.getAlgebraicVariables().size()) + " algebraic variables, which wants " +
                     std::to_string(wanted) + " residuals, but lists " + std::to_string(lsDae.getResiduals().size()) +
