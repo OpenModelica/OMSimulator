@@ -718,14 +718,42 @@ class System:
 
     raise ValueError(f"Connector '{connector_name}' not found in element '{element_name or self.name}'")
 
+  def _acausalTerminal(self, element_name, connector_name):
+    """The members of a terminal of an acausal component, or None."""
+    if not element_name:
+      return None
+    element = self.elements.get(CRef(element_name))
+    fmu = getattr(element, 'fmu', None)
+    if fmu is None:
+      return None
+    return fmu.acausalTerminals.get(str(connector_name))
+
   def addConnection(self, startElement : str, startConnector : str, endElement : str, endConnector : str, suppressUnitConversion : bool = False):
     """Adds a connection to the system."""
+    # Two terminals of acausal components: connect them member by member. The
+    # SSD holds the member connections, which is all SSP has a notion of.
+    startTerminal = self._acausalTerminal(startElement, startConnector)
+    endTerminal = self._acausalTerminal(endElement, endConnector)
+    if startTerminal is not None and endTerminal is not None:
+      if set(startTerminal.keys()) != set(endTerminal.keys()):
+        raise ValueError(f"Terminals '{startElement}.{startConnector}' and '{endElement}.{endConnector}' have different members: {sorted(startTerminal.keys())} and {sorted(endTerminal.keys())}")
+      for memberName, (startVariable, startKind) in startTerminal.items():
+        (endVariable, endKind) = endTerminal[memberName]
+        if startKind != endKind:
+          raise ValueError(f"Member '{memberName}' is a {startKind} of '{startElement}.{startConnector}' but a {endKind} of '{endElement}.{endConnector}'")
+        self.addConnection(startElement, startVariable, endElement, endVariable, suppressUnitConversion)
+      return
     # Resolve source connector owner and causality
     (source_owner, source_kind) = self._findConnector(startElement, startConnector)
     # Resolve destination connector owner and causality
     (dest_owner, dest_kind) = self._findConnector(endElement, endConnector)
 
-    if Connection.is_validConnection(source_owner, source_kind, dest_owner, dest_kind):
+    if source_kind == Causality.unspecified and dest_kind == Causality.unspecified:
+      # an acausal connector may be connected any number of times
+      if not Connection.is_validConnection(source_owner, source_kind, dest_owner, dest_kind):
+        raise ValueError(f"info: Invalid acausal connection '{startElement}.{startConnector}'->'{endElement}.{endConnector}': both must be terminal members of components")
+      self.connections.append(Connection(startElement, startConnector, endElement, endConnector, suppressUnitConversion))
+    elif Connection.is_validConnection(source_owner, source_kind, dest_owner, dest_kind):
       self.isConnectorAlreadyConnected(startElement, startConnector, endElement, endConnector)
       self.connections.append(Connection(startElement, startConnector, endElement, endConnector, suppressUnitConversion))
     # flipped connection

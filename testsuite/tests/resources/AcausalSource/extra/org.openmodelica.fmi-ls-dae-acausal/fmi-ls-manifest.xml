@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiDAEAcausalManifest
+  xmlns:fmi-ls="http://fmi-standard.org/fmi-ls-manifest"
+  fmi-ls:fmi-ls-name="org.openmodelica.fmi-ls-dae-acausal"
+  fmi-ls:fmi-ls-version="0.1.0"
+  fmi-ls:fmi-ls-description="OpenModelica extension of fmi-ls-dae: a component connected through its terminals.">
+  <ConnectorResiduals>
+    <ConnectorResidual valueReference="8" terminal="n" variableName="n.i"/>
+    <ConnectorResidual valueReference="7" terminal="p" variableName="p.i"/>
+  </ConnectorResiduals>
+</fmiDAEAcausalManifest>

@@ -1,6 +1,11 @@
 
 set(OM_OMS_TESTSUITE_RESOURCES_FMUS
         ${CMAKE_CURRENT_SOURCE_DIR}/A
+        ${CMAKE_CURRENT_SOURCE_DIR}/AcausalGround
+        ${CMAKE_CURRENT_SOURCE_DIR}/AcausalRC
+        ${CMAKE_CURRENT_SOURCE_DIR}/AcausalSource
+        ${CMAKE_CURRENT_SOURCE_DIR}/AcausalStreamBoundary
+        ${CMAKE_CURRENT_SOURCE_DIR}/AcausalStreamVolume
         ${CMAKE_CURRENT_SOURCE_DIR}/AircraftVehicleDemonstrator.Atmosphere_Model_FMU_sf
         ${CMAKE_CURRENT_SOURCE_DIR}/AircraftVehicleDemonstrator.bC
         ${CMAKE_CURRENT_SOURCE_DIR}/AircraftVehicleDemonstrator.cockpit

@@ -112,3 +112,87 @@ bool oms::LsDaeManifest::load(const std::string& unzippedFmuPath)
   valid = true;
   return true;
 }
+
+bool oms::LsDaeAcausalManifest::load(const std::string& unzippedFmuPath)
+{
+  const filesystem::path manifest = filesystem::path(unzippedFmuPath) / filesystem::path(path());
+  if (!filesystem::exists(manifest))
+    return false;   // not an acausal component
+
+  pugi::xml_document doc;
+  pugi::xml_parse_result result = doc.load_file(manifest.string().c_str());
+  if (!result)
+  {
+    logWarning("fmi-ls-dae-acausal: could not read \"" + manifest.string() + "\": " + std::string(result.description()));
+    return false;
+  }
+
+  const pugi::xml_node root = doc.child("fmiDAEAcausalManifest");
+  if (!root)
+  {
+    logWarning("fmi-ls-dae-acausal: \"" + manifest.string() + "\" has no <fmiDAEAcausalManifest> element");
+    return false;
+  }
+
+  version = root.attribute("fmi-ls:fmi-ls-version").as_string();
+  for (const pugi::xml_node& node : root.child("ConnectorResiduals").children("ConnectorResidual"))
+    connectorResiduals.push_back({node.attribute("valueReference").as_uint(),
+                                  node.attribute("terminal").as_string(),
+                                  node.attribute("variableName").as_string()});
+  for (const pugi::xml_node& node : root.child("ConnectorResiduals").children("StreamResidual"))
+    streamResiduals.push_back({node.attribute("valueReference").as_uint(),
+                               node.attribute("terminal").as_string(),
+                               node.attribute("variableName").as_string()});
+
+  valid = true;
+  return true;
+}
+
+bool oms::Terminals::load(const std::string& unzippedFmuPath)
+{
+  const filesystem::path file = filesystem::path(unzippedFmuPath) / filesystem::path(path());
+  if (!filesystem::exists(file))
+    return false;
+
+  pugi::xml_document doc;
+  pugi::xml_parse_result result = doc.load_file(file.string().c_str());
+  if (!result)
+  {
+    logWarning("could not read \"" + file.string() + "\": " + std::string(result.description()));
+    return false;
+  }
+
+  // Only the top-level terminals: a nested terminal is not a connector an
+  // acausal connection is made between.
+  for (const pugi::xml_node& node : doc.child("fmiTerminalsAndIcons").child("Terminals").children("Terminal"))
+  {
+    Terminal terminal;
+    terminal.name = node.attribute("name").as_string();
+    terminal.terminalKind = node.attribute("terminalKind").as_string();
+    for (const pugi::xml_node& member : node.children("TerminalMemberVariable"))
+      terminal.members.push_back({member.attribute("variableName").as_string(),
+                                  member.attribute("memberName").as_string(),
+                                  member.attribute("variableKind").as_string()});
+    for (const pugi::xml_node& member : node.children("TerminalStreamMemberVariable"))
+      terminal.streamMembers.push_back({member.attribute("inStreamMemberName").as_string(),
+                                        member.attribute("outStreamMemberName").as_string(),
+                                        member.attribute("inStreamVariableName").as_string(),
+                                        member.attribute("outStreamVariableName").as_string()});
+    terminals.push_back(terminal);
+  }
+
+  // The aliases, which a member may be: e.g. b.p of a component with a.p = b.p.
+  pugi::xml_document md;
+  const filesystem::path modelDescription = filesystem::path(unzippedFmuPath) / filesystem::path("modelDescription.xml");
+  if (md.load_file(modelDescription.string().c_str()))
+    for (const pugi::xml_node& variable : md.child("fmiModelDescription").child("ModelVariables").children())
+      for (const pugi::xml_node& alias : variable.children("Alias"))
+        aliasOf[alias.attribute("name").as_string()] = variable.attribute("name").as_string();
+  return true;
+}
+
+std::string oms::Terminals::resolveAlias(const std::string& variableName) const
+{
+  const auto it = aliasOf.find(variableName);
+  return it == aliasOf.end() ? variableName : it->second;
+}

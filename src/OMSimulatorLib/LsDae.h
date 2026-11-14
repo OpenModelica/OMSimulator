@@ -37,6 +37,7 @@
 #define _OMS_LSDAE_H_
 
 #include <cstdint>
+#include <map>
 #include <string>
 #include <vector>
 
@@ -108,6 +109,93 @@ namespace oms
     std::vector<uint32_t> residualVrs;
     std::vector<std::vector<uint32_t>> residualDependencies;
     std::vector<uint32_t> continuousStateDerivatives;
+  };
+  /**
+   * \brief OpenModelica's extension of fmi-ls-dae for an acausal component: a
+   *        model connected through its terminals after it was compiled.
+   *
+   * The component carries one residual per flow member of its terminals that,
+   * unconnected, reads flow = 0. An importer that connects the terminal drops
+   * those residuals and adds the equations of its connections instead:
+   * potentials equal, flows summing to zero. The manifest names them.
+   */
+  class LsDaeAcausalManifest
+  {
+  public:
+    static const char* name() { return "org.openmodelica.fmi-ls-dae-acausal"; }
+    static const char* path() { return "extra/org.openmodelica.fmi-ls-dae-acausal/fmi-ls-manifest.xml"; }
+
+    /// A residual that stands for a flow of a terminal (ConnectorResidual), or
+    /// for inStream of a stream variable of a terminal (StreamResidual).
+    struct ConnectorResidual
+    {
+      uint32_t valueReference;   ///< of the residual, one of LsDaeManifest::getResiduals()
+      std::string terminal;      ///< the terminal the flow belongs to
+      std::string variableName;  ///< the flow variable, or the stream variable
+    };
+
+    /// \return true if a manifest is there and could be read; a missing file is not an error.
+    bool load(const std::string& unzippedFmuPath);
+
+    bool isValid() const { return valid; }
+    const std::string& getVersion() const { return version; }
+    const std::vector<ConnectorResidual>& getConnectorResiduals() const { return connectorResiduals; }
+    const std::vector<ConnectorResidual>& getStreamResiduals() const { return streamResiduals; }
+
+  private:
+    bool valid = false;
+    std::string version;
+    std::vector<ConnectorResidual> connectorResiduals;
+    std::vector<ConnectorResidual> streamResiduals;
+  };
+
+  /**
+   * \brief The terminals of an FMI 3.0 FMU (terminalsAndIcons/terminalsAndIcons.xml),
+   *        as far as an acausal connection needs them.
+   */
+  class Terminals
+  {
+  public:
+    static const char* path() { return "terminalsAndIcons/terminalsAndIcons.xml"; }
+
+    struct Member
+    {
+      std::string variableName;
+      std::string memberName;
+      std::string variableKind;  ///< "signal" (a potential), "inflow" or "outflow" (a flow)
+      bool isFlow() const { return variableKind == "inflow" || variableKind == "outflow"; }
+    };
+
+    /// A stream variable and the variable that stands for its inStream
+    /// (TerminalStreamMemberVariable).
+    struct StreamMember
+    {
+      std::string inStreamMemberName;
+      std::string outStreamMemberName;
+      std::string inStreamVariableName;
+      std::string outStreamVariableName;
+    };
+
+    struct Terminal
+    {
+      std::string name;
+      std::string terminalKind;
+      std::vector<Member> members;
+      std::vector<StreamMember> streamMembers;
+    };
+
+    /// \return true if the file is there and could be read.
+    bool load(const std::string& unzippedFmuPath);
+
+    const std::vector<Terminal>& getTerminals() const { return terminals; }
+
+    /// The variable a terminal member names: itself, or the variable it is an
+    /// FMI 3.0 <Alias> of, which the FMI library does not list as a variable.
+    std::string resolveAlias(const std::string& variableName) const;
+
+  private:
+    std::vector<Terminal> terminals;
+    std::map<std::string, std::string> aliasOf;
   };
 }
 

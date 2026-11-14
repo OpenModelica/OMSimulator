@@ -49,6 +49,10 @@ class Causality(Enum):
   # states, of variables, of an array's dimensions) and can only be set in
   # Configuration Mode. fmi-ls-dae's DAE-mode switch is one.
   structuralParameter = 6
+  # SSP 2.0: a connector whose direction is given by the connections, as for an
+  # acausal connection of Modelica models: the members of an acausal
+  # component's terminals.
+  unspecified = 7
 
 
 class SignalType(Enum):

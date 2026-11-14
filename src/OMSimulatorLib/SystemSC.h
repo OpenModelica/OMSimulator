@@ -122,6 +122,17 @@ namespace oms
     void buildDaeJacobianSparsity();
     /// Distribute the DAE unknowns y (and the state derivatives yp) into the FMUs.
     oms_status_enu_t setDaePoint(double t, N_Vector yy, N_Vector yp);
+    /**
+     * \brief The equations of the acausal connections, in place of the
+     *        residuals that stood for the connected flows and inStreams.
+     *
+     * Builds the connection sets from the system's acausal connections and
+     * fills acausalRows and streamRows. Fails if a set mixes flows, potentials
+     * and stream variables, if the sets do not give as many equations as there
+     * are flow residuals to replace, or if a connected stream variable's terminal
+     * does not have exactly one flow.
+     */
+    oms_status_enu_t collectAcausalConnections();
     /// Read the point the FMUs hold back into y and yp, after a solve or an event.
     oms_status_enu_t getDaePoint(N_Vector yy, N_Vector yp);
     /// IDACalcIC over the current point, then read the consistent point back.
@@ -185,6 +196,51 @@ namespace oms
     /// Per loop of the simulation graph, whether it was lifted; passed to
     /// updateInputsInternal so the inner solver leaves those alone.
     std::vector<bool> liftedLoops;
+
+    /**
+     * An acausal connection set gives the equations of a node: for potentials
+     * v_1 = v_2 = ... = v_k, k-1 rows v_1 - v_m = 0, and for flows the single
+     * row sum(i_m) = 0. They take the rows of the residuals the components'
+     * acausal manifests name for the connected flows (flow = 0, which is what an
+     * unconnected terminal means), so the system stays square and the layout of
+     * the unknowns and the rows is the one above.
+     */
+    struct AcausalTerm
+    {
+      size_t component;             ///< index into fmus
+      fmi3ValueReference vr;        ///< the terminal member
+      double factor;                ///< its factor in the row
+      int column;                   ///< its column if it is an unknown, else -1
+      std::vector<int> terminalRows; ///< the rows of the residuals that stood for its terminal's flows
+    };
+    struct AcausalRow
+    {
+      size_t row;                   ///< the replaced residual's row
+      std::vector<AcausalTerm> terms;
+    };
+    std::vector<AcausalRow> acausalRows;
+
+    /**
+     * A stream variable h_i of a connection set takes the row of the residual
+     * that stood for its inStream (inStream(h_i) = h_i, an unconnected terminal)
+     * with the mixing rule of the set:
+     *   s_i - sum_{j<>i} w_j*h_j / sum_{j<>i} w_j = 0,   w_j = max(-m_j, eps)
+     * where s_i is the variable that stands for inStream(h_i) and m_j is the flow
+     * of the terminal of h_j, into its component. With two members it is
+     * s_i - h_j = 0.
+     */
+    struct StreamTerm
+    {
+      AcausalTerm stream;           ///< h_j
+      AcausalTerm flow;             ///< m_j, factor -1 for an outflow
+    };
+    struct StreamRow
+    {
+      size_t row;                   ///< the replaced residual's row
+      AcausalTerm inStream;         ///< s_i
+      std::vector<StreamTerm> others;
+    };
+    std::vector<StreamRow> streamRows;
 
     /// Per unknown, the rows that reach it; empty when the structure is unknown
     /// and IDA differences the Jacobian itself.

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiDAEManifest
+  xmlns:fmi-ls="http://fmi-standard.org/fmi-ls-manifest"
+  fmi-ls:fmi-ls-name="org.fmi-standard.fmi-ls-dae"
+  fmi-ls:fmi-ls-version="1.0.0-alpha.1"
+  fmi-ls:fmi-ls-description="Layered standard for DAE support in FMI.">
+  <EnableDAEParameter valueReference="3"/>
+  <AlgebraicVariables>
+    <AlgebraicVariable valueReference="0"/>
+  </AlgebraicVariables>
+  <ModelStructure>
+    <Residual valueReference="4" dependencies="0" dependenciesKind="dependent"/>
+  </ModelStructure>
+</fmiDAEManifest>

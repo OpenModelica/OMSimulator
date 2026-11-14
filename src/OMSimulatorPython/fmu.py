@@ -39,7 +39,7 @@ from typing import Union
 from lxml import etree as ET
 from OMSimulator.connector import Connector
 from OMSimulator.unit import Unit
-from OMSimulator.variable import Variable, SignalType
+from OMSimulator.variable import Variable, SignalType, Causality
 from OMSimulator.values import Values
 from OMSimulator import namespace, utils
 from OMSimulator.capi import Capi, Status
@@ -133,6 +133,12 @@ class FMU:
     self.maxOutputDerivativeOrder = 0
 
     self._variables = []
+    # An acausal component (OpenModelica's fmi-ls-dae-acausal extension): its
+    # terminals, {name: {memberName: (variableName, variableKind)}}, connected
+    # acausally by the importer. Empty for any other FMU.
+    self._acausalTerminals = {}
+    # FMI 3.0 <Alias> names, {alias: Variable}
+    self._aliases = {}
     self._states = []
     self._unitDefinitions = []
     self._enumerationDefinitions = []
@@ -294,8 +300,38 @@ class FMU:
             self._parse_typeDefinitions_fmi3(model_description)
             # Parse ModelVariables
             self._parse_variables_fmi3(model_description)
+            # Parse the terminals of an acausal component
+            self._parse_acausal_terminals(fmu_zip)
     except ET.XMLSyntaxError as e:
       raise ValueError(f'Error parsing {model_desc_name}: {e}')
+
+  _ACAUSAL_MANIFEST = 'extra/org.openmodelica.fmi-ls-dae-acausal/fmi-ls-manifest.xml'
+  _TERMINALS = 'terminalsAndIcons/terminalsAndIcons.xml'
+
+  def _parse_acausal_terminals(self, fmu_zip):
+    '''The terminals of an acausal component: an FMU with an fmi-ls-dae-acausal
+    manifest and FMI 3.0 terminals. Their members become connectors of kind
+    "unspecified", connected acausally.'''
+    names = fmu_zip.namelist()
+    if self._ACAUSAL_MANIFEST not in names or self._TERMINALS not in names:
+      return
+    with fmu_zip.open(self._TERMINALS) as f:
+      terminals = ET.fromstring(f.read())
+    for terminal in terminals.findall('./Terminals/Terminal'):
+      members = {}
+      for member in terminal.findall('./TerminalMemberVariable'):
+        members[member.get('memberName')] = (member.get('variableName'), member.get('variableKind'))
+      # A stream member is connected by its stream variable; the variable that
+      # stands for its inStream is computed by the importer.
+      for member in terminal.findall('./TerminalStreamMemberVariable'):
+        members[member.get('outStreamMemberName')] = (member.get('outStreamVariableName'), 'stream')
+      self._acausalTerminals[terminal.get('name')] = members
+
+  @property
+  def acausalTerminals(self) -> dict:
+    '''The terminals of an acausal component, {name: {memberName: (variableName, variableKind)}};
+    variableKind is "stream" for the stream variable of a TerminalStreamMemberVariable.'''
+    return self._acausalTerminals
 
   def _parse_default_experiment(self, model_description):
     """Extract default experiment settings from modelDescription.xml."""
@@ -414,6 +450,10 @@ class FMU:
 
         self._variables.append(variable)
 
+        # The aliases, which an acausal component's terminal member may be
+        for alias in element.findall("Alias"):
+          self._aliases[alias.get("name")] = variable
+
     # Raise an error if ModelVariables section is missing
     if not model_variables:
       raise Exception('ModelVariables section not found in modelDescription.xml')
@@ -458,7 +498,12 @@ class FMU:
 
   def makeConnectors(self):
     connectors = []
+    # The members of an acausal component's terminals that are not inputs or
+    # outputs are connected acausally, (calculated) parameters among them.
+    acausal = {variableName for members in self._acausalTerminals.values() for (variableName, _) in members.values()}
     for var in self.variables:
+      if (var.isParameter() or var.isCalculatedParameter()) and str(var.name) in acausal:
+        continue
       if var.isInput() or var.isOutput() or var.isParameter() or var.isCalculatedParameter():
         connector = Connector(var.name, var.causality, var.signal_type)
         connector.setUnit(var.unit)
@@ -467,6 +512,20 @@ class FMU:
           for enum in var.enumerationDefinition:
             if enum.name == var.declaredType:
               connector.setEnumerationName(var.declaredType)
+        connectors.append(connector)
+    for var in self.variables:
+      if str(var.name) in acausal and not (var.isInput() or var.isOutput()):
+        connector = Connector(var.name, Causality.unspecified, var.signal_type)
+        connector.setUnit(var.unit)
+        connector.description = var.description
+        connectors.append(connector)
+    # a member that is an alias of another variable, e.g. b.p with a.p = b.p
+    for name in sorted(acausal):
+      var = self._aliases.get(name)
+      if var is not None:
+        connector = Connector(name, Causality.unspecified, var.signal_type)
+        connector.setUnit(var.unit)
+        connector.description = var.description
         connectors.append(connector)
     return connectors
 

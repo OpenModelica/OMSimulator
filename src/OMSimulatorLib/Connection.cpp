@@ -123,7 +123,9 @@ oms::Connection& oms::Connection::operator=(const oms::Connection& rhs)
 oms_status_enu_t oms::Connection::exportToSSD(pugi::xml_node &root) const
 {
   pugi::xml_node node;
-  if(type == oms_connection_single)
+  // An acausal connection is an ordinary SSD connection between connectors of
+  // kind "unspecified".
+  if(type == oms_connection_single || type == oms_connection_acausal)
     node = root.append_child(oms::ssp::Draft20180219::ssd::connection);
   else if(type == oms_connection_bus)
     node = root.append_child(oms::ssp::Draft20180219::bus_connection);
