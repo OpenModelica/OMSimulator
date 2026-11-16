@@ -368,6 +368,7 @@ class FMU:
   def _parse_variables_fmi3(self, model_description):
     '''Parses variables from the ModelVariables section of modelDescription.xml'''
     model_variables = model_description.xpath('//ModelVariables')
+    state_vrs = []
     ## iterate over all ModelVariables sections (fmi3 may have multiple)
     for model_var_section in model_variables:
       for element in model_var_section:
@@ -381,13 +382,15 @@ class FMU:
         variability = element.get("variability", "continuous")
         initial = element.get('initial') if element.get('initial') is not None else self._getInitialAttribute(variability, causality)
         start = element.get("start")
-        derivative_index = int(element.get('derivative', '-1'))
+        # In FMI 3 the derivative attribute is the value reference of the state
+        # (in FMI 2 it is an index); 0 is a valid value reference.
+        derivative = element.get('derivative')
         declaredType = element.get('declaredType')
         unit = element.get("unit")
 
         # Handle state variables if it's a derivative
-        if derivative_index > 0 and variability == 'continuous':
-          self._states.append(self._variables[derivative_index - 1])
+        if derivative is not None and variability == 'continuous':
+          state_vrs.append(int(derivative))
 
         # Handle nested <Start> element for String/Binary/Enumeration types
         if start is None:
@@ -413,6 +416,13 @@ class FMU:
               variable.enumerationDefinition.append(enumeration)
 
         self._variables.append(variable)
+
+    # The states, in the order of their derivatives; a state may come after its
+    # derivative in ModelVariables.
+    variable_by_vr = {var.valueReference: var for var in self._variables}
+    for vr in state_vrs:
+      if vr in variable_by_vr:
+        self._states.append(variable_by_vr[vr])
 
     # Raise an error if ModelVariables section is missing
     if not model_variables:
