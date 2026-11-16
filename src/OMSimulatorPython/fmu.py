@@ -284,12 +284,14 @@ class FMU:
           self._parse_units(model_description)
 
           # Dispatch version-specific handling
-          if self._fmiVersion == "2.0":
+          # by the major version: an FMI 3 FMU may say 3.0.1 or 3.0.2
+          major = utils.fmiMajorVersion(self._fmiVersion)
+          if major == "2":
             # Parse typeDefinitions
             self._parse_typeDefinitions_fmi2(model_description)
             # Parse ModelVariables
             self._parse_variables_fmi2(model_description)
-          elif self._fmiVersion == "3.0":
+          elif major == "3":
             # Parse typeDefinitions
             self._parse_typeDefinitions_fmi3(model_description)
             # Parse ModelVariables
