@@ -203,6 +203,10 @@ class FMU:
   def states(self):
     return self._states
 
+  def get_states_list(self) -> dict[str, Variable]:
+    '''Returns the continuous states as {name: Variable}, in state order (like pyfmi's get_states_list).'''
+    return {str(state.name): state for state in self._states}
+
   def _get_bool(self, element, attr, default=False):
     value = element.get(attr)
     if value is None:
@@ -318,6 +322,8 @@ class FMU:
   def _parse_variables_fmi2(self, model_description):
     '''Parses variables from the ModelVariables section of modelDescription.xml'''
     scalar_variables = model_description.xpath('//ModelVariables/ScalarVariable')
+    # 1-based ScalarVariable indices; may refer to a variable declared after the derivative
+    state_indices = []
     for scalar_var in scalar_variables:
       name = scalar_var.get('name')
       description = scalar_var.get('description')
@@ -340,9 +346,8 @@ class FMU:
         derivative_index = int(type_element.get('derivative', '-1'))
         declaredType = type_element.get('declaredType')
 
-        # Handle state variables if it's a derivative
         if derivative_index > 0 and variability == 'continuous':
-          self._states.append(self._variables[derivative_index - 1])
+          state_indices.append(derivative_index)
 
       # Create and store the variable
       variable = Variable(name, description, value_reference, causality, variability, initial, var_type, unit, start, declaredType)
@@ -361,6 +366,8 @@ class FMU:
 
       self._variables.append(variable)
 
+    self._states = [self._variables[index - 1] for index in state_indices]
+
     # Raise an error if ModelVariables section is missing
     if not scalar_variables:
       raise Exception('ModelVariables section not found in modelDescription.xml')
@@ -368,6 +375,8 @@ class FMU:
   def _parse_variables_fmi3(self, model_description):
     '''Parses variables from the ModelVariables section of modelDescription.xml'''
     model_variables = model_description.xpath('//ModelVariables')
+    # FMI 3.0: derivative is the valueReference of the state, not an index
+    state_value_references = []
     ## iterate over all ModelVariables sections (fmi3 may have multiple)
     for model_var_section in model_variables:
       for element in model_var_section:
@@ -381,13 +390,12 @@ class FMU:
         variability = element.get("variability", "continuous")
         initial = element.get('initial') if element.get('initial') is not None else self._getInitialAttribute(variability, causality)
         start = element.get("start")
-        derivative_index = int(element.get('derivative', '-1'))
+        derivative = element.get('derivative')
         declaredType = element.get('declaredType')
         unit = element.get("unit")
 
-        # Handle state variables if it's a derivative
-        if derivative_index > 0 and variability == 'continuous':
-          self._states.append(self._variables[derivative_index - 1])
+        if derivative is not None and variability == 'continuous':
+          state_value_references.append(int(derivative))
 
         # Handle nested <Start> element for String/Binary/Enumeration types
         if start is None:
@@ -413,6 +421,9 @@ class FMU:
               variable.enumerationDefinition.append(enumeration)
 
         self._variables.append(variable)
+
+    variables_by_value_reference = {variable.valueReference: variable for variable in self._variables}
+    self._states = [variables_by_value_reference[vr] for vr in state_value_references]
 
     # Raise an error if ModelVariables section is missing
     if not model_variables:
