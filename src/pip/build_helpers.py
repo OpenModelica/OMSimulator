@@ -46,6 +46,16 @@ except ImportError:
   subprocess.check_call([sys.executable, "-m", "pip", "install", "requests"])
   import requests
 
+def glibc_version():
+  """Returns the version of the C library as a tuple, (0, 0) if it is not glibc."""
+  lib, version = platform.libc_ver()
+  if lib != 'glibc':
+    return (0, 0)
+  try:
+    return tuple(int(part) for part in version.split('.')[:2])
+  except ValueError:
+    return (0, 0)
+
 class OMSInstaller(build_py):
   """
   Custom build_py command to download OMSimulator binaries and copy them
@@ -72,12 +82,12 @@ class OMSInstaller(build_py):
 
     # Select platform-specific download
     if (sysconfig.get_platform() == 'linux-x86_64'):
-      info = platform.freedesktop_os_release()
-      version = info.get("VERSION_ID", "")
-      if version.startswith("24.04"):
+      # linux-amd64 is built on Ubuntu 24.04 and needs glibc 2.38 or newer,
+      # linux-jammy-amd64 is built on Ubuntu 22.04 and covers older systems
+      if glibc_version() >= (2, 38):
         url = 'https://build.openmodelica.org/omsimulator/nightly/linux-amd64/OMSimulator-linux-amd64-@OMS_VERSION_STRING@.tar.gz'
       else:
-        url = 'https://build.openmodelica.org/omsimulator/nightly/linux-focal-amd64/OMSimulator-linux-focal-amd64-@OMS_VERSION_STRING@.tar.gz'
+        url = 'https://build.openmodelica.org/omsimulator/nightly/linux-jammy-amd64/OMSimulator-linux-jammy-amd64-@OMS_VERSION_STRING@.tar.gz'
       dll_path  = "lib/x86_64-linux-gnu/libOMSimulator.so"
       source_path = "lib/x86_64-linux-gnu/OMSimulator"
     elif (sysconfig.get_platform() == "mingw_x86_64_ucrt" or (sysconfig.get_platform() == 'mingw' and platform.architecture()[0] == '64bit')):
