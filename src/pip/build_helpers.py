@@ -90,7 +90,8 @@ class OMSInstaller(build_py):
         url = 'https://build.openmodelica.org/omsimulator/nightly/linux-jammy-amd64/OMSimulator-linux-jammy-amd64-@OMS_VERSION_STRING@.tar.gz'
       dll_path  = "lib/x86_64-linux-gnu/libOMSimulator.so"
       source_path = "lib/x86_64-linux-gnu/OMSimulator"
-    elif (sysconfig.get_platform() == "mingw_x86_64_ucrt" or (sysconfig.get_platform() == 'mingw' and platform.architecture()[0] == '64bit')):
+    # MSYS2 UCRT64: mingw_x86_64_ucrt, or mingw_x86_64_ucrt_gnu in newer Python versions
+    elif (sysconfig.get_platform().startswith("mingw_x86_64_ucrt") or (sysconfig.get_platform() == 'mingw' and platform.architecture()[0] == '64bit')):
       url = 'https://build.openmodelica.org/omsimulator/nightly/win-mingw-ucrt64/OMSimulator-mingw-ucrt64-@OMS_VERSION_STRING@.zip'
       dll_path  = "bin/libOMSimulator.dll"
       source_path = "lib/OMSimulator"
