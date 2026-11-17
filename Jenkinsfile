@@ -9,6 +9,7 @@ pipeline {
     booleanParam(name: 'SUBMODULE_UPDATE', defaultValue: false, description: 'Allow pull request to update submodules (disabled by default due to common user errors)')
     booleanParam(name: 'UPLOAD_BUILD_OPENMODELICA', defaultValue: false, description: 'Upload install artifacts to build.openmodelica.org/omsimulator. Activates MINGW_UCRT64 as well.')
     string(name: 'CTEST_FLAGS', defaultValue: '', description: 'Extra flags passed to ctest, e.g. -R api')
+    booleanParam(name: 'PYPI_RELEASE', defaultValue: false, description: 'Upload the pip package of this master build to PyPI, after its binaries are uploaded.')
   }
   stages {
     stage('pre-build') {
@@ -460,6 +461,49 @@ EXIT /b 1
               )
             }
           }
+        }
+      }
+    }
+
+    // PyPI only gets an sdist: at install time build_helpers.py downloads the
+    // binaries that upload-artifacts has just put on build.openmodelica.org.
+    stage('pypi-release') {
+      when {
+        allOf {
+          not {
+            changeRequest()
+          }
+          branch 'master'
+          expression { return params.PYPI_RELEASE }
+        }
+        beforeAgent true
+      }
+      agent {
+        docker {
+          image 'docker.openmodelica.org/build-deps:ubuntu-24.04-omsimulator'
+          label 'linux'
+          alwaysPull true
+        }
+      }
+      environment {
+        HOME = "/tmp/"
+      }
+      steps {
+        writeVersionFile()
+        // The pip_sdist target checks for the build module at configure time,
+        // so CMake has to use the venv that has it.
+        sh '''
+          set -e
+          rm -rf pip-venv build-pip src/pip/install/dist
+          python3 -m venv pip-venv
+          pip-venv/bin/pip install build twine
+          cmake -S . -B build-pip -DOMS_ENABLE_PIP=ON -DPython_EXECUTABLE="$PWD/pip-venv/bin/python"
+          cmake --build build-pip --target pip_sdist
+          pip-venv/bin/twine check src/pip/install/dist/*
+        '''
+        archiveArtifacts artifacts: 'src/pip/install/dist/*.tar.gz', fingerprint: true
+        withCredentials([string(credentialsId: 'OMSimulator-pypi-token', variable: 'TWINE_PASSWORD')]) {
+          sh 'TWINE_USERNAME=__token__ pip-venv/bin/twine upload --non-interactive src/pip/install/dist/*'
         }
       }
     }
