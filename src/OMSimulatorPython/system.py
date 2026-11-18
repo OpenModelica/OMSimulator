@@ -941,9 +941,8 @@ class System:
     componentSolver = {}
     # dict to group connections by solver unit
     solver_connections = defaultdict(list)
-    # connections where neither endpoint is a component (a pure system/
-    # subsystem boundary-connector pass-through); resolved by value-copy
-    # instead of a live oms_addConnection, see the loop in processElements
+    # Boundary chains are resolved during instantiation, either as live
+    # component connections or value copies.
     boundary_connections = []
 
     # process the elements
@@ -1100,15 +1099,15 @@ class System:
             "end connector": str(connection.endConnector)
         }
 
+      if connection.suppressUnitConversion:
+        connection_info["suppress unit conversion"] = True
+      if connection.linearTransformation:
+        connection_info["linear transformation"] = {
+          "factor": connection.linearTransformation.factor,
+          "offset": connection.linearTransformation.offset
+        }
+
       if startSolver is None and endSolver is None:
-        # Neither endpoint is a component -- a pure top-level/subsystem
-        # boundary-connector pass-through (e.g. a top-level input exposing a
-        # subsystem's own input). OMSimulator's WC master algorithm has no
-        # concept of an input-to-input edge and rejects it outright
-        # ("[updateDependencyGraphs] failed for ..." at initialize, confirmed
-        # by direct Capi testing), so this is never turned into a live
-        # oms_addConnection. Resolved instead in InstantiatedModel by
-        # copying the value across after start values are applied.
         boundary_connections.append(connection_info)
         continue
 
@@ -1124,15 +1123,6 @@ class System:
       elif endSolver is None and startSolver is not None:
         solver = startSolver
 
-      if connection.suppressUnitConversion:
-        connection_info["suppress unit conversion"] = True
-
-      ## add linear transformation info if available
-      if connection.linearTransformation:
-        connection_info["linear transformation"] = {
-          "factor": connection.linearTransformation.factor,
-          "offset": connection.linearTransformation.offset
-        }
       solver_connections[solver].append(connection_info)
 
   def export(self, root):
