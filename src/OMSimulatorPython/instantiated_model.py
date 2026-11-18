@@ -70,10 +70,71 @@ def _system_type_for_method(method: str) -> SystemType:
 def _system_type_label(system_type: SystemType) -> str:
   return "oms_system_wc" if system_type == SystemType.wc else "oms_system_sc"
 
+def _resolve_dynamic_boundaries(sim_units, boundary_connections):
+  """Add live edges for component-driven chains; return external-input chains."""
+  incoming = {}
+  component_units = {}
+  for unit in sim_units:
+    for component in unit["components"]:
+      component_units[tuple(component["name"])] = unit
+    for connection in unit["connections"]:
+      end = tuple(connection["end element"] + [connection["end connector"]])
+      incoming.setdefault(end, []).append(connection)
+  for connection in boundary_connections:
+    end = tuple(connection["end element"] + [connection["end connector"]])
+    incoming.setdefault(end, []).append(connection)
+
+  static = []
+  for boundary in boundary_connections:
+    chain = [boundary]
+    current = boundary
+    visited = set()
+    while True:
+      source = tuple(current["start element"] + [current["start connector"]])
+      if source in visited:
+        raise ValueError(f"Cyclic system boundary connection at {'.'.join(source)}")
+      visited.add(source)
+      unit = component_units.get(tuple(current["start element"]))
+      if unit is not None:
+        resolved = {
+          "start element": current["start element"],
+          "start connector": current["start connector"],
+          "end element": boundary["end element"],
+          "end connector": boundary["end connector"],
+        }
+        factor, offset = 1.0, 0.0
+        has_transform = False
+        for edge in reversed(chain):
+          transform = edge.get("linear transformation")
+          if transform is not None:
+            edge_factor = float(transform.get("factor", 1))
+            edge_offset = float(transform.get("offset", 0))
+            factor, offset = edge_factor * factor, edge_factor * offset + edge_offset
+            has_transform = True
+        if has_transform:
+          resolved["linear transformation"] = {"factor": factor, "offset": offset}
+        if any(edge.get("suppress unit conversion", False) for edge in chain):
+          resolved["suppress unit conversion"] = True
+        unit["connections"].append(resolved)
+        break
+      parents = incoming.get(source, [])
+      if len(parents) > 1:
+        raise ValueError(f"Multiple sources for system connector {'.'.join(source)}")
+      if not parents:
+        static.append(boundary)
+        break
+      current = parents[0]
+      chain.append(current)
+  return static
+
 class InstantiatedModel:
   def __init__(self, json_description, ssdName: str, system: System, resources: dict):
     #print(f"info: Instantiating model with JSON description:\n{json_description}", flush=True)
     config = json.loads(json_description)
+    sim_units = config.get("simulation units", [])
+    static_boundary_connections = _resolve_dynamic_boundaries(
+      sim_units, config.get("boundary connections", [])
+    )
     self.modelName = "model" ## create random name, but we cannot commits test as jenkins will gerate new model name
     self.apiCall = []
     self.mappedCrefs = {}  # Store mapped CRefs associated with their export names
@@ -97,7 +158,6 @@ class InstantiatedModel:
 
     # Extract all simulation units
     # processElements guarantees every unit has a solver (CS=oms_ma, ME=cvode by default).
-    sim_units = config.get("simulation units", [])
     num_units = len(sim_units)
     # print(f"Number of simulation units: {num_units}", flush=True)
 
@@ -263,7 +323,7 @@ class InstantiatedModel:
     ## after start values are in place, so the copied value is the real one.
     ## Kept as self.boundaryConnections so a later setValue() can re-resolve
     ## them too (see setValue below).
-    self.boundaryConnections = config.get("boundary connections", [])
+    self.boundaryConnections = static_boundary_connections
     self._applyBoundaryConnections(self.boundaryConnections)
 
     self.apiCall.append(f'oms_instantiate("{self.modelName}")')
@@ -405,10 +465,7 @@ class InstantiatedModel:
         raise TypeError(f"Unsupported type: {type}")
 
   def _applyBoundaryConnections(self, boundary_connections: list):
-    """Resolve pure system/subsystem boundary-connector connections (see
-    System.processElements) by copying the value across instead of a live
-    oms_addConnection, which OMSimulator's WC master algorithm rejects for
-    an edge between two connectors that aren't a component's own.
+    """Copy externally driven system/subsystem boundary connections.
 
     Applied once per connection, repeated len(boundary_connections) times so
     a chain of nested pass-throughs (root -> subsystem -> subsystem) fully
