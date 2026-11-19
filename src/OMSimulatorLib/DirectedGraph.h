@@ -92,8 +92,9 @@ namespace oms
 
   private:
     std::deque< std::vector<int> > getSCCs();
+    std::deque< std::vector<int> > getSCCs(const std::vector<bool>& include, const std::vector<bool>& cut);
     void calculateSortedConnections();
-    void strongconnect(int v, std::vector< std::vector<int> > G, int& index, int *d, int *low, std::stack<int>& S, bool *stacked, std::deque< std::vector<int> >& components);
+    void strongconnect(int v, const std::vector<bool>& include, const std::vector<bool>& cut, int& index, int *d, int *low, std::stack<int>& S, bool *stacked, std::deque< std::vector<int> >& components);
 
     static int getEdgeIndex(const scc_t& edges, int from, int to);
 
