@@ -241,13 +241,20 @@ std::deque< std::vector<int> > oms::DirectedGraph::getSCCs()
   std::deque< std::vector<int> > components = getSCCs(std::vector<bool>(numVertices, true), std::vector<bool>(numVertices, false));
 
   // The loop solvers iterate on reals only, so an integer, enumeration or
-  // boolean edge must not be part of a loop. Within each loop that contains
-  // one, sort again with those edges unable to reach a successor: each then
-  // passes on the latest value of its output, like any other connection.
+  // boolean connection must not be part of a loop. Within each loop that
+  // contains one, sort again with those connections unable to reach a
+  // successor. Every cycle through a non-real variable passes through such a
+  // connection, so this breaks all of them, while the dependencies inside the
+  // components still order each connection after the output it reads.
   std::vector<bool> discrete(numVertices, false);
   for (size_t v = 0; v < numVertices; ++v)
-    discrete[v] = nodes[edges.connections[v].first].getType() != oms_signal_type_real ||
-                  nodes[edges.connections[v].second].getType() != oms_signal_type_real;
+  {
+    const Connector& conA = nodes[edges.connections[v].first];
+    const Connector& conB = nodes[edges.connections[v].second];
+    discrete[v] = (conA.getType() != oms_signal_type_real || conB.getType() != oms_signal_type_real) &&
+                  (oms::Connection::isValid(conA.getName(), conB.getName(), conA, conB) ||
+                   oms::Connection::isValidExportConnectorName(conA, conB));
+  }
 
   std::deque< std::vector<int> > result;
   for (const std::vector<int>& component : components)
@@ -268,11 +275,8 @@ std::deque< std::vector<int> > oms::DirectedGraph::getSCCs()
     for (int v : component)
     {
       include[v] = true;
-      const Connector& conA = nodes[edges.connections[v].first];
-      const Connector& conB = nodes[edges.connections[v].second];
-      if (discrete[v] && (oms::Connection::isValid(conA.getName(), conB.getName(), conA, conB) ||
-                          oms::Connection::isValidExportConnectorName(conA, conB)))
-        ss << "  " << std::string(conA.getName()) << " -> " << std::string(conB.getName()) << std::endl;
+      if (discrete[v])
+        ss << "  " << std::string(nodes[edges.connections[v].first].getName()) << " -> " << std::string(nodes[edges.connections[v].second].getName()) << std::endl;
     }
     logInfo(ss.str());
 
