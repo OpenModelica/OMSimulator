@@ -125,8 +125,9 @@ namespace oms
      *
      * The switch is a structural parameter, so it is set in Configuration Mode,
      * before initialization. From then on the FMU no longer answers with the
-     * derivatives and the algebraic variables: the importer owns them and reads
-     * the residuals of F(t, x, x', z) = 0 back.
+     * algebraic variables: the importer owns them and reads the residuals back.
+     * The derivatives are still the FMU's in the semi-explicit form, and the
+     * importer's in the fully implicit form F(t, x, x', z) = 0.
      */
     oms_status_enu_t enableDaeMode();
     /// The DAE checks that need the state count, which is known after initialization.
@@ -141,7 +142,7 @@ namespace oms
     const std::vector<fmi3ValueReference>& getDerivativeValueReferences() const {return derivativeVrs;}
     oms_status_enu_t getAlgebraicVariables(double* values);
     oms_status_enu_t setAlgebraicVariables(const double* values);
-    /// The state derivatives, by value reference: the implicit form's knowns.
+    /// The state derivatives, by value reference: the fully implicit form's knowns.
     oms_status_enu_t setDerivatives(const double* derivatives);
     oms_status_enu_t getContinuousStates(double* states);
     oms_status_enu_t setContinuousStates(double* states);
@@ -196,8 +197,9 @@ namespace oms
     /// fmi-ls-dae: the manifest, and whether this instance runs in DAE mode.
     LsDaeManifest lsDae;
     bool daeMode = false;
-    /// The <ContinuousStateDerivative> value references of the model
-    /// description, in the order fmi3GetContinuousStates uses for the states.
+    /// The <ContinuousStateDerivative> value references of the manifest, or of
+    /// the model description for the fully implicit form, in the order
+    /// fmi3GetContinuousStates uses for the states.
     std::vector<fmi3ValueReference> derivativeVrs;
     /// The states those derivatives belong to, resolved from the derivative
     /// links of the model description; same order.
