@@ -17,6 +17,7 @@ oms_add_test(
   PIController.py
   pwmtest.py
   QuarterCarModel.py
+  realTime1.py
   tankYPipe.py
   SimpleSimulation1.py
   SimpleSimulation2.py

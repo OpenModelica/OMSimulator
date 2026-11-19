@@ -335,7 +335,7 @@ oms_status_enu_t oms::SystemWC::reset()
 
 oms_status_enu_t oms::SystemWC::doStep()
 {
-  auto start = std::chrono::steady_clock::now() + std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::duration<double>(time));
+  auto start = std::chrono::steady_clock::now() - std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::duration<double>(time));
 
   if (solverMethod == oms_solver_wc_mav || solverMethod == oms_solver_wc_mav2)
   {
@@ -653,7 +653,6 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime)
   updateInputs(eventGraph);
 
   ComRef modelName = this->getModel().getCref();
-  auto start = std::chrono::steady_clock::now() + std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::duration<double>(time));
 
   fmi2Status fmi_status;
   double startTime = time;
