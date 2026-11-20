@@ -1,4 +1,5 @@
 oms_add_test(
+  AlgLoopDiscrete1.py
   clockedStepBoundary.py
   DaeMode1.py
   DaeMode2.py

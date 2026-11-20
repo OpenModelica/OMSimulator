@@ -160,7 +160,7 @@ int oms::DirectedGraph::getEdgeIndex(const scc_t& edges, int from, int to)
   return -1;
 }
 
-void oms::DirectedGraph::strongconnect(int v, std::vector< std::vector<int> > G, int& index, int *d, int *low, std::stack<int>& S, bool *stacked, std::deque< std::vector<int> >& components)
+void oms::DirectedGraph::strongconnect(int v, const std::vector<bool>& include, const std::vector<bool>& cut, int& index, int *d, int *low, std::stack<int>& S, bool *stacked, std::deque< std::vector<int> >& components)
 {
   // Set the depth index for v to the smallest unused index
   d[v] = index;
@@ -170,14 +170,17 @@ void oms::DirectedGraph::strongconnect(int v, std::vector< std::vector<int> > G,
   stacked[v] = true;
 
   // Consider successors of v
-  std::vector<int> successors = G[edges.connections[v].second];
+  static const std::vector<int> noSuccessors;
+  const std::vector<int>& successors = cut[v] ? noSuccessors : G[edges.connections[v].second];
   for (int i = 0; i < successors.size(); ++i)
   {
     int w = getEdgeIndex(edges, edges.connections[v].second, successors[i]);
+    if (!include[w])
+      continue;
     if (d[w] == -1)
     {
       // Successor w has not yet been visited; recurse on it
-      strongconnect(w, G, index, d, low, S, stacked, components);
+      strongconnect(w, include, cut, index, d, low, S, stacked, components);
       low[v] = (std::min)(low[v], low[w]); // this is done to make windows compile std::min => (std::min)
     }
     else if (stacked[w])
@@ -208,15 +211,12 @@ void oms::DirectedGraph::strongconnect(int v, std::vector< std::vector<int> > G,
   }
 }
 
-std::deque< std::vector<int> > oms::DirectedGraph::getSCCs()
+std::deque< std::vector<int> > oms::DirectedGraph::getSCCs(const std::vector<bool>& include, const std::vector<bool>& cut)
 {
-  //std::cout << "Tarjan's strongly connected components algorithm" << std::endl;
-
   size_t numVertices = edges.connections.size();
   int *d = new int[numVertices];
   std::fill(d, d + numVertices, -1);
   int *low = new int[numVertices];
-  int *scc = new int[numVertices];
   bool *stacked = new bool[numVertices];
   std::stack<int> S;
   int index = 0;
@@ -224,28 +224,67 @@ std::deque< std::vector<int> > oms::DirectedGraph::getSCCs()
 
   for (int v = 0; v < numVertices; ++v)
   {
-    if (d[v] == -1)
-      strongconnect(v, G, index, d, low, S, stacked, components);
+    if (include[v] && d[v] == -1)
+      strongconnect(v, include, cut, index, d, low, S, stacked, components);
   }
-
-  // dump strongly connected components
-  //std::cout << "Strongly connected components:" << std::endl;
-  //for (int i=0; i<components.size(); ++i)
-  //{
-  //  for (int j=0; j<components[i].size(); ++j)
-  //  {
-  //    int v = components[i][j];
-  //    std::cout << nodes[v].getFMUInstanceName() << "." << nodes[v].getName() << " ";
-  //  }
-  //  std::cout << std::endl;
-  //}
 
   delete[] d;
   delete[] low;
-  delete[] scc;
   delete[] stacked;
 
   return components;
+}
+
+std::deque< std::vector<int> > oms::DirectedGraph::getSCCs()
+{
+  const size_t numVertices = edges.connections.size();
+  std::deque< std::vector<int> > components = getSCCs(std::vector<bool>(numVertices, true), std::vector<bool>(numVertices, false));
+
+  // The loop solvers iterate on reals only, so an integer, enumeration or
+  // boolean connection must not be part of a loop. Within each loop that
+  // contains one, sort again with those connections unable to reach a
+  // successor. Every cycle through a non-real variable passes through such a
+  // connection, so this breaks all of them, while the dependencies inside the
+  // components still order each connection after the output it reads.
+  std::vector<bool> discrete(numVertices, false);
+  for (size_t v = 0; v < numVertices; ++v)
+  {
+    const Connector& conA = nodes[edges.connections[v].first];
+    const Connector& conB = nodes[edges.connections[v].second];
+    discrete[v] = (conA.getType() != oms_signal_type_real || conB.getType() != oms_signal_type_real) &&
+                  (oms::Connection::isValid(conA.getName(), conB.getName(), conA, conB) ||
+                   oms::Connection::isValidExportConnectorName(conA, conB));
+  }
+
+  std::deque< std::vector<int> > result;
+  for (const std::vector<int>& component : components)
+  {
+    bool hasDiscrete = false;
+    for (int v : component)
+      hasDiscrete = hasDiscrete || discrete[v];
+
+    if (component.size() < 2 || !hasDiscrete)
+    {
+      result.push_back(component);
+      continue;
+    }
+
+    std::vector<bool> include(numVertices, false);
+    std::stringstream ss;
+    ss << "Alg. loop broken up at its non-real connection(s):" << std::endl;
+    for (int v : component)
+    {
+      include[v] = true;
+      if (discrete[v])
+        ss << "  " << std::string(nodes[edges.connections[v].first].getName()) << " -> " << std::string(nodes[edges.connections[v].second].getName()) << std::endl;
+    }
+    logInfo(ss.str());
+
+    for (const std::vector<int>& part : getSCCs(include, discrete))
+      result.push_back(part);
+  }
+
+  return result;
 }
 
 const std::vector<oms::scc_t>& oms::DirectedGraph::getSortedConnections()
