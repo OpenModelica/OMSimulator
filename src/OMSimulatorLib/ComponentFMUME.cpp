@@ -668,8 +668,12 @@ oms_status_enu_t oms::ComponentFMUME::instantiate()
     logInfo("fmi2Instantiate() failed");
     exit(1);
   }
-  //logInfo("instantiation successfull");
 
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::ComponentFMUME::enterInitialization()
+{
   // set start values from local resources
   if (values.hasResources())
   {
@@ -917,9 +921,13 @@ oms_status_enu_t oms::ComponentFMUME::initialize()
 
 oms_status_enu_t oms::ComponentFMUME::terminate()
 {
-  fmi2Status fmistatus = fmi2_terminate(instance);
-  if (fmi2OK != fmistatus)
-    return logError_Termination(getCref());
+  // an FMU that was never initialized is still Instantiated, where only fmi2FreeInstance is allowed
+  if (!getModel().validState(oms_modelState_instantiated))
+  {
+    fmi2Status fmistatus = fmi2_terminate(instance);
+    if (fmi2OK != fmistatus)
+      return logError_Termination(getCref());
+  }
 
   fmi2_freeInstance(instance);
   instance = NULL;
@@ -932,23 +940,6 @@ oms_status_enu_t oms::ComponentFMUME::reset()
   fmi2Status fmistatus = fmi2_reset(instance);
   if (fmi2OK != fmistatus)
     return logError_ResetFailed(getCref());
-
-  // enterInitialization
-  const double& startTime = getModel().getStartTime();
-  double relativeTolerance = 0.0;
-  getParentSystem()->getTolerance(&relativeTolerance);
-  fmistatus = fmi2_setupExperiment(instance, fmi2True, relativeTolerance, startTime, fmi2False, 1.0);
-  if (fmi2OK != fmistatus) return logError_FMUCall("fmi2_setupExperiment", this);
-
-  fmistatus = fmi2_enterInitializationMode(instance);
-  if (fmi2OK != fmistatus) return logError_FMUCall("fmi2_enterInitializationMode", this);
-
-  eventInfo.newDiscreteStatesNeeded = fmi2False;
-  eventInfo.terminateSimulation = fmi2False;
-  eventInfo.nominalsOfContinuousStatesChanged = fmi2False;
-  eventInfo.valuesOfContinuousStatesChanged = fmi2True;
-  eventInfo.nextEventTimeDefined = fmi2False;
-  eventInfo.nextEventTime = -0.0;
 
   return oms_status_ok;
 }
@@ -969,7 +960,7 @@ oms_status_enu_t oms::ComponentFMUME::getBoolean(const ComRef& cref, bool& value
 {
   CallClock callClock(clock);
 
-  if (oms_modelState_virgin == getModel().getModelState())
+  if (getModel().validState(oms_modelState_virgin|oms_modelState_instantiated))
   {
     // check for start values exist, priority over modeldescription.xml start values
     if (values.hasResources())  // search in local resources
@@ -1067,7 +1058,7 @@ oms_status_enu_t oms::ComponentFMUME::getInteger(const ComRef& cref, int& value)
 {
   CallClock callClock(clock);
 
-  if (oms_modelState_virgin == getModel().getModelState())
+  if (getModel().validState(oms_modelState_virgin|oms_modelState_instantiated))
   {
     // check for start values exist, priority over modeldescription.xml start values
     if (values.hasResources())  // search in local resources
@@ -1173,7 +1164,7 @@ oms_status_enu_t oms::ComponentFMUME::getReal(const ComRef& cref, double& value)
 {
   CallClock callClock(clock);
 
-  if (oms_modelState_virgin == getModel().getModelState())
+  if (getModel().validState(oms_modelState_virgin|oms_modelState_instantiated))
   {
     // check for start values exist, priority over modeldescription.xml start values
     if (values.hasResources())  // search in local resources
@@ -1265,7 +1256,7 @@ oms_status_enu_t oms::ComponentFMUME::getString(const ComRef& cref, std::string&
 {
   CallClock callClock(clock);
 
-  if (oms_modelState_virgin == getModel().getModelState())
+  if (getModel().validState(oms_modelState_virgin|oms_modelState_instantiated))
   {
     // check for start values exist, priority over modeldescription.xml start values
     if (values.hasResources())  // search in local resources
@@ -1467,7 +1458,7 @@ oms_status_enu_t oms::ComponentFMUME::setBoolean(const ComRef& cref, bool value)
   if (!fmu || j < 0)
     return logError_UnknownSignal(getFullCref() + cref);
 
-  if (oms_modelState_virgin == getModel().getModelState())
+  if (getModel().validState(oms_modelState_virgin|oms_modelState_instantiated))
   {
     // update start values in top level Modeldescription.xml to be exported in ssv templates
     values.updateModelDescriptionBooleanStartValue(cref, value);
@@ -1519,7 +1510,7 @@ oms_status_enu_t oms::ComponentFMUME::setInteger(const ComRef& cref, int value)
   if (!fmu || j < 0)
     return logError_UnknownSignal(getFullCref() + cref);
 
-  if (oms_modelState_virgin == getModel().getModelState())
+  if (getModel().validState(oms_modelState_virgin|oms_modelState_instantiated))
   {
     // update start values in top level Modeldescription.xml to be exported in ssv templates
     values.updateModelDescriptionIntegerStartValue(cref, value);
@@ -1638,7 +1629,7 @@ oms_status_enu_t oms::ComponentFMUME::setReal(const ComRef& cref, double value)
     if (allVariables[j].isCalculated() || allVariables[j].isIndependent())
       return logWarning("It is not allowed to provide a start value if initial=\"calculated\" or causality=\"independent\".");
 
-  if (oms_modelState_virgin == getModel().getModelState())
+  if (getModel().validState(oms_modelState_virgin|oms_modelState_instantiated))
   {
     // update start values in top level Modeldescription.xml to be exported in ssv templates
     values.updateModelDescriptionRealStartValue(cref, value);
@@ -1696,7 +1687,7 @@ oms_status_enu_t oms::ComponentFMUME::setString(const ComRef& cref, const std::s
     if (allVariables[j].isCalculated() || allVariables[j].isIndependent())
       return logWarning("It is not allowed to provide a start value if initial=\"calculated\" or causality=\"independent\".");
 
-  if (oms_modelState_virgin == getModel().getModelState())
+  if (getModel().validState(oms_modelState_virgin|oms_modelState_instantiated))
   {
     // update start values in top level Modeldescription.xml to be exported in ssv templates
     values.updateModelDescriptionStringStartValue(cref, value);

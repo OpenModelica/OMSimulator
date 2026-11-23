@@ -29,7 +29,6 @@ fmu.setTolerance(1e-6)
 print(f"info: After instantiation:")
 print(f"info:    k: {fmu.getValue('k')}", flush=True)
 print(f"info:    u: {fmu.getValue('u')}", flush=True)
-print(f"info:    y: {fmu.getValue('y')}", flush=True)
 
 fmu.initialize()
 fmu.simulate()
@@ -45,7 +44,6 @@ fmu.delete()
 ## info: After instantiation:
 ## info:    k: 5.0
 ## info:    u: 10.0
-## info:    y: 50.0
 ## info:    Result file: Gain_res.mat (bufferSize=10)
 ## info: After Simulation:
 ## info:    k: 5.0

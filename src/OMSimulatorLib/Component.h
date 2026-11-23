@@ -72,6 +72,7 @@ namespace oms
     virtual void getFilteredUnitDefinitionsToSSD(std::map<std::string, std::map<std::string, std::string>>& unitDefinitions) { return ; }
     virtual void getFilteredEnumerationDefinitionsToSSD(std::map<std::string, std::map<std::string, std::string>>& enumerationDefinitions) { return ; }
 
+    virtual oms_status_enu_t enterInitialization() {return oms_status_ok;}
     virtual oms_status_enu_t initialize() = 0;
     virtual oms_status_enu_t instantiate() = 0;
     virtual oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultFile) = 0;

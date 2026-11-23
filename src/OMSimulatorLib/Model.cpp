@@ -1241,6 +1241,13 @@ oms_status_enu_t oms::Model::initialize()
     }
   }
 
+  if (oms_status_ok != system->enterInitialization())
+  {
+    terminate();
+    clock.toc();
+    return logError_Initialization(system->getFullCref());
+  }
+
   if (oms_status_ok != system->initialize())
   {
     terminate();

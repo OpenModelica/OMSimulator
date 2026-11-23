@@ -7,9 +7,6 @@
 
 from OMSimulator import FMU
 
-# TODO: fails until a start time set after instantiate() reaches the FMU
-# (fmi2SetupExperiment) and the solver; both still start at t = 0.
-
 # Simulates der(x) = -x from a start time other than zero, with the start
 # time set after instantiate(). The start value of x applies at the start
 # time, so with x = 2 at t = 3 and 20 Euler steps of 0.1, x(5) = 2*0.9^20.
