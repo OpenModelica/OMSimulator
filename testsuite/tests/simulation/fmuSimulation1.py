@@ -26,11 +26,11 @@ fmu.setStepSize(0.1)
 
 fmu.setTolerance(1e-6)
 
-print(f"info: After instantiation:")
+fmu.initialize()
+print(f"info: After initialization:")
 print(f"info:    k: {fmu.getValue('k')}", flush=True)
 print(f"info:    u: {fmu.getValue('u')}", flush=True)
 
-fmu.initialize()
 fmu.simulate()
 print(f"info: After Simulation:")
 print(f"info:    k: {fmu.getValue('k')}", flush=True)
@@ -41,10 +41,10 @@ fmu.terminate()
 fmu.delete()
 
 ## Result:
-## info: After instantiation:
+## info:    Result file: Gain_res.mat (bufferSize=10)
+## info: After initialization:
 ## info:    k: 5.0
 ## info:    u: 10.0
-## info:    Result file: Gain_res.mat (bufferSize=10)
 ## info: After Simulation:
 ## info:    k: 5.0
 ## info:    u: 10.0

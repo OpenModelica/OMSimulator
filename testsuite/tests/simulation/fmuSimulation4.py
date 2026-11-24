@@ -18,22 +18,19 @@ fmu.setValue('u', 10.0)
 fmu.instantiate()
 fmu.setResultFile('Gain_res.mat')
 
-print(f"info: After instantiation:")
-print(f"info:    k: {fmu.getValue('k')}", flush=True)
-print(f"info:    u: {fmu.getValue('u')}", flush=True)
-
 fmu.initialize()
 print(f"info: After initialization:")
+print(f"info:    k: {fmu.getValue('k')}", flush=True)
+print(f"info:    u: {fmu.getValue('u')}", flush=True)
 print(f"info:    y: {fmu.getValue('y')}", flush=True)
 
 fmu.terminate()
 fmu.delete()
 
 ## Result:
-## info: After instantiation:
-## info:    k: 5.0
-## info:    u: 10.0
 ## info:    Result file: Gain_res.mat (bufferSize=10)
 ## info: After initialization:
+## info:    k: 5.0
+## info:    u: 10.0
 ## info:    y: 50.0
 ## endResult

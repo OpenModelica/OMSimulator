@@ -59,7 +59,6 @@ instantiated_model.terminate()
 instantiated_model.delete()
 
 ## Result:
-## info:    Result file: SimpleSimulation15_res.mat (bufferSize=10)
 ## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
 ## |--   resources/Add.fmu
@@ -110,6 +109,7 @@ instantiated_model.delete()
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
+## info:    Result file: SimpleSimulation15_res.mat (bufferSize=10)
 ## info:    default.sub-system.u      : 400.0
 ## info:    default.sub-system.Add2.u1: 400.0
 ## info:    default.sub-system.Add2.u2: 400.0

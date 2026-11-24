@@ -47,7 +47,8 @@ instantiated_model.setValue(CRef('default', 'param1'), 2.0)
 instantiated_model.setValue(CRef('default', 'sub-system', 'input'), 5.0)
 instantiated_model.setValue(CRef('default', 'Add1', 'u2'), 3.0)
 
-print(f"info: After instantiation:")
+instantiated_model.initialize()
+print(f"info: After initialization:")
 print(f"info:    default.param1           : {instantiated_model.getValue(CRef('default', 'param1'))}", flush=True)
 print(f"info:    default.sub-system.input : {instantiated_model.getValue(CRef('default', 'sub-system', 'input'))}", flush=True)
 print(f"info:    default.sub-system.output: {instantiated_model.getValue(CRef('default', 'sub-system', 'output'))}", flush=True)
@@ -55,7 +56,6 @@ print(f"info:    default.Add1.u1          : {instantiated_model.getValue(CRef('d
 print(f"info:    default.Add1.u2          : {instantiated_model.getValue(CRef('default', 'Add1', 'u2'))}", flush=True)
 print(f"info:    default.Add1.y           : {instantiated_model.getValue(CRef('default', 'Add1', 'y'))}", flush=True)
 
-instantiated_model.initialize()
 instantiated_model.simulate()
 print(f"info: After simulation:")
 print(f"info:    default.param1           : {instantiated_model.getValue(CRef('default', 'param1'))}", flush=True)
@@ -115,15 +115,15 @@ instantiated_model.delete()
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
-## info: After instantiation:
-## info:    default.param1           : 2.0
-## info:    default.sub-system.input : 5.0
-## info:    default.sub-system.output: 0.0
-## info:    default.Add1.u1          : 0.0
-## info:    default.Add1.u2          : 3.0
-## info:    default.Add1.y           : 3.0
 ## info:    model doesn't contain any continuous state
 ## info:    Result file: export_json4_res.mat (bufferSize=10)
+## info: After initialization:
+## info:    default.param1           : 2.0
+## info:    default.sub-system.input : 5.0
+## info:    default.sub-system.output: 5.0
+## info:    default.Add1.u1          : 2.0
+## info:    default.Add1.u2          : 3.0
+## info:    default.Add1.y           : 5.0
 ## info: After simulation:
 ## info:    default.param1           : 2.0
 ## info:    default.sub-system.input : 5.0
