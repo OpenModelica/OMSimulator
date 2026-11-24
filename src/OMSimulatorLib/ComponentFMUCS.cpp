@@ -364,9 +364,9 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const pugi::xml_node& node, om
     {
       // vendor annotations, e.g. the solver of OMSimulator 3, are not used
     }
-    else if(name == oms::ssp::Version1_0::ssc::meta_data)
+    else if(name == oms::ssp::Version2_0::ssc::meta_data)
     {
-      // handle meta data associated with the component
+      logWarning("Meta data associated with the component is not used.");
     }
     else
     {
