@@ -764,25 +764,25 @@ class FMU:
 
   def _getReal(self, cref: CRef):
     value, status = Capi.getReal(cref) # Get the value from the CAPI
-    if status != Status.ok:
+    if status not in (Status.ok, Status.warning):
       raise RuntimeError(f"Failed to get value for {cref}: {status}")
     return value
 
   def _getInteger(self, cref: CRef):
     value, status = Capi.getInteger(cref)
-    if status != Status.ok:
+    if status not in (Status.ok, Status.warning):
       raise RuntimeError(f"Failed to get value for {cref}: {status}")
     return value
 
   def _getBoolean(self, cref: CRef):
     value, status = Capi.getBoolean(cref)
-    if status != Status.ok:
+    if status not in (Status.ok, Status.warning):
       raise RuntimeError(f"Failed to get value for {cref}: {status}")
     return value
 
   def _getString(self, cref: CRef):
     value, status = Capi.getString(cref)
-    if status != Status.ok:
+    if status not in (Status.ok, Status.warning):
       raise RuntimeError(f"Failed to get value for {cref}: {status}")
     return value
 

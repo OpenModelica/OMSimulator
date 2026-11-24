@@ -177,6 +177,9 @@ namespace oms
 
     virtual oms_status_enu_t renameValues(const ComRef& oldCref, const ComRef& newCref) { return oms_status_ok; }
 
+    template <typename T>
+    oms_status_enu_t startValueNotAvailable(const ComRef& cref, T& value, bool logErrorInVirgin = true) const;
+
   protected:
     DirectedGraph initialUnknownsGraph;
     DirectedGraph outputsGraph;

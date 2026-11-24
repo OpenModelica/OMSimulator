@@ -975,7 +975,7 @@ oms_status_enu_t oms::ComponentFMUME::getBoolean(const ComRef& cref, bool& value
         return oms_status_ok;
       }
 
-      return logError("no start value set or available for signal: " + std::string(getFullCref() + cref));
+      return startValueNotAvailable(cref, value);
     }
     else if (getParentSystem() && getParentSystem()->getValues().hasResources())  // search in root resources
     {
@@ -989,7 +989,7 @@ oms_status_enu_t oms::ComponentFMUME::getBoolean(const ComRef& cref, bool& value
         return oms_status_ok;
       }
 
-      return logError("no start value set or available for signal: " + std::string(getFullCref() + cref));
+      return startValueNotAvailable(cref, value);
     }
     else if (getParentSystem()->getParentSystem() && getParentSystem()->getParentSystem()->getValues().hasResources())  // search in top level root resources
     {
@@ -1003,7 +1003,7 @@ oms_status_enu_t oms::ComponentFMUME::getBoolean(const ComRef& cref, bool& value
         return oms_status_ok;
       }
 
-      return logError("no start value set or available for signal: " + std::string(getFullCref() + cref));
+      return startValueNotAvailable(cref, value);
     }
     else // search inline
     {
@@ -1012,10 +1012,11 @@ oms_status_enu_t oms::ComponentFMUME::getBoolean(const ComRef& cref, bool& value
       {
         return oms_status_ok;
       }
-      else
+      else if (oms_status_ok == values.getBooleanFromModeldescription(cref, value))
       {
-        return values.getBooleanFromModeldescription(cref, value);
+        return oms_status_ok;
       }
+      return startValueNotAvailable(cref, value, false);
     }
   }
 
@@ -1073,7 +1074,7 @@ oms_status_enu_t oms::ComponentFMUME::getInteger(const ComRef& cref, int& value)
         return oms_status_ok;
       }
 
-      return logError("no start value set or available for signal: " + std::string(getFullCref() + cref));
+      return startValueNotAvailable(cref, value);
     }
     else if (getParentSystem() && getParentSystem()->getValues().hasResources())  // search in root resources
     {
@@ -1087,7 +1088,7 @@ oms_status_enu_t oms::ComponentFMUME::getInteger(const ComRef& cref, int& value)
         return oms_status_ok;
       }
 
-      return logError("no start value set or available for signal: " + std::string(getFullCref() + cref));
+      return startValueNotAvailable(cref, value);
     }
     else if (getParentSystem()->getParentSystem() && getParentSystem()->getParentSystem()->getValues().hasResources())  // search in top level root resources
     {
@@ -1101,7 +1102,7 @@ oms_status_enu_t oms::ComponentFMUME::getInteger(const ComRef& cref, int& value)
         return oms_status_ok;
       }
 
-      return logError("no start value set or available for signal: " + std::string(getFullCref() + cref));
+      return startValueNotAvailable(cref, value);
     }
     else // search inline
     {
@@ -1110,10 +1111,11 @@ oms_status_enu_t oms::ComponentFMUME::getInteger(const ComRef& cref, int& value)
       {
         return oms_status_ok;
       }
-      else
+      else if (oms_status_ok == values.getIntegerFromModeldescription(cref, value))
       {
-        return values.getIntegerFromModeldescription(cref, value);
+        return oms_status_ok;
       }
+      return startValueNotAvailable(cref, value, false);
     }
   }
 
@@ -1179,7 +1181,7 @@ oms_status_enu_t oms::ComponentFMUME::getReal(const ComRef& cref, double& value)
         return oms_status_ok;
       }
 
-      return logError("no start value set or available for signal: " + std::string(getFullCref() + cref));
+      return startValueNotAvailable(cref, value);
     }
     else if (getParentSystem() && getParentSystem()->getValues().hasResources())  // search in root resources
     {
@@ -1193,7 +1195,7 @@ oms_status_enu_t oms::ComponentFMUME::getReal(const ComRef& cref, double& value)
         return oms_status_ok;
       }
 
-      return logError("no start value set or available for signal: " + std::string(getFullCref() + cref));
+      return startValueNotAvailable(cref, value);
     }
     else if (getParentSystem()->getParentSystem() && getParentSystem()->getParentSystem()->getValues().hasResources())  // search in top level root resources
     {
@@ -1207,7 +1209,7 @@ oms_status_enu_t oms::ComponentFMUME::getReal(const ComRef& cref, double& value)
         return oms_status_ok;
       }
 
-      return logError("no start value set or available for signal: " + std::string(getFullCref() + cref));
+      return startValueNotAvailable(cref, value);
     }
     else // search inline
     {
@@ -1216,10 +1218,11 @@ oms_status_enu_t oms::ComponentFMUME::getReal(const ComRef& cref, double& value)
       {
         return oms_status_ok;
       }
-      else
+      else if (oms_status_ok == values.getRealFromModeldescription(cref, value))
       {
-        return values.getRealFromModeldescription(cref, value);
+        return oms_status_ok;
       }
+      return startValueNotAvailable(cref, value, false);
     }
   }
 
@@ -1271,7 +1274,7 @@ oms_status_enu_t oms::ComponentFMUME::getString(const ComRef& cref, std::string&
         return oms_status_ok;
       }
 
-      return logError("no start value set or available for signal: " + std::string(getFullCref() + cref));
+      return startValueNotAvailable(cref, value);
     }
     else if (getParentSystem() && getParentSystem()->getValues().hasResources())  // search in root resources
     {
@@ -1285,7 +1288,7 @@ oms_status_enu_t oms::ComponentFMUME::getString(const ComRef& cref, std::string&
         return oms_status_ok;
       }
 
-      return logError("no start value set or available for signal: " + std::string(getFullCref() + cref));
+      return startValueNotAvailable(cref, value);
     }
     else if (getParentSystem()->getParentSystem() && getParentSystem()->getParentSystem()->getValues().hasResources())  // search in top level root resources
     {
@@ -1299,7 +1302,7 @@ oms_status_enu_t oms::ComponentFMUME::getString(const ComRef& cref, std::string&
         return oms_status_ok;
       }
 
-      return logError("no start value set or available for signal: " + std::string(getFullCref() + cref));
+      return startValueNotAvailable(cref, value);
     }
     else // search inline
     {
@@ -1308,10 +1311,11 @@ oms_status_enu_t oms::ComponentFMUME::getString(const ComRef& cref, std::string&
       {
         return oms_status_ok;
       }
-      else
+      else if (oms_status_ok == values.getStringFromModeldescription(cref, value))
       {
-        return values.getStringFromModeldescription(cref, value);
+        return oms_status_ok;
       }
+      return startValueNotAvailable(cref, value, false);
     }
   }
 

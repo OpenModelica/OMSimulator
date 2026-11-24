@@ -150,6 +150,26 @@ oms::Model& oms::Component::getModel() const
   return parentSystem->getModel();
 }
 
+template <typename T>
+oms_status_enu_t oms::Component::startValueNotAvailable(const ComRef& cref, T& value, bool logErrorInVirgin) const
+{
+  if (getModel().validState(oms_modelState_instantiated))
+  {
+    // FMI forbids fmi2GetXXX in the Instantiated state, so calculated values are not available yet
+    value = T();
+    return logWarning("no start value available for signal " + std::string(getFullCref() + cref) + " before initialization, returning 0; call getValue after initialize() to get the calculated value");
+  }
+
+  if (logErrorInVirgin)
+    return logError("no start value set or available for signal: " + std::string(getFullCref() + cref));
+  return oms_status_error;
+}
+
+template oms_status_enu_t oms::Component::startValueNotAvailable<double>(const ComRef&, double&, bool) const;
+template oms_status_enu_t oms::Component::startValueNotAvailable<int>(const ComRef&, int&, bool) const;
+template oms_status_enu_t oms::Component::startValueNotAvailable<bool>(const ComRef&, bool&, bool) const;
+template oms_status_enu_t oms::Component::startValueNotAvailable<std::string>(const ComRef&, std::string&, bool) const;
+
 oms::Connector* oms::Component::getConnector(const ComRef& cref)
 {
   for (auto &connector : connectors) {
