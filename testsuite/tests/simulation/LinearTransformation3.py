@@ -18,15 +18,13 @@ model2.list()
 instantiated_model = model2.instantiate() ## internally generate the json file and also set the model state like virgin,
 instantiated_model.setResultFile("LinearTransformation3_res.mat")
 
-print(f"info: After instantiation:")
-
+instantiated_model.initialize()
+print(f"info: After initialization:")
 print(f"info:    default.Gain1.k: {instantiated_model.getValue(CRef('default', 'Gain1', 'k'))}", flush=True)
 print(f"info:    default.Gain1.u: {instantiated_model.getValue(CRef('default', 'Gain1', 'u'))}", flush=True)
 print(f"info:    default.Gain1.y: {instantiated_model.getValue(CRef('default', 'Gain1', 'y'))}", flush=True)
 print(f"info:    default.Add1.u1: {instantiated_model.getValue(CRef('default', 'Add1', 'u1'))}", flush=True)
 
-
-instantiated_model.initialize()
 instantiated_model.simulate()
 print(f"info: After simulation:")
 print(f"info:    default.Gain1.k: {instantiated_model.getValue(CRef('default', 'Gain1', 'k'))}", flush=True)
@@ -83,12 +81,12 @@ instantiated_model.delete()
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
-## info: After instantiation:
+## info:    Result file: LinearTransformation3_res.mat (bufferSize=10)
+## info: After initialization:
 ## info:    default.Gain1.k: 13.0
 ## info:    default.Gain1.u: 14.0
 ## info:    default.Gain1.y: 182.0
-## info:    default.Add1.u1: 0.0
-## info:    Result file: LinearTransformation3_res.mat (bufferSize=10)
+## info:    default.Add1.u1: 182.0
 ## info: After simulation:
 ## info:    default.Gain1.k: 13.0
 ## info:    default.Gain1.u: 14.0

@@ -151,3 +151,6 @@ class Variable:
 
   def isExact(self):
     return self.initial == "exact"
+
+  def isApprox(self):
+    return self.initial == "approx"

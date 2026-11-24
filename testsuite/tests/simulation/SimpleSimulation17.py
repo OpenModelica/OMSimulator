@@ -29,10 +29,11 @@ model2 = SSP('SimpleSimulation17.ssp')
 model2.list()
 instantiated_model = model2.instantiate() ## internally generate the json file and also set the model state like virgin,
 instantiated_model.setResultFile("SimpleSimulation17_res.mat")
-print(f"info: After instantiation:")
+instantiated_model.initialize()
+print(f"info: After initialization:")
 print(f"info:    default.input1           : {instantiated_model.getValue(CRef('default', 'input1'))}", flush=True)
 print(f"info:    default.sub-system.input2: {instantiated_model.getValue(CRef('default', 'sub-system', 'input2'))}", flush=True)
-instantiated_model.initialize()
+
 instantiated_model.simulate()
 print(f"info: After simulation:")
 print(f"info:    default.input1           : {instantiated_model.getValue(CRef('default', 'input1'))}", flush=True)
@@ -61,10 +62,10 @@ instantiated_model.delete()
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
-## info: After instantiation:
+## info:    Result file: SimpleSimulation17_res.mat (bufferSize=10)
+## info: After initialization:
 ## info:    default.input1           : 100.0
 ## info:    default.sub-system.input2: 200.0
-## info:    Result file: SimpleSimulation17_res.mat (bufferSize=10)
 ## info: After simulation:
 ## info:    default.input1           : 100.0
 ## info:    default.sub-system.input2: 200.0

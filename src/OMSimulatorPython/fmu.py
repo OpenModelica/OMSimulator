@@ -144,10 +144,7 @@ class FMU:
     self.fmuInstantiated = False
     self.fmuInitialized = False
     self.mode = None
-    # override the FMU's declared defaultExperiment; must be set before instantiate()
-    # since they need to reach the FMU's fmi2SetupExperiment call, not just the
-    # solver's own bookkeeping (setting them afterwards is too late for the FMU's
-    # own initial/first-sample state)
+    # override the FMU's declared defaultExperiment
     self.startTime = None
     self.stopTime = None
     self.tolerance = None
@@ -661,11 +658,7 @@ class FMU:
     if status != Status.ok:
       raise RuntimeError(f"Failed to set export name: {status}")
 
-    # Apply simulation settings (defaults, overridden by self.startTime/stopTime/tolerance/
-    # stepSize if set) *before* Capi.instantiate(). The underlying FMU's fmi2SetupExperiment
-    # call happens inside Capi.instantiate() and reads the model's startTime at that exact
-    # moment; setting it afterwards only updates the solver's own bookkeeping, not the FMU's
-    # actual initial/first-sample state.
+    # defaultExperiment, overridden by self.startTime/stopTime/tolerance/stepSize if set
     self.appliedExperiment = {
       'startTime': self.startTime if self.startTime is not None else self.defaultExperiment.get('startTime'),
       'stopTime': self.stopTime if self.stopTime is not None else self.defaultExperiment.get('stopTime'),
@@ -771,25 +764,25 @@ class FMU:
 
   def _getReal(self, cref: CRef):
     value, status = Capi.getReal(cref) # Get the value from the CAPI
-    if status != Status.ok:
+    if status not in (Status.ok, Status.warning):
       raise RuntimeError(f"Failed to get value for {cref}: {status}")
     return value
 
   def _getInteger(self, cref: CRef):
     value, status = Capi.getInteger(cref)
-    if status != Status.ok:
+    if status not in (Status.ok, Status.warning):
       raise RuntimeError(f"Failed to get value for {cref}: {status}")
     return value
 
   def _getBoolean(self, cref: CRef):
     value, status = Capi.getBoolean(cref)
-    if status != Status.ok:
+    if status not in (Status.ok, Status.warning):
       raise RuntimeError(f"Failed to get value for {cref}: {status}")
     return value
 
   def _getString(self, cref: CRef):
     value, status = Capi.getString(cref)
-    if status != Status.ok:
+    if status not in (Status.ok, Status.warning):
       raise RuntimeError(f"Failed to get value for {cref}: {status}")
     return value
 
@@ -798,12 +791,12 @@ class FMU:
     variable = self.getVariableByName(str(cref))
 
     if variable and self.fmuInstantiated and not self.fmuInitialized:
-      allowed = (variable.isInput() or variable.isExact())
+      allowed = (variable.isInput() or variable.isExact() or variable.isApprox())
       if not allowed:
         warnings.warn(
             f"Cannot set variable '{cref}' after the FMU "
             f"is instantiated. Only variables with "
-            f"causality='input' or initial='exact' can "
+            f"causality='input' or initial='exact' or 'approx' can "
             f"be set at this stage. Variable '{cref}' has "
             f"causality='{variable.causality.name}' and "
             f"initial='{variable.initial}'",RuntimeWarning)

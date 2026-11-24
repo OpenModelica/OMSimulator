@@ -182,8 +182,6 @@ oms_status_enu_t oms::SystemWC::importFromSSD_SimulationInformation(const pugi::
 
 oms_status_enu_t oms::SystemWC::instantiate()
 {
-  time = getModel().getStartTime();
-
   for (const auto& subsystem : getSubSystems())
     if (oms_status_ok != subsystem.second->instantiate())
       return oms_status_error;
@@ -327,8 +325,6 @@ oms_status_enu_t oms::SystemWC::reset()
   for (const auto& component : getComponents())
     if (oms_status_ok != component.second->reset())
       return oms_status_error;
-
-  time = getModel().getStartTime();
 
   return oms_status_ok;
 }

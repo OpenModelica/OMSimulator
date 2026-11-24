@@ -813,8 +813,6 @@ oms_status_enu_t oms::SystemSC::importFromSSD_SimulationInformation(const pugi::
 
 oms_status_enu_t oms::SystemSC::instantiate()
 {
-  time = getModel().getStartTime();
-
   // there shouldn't be any subsystem
   for (const auto& subsystem : getSubSystems())
     if (oms_status_ok != subsystem.second->instantiate())
@@ -1330,8 +1328,6 @@ oms_status_enu_t oms::SystemSC::reset()
   for (const auto& component : getComponents())
     if (oms_status_ok != component.second->reset())
       return oms_status_error;
-
-  time = getModel().getStartTime();
 
   if (oms_solver_sc_ida == solverMethod && solverData.ida.mem)
   {

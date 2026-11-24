@@ -72,7 +72,8 @@ instantiated_model.setValue(CRef('default', 'sub-system1', 'Add1', 'u1'), 0.0)
 instantiated_model.setValue(CRef('default', 'sub-system1', 'Add1', 'u2'), 0.0)
 instantiated_model.setResultFile("NestedSystemSimulation2_res.mat")
 
-print(f"info: After instantiation:")
+instantiated_model.initialize()
+print(f"info: After initialization:")
 print(f"info:    default.input1: {instantiated_model.getValue(CRef('default', 'input1'))}", flush=True)
 print(f"info:    default.param1: {instantiated_model.getValue(CRef('default', 'param1'))}", flush=True)
 print(f"info:    default.Gain1.k: {instantiated_model.getValue(CRef('default', 'Gain1', 'k'))}", flush=True)
@@ -84,8 +85,6 @@ print(f"info:    default.sub-system1.Gain1.k: {instantiated_model.getValue(CRef(
 print(f"info:    default.sub-system1.Gain1.u: {instantiated_model.getValue(CRef('default', 'sub-system1', 'Gain1', 'u'))}", flush=True)
 print(f"info:    default.sub-system1.Gain1.y: {instantiated_model.getValue(CRef('default', 'sub-system1', 'Gain1', 'y'))}", flush=True)
 
-
-instantiated_model.initialize()
 instantiated_model.simulate()
 print(f"info: After simulation:")
 print(f"info:    default.input1: {instantiated_model.getValue(CRef('default', 'input1'))}", flush=True)
@@ -176,21 +175,21 @@ instantiated_model.delete()
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
-## info: After instantiation:
-## info:    default.input1: 3.0
-## info:    default.param1: 0.0
-## info:    default.Gain1.k: 1.0
-## info:    default.Gain1.u: 0.0
-## info:    default.Gain1.y: 0.0
-## info:    default.sub-system1.input1: 10.0
-## info:    default.sub-system1.param1: 0.0
-## info:    default.sub-system1.Gain1.k: 1.0
-## info:    default.sub-system1.Gain1.u: 0.0
-## info:    default.sub-system1.Gain1.y: 0.0
 ## info:    model doesn't contain any continuous state
 ## info:    maximum step size for 'model.root.solver2': 0.001000
 ## info:    model doesn't contain any continuous state
 ## info:    Result file: NestedSystemSimulation2_res.mat (bufferSize=10)
+## info: After initialization:
+## info:    default.input1: 3.0
+## info:    default.param1: 0.0
+## info:    default.Gain1.k: 1.0
+## info:    default.Gain1.u: 3.0
+## info:    default.Gain1.y: 3.0
+## info:    default.sub-system1.input1: 10.0
+## info:    default.sub-system1.param1: 0.0
+## info:    default.sub-system1.Gain1.k: 1.0
+## info:    default.sub-system1.Gain1.u: 10.0
+## info:    default.sub-system1.Gain1.y: 10.0
 ## info: After simulation:
 ## info:    default.input1: 3.0
 ## info:    default.param1: 0.0

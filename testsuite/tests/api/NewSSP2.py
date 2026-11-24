@@ -30,10 +30,6 @@ model2.list()
 
 ## Result:
 ## INFO:OMSimulator.ssp:Temporary directory created: <hidden>
-## INFO:OMSimulator.ssd:SSD 'default' exported to <hidden>
-## INFO:OMSimulator.ssd:SSD 'Variant-B' exported to <hidden>
-## INFO:OMSimulator.ssp:SSP file 'NewSSP2.ssp' successfully exported!
-## INFO:OMSimulator.ssp:Temporary directory created: <hidden>
 ## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
 ## |--   resources/Add.fmu
@@ -52,6 +48,10 @@ model2.list()
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
+## INFO:OMSimulator.ssd:SSD 'default' exported to <hidden>
+## INFO:OMSimulator.ssd:SSD 'Variant-B' exported to <hidden>
+## INFO:OMSimulator.ssp:SSP file 'NewSSP2.ssp' successfully exported!
+## INFO:OMSimulator.ssp:Temporary directory created: <hidden>
 ## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
 ## |--   resources/Add.fmu
