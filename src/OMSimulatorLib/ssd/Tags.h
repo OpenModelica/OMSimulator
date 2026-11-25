@@ -40,6 +40,13 @@ namespace oms
 {
   namespace ssp
   {
+    namespace Version2_0
+    {
+      namespace ssc
+      {
+        extern const char* meta_data;
+      }
+    }
     namespace Version1_0
     {
       extern const char* simulation_information;

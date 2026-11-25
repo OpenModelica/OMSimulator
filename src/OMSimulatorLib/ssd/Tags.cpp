@@ -105,3 +105,6 @@ const char* oms::ssp::Version1_0::ssc::annotation                      = "ssc:An
 
 const char* oms::ssp::Version1_0::ssm::parameter_mapping               = "ssm:ParameterMapping";
 const char* oms::ssp::Version1_0::ssm::parameter_mapping_entry         = "ssm:MappingEntry";
+
+// version 2.0
+const char* oms::ssp::Version2_0::ssc::meta_data                       = "ssc:MetaData";

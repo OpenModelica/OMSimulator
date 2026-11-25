@@ -378,6 +378,10 @@ oms::Component* oms::ComponentFMU3CS::NewComponent(const pugi::xml_node& node, o
     {
       // vendor annotations, e.g. the solver of OMSimulator 3, are not used
     }
+    else if(name == oms::ssp::Version2_0::ssc::meta_data)
+    {
+      // meta data is not used
+    }
     else
     {
       logError_WrongSchema(name);
