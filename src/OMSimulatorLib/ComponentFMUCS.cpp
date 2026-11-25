@@ -366,7 +366,7 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const pugi::xml_node& node, om
     }
     else if(name == oms::ssp::Version2_0::ssc::meta_data)
     {
-      logWarning("Meta data associated with the component is not used.");
+      // meta data is not used
     }
     else
     {
