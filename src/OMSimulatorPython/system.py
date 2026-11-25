@@ -942,12 +942,12 @@ class System:
     # dict to group connections by solver unit
     solver_connections = defaultdict(list)
     # connections where neither endpoint is a component (a pure system/
-    # subsystem boundary-connector pass-through); resolved by value-copy
-    # instead of a live oms_addConnection, see the loop in processElements
+    # subsystem boundary-connector pass-through), see the loop in processElements
     boundary_connections = []
 
     # process the elements
     self.processElements(self.elements, self.connections, data, solver_groups, componentSolver, solver_connections, resources, tempdir, boundary_connections)
+    boundary_connections = self._resolveBoundaryConnections(solver_groups, solver_connections, boundary_connections)
 
     ## group the simulation units
     for solver, components in solver_groups.items():
@@ -1100,6 +1100,16 @@ class System:
             "end connector": str(connection.endConnector)
         }
 
+      if connection.suppressUnitConversion:
+        connection_info["suppress unit conversion"] = True
+
+      ## add linear transformation info if available
+      if connection.linearTransformation:
+        connection_info["linear transformation"] = {
+          "factor": connection.linearTransformation.factor,
+          "offset": connection.linearTransformation.offset
+        }
+
       if startSolver is None and endSolver is None:
         # Neither endpoint is a component -- a pure top-level/subsystem
         # boundary-connector pass-through (e.g. a top-level input exposing a
@@ -1107,8 +1117,7 @@ class System:
         # concept of an input-to-input edge and rejects it outright
         # ("[updateDependencyGraphs] failed for ..." at initialize, confirmed
         # by direct Capi testing), so this is never turned into a live
-        # oms_addConnection. Resolved instead in InstantiatedModel by
-        # copying the value across after start values are applied.
+        # oms_addConnection. See _resolveBoundaryConnections.
         boundary_connections.append(connection_info)
         continue
 
@@ -1124,16 +1133,54 @@ class System:
       elif endSolver is None and startSolver is not None:
         solver = startSolver
 
-      if connection.suppressUnitConversion:
-        connection_info["suppress unit conversion"] = True
-
-      ## add linear transformation info if available
-      if connection.linearTransformation:
-        connection_info["linear transformation"] = {
-          "factor": connection.linearTransformation.factor,
-          "offset": connection.linearTransformation.offset
-        }
       solver_connections[solver].append(connection_info)
+
+  def _resolveBoundaryConnections(self, solver_groups: defaultdict, solver_connections: defaultdict, boundary_connections: list) -> list:
+    """Replaces each boundary connection that is driven by a component through
+    a chain of system connectors with a direct connection from that component
+    output, e.g. sub.Gain.y -> sub.y -> out becomes sub.Gain.y -> out. Returns
+    the boundary connections that are driven by a system input; InstantiatedModel
+    resolves those by copying the value."""
+    def endpoint(connection, side):
+      return tuple(connection[f"{side} element"] + [connection[f"{side} connector"]])
+
+    component_solver = {tuple(component["name"]): solver for solver, components in solver_groups.items() for component in components}
+    driver = {}
+    for connection in [c for connections in solver_connections.values() for c in connections] + boundary_connections:
+      driver[endpoint(connection, "end")] = connection
+
+    remaining = []
+    for connection in boundary_connections:
+      chain = [connection]
+      while tuple(chain[-1]["start element"]) not in component_solver:
+        upstream = driver.get(endpoint(chain[-1], "start"))
+        if upstream is None or len(chain) > len(boundary_connections):
+          break
+        chain.append(upstream)
+
+      source = chain[-1]
+      solver = component_solver.get(tuple(source["start element"]))
+      if solver is None:
+        remaining.append(connection)
+        continue
+
+      resolved = {
+        "start element": source["start element"],
+        "start connector": source["start connector"],
+        "end element": connection["end element"],
+        "end connector": connection["end connector"]
+      }
+      if any(edge.get("suppress unit conversion", False) for edge in chain):
+        resolved["suppress unit conversion"] = True
+      transformations = [edge["linear transformation"] for edge in reversed(chain) if "linear transformation" in edge]
+      if transformations:
+        factor, offset = 1.0, 0.0
+        for transformation in transformations:
+          edge_factor = float(transformation["factor"])
+          factor, offset = edge_factor * factor, edge_factor * offset + float(transformation["offset"])
+        resolved["linear transformation"] = {"factor": factor, "offset": offset}
+      solver_connections[solver].append(resolved)
+    return remaining
 
   def export(self, root):
     node = ET.SubElement(root, namespace.tag("ssd", "System"), attrib={"name": str(self.name)})
