@@ -8,10 +8,12 @@ oms_add_test(
   exportJson1.py
   exportJson2.py
   exportJson4.py
+  fmuSetInput.py
   fmuSimulation1.py
   fmuSimulation2.py
   fmuSimulation3.py
   fmuSimulation4.py
+  fmuStartTime.py
   LinearTransformation1.py
   LinearTransformation2.py
   LinearTransformation3.py

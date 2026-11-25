@@ -33,7 +33,6 @@ instantiated_model.delete()
 
 
 ## Result:
-## info:    Result file: SimpleSimulation19_res.mat (bufferSize=10)
 ## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
 ## |--   resources/Gain.fmu
@@ -55,6 +54,7 @@ instantiated_model.delete()
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
+## info:    Result file: SimpleSimulation19_res.mat (bufferSize=10)
 ##
 ## info: After simulation:
 ## info:    root.Gain.k : 2.0

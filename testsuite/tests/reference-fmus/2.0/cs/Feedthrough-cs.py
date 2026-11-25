@@ -20,6 +20,7 @@ instantiated_model.setValue(CRef('default', 'Feedthrough', 'Enumeration_input'),
 instantiated_model.setValue(CRef('default', 'Feedthrough', 'Float64_continuous_input'), 3.1)
 instantiated_model.setValue(CRef('default', 'Feedthrough', 'Float64_discrete_input'), 4.2)
 instantiated_model.setValue(CRef('default', 'Feedthrough', 'Int32_input'), 5)
+instantiated_model.setValue(CRef('default', 'Feedthrough', 'String_parameter'), "Set me test!")
 
 instantiated_model.setStopTime(10.0)
 instantiated_model.setTolerance(1e-5)
@@ -32,7 +33,7 @@ print(f"info:    Feedthrough.Enumeration_output: {instantiated_model.getValue(CR
 print(f"info:    Feedthrough.Float64_continuous_output: {instantiated_model.getValue(CRef('default', 'Feedthrough', 'Float64_continuous_output'))}", flush=True)
 print(f"info:    Feedthrough.Float64_discrete_output: {instantiated_model.getValue(CRef('default', 'Feedthrough', 'Float64_discrete_output'))}", flush=True)
 print(f"info:    Feedthrough.Int32_output: {instantiated_model.getValue(CRef('default', 'Feedthrough', 'Int32_output'))}", flush=True)
-
+print(f"info:    Feedthrough.String_parameter: {instantiated_model.getValue(CRef('default', 'Feedthrough', 'String_parameter'))}", flush=True)
 instantiated_model.terminate()
 instantiated_model.delete()
 
@@ -44,4 +45,5 @@ instantiated_model.delete()
 ## info:    Feedthrough.Float64_continuous_output: 3.1
 ## info:    Feedthrough.Float64_discrete_output: 4.2
 ## info:    Feedthrough.Int32_output: 5
+## info:    Feedthrough.String_parameter: Set me test!
 ## endResult

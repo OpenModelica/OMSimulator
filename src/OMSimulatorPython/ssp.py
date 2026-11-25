@@ -33,6 +33,7 @@
 import logging
 import os
 import shutil
+import sys
 import tempfile
 import zipfile
 from collections.abc import Iterable
@@ -437,6 +438,8 @@ class SSP:
     print(f"|-- Active Variant: {self.activeVariantName}")
     for ssd in self.variants.values():
       ssd.list("|--")
+    # the C library logs directly to stdout, so flush to keep the order
+    sys.stdout.flush()
 
   def instantiate(self):
     if self.activeVariant is None:

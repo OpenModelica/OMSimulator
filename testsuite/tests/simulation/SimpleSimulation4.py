@@ -30,8 +30,11 @@ print(f"info:    default.CauerLowPassAnalog.C1.C: {instantiated_model.getValue(C
 
 instantiated_model.initialize()
 
+print(f"info: After initialization:")
+print(f"info:    default.CauerLowPassAnalog.R1.T: {instantiated_model.getValue(CRef('default', 'CauerLowPassAnalog', 'R1.T'))}", flush=True)
+print(f"info:    default.CauerLowPassAnalog.C1.C: {instantiated_model.getValue(CRef('default', 'CauerLowPassAnalog', 'C1.C'))}", flush=True)
+
 instantiated_model.simulate()
-value = instantiated_model.getValue(CRef('default', 'CauerLowPassAnalog', 'R1.T'))
 print(f"info: After Simulation:")
 print(f"info:    default.CauerLowPassAnalog.R1.T: {instantiated_model.getValue(CRef('default', 'CauerLowPassAnalog', 'R1.T'))}", flush=True)
 print(f"info:    default.CauerLowPassAnalog.C1.C: {instantiated_model.getValue(CRef('default', 'CauerLowPassAnalog', 'C1.C'))}", flush=True)
@@ -43,11 +46,18 @@ instantiated_model.delete()
 ## info: Before instantiation:
 ## info:    default.CauerLowPassAnalog.R1.T: None
 ## info:    default.CauerLowPassAnalog.C1.C: None
+## warning: no start value available for signal model.root.CauerLowPassAnalog.R1.T before initialization, returning 0; call getValue after initialize() to get the calculated value
 ## info: After instantiation:
+## info:    default.CauerLowPassAnalog.R1.T: 0.0
+## warning: no start value available for signal model.root.CauerLowPassAnalog.C1.C before initialization, returning 0; call getValue after initialize() to get the calculated value
+## info:    default.CauerLowPassAnalog.C1.C: 0.0
+## info:    Result file: SimpleSimulation4_res.mat (bufferSize=10)
+## info: After initialization:
 ## info:    default.CauerLowPassAnalog.R1.T: 300.15
 ## info:    default.CauerLowPassAnalog.C1.C: 1.072
-## info:    Result file: SimpleSimulation4_res.mat (bufferSize=10)
 ## info: After Simulation:
 ## info:    default.CauerLowPassAnalog.R1.T: 300.15
 ## info:    default.CauerLowPassAnalog.C1.C: 1.072
+## info:    2 warnings
+## info:    0 errors
 ## endResult

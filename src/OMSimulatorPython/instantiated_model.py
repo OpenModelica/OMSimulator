@@ -526,12 +526,12 @@ class InstantiatedModel:
     variable = component.fmu.getVariableByName(variable_name)
 
     if variable and self.fmuInstantiated and not self.fmuInitialized:
-      allowed = (variable.isInput() or variable.isExact())
+      allowed = (variable.isInput() or variable.isExact() or variable.isApprox())
       if not allowed:
         warnings.warn(
             f"Cannot set variable '{variable_name}' after the FMU "
             f"is instantiated. Only variables with "
-            f"causality='input' or initial='exact' can "
+            f"causality='input' or initial='exact' or 'approx' can "
             f"be set at this stage. Variable '{variable_name}' has "
             f"causality='{variable.causality.name}' and "
             f"initial='{variable.initial}'",RuntimeWarning)

@@ -80,6 +80,7 @@ instantiated_model.setValue(CRef('default', 'addSat', 'k2'), -1.0)
 instantiated_model.setValue(CRef('default', 'gainTrack', 'k'), 1.0/(k*Ni))
 # print(instantiated_model.dumpApiCalls())
 
+instantiated_model.initialize()
 print(f"info:    Parameter settings")
 print(f"info:      default.addP.k1      : {instantiated_model.getValue(CRef('default', 'addP', 'k1'))}")
 print(f"info:      default.addP.k2      : {instantiated_model.getValue(CRef('default', 'addP', 'k2'))}")
@@ -89,8 +90,6 @@ print(f"info:      default.gainPI.k     : {instantiated_model.getValue(CRef('def
 print(f"info:      default.limiter.uMax : {instantiated_model.getValue(CRef('default', 'limiter', 'uMax'))}")
 print(f"info:      default.addSat.k2    : {instantiated_model.getValue(CRef('default', 'addSat', 'k2'))}")
 print(f"info:      default.gainTrack.k  : {instantiated_model.getValue(CRef('default', 'gainTrack', 'k'))}")
-
-instantiated_model.initialize()
 print(f"info:    Initialization")
 print(f"info:      default.limiter.u: {instantiated_model.getValue(CRef('default', 'limiter', 'u'))}")
 print(f"info:      default.limiter.y: {instantiated_model.getValue(CRef('default', 'limiter', 'y'))}")

@@ -76,7 +76,8 @@ instantiated_model = model2.instantiate() ## internally generate the json file a
 # print(instantiated_model.dumpApiCalls(), flush=True)
 instantiated_model.setResultFile("SimpleSimulation11_res.mat")
 
-print(f"info: After instantiation:")
+instantiated_model.initialize()
+print(f"info: After initialization:")
 print(f"info:    default.param1 : {instantiated_model.getValue(CRef('default', 'param1'))}", flush=True)
 print(f"info:    default.input1 : {instantiated_model.getValue(CRef('default', 'input1'))}", flush=True)
 print(f"info:    default.Gain1.k: {instantiated_model.getValue(CRef('default', 'Gain1', 'k'))}", flush=True)
@@ -88,8 +89,6 @@ print(f"info:    default.sub-system.Gain2.k: {instantiated_model.getValue(CRef('
 print(f"info:    default.sub-system.Gain2.u: {instantiated_model.getValue(CRef('default', 'sub-system', 'Gain2', 'u'))}", flush=True)
 print(f"info:    default.sub-system.Gain2.y: {instantiated_model.getValue(CRef('default', 'sub-system', 'Gain2', 'y'))}", flush=True)
 
-
-instantiated_model.initialize()
 instantiated_model.simulate()
 print(f"info: After simulation:")
 print(f"info:    default.param1 : {instantiated_model.getValue(CRef('default', 'param1'))}", flush=True)
@@ -179,20 +178,20 @@ instantiated_model.delete()
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
-## info: After instantiation:
-## info:    default.param1 : 200.0
-## info:    default.input1 : 300.0
-## info:    default.Gain1.k: 2.0
-## info:    default.Gain1.u: 0.0
-## info:    default.Gain1.y: 0.0
-## info:    default.Add1.u1: 0.0
-## info:    default.sub-system.input: 400.0
-## info:    default.sub-system.Gain2.k: 500.0
-## info:    default.sub-system.Gain2.u: 0.0
-## info:    default.sub-system.Gain2.y: 0.0
 ## info:    model doesn't contain any continuous state
 ## info:    maximum step size for 'model.root.solver2': 0.001000
 ## info:    Result file: SimpleSimulation11_res.mat (bufferSize=10)
+## info: After initialization:
+## info:    default.param1 : 200.0
+## info:    default.input1 : 300.0
+## info:    default.Gain1.k: 2.0
+## info:    default.Gain1.u: 300.0
+## info:    default.Gain1.y: 600.0
+## info:    default.Add1.u1: 600.0
+## info:    default.sub-system.input: 400.0
+## info:    default.sub-system.Gain2.k: 500.0
+## info:    default.sub-system.Gain2.u: 400.0
+## info:    default.sub-system.Gain2.y: 200000.0
 ## info: After simulation:
 ## info:    default.param1 : 200.0
 ## info:    default.input1 : 300.0

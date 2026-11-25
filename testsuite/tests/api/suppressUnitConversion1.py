@@ -29,7 +29,6 @@ instantiated_model.terminate()
 instantiated_model.delete()
 
 ## Result:
-## info:    Result file: default_res.mat (bufferSize=10)
 ## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
 ## |--   resources/Gain.fmu
@@ -67,4 +66,5 @@ instantiated_model.delete()
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
+## info:    Result file: default_res.mat (bufferSize=10)
 ## endResult

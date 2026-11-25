@@ -9,7 +9,7 @@ pipeline {
     booleanParam(name: 'SUBMODULE_UPDATE', defaultValue: false, description: 'Allow pull request to update submodules (disabled by default due to common user errors)')
     booleanParam(name: 'UPLOAD_BUILD_OPENMODELICA', defaultValue: false, description: 'Upload install artifacts to build.openmodelica.org/omsimulator. Activates MINGW_UCRT64 as well.')
     string(name: 'CTEST_FLAGS', defaultValue: '', description: 'Extra flags passed to ctest, e.g. -R api')
-    booleanParam(name: 'PYPI_RELEASE', defaultValue: false, description: 'Upload the pip package of this master build to PyPI, after its binaries are uploaded.')
+    booleanParam(name: 'PYPI_RELEASE', defaultValue: false, description: 'Only upload the pip package of this master commit to PyPI, without build and tests. Its binaries must already be on build.openmodelica.org.')
   }
   stages {
     stage('pre-build') {
@@ -46,6 +46,12 @@ pipeline {
       }
     }
     stage('build-in-parallel') {
+      when {
+        not {
+          expression { return params.PYPI_RELEASE }
+        }
+        beforeAgent true
+      }
       parallel {
         stage('linux64-resolute-asan') {
           stages {
@@ -362,6 +368,12 @@ EXIT /b 1
     }
 
     stage('upload') {
+      when {
+        not {
+          expression { return params.PYPI_RELEASE }
+        }
+        beforeAgent true
+      }
       parallel {
 
         stage('upload-doc') {
@@ -466,7 +478,7 @@ EXIT /b 1
     }
 
     // PyPI only gets an sdist: at install time build_helpers.py downloads the
-    // binaries that upload-artifacts has just put on build.openmodelica.org.
+    // binaries that the regular build of this commit put on build.openmodelica.org.
     stage('pypi-release') {
       when {
         allOf {
@@ -490,6 +502,27 @@ EXIT /b 1
       }
       steps {
         writeVersionFile()
+        // Without these archives every pip install of the package would fail.
+        sh """
+          python3 - <<'EOF'
+import sys, urllib.request
+version = '${env.OMS_VERSION}'
+missing = []
+for f in ['linux-amd64/OMSimulator-linux-amd64-' + version + '.tar.gz',
+          'linux-jammy-amd64/OMSimulator-linux-jammy-amd64-' + version + '.tar.gz',
+          'win-mingw-ucrt64/OMSimulator-mingw-ucrt64-' + version + '.zip',
+          'win-msvc64/OMSimulator-win64-' + version + '.zip']:
+  try:
+    urllib.request.urlopen(urllib.request.Request('https://build.openmodelica.org/omsimulator/nightly/' + f, method='HEAD'))
+  except Exception as e:
+    missing.append(f + ': ' + str(e))
+if missing:
+  print('Missing binaries, wait for the regular master build of this commit:')
+  print(*missing, sep='; ')
+  sys.exit(1)
+print('Binaries found for ' + version)
+EOF
+        """
         // The pip_sdist target checks for the build module at configure time,
         // so CMake has to use the venv that has it.
         sh '''

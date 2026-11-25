@@ -2421,6 +2421,21 @@ oms_status_enu_t oms::System::importFromSSD_ConnectionGeometry(const pugi::xml_n
   return oms_status_ok;
 }
 
+oms_status_enu_t oms::System::enterInitialization()
+{
+  time = getModel().getStartTime();
+
+  for (const auto& subsystem : getSubSystems())
+    if (oms_status_ok != subsystem.second->enterInitialization())
+      return oms_status_error;
+
+  for (const auto& component : getComponents())
+    if (oms_status_ok != component.second->enterInitialization())
+      return oms_status_error;
+
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms::System::registerSignalsForResultFile(ResultWriter& resultFile)
 {
   if (Flags::WallTime())
