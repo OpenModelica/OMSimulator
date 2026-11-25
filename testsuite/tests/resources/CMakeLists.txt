@@ -16,6 +16,7 @@ set(OM_OMS_TESTSUITE_RESOURCES_FMUS
         ${CMAKE_CURRENT_SOURCE_DIR}/Dahlquist
         ${CMAKE_CURRENT_SOURCE_DIR}/Dahlquist3
         ${CMAKE_CURRENT_SOURCE_DIR}/DaeLoopA
+        ${CMAKE_CURRENT_SOURCE_DIR}/DaeSemiLoopA
         ${CMAKE_CURRENT_SOURCE_DIR}/DualMassOscillator.System1
         ${CMAKE_CURRENT_SOURCE_DIR}/DualMassOscillator.System2
         ${CMAKE_CURRENT_SOURCE_DIR}/Enum1

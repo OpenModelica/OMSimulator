@@ -90,12 +90,16 @@ bool oms::LsDaeManifest::load(const std::string& unzippedFmuPath)
   for (const pugi::xml_node& node : root.child("AlgebraicVariables").children("AlgebraicVariable"))
     algebraicVrs.push_back(node.attribute("valueReference").as_uint());
 
-  // The manifest's <ModelStructure> replaces the model description's: no
-  // <ContinuousStateDerivative> is the fully implicit form, where the residuals
-  // cover the state rows as well.
+  // The manifest's <ModelStructure> replaces the model description's. Its
+  // <ContinuousStateDerivative> entries are the semi-explicit form; none is the
+  // fully implicit form of older drafts, where the residuals cover the state
+  // rows as well.
   const pugi::xml_node structure = root.child("ModelStructure");
   for (const pugi::xml_node& node : structure.children("ContinuousStateDerivative"))
+  {
     continuousStateDerivatives.push_back(node.attribute("valueReference").as_uint());
+    continuousStateDerivativeDependencies.push_back(parseValueReferenceList(node.attribute("dependencies").value()));
+  }
 
   for (const pugi::xml_node& node : structure.children("Residual"))
   {

@@ -92,12 +92,18 @@ namespace oms
     /**
      * \brief The state derivatives the manifest lists.
      *
-     * Empty for the fully implicit form `F(t, x, x', z) = 0`, where the
-     * residuals cover the state rows too. A non-empty list is the semi-explicit
-     * form: the FMU answers with `der(x)` and the residuals constrain the
-     * algebraic variables alone.
+     * A non-empty list is the semi-explicit form fmi-ls-dae defines: the FMU
+     * answers with `der(x)`, and the residuals constrain the algebraic
+     * variables alone. Empty is the fully implicit form `F(t, x, x', z) = 0`
+     * of FMUs exported against older drafts, where the residuals cover the
+     * state rows too.
      */
     const std::vector<uint32_t>& getContinuousStateDerivatives() const { return continuousStateDerivatives; }
+    /**
+     * \brief Per state derivative, the value references it declares a
+     *        dependency on; empty when it named none.
+     */
+    const std::vector<std::vector<uint32_t>>& getContinuousStateDerivativeDependencies() const { return continuousStateDerivativeDependencies; }
     bool isFullyImplicit() const { return continuousStateDerivatives.empty(); }
 
   private:
@@ -108,6 +114,7 @@ namespace oms
     std::vector<uint32_t> residualVrs;
     std::vector<std::vector<uint32_t>> residualDependencies;
     std::vector<uint32_t> continuousStateDerivatives;
+    std::vector<std::vector<uint32_t>> continuousStateDerivativeDependencies;
   };
 }
 
