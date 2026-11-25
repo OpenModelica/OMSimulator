@@ -1108,6 +1108,8 @@ class System:
         }
 
       if startSolver is None and endSolver is None:
+        # Neither endpoint is a component. OMSimulator rejects an edge between
+        # two system connectors, so InstantiatedModel resolves these chains.
         boundary_connections.append(connection_info)
         continue
 
