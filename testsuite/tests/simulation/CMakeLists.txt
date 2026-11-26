@@ -17,6 +17,7 @@ oms_add_test(
   LinearTransformation1.py
   LinearTransformation2.py
   LinearTransformation3.py
+  LinearTransformation4.py
   PIController.py
   pwmtest.py
   QuarterCarModel.py

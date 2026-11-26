@@ -422,9 +422,9 @@ class InstantiatedModel:
           raise KeyError(f"No mapping found for {start}")
         if end not in self.mappedCrefs:
           raise KeyError(f"No mapping found for {end}")
-        self._copyValue(self.mappedCrefs[start], self.mappedCrefs[end])
+        self._copyValue(self.mappedCrefs[start], self.mappedCrefs[end], connection.get("linear transformation"))
 
-  def _copyValue(self, source_path: str, target_path: str):
+  def _copyValue(self, source_path: str, target_path: str, linear_transformation: dict | None = None):
     type, status = Capi.getVariableType(source_path)
     if status != Status.ok:
       raise RuntimeError(f"Failed to get variable type for {source_path}: {status}")
@@ -434,6 +434,8 @@ class InstantiatedModel:
         value, status = Capi.getReal(source_path)
         if status != Status.ok:
           raise RuntimeError(f"Failed to get real value for {source_path}: {status}")
+        if linear_transformation is not None:
+          value = float(linear_transformation["factor"]) * value + float(linear_transformation["offset"])
         self._setReal(target_path, value)
       case SignalType.Integer | SignalType.Int8 | SignalType.UInt8 | SignalType.Int16 | SignalType.UInt16 | SignalType.Int32 | SignalType.UInt32 | SignalType.Int64 | SignalType.UInt64:
         value, status = Capi.getInteger(source_path)
