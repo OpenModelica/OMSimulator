@@ -187,7 +187,7 @@ class InstantiatedModel:
           comp_path = ".".join([solver_path] + [comp["name"][-1]])
         else:
           ## add prefix to nested systems to avoid name conflicts while flattening the system during instantiation, e.g. sub-system1_Add1, sub-system1_Gain1
-          comp_name = f"{comp['name'][-2]}_{comp['name'][-1]}"
+          comp_name = "_".join(comp["name"][1:])
           comp_path = ".".join([solver_path] + [comp_name])
         self.apiCall.append(f'oms_addSubModel("{comp_path}", "{comp["path"]}")')
         status = Capi.addSubModel(comp_path, comp["path"])
@@ -484,7 +484,7 @@ class InstantiatedModel:
         connector_path = ".".join([self.mappedCrefs[systemName], str(connector.name)])
       else:
         ## add prefix to nested systems to avoid name conflicts while flattening the system during instantiation, e.g. sub-system1_input1, sub-system1_param1
-        connector_name_prefix = f"{system_name[-1]}_{str(connector.name)}"  # replace '-' with '_' for sub-system name in connector path
+        connector_name_prefix = "_".join(system_name[1:] + [str(connector.name)])
         connector_path = ".".join([self.mappedCrefs[systemName], connector_name_prefix])
       self.apiCall.append(f'oms_addConnector("{connector_path}", "{connector.causality}", {connector.signal_type})')
       status = Capi.addConnector(connector_path, connector.causality.value, connector.c_signal_type.value)
@@ -515,9 +515,10 @@ class InstantiatedModel:
     """Checks if a component variable meets the FMI requirements."""
     ## Last element is the variable name
     variable_name = cref.names[-1]
-    ## The second last element is the component name
-    component_name = cref.names[-2]
-    component = self.system.elements.get(CRef(component_name))
+    ## The elements between the system name and the variable are the path to the component
+    component = self.system
+    for name in cref.names[1:-1]:
+      component = component.elements.get(CRef(name)) if isinstance(component, System) else None
 
     # Top-level system variable: no FMI check required
     if not isinstance(component, Component):
