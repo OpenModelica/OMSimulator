@@ -999,7 +999,7 @@ class System:
     json_string = json.dumps(data, indent=2)
     return json_string
 
-  def processElements(self, elements_dict: dict, connections: list, data: dict, solver_groups : defaultdict, componentSolver : dict, solver_connections : defaultdict, resources :dict, tempdir : str, boundary_connections: list, systemName = None):
+  def processElements(self, elements_dict: dict, connections: list, data: dict, solver_groups : defaultdict, componentSolver : dict, solver_connections : defaultdict, resources :dict, tempdir : str, boundary_connections: list, systemPath: tuple = ()):
     """Processes the elements and connections in the system."""
     for key, element in elements_dict.items():
       if isinstance(element, Component):
@@ -1051,12 +1051,12 @@ class System:
               "type": connector.signal_type.name if connector.signal_type else None,
           })
         solver_groups[element.solver].append({
-            "name": [self.name] + ([systemName] if systemName else []) + [str(element.name)],
+            "name": [self.name] + list(systemPath) + [str(element.name)],
             "type": fmuType,
             "path": str(Path(tempdir, str(element.fmuPath))) if tempdir is not None else str(element.fmuPath),
             "connectors": connector_info
         })
-        componentSolver[str(element.name)] = element.solver
+        componentSolver[systemPath + (str(element.name),)] = element.solver
       elif isinstance(element, ComponentTable):
         if element.filePath is None:
           raise ValueError(f"Table '{element.name}' has no source file and cannot be simulated")
@@ -1078,25 +1078,25 @@ class System:
               "type": connector.signal_type.name if connector.signal_type else None,
           })
         solver_groups[element.solver].append({
-            "name": [self.name] + ([systemName] if systemName else []) + [str(element.name)],
+            "name": [self.name] + list(systemPath) + [str(element.name)],
             "type": "table",
             "path": str(Path(tempdir, str(element.filePath))) if tempdir is not None else str(element.filePath),
             "connectors": connector_info
         })
       elif isinstance(element, System):
         # recurse into subsystems
-        self.processElements(element.elements, element.connections, data, solver_groups, componentSolver, solver_connections, resources, tempdir, boundary_connections, systemName=str(element.name))
+        self.processElements(element.elements, element.connections, data, solver_groups, componentSolver, solver_connections, resources, tempdir, boundary_connections, systemPath=systemPath + (str(element.name),))
 
     for connection in connections:
       startElement = str(connection.startElement)
       endElement = str(connection.endElement)
-      startSolver = componentSolver.get(startElement, None)
-      endSolver = componentSolver.get(endElement, None)
+      startSolver = componentSolver.get(systemPath + (startElement,)) if startElement else None
+      endSolver = componentSolver.get(systemPath + (endElement,)) if endElement else None
 
       connection_info = {
-            "start element": [self.name] + ([systemName] if systemName else []) + ([startElement] if startElement else []),
+            "start element": [self.name] + list(systemPath) + ([startElement] if startElement else []),
             "start connector": str(connection.startConnector),
-            "end element": [self.name] + ([systemName] if systemName else []) + ([endElement] if endElement else []),
+            "end element": [self.name] + list(systemPath) + ([endElement] if endElement else []),
             "end connector": str(connection.endConnector)
         }
 
