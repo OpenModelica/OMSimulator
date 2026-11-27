@@ -22,6 +22,7 @@ oms_add_test(
   pwmtest.py
   QuarterCarModel.py
   realTime1.py
+  tableToModelExchange1.py
   tankYPipe.py
   SimpleSimulation1.py
   SimpleSimulation2.py
