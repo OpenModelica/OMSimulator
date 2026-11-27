@@ -1133,12 +1133,6 @@ oms::BusConnector* oms::System::getBusConnector(const oms::ComRef& cref)
   if (subsystem != subsystems.end())
     return subsystem->second->getBusConnector(tail);
 
-  if (!cref.isValidIdent())
-  {
-    logError_InvalidIdent(cref);
-    return nullptr;
-  }
-
   for(auto& busconnector : busconnectors)
     if (busconnector && busconnector->getName() == cref)
       return busconnector;
