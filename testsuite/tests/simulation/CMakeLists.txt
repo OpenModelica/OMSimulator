@@ -52,4 +52,5 @@ oms_add_test(
   NestedSystemSimulation3.py
   NestedSystemSimulation4.py
   NestedSystemSimulation5.py
+  NestedSystemSimulation6.py
 )
